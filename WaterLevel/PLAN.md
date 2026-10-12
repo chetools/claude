@@ -8,8 +8,8 @@ Plücker ray map. Code is marimo notebooks, run on molab (RTX PRO 6000 Blackwell
 
 | Item | Value |
 |---|---|
-| Videos | 6 iPhone 1080p videos at standard fps. Already recorded, cannot change. |
-| Labels | 1 mass in grams per video. The 6 values are distinct and run from empty to nearly full. |
+| Videos | 7 iPhone 1080p videos (v01–v07): h264, SDR (not HDR), rotation −90°, 63–105 frames each at 5 fps. Already recorded, cannot change. |
+| Labels | 1 mass in grams per video: 0, 48, 145, 200, 239, 315, 411 g. v07 is at the brim (`cup.json`: inner height 100 mm, inner diameter 79 mm, brim 411 g). |
 | Scene | The cup and the room are the same in every video. Lighting and where the cup sits can change. |
 | Camera | Moves very differently from video to video (orbits, up and down). |
 | Training | Choice (c): self-supervised LeJEPA, then end-to-end fine-tuning on grams. |
@@ -17,10 +17,10 @@ Plücker ray map. Code is marimo notebooks, run on molab (RTX PRO 6000 Blackwell
 
 ## 2. Risks, and how the plan handles them
 
-1. **There are only 6 labels.** Each video carries a single gram value. Statistically this means 6
+1. **There are only 7 labels.** Each video carries a single gram value. Statistically this means 7
    samples, not thousands of frames. Consequences:
-   - Evaluation is **leave-one-video-out (LOVO)**, 6 folds. Never split frames from the same video between train and test.
-   - Only the 4 middle videos test *interpolation*. Holding out the empty or the near-full video
+   - Evaluation is **leave-one-video-out (LOVO)**, 7 folds. Never split frames from the same video between train and test.
+   - Only the 5 middle videos test *interpolation*. Holding out the empty or the near-full video
      tests *extrapolation*, so those two folds are reported separately and expected to be worse.
    - Recommendation, even though the videos are fixed: **each extra video recorded later is worth
      more than any change to the model.** The pipeline will accept new videos plus a `labels.csv` row with no code changes.
@@ -35,7 +35,7 @@ Plücker ray map. Code is marimo notebooks, run on molab (RTX PRO 6000 Blackwell
    ray moment and keep only the direction plus the elevation relative to the cup, or rebalance training frames by viewpoint.
 4. **A transparent cup with refraction confuses depth and pose estimators.** Canonicalization
    therefore relies on the table plane and the cup silhouette, not on the cup's own predicted depth.
-5. **iPhone video quirks:** HEVC encoding, rotation metadata, and often HDR (HLG/Dolby Vision) colour.
+5. **iPhone video quirks:** HEVC encoding, rotation metadata, and often HDR (HLG/Dolby Vision) colour. (The 7 recorded videos turned out to be h264 SDR with −90° rotation.)
    The decoder must apply the rotation and tone-map to SDR. Otherwise colours shift per video, which is another leak.
 
 ## 3. Camera poses and the cup frame (`pipeline.py`, stage 1)
@@ -54,10 +54,10 @@ Per video:
    - Base centre: intersect the camera rays through the bottom edge of the cup silhouette with the table plane, take the median over frames, and make it the **origin**.
    - Scale: cup height (top rim minus base, measured the same way) = 1 unit. If the real cup height in mm is provided, convert to metres.
    - Yaw around z is arbitrary, since the cup is round. Fix it to the direction of the first camera; ray features must not depend on yaw anyway (see §4).
-5. Save per-frame K and the camera-to-cup transform as `poses/vXX.npz`. Push them to the HF dataset under `processed/`.
+5. Save per-frame K and the camera-to-cup transform as `processed/vXX.npz` (+ `vXX_mask.npz`). Push them to the HF dataset under `processed/`.
 6. Checks:
    - Draw the cup axis and rim circle back onto the frames.
-   - 3D Plotly view of all 6 camera paths in the shared cup frame.
+   - 3D Plotly view of all 7 camera paths in the shared cup frame.
    - Reprojection error of the base point across frames.
 
 Alternatives considered: MASt3R-SfM (slower, same need for the cup frame), COLMAP/GLOMAP
@@ -74,19 +74,19 @@ under the cup would have been best, but the videos are already recorded.
 ## 5. Model and training (`pipeline.py`, stage 3)
 
 - **Backbone:** ViT-S/16, initialised from DINOv3 (or DINOv2) weights. A from-scratch variant is run as an ablation, because from scratch is the "pure" LeJEPA setting.
-- **Stage 1, LeJEPA continued pretraining** on cup-centred crops of frames from the 5 training videos per fold. The held-out video is excluded, so the comparison stays clean.
+- **Stage 1, LeJEPA continued pretraining** on cup-centred crops of frames from the 6 training videos per fold. The held-out video is excluded, so the comparison stays clean.
   - Views: 2 global plus several local crops. Global views may come from **different frames of the same video**. This is a multi-view pairing: same water, different camera, and each view has its own rays.
   - Loss: LeJEPA's prediction loss plus SIGReg (the `lejepa` package: Epps-Pulley test, 1024 slices), with one trade-off weight λ.
 - **Stage 2, end-to-end fine-tuning** with the following settings:
   - Head: an MLP on the [CLS] token concatenated with mean-pooled patch tokens. It predicts grams standardised to z-scores.
-  - Loss: Huber loss on grams, plus SIGReg kept at a small λ as a regulariser (protects against collapse and overfitting with only 5 labels).
+  - Loss: Huber loss on grams, plus SIGReg kept at a small λ as a regulariser (protects against collapse and overfitting with only 6 labels per fold).
   - Learning rates differ by layer depth (layer-wise decay). Use EMA of the weights and heavy augmentation.
 - **Video-level prediction:** take the median over a video's frames; report frame-level numbers too.
 - **Precision:** bf16 on Blackwell. Batch size can be large (96 GB), but the dataset is tiny, so expect it to be augmentation-bound, not compute-bound.
 
 ## 6. Evaluation and leak audits (`pipeline.py` stage 2, `04_eval.py`)
 
-All results are LOVO over 6 folds. MAE in grams is reported per fold, and for the middle 4 folds versus the end 2.
+All results are LOVO over 7 folds. MAE in grams is reported per fold, and for the middle 5 folds versus the end 2.
 
 | Baseline / ablation | Purpose |
 |---|---|
@@ -106,7 +106,7 @@ Leak audits. These must come out near chance or near the mean predictor.
 
 Interpretability check: a saliency or attention rollout map should concentrate on the water line and meniscus.
 
-**Definition of success:** in the 4 middle folds, the MAE is well below the mean predictor's (a target of under half). The audits are clean. Rays at least match the no-ray ablation.
+**Definition of success:** in the 5 middle folds, the MAE is well below the mean predictor's (a target of under half). The audits are clean. Rays at least match the no-ray ablation.
 
 ## 7. Notebooks (marimo, on molab)
 
@@ -115,14 +115,34 @@ Interpretability check: a saliency or attention rollout map should concentrate o
 | `pipeline.py` | One notebook, four stages, each behind its own button: **0 data** (pull from HF, decode, check rotation and HDR, contact sheets); **1 poses** (VGGT, SAM 2 masks, cup frame, visual checks, push `processed/` to HF; videos already processed are loaded, not recomputed); **2 audits** (the leak audits); **3 training** (LeJEPA pretraining and fine-tuning, LOVO loop; checkpoints go to an HF model repo, since molab sessions end). Stages pull what they need, so they don't have to be run in order. |
 | `04_eval.py` | Results tables, plots, saliency maps. |
 | `../env_check.py` (repo root) | Diagnostic: which packages molab actually loads (uv venv vs preinstalled), conflicts; *Send report to Claude* uploads it to `logs/` in the dataset. |
-| `smoke.py` | Local smoke test before using molab's GPU: `python smoke.py --setup` builds `.molab-venv` from `molab-lock.txt` (molab's versions); `python smoke.py` runs every notebook with `WL_SMOKE=1` (3 videos x 8 frames, a few training steps, `work-smoke/`, no HF pushes). |
+| `smoke.py` | Local smoke test before using molab's GPU: `python smoke.py --setup` builds `.molab-venv` from `molab-lock.txt` (molab's versions); `python smoke.py` runs every notebook with `WL_SMOKE=1` (3 videos x 6 low-res frames; poses recomputed each run, `--quick` reuses them; a few training steps, `work-smoke/`, no HF pushes). |
 
 - Each notebook declares its dependencies inline (PEP 723) so molab installs them.
 - PyTorch must be a CUDA 12.8+ build to run on Blackwell. molab's preinstalled torch (cu130) is used.
 - The HF token goes in at runtime through a password field or the `HF_TOKEN` environment variable. It is never stored in the notebook.
 - Everything is seeded, and the fold definitions are fixed in `labels.csv` order.
 
-## 8. Still needed from the user
+## 8. Status and findings (2026-10-12)
 
-1. Upload the videos to HF (`UPLOAD.md`) and send the repo ID.
-2. Optional but useful: the cup's inner height and inner diameter in mm, and the capacity in grams when full to the brim.
+Done on molab: data, poses (all 7 videos, 283 s; `processed/` is on HF) and audits (`results/` on HF).
+Not yet run: training (stage 3) and `04_eval.py`. The models repo `carlosco/waterlevel-models` is still empty.
+
+**Audits, LOVO MAE in grams (mid = 5 middle folds, end = v01 and v07):**
+
+| Run | mid | end |
+|---|---|---|
+| Train mean (floor) | 85.6 | 239.8 |
+| Frozen DINOv2 + ridge | **10.1** | 110.5 |
+| Background only (cup hidden) | **27.2** | 139.6 |
+| Colour histogram only | 55.6 | 128.6 |
+| Rays only | 89.6 | 240.2 |
+| Video ID from rays (accuracy, chance 14 %) | 38 % | |
+
+- **The background audit fails:** with the cup painted out it still beats the mean predictor by about 3×, and colour
+  alone also beats it. Something outside the cup (lighting, table, reflections, or the shape of the grey cup region
+  itself) carries the label. Investigate before trusting any model score. Note that the frozen DINOv2 baseline
+  (10 g) is already strong, so the LeJEPA model has to beat that, not just the mean.
+- Rays alone carry no gram signal (≈ mean), and the video-ID fingerprint is moderate (38 %, below the 50 % fallback threshold).
+- **Pose diagnostics:** the projected base point sits 9–12 % of mask height above the lowest mask pixel in *every*
+  video (`base offset median` −0.09 to −0.12), so the bias is systematic. Probably the thick glass base or refraction
+  at the silhouette bottom; check the overlays before relying on absolute heights. Plane-inlier fraction 0.23–0.42.

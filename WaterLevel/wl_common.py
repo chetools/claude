@@ -100,7 +100,9 @@ def ensure_vggt() -> None:
 
 
 def ensure_sam2() -> None:
-    ensure_pkg("sam2", "git+https://github.com/facebookresearch/sam2.git", {"SAM2_BUILD_CUDA": "0"})
+    # No deps: uv installs into molab's /tmp/uv-venv and cannot see the image's /usr/local torch, so with deps it
+    # downloaded a second torch (2.14.1) + numpy into the venv mid-session. The notebook header supplies the rest.
+    ensure_pkg("sam2", "git+https://github.com/facebookresearch/sam2.git", {"SAM2_BUILD_CUDA": "0"}, no_deps=True)
 
 
 # --------------------------------------------------------------------------- data
