@@ -29,14 +29,14 @@ def _():
 @app.cell
 def _(C, mo):
     try:
-        _stems = [s for s, _ in C.read_labels()]
-    except FileNotFoundError:
-        _stems = []
+        _stems, _err = [s for s, _ in C.ensure_labels()], None
+    except Exception as e:  # no network / no token for a private dataset
+        _stems, _err = [], mo.callout(mo.md(f"Could not fetch `labels.csv`: `{type(e).__name__}: {e}`. Set `HF_TOKEN` if the dataset is private."), kind="danger")
     pick = mo.ui.multiselect(_stems, value=_stems, label="Videos")
     prompt = mo.ui.text(value="a transparent drinking glass", label="Detector prompt", full_width=True)
     box_override = mo.ui.text(label="Box override on frame 0 (x0,y0,x1,y1 in the 518-px image; blank = auto)", full_width=True)
     run = mo.ui.run_button(label="Run VGGT + masks + cup frame")
-    mo.vstack([pick, prompt, box_override, run])
+    mo.vstack([_err, pick, prompt, box_override, run] if _err else [pick, prompt, box_override, run])
     return box_override, pick, prompt, run
 
 

@@ -146,6 +146,21 @@ def push_results(token: str | None = None) -> bool:
         return False
 
 
+def ensure_labels(token: str | None = None) -> list[tuple[str, float]]:
+    """labels.csv (+ cup.json) only: enough to list the videos without running 00 or pulling the whole dataset."""
+    if not (HF_DIR / "labels.csv").exists():
+        from huggingface_hub import snapshot_download
+
+        snapshot_download(
+            repo_id=DATASET_REPO,
+            repo_type="dataset",
+            local_dir=HF_DIR,
+            token=token or hf_token(),
+            allow_patterns=["labels.csv", "cup.json"],
+        )
+    return read_labels()
+
+
 def read_labels(root: Path = HF_DIR) -> list[tuple[str, float]]:
     """[(stem, grams)] in labels.csv order. That order defines the folds."""
     out = []
