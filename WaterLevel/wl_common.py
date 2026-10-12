@@ -7,6 +7,7 @@ Keep this file next to the notebooks. Layout of the working directory (WL_WORK, 
 """
 from __future__ import annotations
 
+import contextlib
 import csv
 import json
 import os
@@ -446,3 +447,49 @@ def load_results(root: Path | None = None) -> dict:
             if not (root / p.name).exists():
                 shutil.copy(p, root / p.name)
     return {p.stem: json.loads(p.read_text()) for p in sorted(root.glob("*.json"))}
+
+
+# --------------------------------------------------------------------------- run logs
+
+
+@contextlib.contextmanager
+def run_log(stage: str, token: str | None = None):
+    """Wrap a notebook stage. On exit, write a markdown log (status, duration, env, notes, traceback) to work/logs/
+    and push it to the HF dataset under logs/, so failures can be read without copy-pasting from the notebook.
+    Yields a list: append strings to it to include progress notes. Exceptions are re-raised unchanged."""
+    import time
+    import traceback
+
+    notes: list[str] = []
+    t0 = time.time()
+    try:
+        yield notes
+    except Exception:
+        _write_log(stage, "error", notes, traceback.format_exc(), time.time() - t0, token)
+        raise
+    _write_log(stage, "ok", notes, "", time.time() - t0, token)
+
+
+def _write_log(stage: str, status: str, notes: list[str], tb: str, secs: float, token: str | None) -> None:
+    import datetime
+
+    stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d-%H%M%S")
+    name = f"{stamp}_{stage}_{status}.md"
+    text = "\n".join([
+        f"# {stage}: {status}", "", f"- utc: {stamp}", f"- duration: {secs:.0f} s", f"- env: {env_report()}", "",
+        *(["## notes", *notes, ""] if notes else []),
+        *(["## traceback", "```", tb.rstrip(), "```"] if tb else []),
+    ]) + "\n"
+    out = WORK / "logs" / name
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(text)
+    try:
+        from huggingface_hub import HfApi
+
+        HfApi(token=token or hf_token()).upload_file(
+            path_or_fileobj=str(out), path_in_repo=f"logs/{name}", repo_id=DATASET_REPO, repo_type="dataset",
+            commit_message=f"log {stage} {status}",
+        )
+        print(f"log pushed: logs/{name}")
+    except Exception as e:
+        print(f"WARNING: could not push log logs/{name} ({type(e).__name__}: {e}); it is only at {out}")

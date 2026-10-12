@@ -96,8 +96,10 @@ def _(mo):
 @app.cell
 def _(C, data_go, labels, mo, tok):
     mo.stop(not data_go.value, mo.md("Press the button (later stages also do this on their own)."))
-    C.pull_dataset(tok)
-    infos = {_s: C.decode_video(_s)[1] for _s, _ in labels}
+    with C.run_log("data", tok) as _notes:
+        C.pull_dataset(tok)
+        infos = {_s: C.decode_video(_s)[1] for _s, _ in labels}
+        _notes += [f"- {_s}: {_i['codec_line'][:90]} rot={_i['rotation']} hdr={_i['hdr']} tonemapped={_i['tonemapped']}" for _s, _i in infos.items()]
     _rows = []
     for _stem, _g in labels:
         _i = infos[_stem]
@@ -193,7 +195,7 @@ def _(C, Image, np, torch):
         with torch.no_grad():
             out = det(**inp)
         side = max(im.size)  # OWLv2 pads to a square
-        res = proc.post_process_object_detection(out, threshold=0.05, target_sizes=torch.tensor([[side, side]]))[0]
+        res = proc.post_process_grounded_object_detection(out, threshold=0.05, target_sizes=torch.tensor([[side, side]]))[0]
         if len(res["scores"]) == 0:
             raise RuntimeError("detector found nothing; give a box override")
         b = res["boxes"][res["scores"].argmax()].cpu().numpy()
@@ -280,11 +282,14 @@ def _(C, detect_box, load_small, mo, np, pose_box, pose_go, pose_pick, pose_prom
                 "base offset median": round(float(np.nanmedian(offs)), 3), "base offset p90": round(float(np.nanpercentile(np.abs(offs), 90)), 3)}
 
     pose_summary = []
-    for _stem in pose_pick.value:
-        if (_out / f"{_stem}.npz").exists() and (_out / f"{_stem}_mask.npz").exists() and not pose_redo.value:
-            pose_summary.append({"video": _stem, "status": "cached"})
-        else:
-            pose_summary.append({"video": _stem, "status": "computed", **_process(_stem)})
+    with C.run_log("poses", tok) as _notes:
+        for _stem in pose_pick.value:
+            if (_out / f"{_stem}.npz").exists() and (_out / f"{_stem}_mask.npz").exists() and not pose_redo.value:
+                pose_summary.append({"video": _stem, "status": "cached"})
+            else:
+                _notes.append(f"- {_stem}: processing")
+                pose_summary.append({"video": _stem, "status": "computed", **_process(_stem)})
+            _notes.append(f"- {pose_summary[-1]}")
     _cols = list(dict.fromkeys(k for r in pose_summary for k in r))
     mo.vstack([
         mo.md("Done. Offsets are fractions of mask height (0 is perfect). Cached videos show no diagnostics; tick Recompute to redo them."),
@@ -445,41 +450,43 @@ def _(np, stems, torch):
 
 
 @app.cell
-def _(audit_go, feats_background, feats_colour, feats_dino, feats_rays, get_sampler, labels, mo, np, stems):
+def _(C, audit_go, feats_background, feats_colour, feats_dino, feats_rays, get_sampler, labels, mo, np, stems, tok):
     from sklearn.linear_model import LogisticRegression, Ridge
     from sklearn.model_selection import GridSearchCV, GroupKFold
     from sklearn.pipeline import make_pipeline
     from sklearn.preprocessing import StandardScaler
 
     mo.stop(not audit_go.value, mo.md("Press the button to run the audits."))
-    _S = get_sampler()
-    _X_dino, _grp = feats_dino(_S)
-    _feats = {"frozen DINOv2 + ridge": _X_dino, "background only (cup hidden)": feats_background(_S),
-              "colour histogram only": feats_colour(_S), "rays only": feats_rays(_S)}
-    _gm = dict(labels)
-    _y = np.array([_gm[stems[g]] for g in _grp], dtype=float)
+    with C.run_log("audits", tok) as _notes:
+        _S = get_sampler()
+        _X_dino, _grp = feats_dino(_S)
+        _feats = {"frozen DINOv2 + ridge": _X_dino, "background only (cup hidden)": feats_background(_S),
+                  "colour histogram only": feats_colour(_S), "rays only": feats_rays(_S)}
+        _gm = dict(labels)
+        _y = np.array([_gm[stems[g]] for g in _grp], dtype=float)
 
-    def _lovo_ridge(X):
-        out = {}
-        for h in range(len(stems)):
-            tr, te = _grp != h, _grp == h
-            gs = GridSearchCV(make_pipeline(StandardScaler(), Ridge()), {"ridge__alpha": [1, 10, 100, 1e3, 1e4]},
-                              cv=GroupKFold(n_splits=min(4, len(set(_grp[tr])))), scoring="neg_mean_absolute_error")
-            gs.fit(X[tr], _y[tr], groups=_grp[tr])
-            out[stems[h]] = dict(true=_gm[stems[h]], frames=gs.predict(X[te]).tolist())
-        return out
+        def _lovo_ridge(X):
+            out = {}
+            for h in range(len(stems)):
+                tr, te = _grp != h, _grp == h
+                gs = GridSearchCV(make_pipeline(StandardScaler(), Ridge()), {"ridge__alpha": [1, 10, 100, 1e3, 1e4]},
+                                  cv=GroupKFold(n_splits=min(4, len(set(_grp[tr])))), scoring="neg_mean_absolute_error")
+                gs.fit(X[tr], _y[tr], groups=_grp[tr])
+                out[stems[h]] = dict(true=_gm[stems[h]], frames=gs.predict(X[te]).tolist())
+            return out
 
-    ridge_res = {_k: {"variant": _k, "folds": _lovo_ridge(_v)} for _k, _v in _feats.items()}
+        ridge_res = {_k: {"variant": _k, "folds": _lovo_ridge(_v)} for _k, _v in _feats.items()}
 
-    # video id from rays alone: contiguous time blocks held out inside every video (chance = 1/n_videos)
-    _Xr = StandardScaler().fit_transform(_feats["rays only"])
-    _pos = np.concatenate([np.linspace(0, 1, (_grp == g).sum(), endpoint=False) for g in range(len(stems))])
-    _block = np.minimum((_pos * 5).astype(int), 4)
-    _acc = []
-    for _b in range(5):
-        _clf = LogisticRegression(max_iter=2000).fit(_Xr[_block != _b], _grp[_block != _b])
-        _acc.append(float((_clf.predict(_Xr[_block == _b]) == _grp[_block == _b]).mean()))
-    id_acc = float(np.mean(_acc))
+        # video id from rays alone: contiguous time blocks held out inside every video (chance = 1/n_videos)
+        _Xr = StandardScaler().fit_transform(_feats["rays only"])
+        _pos = np.concatenate([np.linspace(0, 1, (_grp == g).sum(), endpoint=False) for g in range(len(stems))])
+        _block = np.minimum((_pos * 5).astype(int), 4)
+        _acc = []
+        for _b in range(5):
+            _clf = LogisticRegression(max_iter=2000).fit(_Xr[_block != _b], _grp[_block != _b])
+            _acc.append(float((_clf.predict(_Xr[_block == _b]) == _grp[_block == _b]).mean()))
+        id_acc = float(np.mean(_acc))
+        _notes.append(f"- video id from rays: {id_acc:.3f}")
     return id_acc, ridge_res
 
 
@@ -537,21 +544,24 @@ def _(C, M, dataclasses, get_sampler, labels, mo, stems, tok, train_folds, train
         print(msg, flush=True)
 
     _summaries = {}
-    for _v in train_variants.value:
-        _cfg = dataclasses.replace(M.Cfg(variant=_v, stage1_steps=int(train_s1.value), stage2_steps=int(train_s2.value)), **M.VARIANTS[_v])
-        _res = {"variant": _v, "cfg": _cfg.__dict__, "folds": {}}
-        for _h in _holds:
-            _res["folds"][_h] = M.run_fold(_S, labels, _h, _cfg, _ckpt, _log)
-            C.save_results(_res, _v)  # saved after every fold so a dead session loses little
-            C.push_results(tok)
-        _summaries[_v] = C.summarize(_res, labels)
+    with C.run_log("training", tok) as _notes:
+        for _v in train_variants.value:
+            _cfg = dataclasses.replace(M.Cfg(variant=_v, stage1_steps=int(train_s1.value), stage2_steps=int(train_s2.value)), **M.VARIANTS[_v])
+            _res = {"variant": _v, "cfg": _cfg.__dict__, "folds": {}}
+            for _h in _holds:
+                _notes.append(f"- {_v} fold {_h}: start")
+                _res["folds"][_h] = M.run_fold(_S, labels, _h, _cfg, _ckpt, _log)
+                C.save_results(_res, _v)  # saved after every fold so a dead session loses little
+                C.push_results(tok)
+            _summaries[_v] = C.summarize(_res, labels)
+            _notes.append(f"- {_v}: {_summaries[_v]}")
 
-    if train_push.value:
-        from huggingface_hub import HfApi
+        if train_push.value:
+            from huggingface_hub import HfApi
 
-        _api = HfApi(token=tok or C.hf_token())
-        _api.create_repo(C.MODEL_REPO, private=True, exist_ok=True)
-        _api.upload_folder(repo_id=C.MODEL_REPO, folder_path=str(_ckpt), path_in_repo="ckpt")
+            _api = HfApi(token=tok or C.hf_token())
+            _api.create_repo(C.MODEL_REPO, private=True, exist_ok=True)
+            _api.upload_folder(repo_id=C.MODEL_REPO, folder_path=str(_ckpt), path_in_repo="ckpt")
     mo.vstack([
         mo.md("Done. Open `04_eval.py` for the full results."),
         mo.ui.table([{"variant": k, "all MAE": round(v["all_mae"], 1), "mid MAE": v["mid_mae"] and round(v["mid_mae"], 1),
