@@ -49,13 +49,20 @@ def build_cache(stem: str, root: Path | None = None) -> Path:
     ext = box[:, 2] * BOX_EXPAND
     x0 = box[:, 0] - ext / 2
     y0 = box[:, 1] - ext / 2
+    def crop(im, i, resample):
+        """Exact (sub-pixel) square crop that may extend past the frame: pad by an integer crop (outside = 0), then
+        resample with the box relative to it. PIL refuses resize boxes that start outside the image."""
+        X0, Y0 = math.floor(x0[i]), math.floor(y0[i])
+        X1, Y1 = math.ceil(x0[i] + ext[i]), math.ceil(y0[i] + ext[i])
+        dx, dy = float(x0[i] - X0), float(y0[i] - Y0)
+        return im.crop((X0, Y0, X1, Y1)).resize((CACHE_RES, CACHE_RES), resample, box=(dx, dy, dx + float(ext[i]), dy + float(ext[i])))
+
     for i, f in enumerate(files):
         im = Image.open(f).convert("RGB")
         W, H = im.size
-        region = (float(x0[i]), float(y0[i]), float(x0[i] + ext[i]), float(y0[i] + ext[i]))
-        imgs[i] = torch.from_numpy(np.asarray(im.resize((CACHE_RES, CACHE_RES), Image.BILINEAR, box=region))).permute(2, 0, 1)
+        imgs[i] = torch.from_numpy(np.asarray(crop(im, i, Image.BILINEAR))).permute(2, 0, 1)
         m = Image.fromarray(mz[i].astype(np.uint8) * 255).resize((W, H), Image.NEAREST)
-        msks[i, 0] = torch.from_numpy(np.asarray(m.resize((CACHE_RES, CACHE_RES), Image.BILINEAR, box=region)) > 127).to(torch.uint8)
+        msks[i, 0] = torch.from_numpy(np.asarray(crop(m, i, Image.BILINEAR)) > 127).to(torch.uint8)
     out.parent.mkdir(parents=True, exist_ok=True)
     torch.save(dict(img=imgs, mask=msks, K=torch.from_numpy(pz["K"]).float(), Rc=torch.from_numpy(pz["Rc"]).float(),
                     o=torch.from_numpy(pz["o"]).float(), x0=torch.from_numpy(x0).float(), y0=torch.from_numpy(y0).float(),

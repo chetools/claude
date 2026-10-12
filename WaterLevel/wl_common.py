@@ -20,7 +20,12 @@ import numpy as np
 
 DATASET_REPO = os.environ.get("WL_DATASET", "carlosco/waterlevel-videos")
 MODEL_REPO = os.environ.get("WL_MODELS", "carlosco/waterlevel-models")
-WORK = Path(os.environ.get("WL_WORK", "work"))
+# WL_SMOKE=1: local smoke test (smoke.py). 3 videos x 8 frames, tiny training, own work dir, never pushes to HF,
+# and every stage button in the notebooks counts as pressed.
+SMOKE = os.environ.get("WL_SMOKE") == "1"
+SMOKE_FRAMES = 8
+SMOKE_CFG = dict(stage1_steps=4, stage2_steps=4, b1=4, b2=8)
+WORK = Path(os.environ.get("WL_WORK", "work-smoke" if SMOKE else "work"))
 HF_DIR = WORK / "hf"
 FRAMES_DIR = WORK / "frames"
 FPS = 5
@@ -72,7 +77,7 @@ def env_report() -> str:
         except metadata.PackageNotFoundError:
             return "-"
 
-    names = ("numpy", "scipy", "pillow", "torch", "torchvision", "transformers", "huggingface-hub", "vggt", "sam2")
+    names = ("numpy", "scipy", "pillow", "torch", "torchvision", "transformers", "huggingface-hub", "vggt", "sam-2")
     pk = " ".join(f"{n}={v(n)}" for n in names)
     try:
         import torch
@@ -107,7 +112,7 @@ def hf_token() -> str | None:
 def pull_dataset(token: str | None = None, include_videos: bool = True) -> Path:
     from huggingface_hub import snapshot_download
 
-    patterns = ["labels.csv", "cup.json", "processed/*", "results/*"]
+    patterns = ["labels.csv", "cup.json"] if SMOKE else ["labels.csv", "cup.json", "processed/*", "results/*"]
     if include_videos:
         patterns.append("videos/*")
     snapshot_download(
@@ -121,6 +126,9 @@ def pull_dataset(token: str | None = None, include_videos: bool = True) -> Path:
 
 
 def push_processed(token: str | None = None) -> None:
+    if SMOKE:
+        print("smoke: not pushing processed/")
+        return
     from huggingface_hub import HfApi
 
     HfApi(token=token or hf_token()).upload_folder(
@@ -134,6 +142,8 @@ def push_processed(token: str | None = None) -> None:
 
 def push_results(token: str | None = None) -> bool:
     """Upload work/results/*.json to the dataset repo under results/. Never raises (a missing write token is only a warning)."""
+    if SMOKE:
+        return False
     try:
         from huggingface_hub import HfApi
 
@@ -168,6 +178,10 @@ def read_labels(root: Path = HF_DIR) -> list[tuple[str, float]]:
     with open(root / "labels.csv", newline="") as f:
         for row in csv.DictReader(f):
             out.append((Path(row["video"]).stem, float(row["grams"])))
+    if SMOKE:  # lightest, middle and heaviest video, still in labels.csv order
+        g = sorted(out, key=lambda t: t[1])
+        keep = {g[0][0], g[len(g) // 2][0], g[-1][0]}
+        out = [t for t in out if t[0] in keep]
     return out
 
 
@@ -249,7 +263,10 @@ def decode_video(stem: str, force: bool = False) -> tuple[Path, dict]:
 
 
 def frame_files(stem: str) -> list[Path]:
-    return sorted((FRAMES_DIR / stem).glob("*.jpg"))
+    files = sorted((FRAMES_DIR / stem).glob("*.jpg"))
+    if SMOKE and len(files) > SMOKE_FRAMES:
+        files = [files[round(i * (len(files) - 1) / (SMOKE_FRAMES - 1))] for i in range(SMOKE_FRAMES)]
+    return files
 
 
 # --------------------------------------------------------------------------- geometry / cup frame
@@ -483,6 +500,9 @@ def _write_log(stage: str, status: str, notes: list[str], tb: str, secs: float, 
     out = WORK / "logs" / name
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(text)
+    if SMOKE:
+        print(f"smoke: log written to {out}")
+        return
     try:
         from huggingface_hub import HfApi
 

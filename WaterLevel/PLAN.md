@@ -115,6 +115,7 @@ Interpretability check: a saliency or attention rollout map should concentrate o
 | `pipeline.py` | One notebook, four stages, each behind its own button: **0 data** (pull from HF, decode, check rotation and HDR, contact sheets); **1 poses** (VGGT, SAM 2 masks, cup frame, visual checks, push `processed/` to HF; videos already processed are loaded, not recomputed); **2 audits** (the leak audits); **3 training** (LeJEPA pretraining and fine-tuning, LOVO loop; checkpoints go to an HF model repo, since molab sessions end). Stages pull what they need, so they don't have to be run in order. |
 | `04_eval.py` | Results tables, plots, saliency maps. |
 | `env_check.py` | Diagnostic: which packages molab actually loads (uv venv vs preinstalled), conflicts, downloadable report. |
+| `smoke.py` | Local smoke test before using molab's GPU: `python smoke.py --setup` builds `.molab-venv` from `molab-lock.txt` (molab's versions); `python smoke.py` runs every notebook with `WL_SMOKE=1` (3 videos x 8 frames, a few training steps, `work-smoke/`, no HF pushes). |
 
 - Each notebook declares its dependencies inline (PEP 723) so molab installs them.
 - PyTorch must be a CUDA 12.8+ build to run on Blackwell. molab's preinstalled torch (cu130) is used.

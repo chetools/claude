@@ -95,7 +95,7 @@ def _(mo):
 
 @app.cell
 def _(C, data_go, labels, mo, tok):
-    mo.stop(not data_go.value, mo.md("Press the button (later stages also do this on their own)."))
+    mo.stop(not (data_go.value or C.SMOKE), mo.md("Press the button (later stages also do this on their own)."))
     with C.run_log("data", tok) as _notes:
         C.pull_dataset(tok)
         infos = {_s: C.decode_video(_s)[1] for _s, _ in labels}
@@ -227,7 +227,7 @@ def _(C, Image, np, torch):
 
 @app.cell
 def _(C, detect_box, load_small, mo, np, pose_box, pose_go, pose_pick, pose_prompt, pose_redo, run_sam2, run_vggt, tok):
-    mo.stop(not pose_go.value, mo.md("Press the button to process."))
+    mo.stop(not (pose_go.value or C.SMOKE), mo.md("Press the button to process."))
     C.pull_dataset(tok)
     _cup = C.read_cup()
     _out = C.HF_DIR / "processed"
@@ -271,7 +271,7 @@ def _(C, detect_box, load_small, mo, np, pose_box, pose_go, pose_pick, pose_prom
         metres = _cup.get("inner_height_mm", None)
         np.savez_compressed(_out / f"{stem}.npz", K=K_full.astype(np.float32), K_low=intr.astype(np.float32),
                             Rc=Rc.astype(np.float32), o=o.astype(np.float32), box=bx.astype(np.float32),
-                            frame_ids=np.arange(len(masks)), wh_full=np.array([Wf, Hf]), wh_low=np.array(masks.shape[2:][::-1]),
+                            frame_ids=np.arange(len(masks)), wh_full=np.array([Wf, Hf]), wh_low=np.array(masks.shape[1:][::-1]),
                             height_world=fr["s"], radius_units=fr["radius"] / fr["s"],
                             metres_per_unit=(metres / 1000.0) if metres else np.nan)
         np.savez_compressed(_out / f"{stem}_mask.npz", mask=masks)
@@ -456,7 +456,7 @@ def _(C, audit_go, feats_background, feats_colour, feats_dino, feats_rays, get_s
     from sklearn.pipeline import make_pipeline
     from sklearn.preprocessing import StandardScaler
 
-    mo.stop(not audit_go.value, mo.md("Press the button to run the audits."))
+    mo.stop(not (audit_go.value or C.SMOKE), mo.md("Press the button to run the audits."))
     with C.run_log("audits", tok) as _notes:
         _S = get_sampler()
         _X_dino, _grp = feats_dino(_S)
@@ -535,7 +535,7 @@ def _(M, mo):
 
 @app.cell
 def _(C, M, dataclasses, get_sampler, labels, mo, stems, tok, train_folds, train_go, train_push, train_s1, train_s2, train_variants):
-    mo.stop(not train_go.value, mo.md("Choose variants and press Train."))
+    mo.stop(not (train_go.value or C.SMOKE), mo.md("Choose variants and press Train."))
     _S = get_sampler()
     _holds = stems if train_folds.value.strip() == "all" else [x.strip() for x in train_folds.value.split(",")]
     _ckpt = C.WORK / "ckpt"
@@ -545,8 +545,10 @@ def _(C, M, dataclasses, get_sampler, labels, mo, stems, tok, train_folds, train
 
     _summaries = {}
     with C.run_log("training", tok) as _notes:
-        for _v in train_variants.value:
+        for _v in list(M.VARIANTS) if C.SMOKE else train_variants.value:
             _cfg = dataclasses.replace(M.Cfg(variant=_v, stage1_steps=int(train_s1.value), stage2_steps=int(train_s2.value)), **M.VARIANTS[_v])
+            if C.SMOKE:
+                _cfg = dataclasses.replace(_cfg, **C.SMOKE_CFG)
             _res = {"variant": _v, "cfg": _cfg.__dict__, "folds": {}}
             for _h in _holds:
                 _notes.append(f"- {_v} fold {_h}: start")
@@ -556,7 +558,7 @@ def _(C, M, dataclasses, get_sampler, labels, mo, stems, tok, train_folds, train
             _summaries[_v] = C.summarize(_res, labels)
             _notes.append(f"- {_v}: {_summaries[_v]}")
 
-        if train_push.value:
+        if train_push.value and not C.SMOKE:
             from huggingface_hub import HfApi
 
             _api = HfApi(token=tok or C.hf_token())

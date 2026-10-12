@@ -62,7 +62,8 @@ def _(C, labels, mo, results):
 def _(C, mo, results):
     runs = [k for k, r in results.items() if r.get("cfg")]
     variant = mo.ui.dropdown(runs, value=runs[0] if runs else None, label="Model run")
-    fold = mo.ui.dropdown(list(results[runs[0]]["folds"]) if runs else [], label="Held-out video")
+    _folds = list(results[runs[0]]["folds"]) if runs else []
+    fold = mo.ui.dropdown(_folds, value=_folds[0] if _folds else None, label="Held-out video")
     go_sal = mo.ui.run_button(label="Saliency (downloads the checkpoint if needed)")
     mo.vstack([mo.hstack([variant, fold]), go_sal])
     return fold, go_sal, variant
@@ -75,7 +76,7 @@ def _(C, fold, go_sal, labels, mo, np, variant):
 
     import wl_model as M
 
-    mo.stop(not go_sal.value or not fold.value)
+    mo.stop(not (go_sal.value or C.SMOKE) or not fold.value)
     _p = C.WORK / "ckpt" / f"{variant.value}_{fold.value}.pt"
     if not _p.exists():
         from huggingface_hub import hf_hub_download

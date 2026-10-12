@@ -45,10 +45,10 @@ def _(Path, re, sys):
         "torch": "", "torchvision": "", "transformers": "",
         "einops": "", "safetensors": "", "opencv-python": "", "hydra-core": "",
         "iopath": "", "tqdm": "", "scikit-learn": "", "timm": "",
-        "vggt": "", "sam2": "",  # git installs via wl_common.ensure_vggt / ensure_sam2
+        "vggt": "", "sam-2": "",  # git installs via wl_common.ensure_vggt / ensure_sam2
     }
     IMPORT_NAME = {"pillow": "PIL", "huggingface-hub": "huggingface_hub", "opencv-python": "cv2",
-                   "hydra-core": "hydra", "scikit-learn": "sklearn", "imageio-ffmpeg": "imageio_ffmpeg"}
+                   "hydra-core": "hydra", "scikit-learn": "sklearn", "imageio-ffmpeg": "imageio_ffmpeg", "sam-2": "sam2"}
 
     def norm(n):
         return re.sub(r"[-_.]+", "-", n).lower()
