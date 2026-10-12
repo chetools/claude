@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#   "marimo", "numpy", "scipy", "pillow", "plotly", "huggingface_hub", "imageio-ffmpeg",
+#   "marimo", "numpy", "scipy", "pillow", "plotly", "huggingface_hub>=1.5,<2", "imageio-ffmpeg",
 #   "torch", "torchvision", "transformers",
 #   "einops", "safetensors", "opencv-python-headless", "hydra-core", "iopath", "tqdm",
 # ]
