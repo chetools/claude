@@ -1,4 +1,6 @@
 # /// script
+# # Dependencies = the WaterLevel notebooks', so molab builds the same environment they get.
+# # For another project, swap in that project's dependencies and edit "Expected packages" in Settings.
 # requires-python = ">=3.11"
 # dependencies = [
 #   "marimo", "packaging", "numpy", "scipy", "pillow", "plotly", "huggingface_hub>=1.5,<2", "imageio-ffmpeg",
@@ -17,6 +19,7 @@ app = marimo.App(width="full")
 def _():
     import importlib.metadata as md
     import importlib.util
+    import os
     import re
     import sys
     from pathlib import Path
@@ -29,29 +32,42 @@ def _():
         """
         # Environment check
         Which packages molab actually loads — the notebook's uv venv (**VENV**) or the image's
-        preinstalled `/usr/local` (**BASE**) — compared with what the WaterLevel notebooks declare.
-        Dependency header is the union of all notebooks, so this builds the same env they get.
+        preinstalled `/usr/local` (**BASE**) — compared with the expected packages (Settings; default: WaterLevel).
+        Press **Send report to Claude** at the end so Claude can read it, or download it.
         """
     )
-    return Path, Requirement, SpecifierSet, importlib, md, mo, re, sys
+    return Path, Requirement, SpecifierSet, importlib, md, mo, os, re, sys
 
 
 @app.cell
-def _(Path, re, sys):
-    # What the WaterLevel notebooks declare (union of all headers) + runtime git installs.
-    EXPECTED = {
-        "marimo": "", "numpy": "", "scipy": "", "pillow": "", "plotly": "",
-        "huggingface-hub": ">=1.5,<2", "imageio-ffmpeg": "",
-        "torch": "", "torchvision": "", "transformers": "",
-        "einops": "", "safetensors": "", "opencv-python": "", "hydra-core": "",
-        "iopath": "", "tqdm": "", "scikit-learn": "", "timm": "",
-        "vggt": "", "sam-2": "",  # git installs via wl_common.ensure_vggt / ensure_sam2
-    }
-    IMPORT_NAME = {"pillow": "PIL", "huggingface-hub": "huggingface_hub", "opencv-python": "cv2",
-                   "hydra-core": "hydra", "scikit-learn": "sklearn", "imageio-ffmpeg": "imageio_ffmpeg", "sam-2": "sam2"}
+def _(mo, os):
+    # Defaults: the WaterLevel notebooks (union of their headers) + their runtime git installs (vggt, sam-2).
+    expected_ui = mo.ui.text_area(
+        value="\n".join([
+            "marimo", "numpy", "scipy", "pillow", "plotly", "huggingface-hub>=1.5,<2", "imageio-ffmpeg",
+            "torch", "torchvision", "transformers", "einops", "safetensors", "opencv-python", "hydra-core",
+            "iopath", "tqdm", "scikit-learn", "timm", "vggt", "sam-2",
+        ]),
+        label="Expected packages (one per line, optional version specifier)", rows=8, full_width=True,
+    )
+    dataset_ui = mo.ui.text(value=os.environ.get("WL_DATASET", "carlosco/waterlevel-videos"),
+                            label="HF dataset that receives the report (under logs/)", full_width=True)
+    mo.accordion({"Settings": mo.vstack([expected_ui, dataset_ui])})
+    return dataset_ui, expected_ui
 
+
+@app.cell
+def _(Path, Requirement, expected_ui, re, sys):
     def norm(n):
         return re.sub(r"[-_.]+", "-", n).lower()
+
+    EXPECTED = {}
+    for _line in expected_ui.value.splitlines():
+        if _line.strip() and not _line.strip().startswith("#"):
+            _req = Requirement(_line.strip())
+            EXPECTED[norm(_req.name)] = str(_req.specifier)
+    IMPORT_NAME = {"pillow": "PIL", "huggingface-hub": "huggingface_hub", "opencv-python": "cv2",
+                   "hydra-core": "hydra", "scikit-learn": "sklearn", "imageio-ffmpeg": "imageio_ffmpeg", "sam-2": "sam2"}
 
     def where(p):
         s = str(p)
@@ -64,7 +80,7 @@ def _(Path, re, sys):
 
 
 @app.cell
-def _(all_rows, conflict_rows, env_info, expected_rows, mo, syspath_rows, tf_rows, tf_title, torch_info):
+def _(all_rows, conflict_rows, env_info, expected_rows, mo, os, syspath_rows, tf_rows, tf_title, torch_info):
     # One markdown file with every table below, to download and hand to Claude.
     import datetime
 
@@ -76,7 +92,8 @@ def _(all_rows, conflict_rows, env_info, expected_rows, mo, syspath_rows, tf_row
         out += ["| " + " | ".join(str(r[c]).replace("|", "\\|") for c in cols) + " |" for r in rows]
         return "\n".join(out) + "\n"
 
-    _stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    _stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d-%H%M%S")
+    report_name = f"{_stamp}_env_report.md"
     report = "\n".join([
         f"# molab env report {_stamp}", "", env_info, "",
         f"## Dependency conflicts ({len(conflict_rows)})", _table(conflict_rows),
@@ -86,15 +103,37 @@ def _(all_rows, conflict_rows, env_info, expected_rows, mo, syspath_rows, tf_row
         "## sys.path order", _table(syspath_rows),
         f"## All installed ({len(all_rows)})", _table(all_rows),
     ])
+    send_token = mo.ui.text(label="HF token (write)", kind="password", value=os.environ.get("HF_TOKEN", ""))
+    send_go = mo.ui.run_button(label="Send report to Claude")
     mo.callout(
-        mo.hstack([
-            mo.md("**Report for Claude:** download it and drop the file into the chat."),
-            mo.download(data=report.encode(), filename=f"molab_env_{_stamp}.md",
-                        mimetype="text/markdown", label="Download env report"),
-        ], justify="start", align="center"),
+        mo.vstack([
+            mo.md("**Report for Claude:** press *Send* (uploads it to `logs/` in the HF dataset, where Claude reads it), "
+                  "or download it and drop the file into the chat."),
+            mo.hstack([send_token, send_go,
+                       mo.download(data=report.encode(), filename=report_name, mimetype="text/markdown", label="Download env report")],
+                      justify="start", align="center"),
+        ]),
         kind="info",
     )
-    return (report,)
+    return report, report_name, send_go, send_token
+
+
+@app.cell
+def _(dataset_ui, mo, report, report_name, send_go, send_token):
+    mo.stop(not send_go.value)
+    from huggingface_hub import HfApi
+
+    _repo = dataset_ui.value.strip()
+    try:
+        HfApi(token=send_token.value or None).upload_file(
+            path_or_fileobj=report.encode(), path_in_repo=f"logs/{report_name}", repo_id=_repo, repo_type="dataset",
+            commit_message="env_check report",
+        )
+        _out = mo.callout(mo.md(f"Sent `logs/{report_name}` to `{_repo}`. Tell Claude it is there."), kind="success")
+    except Exception as e:
+        _out = mo.callout(mo.md(f"Upload failed: `{type(e).__name__}: {e}`. Use the download button instead."), kind="danger")
+    _out
+    return
 
 
 @app.cell
