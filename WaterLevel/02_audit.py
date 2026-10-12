@@ -162,6 +162,7 @@ def _(C, id_acc, labels, mo, ridge_res, stems):
         rows.append({"audit / baseline": k, "mid MAE (g)": round(s["mid_mae"], 1), "end MAE (g)": round(s["end_mae"], 1)})
         C.save_results(r, "audit_" + k.split(" ")[0].lower() if k != "frozen DINOv2 + ridge" else "baseline_dino_ridge")
     C.save_results(C.mean_predictor(labels), "baseline_mean")
+    C.push_results()
     verdict = mo.md(
         f"**Video ID from rays alone:** {id_acc:.0%} accuracy on held-out time blocks (chance {1 / len(stems):.0%}). "
         + ("Camera paths fingerprint the videos: apply the fallbacks in the plan (drop absolute ray moments, or rebalance frames by viewpoint)."

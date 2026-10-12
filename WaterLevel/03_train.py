@@ -70,6 +70,7 @@ def _(C, M, folds, go, mo, push, s1, s2, variants):
         for _h in holds:
             res["folds"][_h] = M.run_fold(S, labels, _h, cfg, ckpt, log)
             C.save_results(res, _v)  # saved after every fold so a dead session loses little
+            C.push_results()
         summaries[_v] = C.summarize(res, labels)
 
     if push.value:

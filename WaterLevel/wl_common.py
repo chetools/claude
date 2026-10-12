@@ -77,7 +77,7 @@ def hf_token() -> str | None:
 def pull_dataset(token: str | None = None, include_videos: bool = True) -> Path:
     from huggingface_hub import snapshot_download
 
-    patterns = ["labels.csv", "cup.json", "processed/*"]
+    patterns = ["labels.csv", "cup.json", "processed/*", "results/*"]
     if include_videos:
         patterns.append("videos/*")
     snapshot_download(
@@ -100,6 +100,21 @@ def push_processed(token: str | None = None) -> None:
         path_in_repo="processed",
         commit_message="processed poses and masks",
     )
+
+
+def push_results(token: str | None = None) -> bool:
+    """Upload work/results/*.json to the dataset repo under results/. Never raises (a missing write token is only a warning)."""
+    try:
+        from huggingface_hub import HfApi
+
+        HfApi(token=token or hf_token()).upload_folder(
+            repo_id=DATASET_REPO, repo_type="dataset", folder_path=str(WORK / "results"), path_in_repo="results",
+            commit_message="results",
+        )
+        return True
+    except Exception as e:
+        print(f"WARNING: could not push results to HF ({type(e).__name__}: {e}). They only exist on this session's disk.")
+        return False
 
 
 def read_labels(root: Path = HF_DIR) -> list[tuple[str, float]]:
@@ -380,4 +395,10 @@ def save_results(res: dict, name: str, root: Path | None = None) -> Path:
 
 def load_results(root: Path | None = None) -> dict:
     root = root or (WORK / "results")
+    remote = HF_DIR / "results"  # copies pulled from HF; local files win
+    if remote.exists():
+        root.mkdir(parents=True, exist_ok=True)
+        for p in remote.glob("*.json"):
+            if not (root / p.name).exists():
+                shutil.copy(p, root / p.name)
     return {p.stem: json.loads(p.read_text()) for p in sorted(root.glob("*.json"))}
