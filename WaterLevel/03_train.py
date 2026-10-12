@@ -1,15 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = ["marimo", "numpy", "pillow", "timm", "torch", "torchvision", "huggingface_hub", "imageio-ffmpeg"]
-#
-# [tool.uv.sources]
-# torch = { index = "pytorch-cu128" }
-# torchvision = { index = "pytorch-cu128" }
-#
-# [[tool.uv.index]]
-# name = "pytorch-cu128"
-# url = "https://download.pytorch.org/whl/cu128"
-# explicit = true
 # ///
 import marimo
 

@@ -3,17 +3,8 @@
 # dependencies = [
 #   "marimo", "numpy", "scipy", "pillow", "plotly", "huggingface_hub>=1.5,<2", "imageio-ffmpeg",
 #   "torch", "torchvision", "transformers",
-#   "einops", "safetensors", "opencv-python-headless", "hydra-core", "iopath", "tqdm",
+#   "einops", "safetensors", "opencv-python", "hydra-core", "iopath", "tqdm",
 # ]
-#
-# [tool.uv.sources]
-# torch = { index = "pytorch-cu128" }
-# torchvision = { index = "pytorch-cu128" }
-#
-# [[tool.uv.index]]
-# name = "pytorch-cu128"
-# url = "https://download.pytorch.org/whl/cu128"
-# explicit = true
 # ///
 import marimo
 

@@ -3,18 +3,9 @@
 # dependencies = [
 #   "marimo", "packaging", "numpy", "scipy", "pillow", "plotly", "huggingface_hub>=1.5,<2", "imageio-ffmpeg",
 #   "torch", "torchvision", "transformers",
-#   "einops", "safetensors", "opencv-python-headless", "hydra-core", "iopath", "tqdm",
+#   "einops", "safetensors", "opencv-python", "hydra-core", "iopath", "tqdm",
 #   "scikit-learn", "timm",
 # ]
-#
-# [tool.uv.sources]
-# torch = { index = "pytorch-cu128" }
-# torchvision = { index = "pytorch-cu128" }
-#
-# [[tool.uv.index]]
-# name = "pytorch-cu128"
-# url = "https://download.pytorch.org/whl/cu128"
-# explicit = true
 # ///
 import marimo
 
@@ -52,11 +43,11 @@ def _(Path, re, sys):
         "marimo": "", "numpy": "", "scipy": "", "pillow": "", "plotly": "",
         "huggingface-hub": ">=1.5,<2", "imageio-ffmpeg": "",
         "torch": "", "torchvision": "", "transformers": "",
-        "einops": "", "safetensors": "", "opencv-python-headless": "", "hydra-core": "",
+        "einops": "", "safetensors": "", "opencv-python": "", "hydra-core": "",
         "iopath": "", "tqdm": "", "scikit-learn": "", "timm": "",
         "vggt": "", "sam2": "",  # git installs via wl_common.ensure_vggt / ensure_sam2
     }
-    IMPORT_NAME = {"pillow": "PIL", "huggingface-hub": "huggingface_hub", "opencv-python-headless": "cv2",
+    IMPORT_NAME = {"pillow": "PIL", "huggingface-hub": "huggingface_hub", "opencv-python": "cv2",
                    "hydra-core": "hydra", "scikit-learn": "sklearn", "imageio-ffmpeg": "imageio_ffmpeg"}
 
     def norm(n):
