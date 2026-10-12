@@ -40,6 +40,33 @@ def seed_all(seed: int = SEED) -> None:
         pass
 
 
+# --------------------------------------------------------------------------- packages
+
+
+def ensure_pkg(module: str, spec: str, env: dict | None = None) -> None:
+    """Install a git-only package at runtime (molab strips `name @ git+url` from the dependency header)."""
+    import importlib.util
+    import sys
+
+    if importlib.util.find_spec(module) is not None:
+        return
+    e = {**os.environ, **(env or {})}
+    cmd = [sys.executable, "-m", "uv", "pip", "install", "--python", sys.executable, spec]
+    if subprocess.run(cmd + ["-q"], env=e, capture_output=True).returncode != 0:
+        uv = shutil.which("uv")
+        cmd = [uv, "pip", "install", "--python", sys.executable, spec] if uv else [sys.executable, "-m", "pip", "install", spec]
+        subprocess.run(cmd, env=e, check=True)
+    importlib.invalidate_caches()
+
+
+def ensure_vggt() -> None:
+    ensure_pkg("vggt", "git+https://github.com/facebookresearch/vggt.git")
+
+
+def ensure_sam2() -> None:
+    ensure_pkg("sam2", "git+https://github.com/facebookresearch/sam2.git", {"SAM2_BUILD_CUDA": "0"})
+
+
 # --------------------------------------------------------------------------- data
 
 

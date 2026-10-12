@@ -3,8 +3,7 @@
 # dependencies = [
 #   "marimo", "numpy", "scipy", "pillow", "plotly", "huggingface_hub", "imageio-ffmpeg",
 #   "torch", "torchvision", "transformers",
-#   "vggt @ git+https://github.com/facebookresearch/vggt.git",
-#   "sam2 @ git+https://github.com/facebookresearch/sam2.git",
+#   "einops", "safetensors", "opencv-python-headless", "hydra-core", "iopath", "tqdm",
 # ]
 #
 # [tool.uv.sources]
@@ -69,6 +68,9 @@ def _():
         return torch.from_numpy(arr).permute(0, 3, 1, 2).float() / 255, (VW / Wf, H / Hf), (Wf, Hf)
 
     def run_vggt(imgs):
+        from wl_common import ensure_vggt
+
+        ensure_vggt()
         from vggt.models.vggt import VGGT
         from vggt.utils.geometry import unproject_depth_map_to_point_map
         from vggt.utils.pose_enc import pose_encoding_to_extri_intri
@@ -106,6 +108,9 @@ def _():
         return b
 
     def run_sam2(imgs, box, stem):
+        from wl_common import ensure_sam2
+
+        ensure_sam2()
         from sam2.sam2_video_predictor import SAM2VideoPredictor
 
         d = WORK / "sam" / stem
