@@ -147,7 +147,7 @@ def push_results(token: str | None = None) -> bool:
 
 
 def ensure_labels(token: str | None = None) -> list[tuple[str, float]]:
-    """labels.csv (+ cup.json) only: enough to list the videos without running 00 or pulling the whole dataset."""
+    """labels.csv (+ cup.json) only: enough to list the videos without pulling the whole dataset."""
     if not (HF_DIR / "labels.csv").exists():
         from huggingface_hub import snapshot_download
 

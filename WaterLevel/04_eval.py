@@ -27,7 +27,7 @@ def _(C, mo):
     except Exception as e:  # offline: use whatever labels file is present locally
         labels = C.read_labels() if (C.HF_DIR / "labels.csv").exists() else []
     results = C.load_results()
-    mo.stop(not results, mo.md("No results yet. Run 02 and 03 first."))
+    mo.stop(not results, mo.md("No results yet. Run the audit and training stages of pipeline.py first."))
     results.setdefault("baseline_mean", C.mean_predictor(labels))
     table = []
     for name, r in results.items():

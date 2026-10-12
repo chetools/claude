@@ -30,7 +30,7 @@ STD = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1)
 
 
 def build_cache(stem: str, root: Path | None = None) -> Path:
-    """Crop every frame around the cup (box from 01_poses) and store uint8 tensors + camera data."""
+    """Crop every frame around the cup (box from the poses stage of pipeline.py) and store uint8 tensors + camera data."""
     from PIL import Image
 
     root = root or (C.HF_DIR / "processed")
@@ -42,7 +42,7 @@ def build_cache(stem: str, root: Path | None = None) -> Path:
     files = C.frame_files(stem)
     files = [files[j] for j in pz["frame_ids"]]
     S = len(files)
-    assert S == len(pz["K"]) == len(mz), f"{stem}: {S} frames vs {len(pz['K'])} poses vs {len(mz)} masks; re-run 00/01"
+    assert S == len(pz["K"]) == len(mz), f"{stem}: {S} frames vs {len(pz['K'])} poses vs {len(mz)} masks; re-run the data and poses stages"
     imgs = torch.empty(S, 3, CACHE_RES, CACHE_RES, dtype=torch.uint8)
     msks = torch.empty(S, 1, CACHE_RES, CACHE_RES, dtype=torch.uint8)
     box = pz["box"]  # (S,3) cx, cy, side in full-res px

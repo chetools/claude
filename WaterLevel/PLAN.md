@@ -38,7 +38,7 @@ Plücker ray map. Code is marimo notebooks, run on molab (RTX PRO 6000 Blackwell
 5. **iPhone video quirks:** HEVC encoding, rotation metadata, and often HDR (HLG/Dolby Vision) colour.
    The decoder must apply the rotation and tone-map to SDR. Otherwise colours shift per video, which is another leak.
 
-## 3. Camera poses and the cup frame (notebook `01_poses.py`)
+## 3. Camera poses and the cup frame (`pipeline.py`, stage 1)
 
 The method chosen is **VGGT, followed by putting every video in the cup's coordinate frame**.
 COLMAP on a couple of videos serves as a sanity check.
@@ -71,7 +71,7 @@ under the cup would have been best, but the videos are already recorded.
 - Crops, resizes and flips are applied to the image and the ray map together, so the rays always match the pixels.
 - Injection into the ViT: average the 6 ray channels over each 16×16 patch, pass through a linear layer (zero-initialised), and add the result to the patch token. This is the main design. Ablations: no rays, and rays shuffled between frames.
 
-## 5. Model and training (notebook `03_train.py`)
+## 5. Model and training (`pipeline.py`, stage 3)
 
 - **Backbone:** ViT-S/16, initialised from DINOv3 (or DINOv2) weights. A from-scratch variant is run as an ablation, because from scratch is the "pure" LeJEPA setting.
 - **Stage 1, LeJEPA continued pretraining** on cup-centred crops of frames from the 5 training videos per fold. The held-out video is excluded, so the comparison stays clean.
@@ -84,7 +84,7 @@ under the cup would have been best, but the videos are already recorded.
 - **Video-level prediction:** take the median over a video's frames; report frame-level numbers too.
 - **Precision:** bf16 on Blackwell. Batch size can be large (96 GB), but the dataset is tiny, so expect it to be augmentation-bound, not compute-bound.
 
-## 6. Evaluation and leak audits (notebooks `02_audit.py`, `04_eval.py`)
+## 6. Evaluation and leak audits (`pipeline.py` stage 2, `04_eval.py`)
 
 All results are LOVO over 6 folds. MAE in grams is reported per fold, and for the middle 4 folds versus the end 2.
 
@@ -112,14 +112,12 @@ Interpretability check: a saliency or attention rollout map should concentrate o
 
 | Notebook | Contents |
 |---|---|
-| `00_data.py` | Pull the private dataset from HF, decode, check rotation and HDR, show a contact sheet per video. |
-| `01_poses.py` | VGGT, SAM 2 masks, cup frame, visual checks; push `processed/` to HF. |
-| `02_audit.py` | The leak audits. |
-| `03_train.py` | LeJEPA pretraining and fine-tuning, LOVO loop. Checkpoints are pushed to an HF model repo, since molab sessions end. |
+| `pipeline.py` | One notebook, four stages, each behind its own button: **0 data** (pull from HF, decode, check rotation and HDR, contact sheets); **1 poses** (VGGT, SAM 2 masks, cup frame, visual checks, push `processed/` to HF; videos already processed are loaded, not recomputed); **2 audits** (the leak audits); **3 training** (LeJEPA pretraining and fine-tuning, LOVO loop; checkpoints go to an HF model repo, since molab sessions end). Stages pull what they need, so they don't have to be run in order. |
 | `04_eval.py` | Results tables, plots, saliency maps. |
+| `env_check.py` | Diagnostic: which packages molab actually loads (uv venv vs preinstalled), conflicts, downloadable report. |
 
 - Each notebook declares its dependencies inline (PEP 723) so molab installs them.
-- PyTorch must be a CUDA 12.8+ build (`cu128`) to run on Blackwell.
+- PyTorch must be a CUDA 12.8+ build to run on Blackwell. molab's preinstalled torch (cu130) is used.
 - The HF token goes in at runtime through a password field or the `HF_TOKEN` environment variable. It is never stored in the notebook.
 - Everything is seeded, and the fold definitions are fixed in `labels.csv` order.
 
