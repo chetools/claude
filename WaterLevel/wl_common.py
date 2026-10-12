@@ -20,10 +20,11 @@ import numpy as np
 
 DATASET_REPO = os.environ.get("WL_DATASET", "carlosco/waterlevel-videos")
 MODEL_REPO = os.environ.get("WL_MODELS", "carlosco/waterlevel-models")
-# WL_SMOKE=1: local smoke test (smoke.py). 3 videos x 8 frames, tiny training, own work dir, never pushes to HF,
+# WL_SMOKE=1: local smoke test (smoke.py). 3 videos x 6 low-res frames, tiny training, own work dir, never pushes to HF,
 # and every stage button in the notebooks counts as pressed.
 SMOKE = os.environ.get("WL_SMOKE") == "1"
-SMOKE_FRAMES = 8
+SMOKE_FRAMES = 6  # >= 5: the rays video-ID audit holds out 5 time blocks per video
+SMOKE_VGGT_W = 252  # VGGT input width in smoke runs (518 on molab); keeps VGGT inside an 8 GB GPU
 SMOKE_CFG = dict(stage1_steps=4, stage2_steps=4, b1=4, b2=8)
 WORK = Path(os.environ.get("WL_WORK", "work-smoke" if SMOKE else "work"))
 HF_DIR = WORK / "hf"

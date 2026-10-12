@@ -155,10 +155,26 @@ def _(mo, stems):
 
 @app.cell
 def _(C, Image, np, torch):
-    VW = 518
+    import shutil
+
+    VW = C.SMOKE_VGGT_W if C.SMOKE else 518
+    # Models are loaded once per run. On a big GPU (molab) they all stay on it; on a small one (local smoke test,
+    # 8 GB) only the model in use is on the GPU and the others wait in CPU RAM (moving is ~2 s, reloading VGGT ~11 s).
+    _models = {}
+    _all_on_gpu = torch.cuda.is_available() and torch.cuda.get_device_properties(0).total_memory > 24e9
+
+    def _on_gpu(name, build):
+        if name not in _models:
+            _models[name] = build().eval()
+        if not _all_on_gpu:
+            for k, m in _models.items():
+                if k != name:
+                    m.cpu()
+            torch.cuda.empty_cache()
+        return _models[name].cuda()
 
     def load_small(files):
-        """Resize to VGGT resolution (width 518, height a multiple of 14). Returns (S,3,H,W) float and the per-axis scale."""
+        """Resize to VGGT resolution (width VW, height a multiple of 14). Returns (S,3,H,W) float and the per-axis scale."""
         im0 = Image.open(files[0])
         Wf, Hf = im0.size
         H = max(14, round(VW * Hf / Wf / 14) * 14)
@@ -171,7 +187,12 @@ def _(C, Image, np, torch):
         from vggt.utils.geometry import unproject_depth_map_to_point_map
         from vggt.utils.pose_enc import pose_encoding_to_extri_intri
 
-        model = VGGT.from_pretrained("facebook/VGGT-1B").cuda().eval()
+        def build():
+            m = VGGT.from_pretrained("facebook/VGGT-1B")
+            m.point_head = m.track_head = None  # unused (we unproject depth); saves ~0.4 GB and the point-map pass
+            return m
+
+        model = _on_gpu("vggt", build)
         x = imgs.cuda()
         with torch.no_grad(), torch.autocast("cuda", dtype=torch.bfloat16):
             pred = model(x[None])
@@ -179,8 +200,7 @@ def _(C, Image, np, torch):
         ext, intr = ext[0].cpu().numpy(), intr[0].cpu().numpy()
         pts = unproject_depth_map_to_point_map(pred["depth"][0].float().cpu().numpy(), ext, intr)
         out = (ext, intr, pts.astype(np.float32), pred["depth_conf"][0].float().cpu().numpy())
-        del model, pred
-        torch.cuda.empty_cache()
+        del pred
         return out
 
     def detect_box(frame0, prompt, override):
@@ -189,7 +209,8 @@ def _(C, Image, np, torch):
         from transformers import Owlv2ForObjectDetection, Owlv2Processor
 
         name = "google/owlv2-base-patch16-ensemble"
-        proc, det = Owlv2Processor.from_pretrained(name), Owlv2ForObjectDetection.from_pretrained(name).cuda().eval()
+        proc = Owlv2Processor.from_pretrained(name)
+        det = _on_gpu("owl", lambda: Owlv2ForObjectDetection.from_pretrained(name))
         im = Image.fromarray((frame0.permute(1, 2, 0).numpy() * 255).astype(np.uint8))
         inp = proc(text=[[prompt]], images=im, return_tensors="pt").to("cuda")
         with torch.no_grad():
@@ -198,35 +219,36 @@ def _(C, Image, np, torch):
         res = proc.post_process_grounded_object_detection(out, threshold=0.05, target_sizes=torch.tensor([[side, side]]))[0]
         if len(res["scores"]) == 0:
             raise RuntimeError("detector found nothing; give a box override")
-        b = res["boxes"][res["scores"].argmax()].cpu().numpy()
-        del det
-        torch.cuda.empty_cache()
-        return b
+        return res["boxes"][res["scores"].argmax()].cpu().numpy()
 
     def run_sam2(imgs, box, stem):
         C.ensure_sam2()
         from sam2.sam2_video_predictor import SAM2VideoPredictor
 
         d = C.WORK / "sam" / stem
-        d.mkdir(parents=True, exist_ok=True)
+        shutil.rmtree(d, ignore_errors=True)  # stale frames from an earlier run would be read as extra frames
+        d.mkdir(parents=True)
         for i, im in enumerate(imgs):
             Image.fromarray((im.permute(1, 2, 0).numpy() * 255).astype(np.uint8)).save(d / f"{i:05d}.jpg", quality=95)
-        pred = SAM2VideoPredictor.from_pretrained("facebook/sam2.1-hiera-large")
+        pred = _on_gpu("sam2", lambda: SAM2VideoPredictor.from_pretrained("facebook/sam2.1-hiera-large"))
         masks = np.zeros((len(imgs), imgs.shape[2], imgs.shape[3]), bool)
         with torch.inference_mode(), torch.autocast("cuda", dtype=torch.bfloat16):
             st = pred.init_state(video_path=str(d))
             pred.add_new_points_or_box(st, frame_idx=0, obj_id=1, box=np.asarray(box, dtype=np.float32))
             for fi, _ids, logits in pred.propagate_in_video(st):
                 masks[fi] = (logits[0, 0] > 0).float().cpu().numpy() > 0
-        del pred
-        torch.cuda.empty_cache()
+        pred.reset_state(st)
         return masks
 
-    return detect_box, load_small, run_sam2, run_vggt
+    def free_models():
+        _models.clear()
+        torch.cuda.empty_cache()
+
+    return detect_box, free_models, load_small, run_sam2, run_vggt
 
 
 @app.cell
-def _(C, detect_box, load_small, mo, np, pose_box, pose_go, pose_pick, pose_prompt, pose_redo, run_sam2, run_vggt, tok):
+def _(C, detect_box, free_models, load_small, mo, np, pose_box, pose_go, pose_pick, pose_prompt, pose_redo, run_sam2, run_vggt, tok):
     mo.stop(not (pose_go.value or C.SMOKE), mo.md("Press the button to process."))
     C.pull_dataset(tok)
     _cup = C.read_cup()
@@ -290,6 +312,7 @@ def _(C, detect_box, load_small, mo, np, pose_box, pose_go, pose_pick, pose_prom
                 _notes.append(f"- {_stem}: processing")
                 pose_summary.append({"video": _stem, "status": "computed", **_process(_stem)})
             _notes.append(f"- {pose_summary[-1]}")
+        free_models()
     _cols = list(dict.fromkeys(k for r in pose_summary for k in r))
     mo.vstack([
         mo.md("Done. Offsets are fractions of mask height (0 is perfect). Cached videos show no diagnostics; tick Recompute to redo them."),

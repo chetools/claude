@@ -1,11 +1,12 @@
 """Local smoke test of the molab notebooks, in a venv pinned to molab's package versions (molab-lock.txt).
 
     python smoke.py --setup     # create .molab-venv (Python 3.13, CUDA 13 torch) and install molab-lock.txt
-    python smoke.py             # run env_check, pipeline (all stages) and 04_eval with WL_SMOKE=1
-    python smoke.py --fresh     # same, after deleting work-smoke/ (re-decode, re-run VGGT/SAM 2 from scratch)
+    python smoke.py             # run env_check, pipeline (all stages, poses recomputed) and 04_eval with WL_SMOKE=1
+    python smoke.py --quick     # same, but reuse the smoke poses/crops from the last run (skips VGGT/SAM 2)
+    python smoke.py --fresh     # same as default, after deleting all of work-smoke/ (also re-decodes the videos)
     python smoke.py --lock-from REPORT.md   # update molab-lock.txt from an env_check report (then --setup)
 
-WL_SMOKE=1 makes every stage button count as pressed and shrinks the run to 3 videos x 8 frames with a few
+WL_SMOKE=1 makes every stage button count as pressed and shrinks the run to 3 videos x 6 low-res frames with a few
 training steps; it uses work-smoke/ and never pushes to HF. Needs an NVIDIA GPU (the code calls .cuda()).
 """
 import os
@@ -74,6 +75,9 @@ def main():
         sys.exit(f"{PY} missing: run `python smoke.py --setup` first")
     if "--fresh" in sys.argv:
         shutil.rmtree(HERE / "work-smoke", ignore_errors=True)
+    elif "--quick" not in sys.argv:  # keep decoded frames, redo everything computed from them
+        for d in ("hf/processed", "cache", "sam", "results", "ckpt"):
+            shutil.rmtree(HERE / "work-smoke" / d, ignore_errors=True)
     env = {**os.environ, "WL_SMOKE": "1", "PYTHONUTF8": "1"}
     results = []
     for nb in NOTEBOOKS:
