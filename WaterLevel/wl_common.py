@@ -43,7 +43,7 @@ def seed_all(seed: int = SEED) -> None:
 # --------------------------------------------------------------------------- packages
 
 
-def ensure_pkg(module: str, spec: str, env: dict | None = None) -> None:
+def ensure_pkg(module: str, spec: str, env: dict | None = None, no_deps: bool = False) -> None:
     """Install a git-only package at runtime (molab strips `name @ git+url` from the dependency header)."""
     import importlib.util
     import sys
@@ -51,16 +51,45 @@ def ensure_pkg(module: str, spec: str, env: dict | None = None) -> None:
     if importlib.util.find_spec(module) is not None:
         return
     e = {**os.environ, **(env or {})}
-    cmd = [sys.executable, "-m", "uv", "pip", "install", "--python", sys.executable, spec]
+    extra = ["--no-deps"] if no_deps else []
+    cmd = [sys.executable, "-m", "uv", "pip", "install", "--python", sys.executable, *extra, spec]
     if subprocess.run(cmd + ["-q"], env=e, capture_output=True).returncode != 0:
         uv = shutil.which("uv")
-        cmd = [uv, "pip", "install", "--python", sys.executable, spec] if uv else [sys.executable, "-m", "pip", "install", spec]
+        cmd = [uv, "pip", "install", "--python", sys.executable, *extra, spec] if uv else [sys.executable, "-m", "pip", "install", *extra, spec]
         subprocess.run(cmd, env=e, check=True)
     importlib.invalidate_caches()
 
 
+def env_report() -> str:
+    """One-line runtime summary (python + key package versions) to spot molab drift early."""
+    import platform
+    from importlib import metadata
+
+    def v(n):
+        try:
+            return metadata.version(n)
+        except metadata.PackageNotFoundError:
+            return "-"
+
+    names = ("numpy", "scipy", "pillow", "torch", "torchvision", "transformers", "huggingface-hub", "vggt", "sam2")
+    pk = " ".join(f"{n}={v(n)}" for n in names)
+    try:
+        import torch
+
+        cuda = f"cuda={torch.cuda.is_available()}"
+    except ImportError:
+        cuda = "torch=NOT-IMPORTABLE"
+    return f"python={platform.python_version()} {pk} {cuda}"
+
+
 def ensure_vggt() -> None:
-    ensure_pkg("vggt", "git+https://github.com/facebookresearch/vggt.git")
+    # vggt pins numpy<2 (requirements: ==1.26.1); numpy 1.26 has no py3.13 wheels (molab runs 3.13),
+    # so the source build fails. Install without deps; the notebook header supplies the rest.
+    ensure_pkg("vggt", "git+https://github.com/facebookresearch/vggt.git", no_deps=True)
+    try:
+        import vggt.models.vggt  # noqa: F401
+    except ImportError as err:
+        raise RuntimeError(f"vggt installed but import failed ({err}); runtime: {env_report()}") from err
 
 
 def ensure_sam2() -> None:
