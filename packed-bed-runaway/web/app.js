@@ -71,14 +71,13 @@ function refreshTie() {
 // makeApi is also stringified into the Web Worker source, so it must not
 // use anything from the enclosing scope.
 function makeApi(w) {
-  const qp = w.alloc(17), cp = w.alloc(7), gp = w.alloc(8);
+  const qp = w.alloc(17), cp = w.alloc(7);
   const put = (ptr, a) => new Float64Array(w.memory.buffer, ptr, a.length).set(a);
   const out = () => new Float64Array(w.memory.buffer, w.out_ptr(), w.out_len()).slice();
   return {
     solveDim(q, c) { put(qp, q); put(cp, c); w.solve_dim(qp, cp); return out(); },
     groupsDim(q) { put(qp, q); w.groups_dim(qp); return out(); },
     sensDim(q, c, which) { put(qp, q); put(cp, c); w.sens_dim(qp, cp, which); return out(); },
-    sensGroups(g, c, which) { put(gp, g); put(cp, c); w.sens_groups(gp, cp, which); return out(); },
     peakDim(q, c) { put(qp, q); put(cp, c); w.peak_dim(qp, cp); return out(); },
     benchRhs(q, n, reps) { put(qp, q); return w.bench_rhs(qp, n, reps); },
     benchLin(q, n, reps) { put(qp, q); return w.bench_lin(qp, n, reps); },
@@ -86,7 +85,6 @@ function makeApi(w) {
 }
 function runJob(api, it) {
   if (it.fn === 'sensDim') return Array.from(api.sensDim(it.q, it.c, it.which));
-  if (it.fn === 'sensGroups') return Array.from(api.sensGroups(it.g, it.c, it.which));
   if (it.fn === 'peakDim') return Array.from(api.peakDim(it.q, it.c));
   throw new Error('unknown job ' + it.fn);
 }
@@ -169,36 +167,6 @@ function baseLayout(title, extra) {
     margin: {l: 62, r: 24, t: 56, b: 50}, legend: {orientation: 'h', x: 0, y: -0.2},
     font: {family: '"Source Sans Pro",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif'}}, extra || {});
 }
-/** Location of the max of |s| along xs, refined with a parabola in ln(x).
- *  Returns null when the maximum sits at either end (no interior peak). */
-function mvCritical(xs, ss, logx = true) {
-  let k = -1, best = -1;
-  for (let i = 0; i < ss.length; i++) {
-    const a = Math.abs(ss[i]);
-    if (Number.isFinite(a) && a > best) { best = a; k = i; }
-  }
-  if (k <= 0 || k >= ss.length - 1) return null;
-  const f = (x) => (logx ? Math.log(x) : x);
-  const [x0, x1, x2] = [f(xs[k - 1]), f(xs[k]), f(xs[k + 1])];
-  const [y0, y1, y2] = [Math.abs(ss[k - 1]), best, Math.abs(ss[k + 1])];
-  const den = (x0 - x1) * (x0 - x2) * (x1 - x2);
-  const A = (x2 * (y1 - y0) + x1 * (y0 - y2) + x0 * (y2 - y1)) / den;
-  const B = (x2 * x2 * (y0 - y1) + x1 * x1 * (y2 - y0) + x0 * x0 * (y1 - y2)) / den;
-  let xv = (A < 0) ? -B / (2 * A) : x1;
-  if (!(xv >= x0 && xv <= x2)) xv = x1;
-  return {x: logx ? Math.exp(xv) : xv, smax: best, k};
-}
-/** Two-pass MV critical value: coarse grid, then a fine grid between the
- *  neighbours of the coarse peak.  jobFor(x) builds the pool job for x;
- *  pick(result) returns s or NaN.  Returns {x, smax} or null. */
-async function refineCritical(xs, ss, jobFor, pick, opts, logx = true, nFine = 25) {
-  const cr = mvCritical(xs, ss, logx);
-  if (!cr) return null;
-  const a = xs[cr.k - 1], b = xs[cr.k + 1];
-  const fine = logx ? logspace(a, b, nFine) : linspace(a, b, nFine);
-  const res = await pool.map(fine.map(jobFor), opts);
-  return mvCritical(fine, res.map(pick), logx) || cr;
-}
 /** Unpack a solve_dim result (see pack_solve in lib.rs). */
 function parseSolve(a) {
   const ns = a[0], N = a[1], T0 = a[2], gamma = a[3], HDR = 16;
@@ -219,7 +187,7 @@ let api = null;        // main-thread WASM (single solves)
 let pool = null;       // workers (sweeps, maps)
 let wasmModule = null;
 let state = {v: null, q: null, gen: 0};
-const stale = {sweep: true, map: true, mv: true, verdict: true};
+const stale = {sweep: true, map: true};
 
 // ---------------------------------------------------------------- tabs
 document.querySelectorAll('.tabs').forEach((bar) => {
@@ -249,7 +217,6 @@ function renderPendingPlots() {
 function onVisible() {
   if (visible('sub-sweep') && stale.sweep) computeSweep();
   if (visible('sub-map') && stale.map) computeMap();
-  if (visible('sub-mv') && stale.mv) computeMV();
   if (visible('sub-why')) renderMicro();
 }
 
@@ -264,14 +231,13 @@ function recompute() {
   showErr(null);
   const q = buildQ(v);
   state = {v, q, gen: state.gen + 1};
-  stale.sweep = stale.map = stale.mv = stale.verdict = true;
+  stale.sweep = stale.map = true;
   try {
     renderHotSpot(v, q);
   } catch (e) {
     showErr('Computation failed: ' + (e && e.message || e));
     return;
   }
-  computeVerdict();
   onVisible();
 }
 
@@ -303,13 +269,8 @@ function renderHotSpot(v, q) {
     'The tube is drawn mirrored about its axis (r &lt; 0 is the other half). Drag on a chart to zoom; double-click to reset.';
   // ---- groups caption
   const [gm, S, Da, am, ah, Bi, St] = g;
-  const NS = St / (Da * S);
-  const thc = 0.5 * gm * ((gm - 2) - Math.sqrt(gm * gm - 4 * gm));
-  const nsSem = Math.exp(thc / (1 + thc / gm)) / thc;
-  state.semenov = {thc, nsSem, NS, S};
   $('groups-cap').innerHTML = `Dimensionless groups: γ = ${fmt(gm, 2)} · S = ${fmt(S, 2)} · Da = ${fmtG(Da)} ·
     a<sub>h</sub> = ${fmtG(ah)} · a<sub>m</sub> = ${fmtG(am)} · Bi = ${fmtG(Bi)} · St = ${fmtG(St)} ·
-    <b>N/S = ${fmt(NS, 3)}</b> (Semenov critical: ${fmt(nsSem, 3)} at this γ, e = 2.718 as γ→∞) ·
     ΔT<sub>ad</sub> = ${fmt(S * q[P.T_IN] / gm, 0)} K`;
   // ---- heatmaps (tube mirrored about the axis)
   const rr = [];
@@ -348,37 +309,6 @@ function renderHotSpot(v, q) {
   Plotly.react('chart-rad', ks.map(([k, col]) => ({x: rho, y: r2.T[k], mode: 'lines+markers', marker: {size: 4},
     name: `z = ${fmt(r2.xi[k] * L, 3)} m${k === kStar ? ' (hot spot)' : ''}`, line: {color: col, width: k === kStar ? 3 : 2}})),
   baseLayout('Radial temperature profiles', {xaxis: {title: 'r / R', range: [0, 1]}, yaxis: {title: 'T [K]'}}), PLOT_CFG);
-}
-
-// ---------------------------------------------------------------- MV verdict (p0 sweep)
-async function computeVerdict() {
-  const gen = state.gen, {v, q} = state;
-  $('m-v').textContent = '…'; $('m-v').className = 'm-value'; $('m-v-sub').textContent = 'sweeping p₀';
-  const p0s = logspace(q[P.P0] * 0.3, q[P.P0] * 3.5, 57);
-  const c = buildCfg(v, false);
-  let res;
-  try {
-    res = await pool.map(p0s.map((p) => ({fn: 'sensDim', q: Object.assign([...q], {[P.P0]: p}), c, which: P.P0})),
-      {isStale: () => gen !== state.gen});
-  } catch (e) { return; }
-  if (gen !== state.gen) return;
-  const pick = (r) => (r[5] === 1 ? r[2] : NaN);
-  const job = (p) => ({fn: 'sensDim', q: Object.assign([...q], {[P.P0]: p}), c, which: P.P0});
-  let cr;
-  try { cr = await refineCritical(p0s, res.map(pick), job, pick, {isStale: () => gen !== state.gen}); } catch (e) { return; }
-  if (gen !== state.gen) return;
-  state.p0c = cr ? cr.x : null;
-  const el = $('m-v');
-  if (!cr) {
-    el.textContent = 'No peak'; el.className = 'm-value';
-    $('m-v-sub').textContent = 'no sensitivity maximum for 0.3–3.5 × p₀';
-    return;
-  }
-  const ratio = q[P.P0] / cr.x;
-  if (ratio < 0.85) { el.textContent = 'Safe'; el.className = 'm-value ok'; }
-  else if (ratio < 1) { el.textContent = 'Near runaway'; el.className = 'm-value mid'; }
-  else { el.textContent = 'Runaway'; el.className = 'm-value bad'; }
-  $('m-v-sub').textContent = `critical p₀,c = ${fmtG(cr.x, 4)} atm; current = ${fmt(100 * ratio, 0)} % of it`;
 }
 
 // ---------------------------------------------------------------- sensitivity sweep
@@ -424,19 +354,8 @@ async function computeSweep() {
     (i % 2 ? s1 : s2).push(ok ? r[2] : NaN);
   });
   const xs = phis.map(sp.disp);
-  const pick = (r) => (r[5] === 1 ? r[2] : NaN);
-  const opts = {isStale: () => gen !== state.gen};
-  let c2, c1;
-  try {
-    [c2, c1] = await Promise.all([false, true].map((oneD) => refineCritical(phis, oneD ? s1 : s2,
-      (phi) => ({fn: 'sensDim', q: mk(phi), c: buildCfg(v, oneD), which}), pick, opts, sp.mult)));
-  } catch (e) { return; }
-  if (gen !== state.gen) return;
-  const shapes = [];
-  const addV = (x, col, dash) => shapes.push({type: 'line', x0: x, x1: x, yref: 'paper', y0: 0, y1: 1, line: {color: col, dash, width: 1.5}});
-  addV(sp.disp(cur), C.dark, 'dot');
-  if (c2) addV(sp.disp(c2.x), C.red, 'dash');
-  if (c1) addV(sp.disp(c1.x), C.blue, 'dash');
+  const shapes = [{type: 'line', x0: sp.disp(cur), x1: sp.disp(cur), yref: 'paper', y0: 0, y1: 1,
+    line: {color: C.dark, dash: 'dot', width: 1.5}}];
   const xlog = sp.mult;
   Plotly.react('chart-swT', [
     {x: xs, y: T2, name: '2D model', line: {color: C.red, width: 2.5}},
@@ -448,13 +367,9 @@ async function computeSweep() {
     {x: xs, y: s1.map(Math.abs), name: '1D: |s(T*; φ)|', line: {color: C.blue, width: 2, dash: 'dash'}},
   ], baseLayout('Normalised sensitivity |s| = |(φ/T*) ∂T*/∂φ|', {xaxis: {title: sp.label, type: xlog ? 'log' : 'linear'},
     yaxis: {title: '|s|', type: 'log'}, shapes}), PLOT_CFG);
-  const nm = $('sw-param').selectedOptions[0].textContent;
   const fx = (x) => fmtG(sp.disp(x), 4);
-  let txt = `Dotted line: current value (${fx(cur)}). Dashed lines: Morbidelli–Varma critical values, where |s| peaks. `;
-  txt += c2 ? `2D model: ${nm} = ${fx(c2.x)} (max |s| = ${fmt(c2.smax, 1)}). ` : '2D model: no interior maximum of |s| in this range. ';
-  txt += c1 ? `1D model: ${fx(c1.x)} (max |s| = ${fmt(c1.smax, 1)}). ` : '1D model: no interior maximum in this range. ';
-  if (c1 && c2) txt += 'The 2D model reaches runaway first: its hot core is not seen by the 1D average.';
-  $('sw-note').textContent = txt;
+  $('sw-note').textContent = `Dotted line: current value (${fx(cur)}). Where |s| shoots up, a small change in the input ` +
+    'moves the hot spot by a large amount. The 2D model gets there before the 1D model: its hot core is not seen by the 1D average.';
 }
 
 // ---------------------------------------------------------------- sensitivity map
@@ -487,111 +402,21 @@ async function computeMap() {
     S.push(res.slice(i * n, (i + 1) * n).map((r) => (r[5] === 1 ? Math.log10(Math.max(1e-4, Math.abs(r[2]))) : NaN)));
     TT.push(res.slice(i * n, (i + 1) * n).map((r) => (r[5] === 1 ? r[0] : NaN)));
   }
-  // MV boundary: for each coolant temperature, the p0 of max |s|
-  const rx = [], ry = [];
-  for (let j = 0; j < n; j++) {
-    const col = res.map((_, i) => i).filter((i) => i % n === j).map((i) => (res[i][5] === 1 ? res[i][2] : NaN));
-    const cr = mvCritical(ps, col);
-    if (cr && cr.smax > 1) { rx.push(Ts[j]); ry.push(cr.x); }
-  }
   const el = performance.now() - t0;
   $('map-status').textContent = `${jobs.length} solves in ${fmt(el / 1000, 2)} s (${fmt(el / jobs.length * pool.n, 2)} ms per solve per worker, ${pool.n} workers).`;
-  const ridge = {x: rx, y: ry, mode: 'lines', name: 'MV boundary', line: {color: '#fff', width: 3}};
-  const ridgeD = Object.assign({}, ridge, {line: {color: C.dark, width: 2.5, dash: 'dash'}});
   const op = {x: [q[P.T_C]], y: [q[P.P0]], mode: 'markers', name: 'operating point',
     marker: {symbol: 'circle', size: 11, color: C.red, line: {color: '#fff', width: 2}}};
   const xl = v.tie ? 'T_c = T_in [K]' : 'T_c [K]';
   Plotly.react('chart-map', [
     {type: 'heatmap', x: Ts, y: ps, z: S, colorscale: 'Viridis', zmin: -2, zmax: 2,
       colorbar: {title: {text: 'log₁₀|s|'}, thickness: 14},
-      hovertemplate: 'T=%{x:.1f} K<br>p₀=%{y:.4f} atm<br>log₁₀|s|=%{z:.2f}<extra></extra>'}, ridge, op],
+      hovertemplate: 'T=%{x:.1f} K<br>p₀=%{y:.4f} atm<br>log₁₀|s|=%{z:.2f}<extra></extra>'}, op],
     baseLayout('Sensitivity log₁₀|s(T*; p₀)|', {xaxis: {title: xl}, yaxis: {title: 'p₀ [atm]', type: 'log'},
       legend: {orientation: 'h', x: 0, y: -0.2}}), PLOT_CFG);
   Plotly.react('chart-mapT', [
     {type: 'heatmap', x: Ts, y: ps, z: TT, colorscale: 'Inferno', colorbar: {title: {text: 'T* [K]'}, thickness: 14},
-      hovertemplate: 'T=%{x:.1f} K<br>p₀=%{y:.4f} atm<br>T*=%{z:.1f} K<extra></extra>'}, ridgeD, op],
+      hovertemplate: 'T=%{x:.1f} K<br>p₀=%{y:.4f} atm<br>T*=%{z:.1f} K<extra></extra>'}, op],
     baseLayout('Hot-spot temperature T*', {xaxis: {title: xl}, yaxis: {title: 'p₀ [atm]', type: 'log'}}), PLOT_CFG);
-}
-
-// ---------------------------------------------------------------- MV benchmark
-$('mv-go').addEventListener('click', () => computeMV());
-async function computeMV() {
-  if (!pool || !state.groups) return;
-  stale.mv = false;
-  const gen = state.gen, {v} = state;
-  const [gm, Scur, Da, am, ah, Bi, St] = state.groups;
-  const beta = 1 / (1 / Bi + 0.25);
-  const Ss = logspace(4, 80, 14);
-  const NSs = logspace(0.6, 4.5, 56);
-  const c1 = [Math.min(v.N, 24), v.rtol, v.rtol * 1e-3, 1e-5, 0.05, 1, 200000];
-  const c2 = [Math.min(v.N, 24), v.rtol, v.rtol * 1e-3, 1e-5, 0.05, 0, 200000];
-  const jobs = [];
-  for (const S of Ss) for (const ns of NSs) {
-    const N = ns * S;
-    jobs.push({fn: 'sensGroups', g: [gm, S, Da, am, ah, Bi, N * Da, 0], c: c1, which: GI.ST});
-    jobs.push({fn: 'sensGroups', g: [gm, S, Da, am, N * Da / (2 * beta), Bi, St, 0], c: c2, which: GI.AH});
-  }
-  const t0 = performance.now();
-  $('mv-status').textContent = `${jobs.length} solves…`;
-  setBar('mv-bar', 0);
-  let res;
-  try { res = await pool.map(jobs, {isStale: () => gen !== state.gen, onProgress: (f) => setBar('mv-bar', f)}); } catch (e) { return; }
-  if (gen !== state.gen) return;
-  const crit1 = [], crit2 = [], smax1 = [], smax2 = [];
-  Ss.forEach((S, a) => {
-    const s1 = [], s2 = [];
-    NSs.forEach((_, b) => {
-      const r1 = res[2 * (a * NSs.length + b)], r2 = res[2 * (a * NSs.length + b) + 1];
-      s1.push(r1[5] === 1 ? r1[2] : NaN); s2.push(r2[5] === 1 ? r2[2] : NaN);
-    });
-    const k1 = mvCritical(NSs, s1), k2 = mvCritical(NSs, s2);
-    crit1.push(k1 ? k1.x : NaN); crit2.push(k2 ? k2.x : NaN);
-    smax1.push(k1 ? k1.smax : NaN); smax2.push(k2 ? k2.smax : NaN);
-  });
-  // A sensitivity maximum only marks runaway when it is pronounced; for small S
-  // the peak is weak and the reactor never "jumps" (no sharp runaway).
-  const WEAK = 3;
-  const strong = (ys, sm) => ys.map((y, i) => (sm[i] >= WEAK ? y : NaN));
-  const weak = (ys, sm) => ys.map((y, i) => (sm[i] < WEAK ? y : NaN));
-  $('mv-status').textContent = `${jobs.length} solves in ${fmt((performance.now() - t0) / 1000, 2)} s on ${pool.n} workers.`;
-  const sem = state.semenov;
-  const xr = [Ss[0], Ss[Ss.length - 1]];
-  Plotly.react('chart-mv', [
-    {x: Ss, y: strong(crit2, smax2), name: 'MV boundary, 2D model', mode: 'lines+markers', line: {color: C.red, width: 3},
-      fill: 'tozeroy', fillcolor: 'rgba(255,75,75,0.08)', text: smax2.map((m) => 'max |s| = ' + fmt(m, 1)),
-      hovertemplate: 'S=%{x:.2f}<br>(N/S)c=%{y:.3f}<br>%{text}<extra>2D</extra>'},
-    {x: Ss, y: strong(crit1, smax1), name: 'MV boundary, 1D model', mode: 'lines+markers', line: {color: C.blue, width: 2.5},
-      text: smax1.map((m) => 'max |s| = ' + fmt(m, 1)), hovertemplate: 'S=%{x:.2f}<br>(N/S)c=%{y:.3f}<br>%{text}<extra>1D</extra>'},
-    {x: Ss.concat(Ss), y: weak(crit2, smax2).concat(weak(crit1, smax1)), name: `weak peak (max |s| < ${WEAK}): no sharp runaway`,
-      mode: 'markers', marker: {symbol: 'circle-open', size: 9, color: C.grey}},
-    {x: xr, y: [sem.nsSem, sem.nsSem], name: `Semenov, γ = ${fmt(gm, 1)} (${fmt(sem.nsSem, 3)})`, mode: 'lines',
-      line: {color: C.dark, dash: 'dash', width: 2}},
-    {x: xr, y: [Math.E, Math.E], name: 'Semenov, γ → ∞ (e)', mode: 'lines', line: {color: C.grey, dash: 'dot', width: 2}},
-    {x: [Scur], y: [sem.NS], name: 'current inputs (1D-equivalent N)', mode: 'markers',
-      marker: {size: 13, color: '#fff', line: {color: C.dark, width: 3}}},
-  ], baseLayout('Runaway boundary in the (S, N/S) plane', {height: 520, xaxis: {title: 'S = γ ΔT_ad / T₀', type: 'log'},
-    yaxis: {title: 'N/S = St / (Da·S)', range: [0, 4]}, legend: {orientation: 'h', x: 0, y: -0.15},
-    annotations: [{x: Math.log10(6), y: 0.35, text: 'runaway (below the curves)', showarrow: false, font: {color: C.red}},
-      {x: Math.log10(6), y: 3.7, text: 'safe', showarrow: false, font: {color: '#1a7f37'}}]}), PLOT_CFG);
-  // interpolate the boundaries at the current S
-  const interp = (ys) => {
-    for (let i = 0; i < Ss.length - 1; i++) {
-      if (Scur >= Ss[i] && Scur <= Ss[i + 1] && Number.isFinite(ys[i]) && Number.isFinite(ys[i + 1])) {
-        const t = Math.log(Scur / Ss[i]) / Math.log(Ss[i + 1] / Ss[i]);
-        return ys[i] + t * (ys[i + 1] - ys[i]);
-      }
-    }
-    return NaN;
-  };
-  const b1 = interp(crit1), b2 = interp(crit2);
-  const last1 = crit1[crit1.length - 1], last2 = crit2[crit2.length - 1];
-  $('mv-note').innerHTML = `At the current S = ${fmt(Scur, 2)}: N/S = ${fmt(sem.NS, 3)}; MV critical N/S = ` +
-    `${fmt(b2, 3)} (2D) and ${fmt(b1, 3)} (1D); Semenov ${fmt(sem.nsSem, 3)}. ` +
-    `${sem.NS > b2 ? 'The point lies above both MV boundaries: <b>no runaway</b>.' : sem.NS > b1 ? 'Between the boundaries: the <b>1D model says safe, the 2D model says runaway</b>.' : 'Below the MV boundaries: <b>runaway</b>.'}` +
-    `<br><b>Benchmark check.</b> Semenov neglects consumption, so the MV boundaries must lie <i>below</i> the Semenov line ` +
-    `and approach it as S grows: at S = ${fmt(Ss[Ss.length - 1], 0)} the 1D boundary is ${fmt(last1, 3)} ` +
-    `(${fmt(100 * last1 / sem.nsSem, 0)} % of Semenov's ${fmt(sem.nsSem, 3)}) and the 2D boundary ${fmt(last2, 3)}. ` +
-    `The 2D boundary sits above the 1D one: radial gradients make the real reactor run away with more cooling than the 1D model needs.`;
 }
 
 // ---------------------------------------------------------------- Python (Pyodide) bridge

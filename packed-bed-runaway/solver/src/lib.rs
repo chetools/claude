@@ -703,21 +703,6 @@ pub fn sensitivity_dimensional(q: &[f64], cfg: &Config, which: usize) -> (f64, f
     (tstar.v, tstar.d, s, run)
 }
 
-/// Same, but with respect to one dimensionless group, and the sensitivity of
-/// theta* itself: s = (phi/theta*) dtheta*/dphi (the Morbidelli-Varma form).
-pub fn sensitivity_groups(gv: &[f64], cfg: &Config, which: usize) -> (f64, f64, f64, Run<Dual<f64>>) {
-    let gd: Vec<Dual<f64>> = gv
-        .iter()
-        .enumerate()
-        .map(|(i, &v)| Dual::new(v, if i == which { 1.0 } else { 0.0 }))
-        .collect();
-    let gr = Groups::from_slice(&gd);
-    let run = integrate(&gr, cfg, |_, _| {});
-    let th = run.theta_star;
-    let s = gv[which] / th.v * th.d;
-    (th.v, th.d, s, run)
-}
-
 // ---------------------------------------------------------------------------
 // 8. WebAssembly interface: plain f64 buffers in linear memory
 // ---------------------------------------------------------------------------
@@ -810,14 +795,6 @@ pub unsafe extern "C" fn solve_dim(q: *const f64, c: *const f64) -> usize {
     set_out(pack_solve(&gr, t0, &cfg))
 }
 
-/// Full solve from dimensionless groups (8 values); T0 is passed as 1.
-#[no_mangle]
-pub unsafe extern "C" fn solve_groups(gv: *const f64, c: *const f64) -> usize {
-    let cfg = Config::from_slice(slice(c, 7));
-    let gr = Groups::from_slice(slice(gv, g::NG));
-    set_out(pack_solve(&gr, 1.0, &cfg))
-}
-
 /// Dimensionless groups for display: [gamma, S, Da, a_m, a_h, Bi, St, theta_w].
 #[no_mangle]
 pub unsafe extern "C" fn groups_dim(q: *const f64) -> usize {
@@ -835,13 +812,6 @@ fn pack_sens(r: (f64, f64, f64, Run<Dual<f64>>)) -> usize {
 pub unsafe extern "C" fn sens_dim(q: *const f64, c: *const f64, which: usize) -> usize {
     let cfg = Config::from_slice(slice(c, 7));
     pack_sens(sensitivity_dimensional(slice(q, p::NP), &cfg, which))
-}
-
-/// [theta*, dtheta*/dphi, s, xi*, steps, ok] for group `which`.
-#[no_mangle]
-pub unsafe extern "C" fn sens_groups(gv: *const f64, c: *const f64, which: usize) -> usize {
-    let cfg = Config::from_slice(slice(c, 7));
-    pack_sens(sensitivity_groups(slice(gv, g::NG), &cfg, which))
 }
 
 /// Peak only (no recording) -- the inner loop of the speed race.

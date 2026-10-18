@@ -104,31 +104,3 @@ fn radial_grid_second_order() {
     let order = ((t[0] - t[1]) / (t[1] - t[2])).abs().log2();
     assert!(order > 1.6 && order < 2.6, "observed order {order}, T* = {t:?}");
 }
-
-/// Morbidelli-Varma boundary of the 1D model rises with S toward the
-/// finite-gamma Semenov limit (Frank-Kamenetskii tangency) from below.
-#[test]
-fn mv_boundary_approaches_semenov() {
-    let gamma: f64 = 20.0;
-    let thc = 0.5 * gamma * ((gamma - 2.0) - (gamma * gamma - 4.0 * gamma).sqrt());
-    let limit = (thc / (1.0 + thc / gamma)).exp() / thc;
-    let cfg = Config { one_d: true, rtol: 1e-6, atol: 1e-9, h0: 1e-6, ..default_config() };
-    let mut prev = 0.0;
-    for &s in &[10.0, 20.0, 40.0, 80.0] {
-        let (mut best, mut bs) = (0.0, 0.0);
-        let mut nn = 1.0f64;
-        while nn < 3.5 {
-            let gv = [gamma, s, 1.0, 0.0, 0.0, 0.0, nn * s, 0.0];
-            let (_, _, sens, run) = sensitivity_groups(&gv, &cfg, g::ST);
-            assert!(run.ok);
-            if sens.abs() > bs {
-                bs = sens.abs();
-                best = nn;
-            }
-            nn *= 1.01;
-        }
-        assert!(best > prev && best < limit, "S={s}: (N/S)_c={best}, limit {limit}");
-        prev = best;
-    }
-    assert!(prev > 0.8 * limit);
-}

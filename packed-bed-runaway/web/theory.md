@@ -13,7 +13,7 @@ little hotter, the hot spot can grow from tens of kelvin to hundreds. That jump 
 damage, loss of selectivity (here, total combustion to CO₂), and a safety hazard. Near the
 boundary the hot-spot temperature is **parametrically sensitive**: a tiny change in an
 input produces a large change in the output. This page computes that sensitivity directly
-and uses it to locate the runaway boundary.
+and maps it over the operating conditions.
 
 ## 2. The 2D pseudo-homogeneous model
 
@@ -112,12 +112,7 @@ $$
 The term $R/(4\lambda_{er})$ comes from the conduction resistance of a cylinder with a uniformly
 distributed heat source: the parabolic radial profile has a mean-to-wall difference of
 $q R^2 /(8 \lambda_{er})$ per unit volumetric source $q$. It is the standard 1D–2D
-correspondence. With it, the 2D model's heat-removal capacity can be placed on the same axis as the
-1D model's,
-
-$$
-N = \frac{St}{Da} = \frac{2\beta\,a_h}{Da}, \qquad \beta = \frac{UR}{\lambda_{er}} = \frac{1}{1/Bi + 1/4}.
-$$
+correspondence.
 
 **Why 2D runs hotter.** In the 2D model heat released at the axis must first cross the bed
 by conduction before the wall can remove it. The axis therefore runs hotter than the radial average that the
@@ -253,119 +248,17 @@ $w$ is then amplified exponentially, and that amplification is the sensitivity.
    - the error test also checks the derivative parts (scaled by their largest component), so the
      sensitivities are resolved as well as the solution.
 
-## 9. Semenov's criterion: derivation
-
-Semenov (1928) analysed a well-mixed vessel with heat generation and wall cooling. Applied to the
-**initial** part of a tubular reactor, where the reactant has barely been consumed ($x \approx 0$),
-the 1D energy balance with $\theta_w = 0$ becomes
-
-$$
-\frac{1}{Da}\,\frac{d\theta}{d\xi} = \underbrace{S\,\exp\!\left(\frac{\theta}{1+\theta/\gamma}\right)}_{g(\theta)\text{ (generation)}} - \underbrace{N\,\theta}_{\ell(\theta)\text{ (removal)}}, \qquad N = \frac{St}{Da}.
-$$
-
-- **Safe case.** If generation and removal cross, $g(\theta) = \ell(\theta)$ has a low root $\theta_s$. Starting from
-  $\theta = 0$ (where $g > \ell$), the temperature rises and stops at $\theta_s$, where generation is balanced.
-  The reactor sits at a modest pseudo-steady temperature until consumption slowly extinguishes it.
-- **Runaway case.** If removal lies **below** generation everywhere, there is no such root and $\theta$ climbs
-  until the reactant is exhausted.
-
-The boundary between the two cases is tangency: $g = \ell$ and $g' = \ell'$ at the same point $\theta_c$.
-
-**Infinite activation energy** ($\gamma \to \infty$, $g = S e^\theta$):
-
-$$
-S e^{\theta_c} = N\theta_c, \qquad S e^{\theta_c} = N \;\Rightarrow\; \theta_c = 1, \qquad \boxed{\left(\frac{N}{S}\right)_c = e \approx 2.718}.
-$$
-
-Runaway occurs when $N/S < e$. Restoring dimensions, $\theta_c = 1$ means the critical
-temperature rise above the coolant is $R T_0^2/E$. That is the famous Semenov result.
-
-**Finite activation energy** (Frank-Kamenetskii's exact form). Let $u(\theta) = \theta/(1+\theta/\gamma)$, so
-$u'(\theta) = (1+\theta/\gamma)^{-2}$. Tangency gives
-
-$$
-S e^{u} = N\theta, \qquad S e^{u}\,(1+\theta/\gamma)^{-2} = N
-\;\Rightarrow\; \theta_c = (1 + \theta_c/\gamma)^2 .
-$$
-
-This is a quadratic, $\theta_c^2/\gamma^2 + (2/\gamma - 1)\theta_c + 1 = 0$, whose physically relevant (smaller) root is
-
-$$
-\theta_c = \frac{\gamma}{2}\left[(\gamma - 2) - \sqrt{\gamma^2 - 4\gamma}\right], \qquad
-\left(\frac{N}{S}\right)_c = \frac{\exp\!\big(\theta_c/(1+\theta_c/\gamma)\big)}{\theta_c}.
-$$
-
-It requires $\gamma > 4$; for $\gamma \le 4$ there is no ignition at all. For $\gamma = 20$, $\theta_c = 1.11$
-and $(N/S)_c = 2.58$, which tends to $e$ as $\gamma \to \infty$.
-
-**What Semenov neglects.** Consumption. In a tubular reactor the hot spot also depletes the reactant,
-which lowers the rate. Runaway therefore needs *less* cooling than Semenov's estimate: the true critical
-$N/S$ is smaller. The two agree only when $S \to \infty$ (a very energetic feed), where the temperature
-explodes long before conversion matters. Semenov is thus the large-$S$ limit of the exact
-boundary, which is the limit the benchmark tab checks.
-
-## 10. The Morbidelli–Varma (MV) criterion: derivation
-
-Older criteria defined runaway by a *geometric* feature of the temperature profile, for example
-Barkelew's envelope or van Welsenaere and Froment's inflection points. Morbidelli and Varma (1982, 1988)
-instead defined it by what makes runaway dangerous in practice: **sensitivity**.
-
-**Definition.** A reactor operates in the parametrically sensitive (runaway) region when the
-normalized sensitivity of the hot-spot temperature to an input $\phi$ is large. The
-**critical value** $\phi_c$, the boundary between runaway and non-runaway, is the value at which
-$|s(\theta^*;\phi)|$ is **maximum**:
-
-$$
-\frac{\partial}{\partial\phi}\,\big|s(\theta^*;\phi)\big| = 0, \qquad
-\frac{\partial^2}{\partial\phi^2}\,\big|s(\theta^*;\phi)\big| < 0 .
-$$
-
-**Why a maximum.** As $\phi$ (say $p_0$) increases, $\theta^*$ behaves as follows:
-- Far below the boundary, $\theta^*$ grows gently and $s$ is $O(1)$.
-- Far above it, the reactant is fully consumed at the hot spot, so $\theta^* \approx$ the adiabatic rise, again a gentle function with $s = O(1)$.
-- In between lies a narrow transition where $\theta^*$ jumps. There $s$ peaks.
-
-The peak is the inflection point of the $\ln\theta^*$ vs $\ln\phi$ curve: the steepest part of the
-jump. It is a property of the solution itself, not of the profile's shape, so it applies to any model,
-1D or 2D, homogeneous or heterogeneous.
-
-**Computing it.**
-1. Sweep $\phi$.
-2. At each point compute $\theta^*$ and $\partial\theta^*/\partial\phi$ from the sensitivity equations (here AD).
-3. Locate the maximum of $|s|$, refined with a parabola in $\ln\phi$.
-
-The sensitivity map repeats this along one axis for every value of a second parameter. The ridge of maxima
-is the runaway boundary in that plane.
-
-**Generalized (intrinsic) property.** Morbidelli & Varma showed that for a
-given system the critical conditions found this way are nearly the same *whichever*
-input is used as $\phi$, for example $p_0$, $T_c$ or $U$. The boundary is therefore intrinsic to the
-reactor rather than to the experiment. This is why the 1D boundary can be drawn once in the
-$(S, N/S)$ plane; here it is found by varying $N$ at fixed $S$.
-
-**Consistency with Semenov.** As $S \to \infty$, $\theta^*$ explodes at negligible
-conversion. The sensitivity peak then sits where the pseudo-steady root $\theta_s$ disappears,
-because $s \propto \partial\theta_s/\partial N$ diverges at the tangency (a fold point). So
-$(N/S)_c^{MV} \to (N/S)_c^{\text{Semenov}}$, and for finite $S$ it lies below it, since consumption delays
-runaway. The benchmark tab checks both properties numerically, and so does the Rust test suite.
-
-## 11. Using the page
+## 9. Using the page
 
 - **App → Hot spot**: the 2D temperature and conversion fields for the sidebar inputs, with axial
   and radial profiles and the 1D model for comparison.
-- **App → Sensitivity sweep**: $T^*$ and $s$ along one input. The dashed line marks the MV critical value.
-- **App → Sensitivity map**: $\log_{10}|s|$ over coolant temperature × feed partial pressure, with the
-  MV boundary (ridge) and the operating point.
-- **App → MV benchmark**: the MV boundary of the 1D and 2D models in the $(S, N/S)$ plane, against
-  the Semenov limits.
+- **App → Sensitivity sweep**: $T^*$ and $s$ along one input, for the 2D and the 1D model.
+- **App → Sensitivity map**: $\log_{10}|s|$ and $T^*$ over coolant temperature × feed partial pressure,
+  with the operating point.
 
 ## References
 
 - G. F. Froment, *Fixed bed catalytic reactors – current design status*, Ind. Eng. Chem. 59(2), 18–27 (1967).
 - G. F. Froment, K. B. Bischoff, J. De Wilde, *Chemical Reactor Analysis and Design*, 3rd ed., Wiley (2011), Ch. 11.
-- M. Morbidelli, A. Varma, *Parametric sensitivity and runaway in tubular reactors*, AIChE J. 28, 705–713 (1982).
-- M. Morbidelli, A. Varma, *A generalized criterion for parametric sensitivity: application to thermal explosion theory*, Chem. Eng. Sci. 43, 91–102 (1988).
-- A. Varma, M. Morbidelli, H. Wu, *Parametric Sensitivity in Chemical Systems*, Cambridge University Press (1999).
-- N. N. Semenov, *Zur Theorie des Verbrennungsprozesses*, Z. Phys. 48, 571–582 (1928).
 - D. A. Frank-Kamenetskii, *Diffusion and Heat Transfer in Chemical Kinetics*, 2nd ed., Plenum (1969).
 - L. F. Shampine, M. W. Reichelt, *The MATLAB ODE suite*, SIAM J. Sci. Comput. 18, 1–22 (1997).

@@ -17,7 +17,6 @@
 .sidebar summary{cursor:pointer;font-weight:600;font-size:1.02rem;margin:1.1rem 0 .2rem}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
 .m-sub{font-size:.8rem;color:var(--muted)}
-.metric .m-value.ok{color:#1a7f37}.metric .m-value.mid{color:#b26b00}.metric .m-value.bad{color:#cf222e}
 .controls{display:flex;flex-wrap:wrap;gap:.8rem;align-items:flex-end;margin:.4rem 0 .8rem}
 .controls .field{margin:0;min-width:120px}
 .controls .field label{font-size:.82rem}
@@ -141,9 +140,9 @@ details.wt-src summary{cursor:pointer;color:var(--muted);font-size:.88rem}
   <div id="app">
     <h1>Packed-bed reactor: hot spots &amp; runaway</h1>
     <p class="intro">A wall-cooled catalytic tube (o-xylene &rarr; phthalic anhydride, Froment's data)
-    modelled in 2D (radial + axial) and solved by the method of lines. The hot spot is mapped against
-    its <b>parametric sensitivity</b>: the Morbidelli&ndash;Varma criterion places the runaway
-    boundary where the hot-spot temperature is most sensitive to the inputs. Rust (compiled to
+    modelled in 2D (radial + axial) and solved by the method of lines. The hot spot is mapped together with
+    its <b>parametric sensitivity</b>: how strongly the hot-spot temperature responds to small changes
+    in the inputs, which is what makes runaway so abrupt. Rust (compiled to
     WebAssembly) does the fast computing; a Python/numpy/scipy reference confirms it.</p>
     <div id="err" class="err" hidden></div>
     <div class="metrics">
@@ -155,8 +154,6 @@ details.wt-src summary{cursor:pointer;color:var(--muted);font-size:.88rem}
         <div class="m-value" id="m-x">&ndash;</div><div class="m-sub" id="m-x-sub"></div></div>
       <div class="metric"><div class="m-label">Sensitivity s(T*; p&#8320;)</div>
         <div class="m-value" id="m-s">&ndash;</div><div class="m-sub" id="m-s-sub"></div></div>
-      <div class="metric"><div class="m-label">Morbidelli&ndash;Varma verdict</div>
-        <div class="m-value" id="m-v">&ndash;</div><div class="m-sub" id="m-v-sub"></div></div>
     </div>
     <p class="caption" id="groups-cap"></p>
     <nav class="tabs" data-panels="tpanel">
@@ -174,7 +171,6 @@ details.wt-src summary{cursor:pointer;color:var(--muted);font-size:.88rem}
         <button data-tab="sub-hot" class="active">Hot spot</button>
         <button data-tab="sub-sweep">Sensitivity sweep</button>
         <button data-tab="sub-map">Sensitivity map</button>
-        <button data-tab="sub-mv">MV benchmark</button>
       </nav>
       <section id="sub-hot" class="spanel">
         <div class="charts">
@@ -227,22 +223,9 @@ details.wt-src summary{cursor:pointer;color:var(--muted);font-size:.88rem}
           <div class="chart" id="chart-mapT"></div>
         </div>
         <div class="note">Each pixel is a full 2D solve with the sensitivity s = (p&#8320;/T*)&middot;&part;T*/&part;p&#8320;
-        computed by automatic differentiation in the same pass. The white line is the
-        Morbidelli&ndash;Varma runaway boundary: for each coolant temperature, the feed at which |s| peaks.
-        Above it (richer feed or hotter coolant) the reactor runs away.</div>
-      </section>
-      <section id="sub-mv" class="spanel" hidden>
-        <div class="controls">
-          <div><button class="btn primary" id="mv-go">Recompute benchmark</button></div>
-          <div class="status" id="mv-status"></div>
-        </div>
-        <div class="progress"><div id="mv-bar"></div></div>
-        <div id="chart-mv" style="height:520px"></div>
-        <div class="note" id="mv-note"></div>
-        <p class="caption">For each S the code sweeps the cooling capacity N (1D: through St; 2D: through
-        a<sub>h</sub>, with N = 2&beta;a<sub>h</sub>/Da and &beta; = 1/(1/Bi + 1/4)) and takes the N where
-        |s(&theta;*; N)| is maximal. &gamma;, Da, Bi and a<sub>m</sub> are those of the current inputs, with
-        &theta;<sub>w</sub> = 0. The derivations are in Theory &sect;9&ndash;10.</p>
+        computed by automatic differentiation in the same pass. The bright band of high |s| is where the
+        hot spot is most sensitive; beyond it (richer feed or hotter coolant) the hot-spot temperature
+        jumps by hundreds of kelvin, as the right-hand map shows.</div>
       </section>
     </section>
 
@@ -303,8 +286,7 @@ details.wt-src summary{cursor:pointer;color:var(--muted);font-size:.88rem}
       </section>
       <section id="sub-rstest" class="rpanel" hidden>
         <p><code>cargo test --release</code>: adiabatic invariant, AD gradient vs. hand-derived, block Thomas
-        vs. dense elimination, AD sensitivity vs. finite differences, second-order grid convergence, and the
-        Morbidelli&ndash;Varma boundary approaching Semenov's limit.</p>
+        vs. dense elimination, AD sensitivity vs. finite differences, and second-order grid convergence.</p>
         @@RS_TEST@@
       </section>
     </section>

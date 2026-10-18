@@ -15,11 +15,10 @@ Everything starts from the dimensional inputs of Froment's o-xylene tube. A dict
 names to SI values. In the live run, `USER_INPUTS` holds the values from the sidebar; at build time it is empty.
 
 `groups_from_dimensional` condenses the 17 inputs into the 8 numbers the equations actually
-depend on (Theory §3). Two of them tell most of the story:
+depend on (Theory §3). Three of them tell most of the story:
 - **$S$** is the heat the feed can release, measured in units of $RT_0^2/E$ (about 29 K here).
-- **$N = St/Da$** is the 1D cooling capacity relative to the reaction rate at the inlet.
-
-Semenov's criterion (Theory §9) says to worry when $N/S$ approaches $e \approx 2.7$.
+- **$Da$** is how fast the reaction runs at the inlet compared with the flow through the bed.
+- **$St$** is how strongly the wall removes heat over the bed length (1D model).
 """, code=r'''
 import numpy as np
 import pbr
@@ -33,7 +32,6 @@ print(f"inlet T0 = {T0:.1f} K,  adiabatic rise dT_ad = {dT_ad:.0f} K")
 print(f"one theta unit = T0/gamma = {T0/gr['gamma']:.1f} K")
 for _k, _v in gr.items():
     print(f"  {_k:8s} = {_v:10.4f}")
-print(f"N/S = St/(Da S) = {gr['St']/(gr['Da']*gr['S']):.3f}   (Semenov: e = 2.718)")
 '''),
 
 dict(title="The radial grid: finite volumes", md=r"""
@@ -247,11 +245,11 @@ figure([dict(x=hs, y=np.abs(np.array(ss) - s_ref) + 1e-16, mode="lines+markers",
        xaxis=dict(title="relative step h", type="log"), yaxis=dict(title="|s_FD - s_ref|", type="log"))
 '''),
 
-dict(title="Morbidelli–Varma: sweep and find the critical feed", md=r"""
-Sweep the feed partial pressure $p_0$, compute $T^*$ and $s$ at each value, and find the
-maximum of $|s|$. That maximum is the **MV critical value** $p_{0,c}$ (Theory §10). Below it the
-hot spot responds gently. Around it, a few percent more feed moves the hot spot by
-hundreds of kelvin.
+dict(title="Sweeping the feed: how sensitive is the hot spot?", md=r"""
+Sweep the feed partial pressure $p_0$ and compute the hot-spot temperature $T^*$ and its
+normalized sensitivity $s$ at each value. At low feed the hot spot responds gently. Over a narrow
+band of $p_0$, a few percent more feed moves the hot spot by hundreds of kelvin, and $|s|$
+rises by orders of magnitude.
 
 This sweep needs 3 solves per point, which takes seconds in Python. The App tab does the same
 with Rust in milliseconds.
@@ -259,28 +257,12 @@ with Rust in milliseconds.
 p0s = np.linspace(0.6, 2.0, 13) * q["p0"]
 res = [pbr.sensitivity_fd(dict(q, p0=p), "p0", rel_h=1e-3) for p in p0s]
 Ts = np.array([r[0] for r in res]); sv = np.array([r[2] for r in res])
-k_c = int(np.argmax(np.abs(sv)))
-print(f"MV critical p0 ~ {p0s[k_c]:.5f} atm  (max |s| = {abs(sv[k_c]):.1f});  current p0 = {q['p0']:.5f} atm")
+k_s = int(np.argmax(np.abs(sv)))
+print(f"largest |s| in this sweep: {abs(sv[k_s]):.1f} at p0 = {p0s[k_s]:.5f} atm;  current p0 = {q['p0']:.5f} atm")
 figure([dict(x=p0s, y=Ts, name="T* [K]"),
         dict(x=p0s, y=np.abs(sv), name="|s(T*; p0)|", yaxis="y2", line=dict(color="firebrick"))],
        title="Hot spot and its sensitivity vs feed partial pressure", xaxis=dict(title="p0 [atm]"),
        yaxis=dict(title="T* [K]"), yaxis2=dict(title="|s|", overlaying="y", side="right", type="log"),
        legend=dict(x=1.1, y=1))
-'''),
-
-dict(title="Semenov's limit for these inputs", md=r"""
-Finally we place the current inputs on Semenov's map. With finite $\gamma$ the tangency
-condition $\theta_c = (1+\theta_c/\gamma)^2$ gives the critical $N/S$ (Theory §9).
-
-Semenov ignores consumption, so it is **conservative**: below the Semenov value runaway is
-*possible*, and the MV criterion tells how close you really are.
-""", code=r'''
-g = gr["gamma"]
-thc = 0.5 * g * ((g - 2) - np.sqrt(g*g - 4*g))
-NS_c = np.exp(thc / (1 + thc/g)) / thc
-NS = gr["St"] / (gr["Da"] * gr["S"])
-print(f"Semenov (finite gamma = {g:.2f}): theta_c = {thc:.3f},  (N/S)_c = {NS_c:.3f}")
-print(f"Semenov (gamma -> inf):           (N/S)_c = e = {np.e:.3f}")
-print(f"current 1D-equivalent N/S = {NS:.3f}  ->  {'below' if NS < NS_c else 'above'} the Semenov line")
 '''),
 ]

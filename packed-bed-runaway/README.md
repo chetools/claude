@@ -10,9 +10,8 @@ fixed-bed reactor (o-xylene → phthalic anhydride, Froment's data):
   method (`ode23s`) using a block-tridiagonal linear solve.
 - **Parametric sensitivity** s = (φ/T*)·∂T*/∂φ of the hot-spot temperature, computed by
   forward-mode **automatic differentiation** (dual numbers carried through the whole solver).
-- **Morbidelli–Varma runaway criterion** (maximum of |s|) applied in sweeps, in a 2D map and in
-  the (S, N/S) plane, benchmarked against **Semenov's** limit. The full derivations are in the
-  page's Theory tab.
+- **Sensitivity sweeps and maps**: T* and |s| along any input, and over coolant temperature × feed
+  partial pressure, for the 2D and the 1D model. The derivations are in the page's Theory tab.
 - **Hybrid implementation.**
   - **Rust → WebAssembly** (`solver/`) drives every live chart. Maps run on all CPU cores through Web Workers.
   - **Python / numpy / scipy** (`python/pbr.py`) is the readable reference. It is explained step by step on the
@@ -32,7 +31,7 @@ fixed-bed reactor (o-xylene → phthalic anhydride, Froment's data):
 ```
 solver/            Rust crate (cdylib → pbr.wasm; rlib for native tests)
   src/lib.rs       model, finite volumes, Rosenbrock, block Thomas, Dual AD, WASM exports
-  tests/checks.rs  cargo tests (adiabatic invariant, AD vs FD, grid order, Semenov limit, ...)
+  tests/checks.rs  cargo tests (adiabatic invariant, AD vs FD, block Thomas, grid order)
   examples/dump.rs reference values for the Python cross-check
 python/
   pbr.py           reference implementation (same function names as lib.rs)
