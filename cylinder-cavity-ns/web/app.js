@@ -26,7 +26,7 @@ function baseLayout(title, extra) {
 function resolution(cellRe) {           // cell Reynolds number U h / nu
   if (cellRe < 2) return 'DNS, fully resolved';
   if (cellRe < 30) return 'DNS, large eddies resolved';
-  return 'implicit LES (limiter acts as sub-grid model)';
+  return 'implicit LES';
 }
 
 // ---------------------------------------------------------------- tabs
@@ -105,7 +105,7 @@ function updateStaticMetrics() {
   $('m-re').textContent = fmtG(p.Re, 3);
   const cellRe = Math.max(Math.abs(p.Us), Math.abs(p.Uo)) * p.h / p.nu;
   $('m-re-sub').textContent = `cell Re ${fmtG(cellRe, 2)}: ${resolution(cellRe)}`;
-  $('m-div-sub').textContent = `after 2 V-cycles · Δt = ${fmtE(p.dt, 2)}`;
+  $('m-div-sub').textContent = `2 V-cycles · Δt ${fmtE(p.dt, 2)}`;
 }
 
 // ---------------------------------------------------------------- display
@@ -198,14 +198,14 @@ function onStats(s) {
   turns.push(`${s.nstep.toLocaleString()} steps`);
   $('m-t-sub').textContent = turns.join(' · ');
   const playing = sim.playing && !sim.busy;
-  $('m-speed').textContent = playing && sim.lastRate ? `${fmtG(sim.lastRate, 3)} /s` : '–';
+  $('m-speed').textContent = playing && sim.lastRate ? `${fmtG(sim.lastRate, 3)} steps/s` : '–';
   $('m-speed-sub').textContent = playing && sim.lastRate
-    ? `steps per second · ${fmtG(sim.lastRate * p.N * p.N / 1e6, 3)} M cell-steps/s` : 'paused';
+    ? `${fmtG(sim.lastRate * p.N * p.N / 1e6, 3)} M cell-steps/s` : 'paused';
   // trail darkness is relative to the flow's own rms speed (box area 1: u_rms = sqrt(2E)), not the body speed,
   // so a slow far field stays visible next to a fast spinning cylinder
   if (s.E > 0) sim.solver.inkRef = 2 * Math.sqrt(2 * s.E);
   $('m-e').textContent = fmtG(s.E, 3);
-  $('m-e-sub').textContent = `enstrophy Z = ${fmtG(s.Z, 3)} · torque ${fmtG(s.torque, 2)}`;
+  $('m-e-sub').textContent = `Z = ${fmtG(s.Z, 3)} · torque ${fmtG(s.torque, 2)}`;
   $('m-div').textContent = fmtE(s.maxdiv, 1);
   if (!Number.isFinite(s.E)) showErr('The solution blew up (NaN). Restart, or lower the Reynolds number / raise the grid size.');
   const H = sim.hist;
@@ -215,6 +215,7 @@ function onStats(s) {
   }
   if ($('in-auto').checked) { autoRange(s); setView(); }
   if (now - sim.chartsAt > 1000 && $('panel-app').offsetParent !== null) { sim.chartsAt = now; drawCharts(s); }
+  document.querySelectorAll('.metrics .m-sub').forEach((e) => { e.title = e.textContent; });   // full text on hover
   $('view-cap').textContent = `${p.N}×${p.N} cells · ${FIELD_NAMES[+$('in-field').value]} · ` +
     `${sim.kind === 'gpu' ? 'WebGPU' : 'CPU fallback'} · ${sim.k} steps per frame`;
 }
