@@ -44,11 +44,12 @@ const RENDER_WGSL = ${JSON.stringify(read('render.wgsl'))};`});
     }
     const sg = await gpu.stats(), sc = await cpu.stats();
     return {err: err && err.message, name: dev.name, du, umax, dc, sumUx: [sg.sumUx, sc.sumUx], det: [sg.det, sc.det],
-      clock: [sg.clock, sc.clock], mass: [sg.mass, sc.mass]};
+      clock: [sg.clock, sc.clock], mass: [sg.mass, sc.mass], maxC: [sg.maxC, sc.maxC]};
   });
   console.log(JSON.stringify(r, null, 1));
   await browser.close();
-  const ok = !r.err && r.du < 1e-5 * r.umax && r.dc < 1e-5 && r.clock[0] === r.clock[1];
+  const ok = !r.err && r.du < 1e-5 * r.umax && r.dc < 1e-5 && r.clock[0] === r.clock[1]
+    && r.maxC[0] > 0 && Math.abs(r.maxC[0] - r.maxC[1]) < 1e-5;
   console.log(ok ? 'GPU CHECK PASSED' : 'GPU CHECK FAILED');
   process.exit(ok ? 0 : 1);
 })();

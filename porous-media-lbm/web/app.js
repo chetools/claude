@@ -156,7 +156,7 @@ function newRunState(v) {
   const g = nu * Ut / kGuess(bed);
   return {v, nu, g, Ut, magic: MAGIC[v.coll], kHist: [], lastK: null, converged: false, adjustments: 0,
     lastAdjustAt: 0, Us: NaN, k: NaN, maxU: 0, mass: NaN, mass0: NaN, clock: 0,
-    tracer: null, rtd: null, stepsPerFrame: backend === 'gpu' ? 20 : 2, rate: {t: performance.now(), clock: 0, mlups: NaN},
+    tracer: null, rtd: null, cScale: 1, stepsPerFrame: backend === 'gpu' ? 20 : 2, rate: {t: performance.now(), clock: 0, mlups: NaN},
     frozen: false};
 }
 function applyParams() {
@@ -244,14 +244,14 @@ async function loop() {
   }
   requestAnimationFrame(loop);
 }
-const viewMode = () => ({speed: 0, vort: 1, tracer: 2, pressure: 3})[$('view-mode').value];
+const viewMode = () => ({speed: 0, vort: 1, tracer: 2, pressure: 3, tracerlog: 4})[$('view-mode').value];
 function viewScale() {
   const m = parseFloat($('view-scale').value) || 1;
   const u = S && S.maxU > 0 ? S.maxU : 1e-6;
   switch (viewMode()) {
     case 0: return u / m;
     case 1: return u / (0.25 * bed.d) / m;
-    case 2: return (S.tracer && S.tracer.cmax > 0 ? Math.min(1, 1.5 * S.tracer.cmax) : 1) / m;
+    case 2: case 4: return S.cScale / m;
     default: return S.g * bed.d * 2 / m + 1e-12;
   }
 }
@@ -271,6 +271,10 @@ function onStats(st) {
   S.Us = st.sumUx / bed.nCross;
   S.k = S.nu * S.Us / S.g;
   S.maxU = st.maxU;
+  // Tracer colour scale: the largest concentration in the bed, rising at once but falling at most 5 % per update,
+  // and never below 1e-3 (so a vanishing tail does not light up the whole bed).
+  const cTarget = Math.max(st.maxC, 1e-3);
+  S.cScale = cTarget > S.cScale ? cTarget : Math.max(cTarget, 0.95 * S.cScale);
   S.mass = st.mass / Math.max(1, countFluid());
   // throughput
   const now = performance.now();
@@ -321,7 +325,8 @@ function injectPulse() {
   if (Dm < 0.002) warn.push(`D_m = ${fmt(Dm)} lattice units is very small: raise Re-to-Pe ratio, τ, or lower Pe_m, or the tracer may oscillate`);
   if (S.maxU > 0.25) warn.push('the peak velocity is high for the tracer lattice (|u| > 0.25)');
   showErr(warn.length ? 'Note: ' + warn.join('; ') + '.' : '');
-  S.tracer = {Dm, pulse, uInt, t0: S.clock, t: [], c: [[], [], []], cmax: 0, done: false, frozenSet: false};
+  S.tracer = {Dm, pulse, uInt, t0: S.clock, t: [], c: [[], [], []], done: false};
+  S.cScale = 1;                       // the inlet holds c = 1 during the pulse
   sim.inject(pulse);
   applyParams();
   S.rtd = null;
@@ -332,7 +337,7 @@ function onTracerStats(st) {
   const t = st.clock - (st.clock >= T.t0 ? T.t0 : st.clock);
   if (T.t.length && t <= T.t[T.t.length - 1]) return;
   T.t.push(t);
-  st.det.forEach((d, j) => { const c = d[1] !== 0 ? d[0] / d[1] : 0; T.c[j].push(c); T.cmax = Math.max(T.cmax, c); });
+  st.det.forEach((d, j) => { T.c[j].push(d[1] !== 0 ? d[0] / d[1] : 0); });
   // finished once the second detector's signal has come and gone
   const c2 = T.c[1], peak = Math.max(...c2);
   const tPeak = T.t[c2.indexOf(peak)];

@@ -1,5 +1,6 @@
 // Draws the lattice straight from the simulation buffers: one fragment per cell.
-// mode 0: speed |u|, 1: vorticity, 2: tracer concentration, 3: pressure (rho - 1) / 3
+// mode 0: speed |u|, 1: vorticity, 2: tracer concentration, 3: pressure (rho - 1) / 3,
+// 4: tracer on a log scale (three decades below vmax)
 
 struct View { nx: u32, ny: u32, mode: u32, pad: u32, vmax: f32, p0: f32, p1: f32, p2: f32 };
 
@@ -60,6 +61,8 @@ fn fs(in: VOut) -> @location(0) vec4<f32> {
     col = diverging(clamp(w / V.vmax, -1.0, 1.0));
   } else if (V.mode == 2u) {
     col = viridis(clamp(q.w / V.vmax, 0.0, 1.0));
+  } else if (V.mode == 4u) {
+    col = viridis(clamp(1.0 + log(max(q.w, 1e-30) / V.vmax) / (3.0 * log(10.0)), 0.0, 1.0));
   } else {
     col = diverging(clamp((q.z - 1.0) / 3.0 / V.vmax, -1.0, 1.0));
   }

@@ -127,12 +127,12 @@ class CpuLbm {
   /** Same quantities as the GPU's reduce + detect kernels. */
   async stats() {
     const {nx, ny, n, solid, fields} = this;
-    let sumUx = 0, maxU = 0, mass = 0, sumC = 0, nFluid = 0;
+    let sumUx = 0, maxU = 0, mass = 0, maxC = 0, nFluid = 0;
     for (let k = 0; k < n; k++) {
       if (solid[k]) continue;
       nFluid++;
       const ux = fields[4 * k], uy = fields[4 * k + 1];
-      sumUx += ux; mass += fields[4 * k + 2]; sumC += fields[4 * k + 3];
+      sumUx += ux; mass += fields[4 * k + 2]; maxC = Math.max(maxC, fields[4 * k + 3]);
       maxU = Math.max(maxU, Math.hypot(ux, uy));
     }
     const det = this.p.det.map((col) => {
@@ -144,7 +144,7 @@ class CpuLbm {
       }
       return [a, b, c];
     });
-    return {sumUx, maxU, mass, sumC, det, clock: this.clock, nFluid};
+    return {sumUx, maxU, mass, maxC, det, clock: this.clock, nFluid};
   }
 
   async readFields() { return this.fields.slice(); }
@@ -166,6 +166,7 @@ class CpuLbm {
           const w = 0.5 * ((fields[at(x + 1, y) + 1] - fields[at(x - 1, y) + 1]) - (fields[at(x, y + 1)] - fields[at(x, y - 1)]));
           rgb = divergingRGB(w / vmax);
         } else if (mode === 2) rgb = viridisRGB(fields[4 * k + 3] / vmax);
+        else if (mode === 4) rgb = viridisRGB(1 + Math.log10(Math.max(fields[4 * k + 3], 1e-30) / vmax) / 3);
         else rgb = divergingRGB((fields[4 * k + 2] - 1) / 3 / vmax);
         img.data[o] = 255 * rgb[0]; img.data[o + 1] = 255 * rgb[1]; img.data[o + 2] = 255 * rgb[2]; img.data[o + 3] = 255;
       }

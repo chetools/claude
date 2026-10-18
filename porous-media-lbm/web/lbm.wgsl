@@ -146,7 +146,7 @@ fn tick() {
 
 var<workgroup> sh: array<vec4<f32>, 256>;
 
-// (sum ux, max |u|, sum rho, sum c) over the fluid cells of one workgroup
+// (sum ux, max |u|, sum rho, max c) over the fluid cells of one workgroup
 @compute @workgroup_size(256)
 fn reduce(@builtin(global_invocation_id) gid: vec3<u32>,
           @builtin(local_invocation_id) lid: vec3<u32>,
@@ -164,7 +164,7 @@ fn reduce(@builtin(global_invocation_id) gid: vec3<u32>,
     if (lid.x < s) {
       let a = sh[lid.x];
       let b = sh[lid.x + s];
-      sh[lid.x] = vec4<f32>(a.x + b.x, max(a.y, b.y), a.z + b.z, a.w + b.w);
+      sh[lid.x] = vec4<f32>(a.x + b.x, max(a.y, b.y), a.z + b.z, max(a.w, b.w));
     }
     workgroupBarrier();
   }

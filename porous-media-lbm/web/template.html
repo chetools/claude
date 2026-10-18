@@ -176,7 +176,7 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
           <div><button class="btn" id="btn-seed">New random bed</button></div>
           <div class="field"><label for="view-mode">Show</label>
             <select id="view-mode"><option value="speed">speed |u|</option><option value="vort">vorticity</option>
-              <option value="tracer">tracer concentration</option><option value="pressure">pressure</option></select></div>
+              <option value="tracer">tracer concentration</option><option value="tracerlog">tracer, log scale</option><option value="pressure">pressure</option></select></div>
           <div class="field"><label for="view-scale">Colour gain</label>
             <select id="view-scale"><option>0.5</option><option selected>1</option><option>2</option><option>4</option><option>10</option></select></div>
           <div class="field"><label for="edit-mode">Mouse</label>
@@ -192,7 +192,8 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
         <div class="note">Flow is from left to right, driven by a uniform body force that stands in for the pressure gradient. The domain is
         periodic, so particles leaving one edge re-enter at the opposite one. Most of the flow goes through a few connected wide pores:
         this is <b>channeling</b>. Switch the view to <i>vorticity</i> to see the shear layers around the particles. Use <i>Mouse: add particles</i>
-        to block a channel and watch the permeability drop. The colours are scaled to the current maximum (gain &times;1).</div>
+        to block a channel and watch the permeability drop. The colours are scaled to the current maximum anywhere in the bed (gain &times;1). The tracer's <i>log scale</i> spans three decades, showing
+        the slow release from stagnant pockets that makes the long RTD tail.</div>
       </section>
       <section id="sub-rtd" class="spanel" hidden>
         <p>Once the flow is steady, press <b>Inject tracer pulse</b> on the <i>Flow field</i> tab. A square pulse of tracer (width set in the

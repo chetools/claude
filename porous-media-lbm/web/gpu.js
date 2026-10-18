@@ -142,11 +142,11 @@ class GpuLbm {
       await st.mapAsync(GPUMapMode.READ);
       const a = st.getMappedRange();
       const det = new Float32Array(a, 0, 16), clock = new Uint32Array(a, 64, 4)[0], part = new Float32Array(a, 80, 4 * this.nwg);
-      let sumUx = 0, maxU = 0, mass = 0, sumC = 0;
+      let sumUx = 0, maxU = 0, mass = 0, maxC = 0;
       for (let w = 0; w < this.nwg; w++) {
-        sumUx += part[4 * w]; maxU = Math.max(maxU, part[4 * w + 1]); mass += part[4 * w + 2]; sumC += part[4 * w + 3];
+        sumUx += part[4 * w]; maxU = Math.max(maxU, part[4 * w + 1]); mass += part[4 * w + 2]; maxC = Math.max(maxC, part[4 * w + 3]);
       }
-      const out = {sumUx, maxU, mass, sumC, clock,
+      const out = {sumUx, maxU, mass, maxC, clock,
         det: [0, 1, 2].map((j) => [det[4 * j], det[4 * j + 1], det[4 * j + 2]])};
       st.unmap();
       return out;
