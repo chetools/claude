@@ -13,7 +13,7 @@ two-dimensional turbulence.
   smoothed mask (Brinkman volume penalisation), so the grid never moves.
 - **WebGPU** (`web/shaders.wgsl`, `web/gpu.js`). Every part of a time step is a compute kernel. The page runs
   grids up to 1024² live in the browser, with vorticity, speed, pressure or a passive dye drawn by a fragment
-  shader, and diagnostics computed by parallel reductions: energy, enstrophy, torque, divergence and a probe spectrum.
+  shader together with animated tracer particles (pathlines with fading trails), and diagnostics computed by parallel reductions: energy, enstrophy, torque, divergence and a probe spectrum.
 - **Python / numpy reference** (`python/ns2d.py`). It implements the same algorithm with the same names. It is
   explained step by step on the page and checked by pytest. The page's Validation tab compares the WebGPU (f32)
   and JavaScript CPU (f64) solvers with numpy, value by value, and benchmarks them.

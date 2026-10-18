@@ -282,6 +282,71 @@ fn stats(@builtin(global_invocation_id) g: vec3<u32>, @builtin(local_invocation_
   }
 }
 
+// ------------------------------------------------------------ tracer particles
+// pos[k] = (x, y, x_prev, y_prev); life[k] = (age, lifetime).  Advected once per
+// frame over the simulated time that frame covered (F.tau), in F.substeps RK2 steps.
+struct Frame { tau: f32, substeps: u32, seed: u32, count: u32 };
+@group(0) @binding(15) var<storage, read_write> pos: array<vec4<f32>>;
+@group(0) @binding(16) var<storage, read_write> life: array<vec2<f32>>;
+@group(0) @binding(17) var<uniform> F: Frame;
+
+// bilinear interpolation of each MAC component (ns2d.interp_velocity)
+fn vel_at(p0: vec2<f32>) -> vec2<f32> {
+  let n = f32(P.n);
+  let p = clamp(p0, vec2<f32>(0.0), vec2<f32>(1.0));
+  let fu = vec2<f32>(p.x * n, p.y * n - 0.5);             // u nodes at (i h, (j+1/2) h)
+  let iu = clamp(floor(fu), vec2<f32>(-1.0), vec2<f32>(n - 1.0));
+  let tu = fu - iu;
+  let i = i32(iu.x); let j = i32(iu.y);
+  let ua = mix(U(i, j), U(i + 1, j), tu.x);
+  let ub = mix(U(i, j + 1), U(i + 1, j + 1), tu.x);
+  let fv = vec2<f32>(p.x * n - 0.5, p.y * n);             // v nodes at ((i+1/2) h, j h)
+  let iv = clamp(floor(fv), vec2<f32>(-1.0), vec2<f32>(n - 1.0));
+  let tv = fv - iv;
+  let a = i32(iv.x); let b = i32(iv.y);
+  let va = mix(V(a, b), V(a + 1, b), tv.x);
+  let vb = mix(V(a, b + 1), V(a + 1, b + 1), tv.x);
+  return vec2<f32>(mix(ua, ub, tu.y), mix(va, vb, tv.y));
+}
+
+fn hash(x0: u32) -> u32 {                     // PCG-style integer hash
+  var x = x0 * 747796405u + 2891336453u;
+  x = ((x >> ((x >> 28u) + 4u)) ^ x) * 277803737u;
+  return (x >> 22u) ^ x;
+}
+fn rand(k: u32, salt: u32) -> f32 { return f32(hash(k * 7919u + salt + F.seed * 104729u) & 0xffffffu) / 16777216.0; }
+
+@compute @workgroup_size(256)
+fn advect_particles(@builtin(global_invocation_id) g: vec3<u32>) {
+  let k = g.x;
+  if (k >= F.count) { return; }
+  var p = pos[k].xy;
+  var a = life[k];
+  let dt = F.tau / f32(F.substeps);
+  for (var s = 0u; s < F.substeps; s++) {
+    let k1 = vel_at(p);
+    p = p + dt * vel_at(p + 0.5 * dt * k1);
+  }
+  a.x += F.tau;
+  let inside = body(p, S.phi).x > 0.5;
+  let outside = any(p < vec2<f32>(0.0)) || any(p > vec2<f32>(1.0));
+  if (a.x >= a.y || inside || outside) {      // respawn somewhere random, no streak
+    let q = vec2<f32>(rand(k, 1u), rand(k, 2u));
+    pos[k] = vec4<f32>(q, q);
+    life[k] = vec2<f32>(0.0, 2.0 + 2.0 * rand(k, 3u));
+    return;
+  }
+  pos[k] = vec4<f32>(p, pos[k].xy);
+  life[k] = a;
+}
+
+// self-test helper: velocity at the points pos[k].xy -> life[k]
+@compute @workgroup_size(256)
+fn sample_velocity(@builtin(global_invocation_id) g: vec3<u32>) {
+  if (g.x >= F.count) { return; }
+  life[g.x] = vel_at(pos[g.x].xy);
+}
+
 // ------------------------------------------------------------ multigrid
 // Cell-centred, zero-flux walls:  (sum of existing neighbours - count * x) / h^2 = b
 struct Level { n: i32, colour: i32, h2: f32, sweeps: i32 };

@@ -188,6 +188,30 @@ in time for the convective and viscous terms, and first order in the splitting a
 The *Validation* tab checks the implementation, not the physics: the WebGPU and CPU solvers against the numpy
 reference, value by value.
 
+## 9. Seeing the velocity: pathlines, streaklines, streamlines
+
+A colour map of the speed $|\mathbf u|$ hides the direction. Three classical families of curves show it, and they
+coincide only in **steady** flow:
+
+| curve | definition | how you would see it |
+|---|---|---|
+| **pathline** | the trajectory of one fluid particle, $\mathrm d\mathbf x_p/\mathrm dt = \mathbf u(\mathbf x_p, t)$ | a long-exposure photograph of one tracer |
+| **streakline** | all particles that passed through one fixed point | dye injected continuously at a point |
+| **streamline** | a curve tangent to $\mathbf u(\cdot, t)$ at one instant | the field at one frozen moment |
+
+The App tab's **flow particles** draw pathlines with a fading memory. Each of many tracers is moved with the
+current velocity every frame, by midpoint RK2 over the simulated time the frame covered, and each step adds a
+short segment to a trail that fades a little every frame. The trail therefore shows where the particle came from
+over the last few dozen frames; the *trail length* slider sets how many. Its direction is the flow direction, and its length (and
+darkness) grows with the speed. The **dye** field shows the same thing collectively: an initially striped fluid
+being stretched and folded, a streakline-like picture of mixing.
+
+The velocity at a particle comes from bilinear interpolation of each staggered component between its own four
+nearest faces. The interpolated field inherits the wall ghost values, so it vanishes on the walls, and particles
+do not leak out. It is not exactly divergence-free between grid points, so a dense cloud of particles slowly
+develops gaps and clumps. Each particle is therefore re-seeded at a random point after a random lifetime of
+2–4 time units, and whenever it ends up inside the cylinder.
+
 ## References
 
 - F. H. Harlow, J. E. Welch, *Phys. Fluids* 8, 2182 (1965): the MAC staggered grid.

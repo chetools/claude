@@ -50,6 +50,7 @@ class CpuSolver {
     this.canvas = canvas;
     this.ctx = canvas ? canvas.getContext('2d') : null;
     this.field = 0; this.crange = 1;
+    this.nPart = 0; this.fade = 0.06;
   }
 
   configure(p, reset) {
@@ -73,6 +74,7 @@ class CpuSolver {
       lv.n = n; lv.h2 = (1 / n) ** 2; lv.r = F(n * n);
       this.levels.push(lv);
     }
+    this.allocParticles();
   }
 
   // ---------------------------------------------------------------- ghosts
@@ -265,8 +267,87 @@ class CpuSolver {
     for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) this.dye[j * n + i] = Math.floor(j * 8 / n) % 2;
   }
 
-  render() {
+  // ---------------------------------------------------------------- tracer particles
+  // velocity at a point: bilinear interpolation of each MAC component (ns2d.interp_velocity)
+  velAt(x0, y0) {
+    const n = this.p.N, x = Math.min(Math.max(x0, 0), 1), y = Math.min(Math.max(y0, 0), 1);
+    const lerp = (a, b, t) => a + (b - a) * t;
+    let fi = x * n, fj = y * n - 0.5;                       // u nodes at (i h, (j+1/2) h)
+    let i = Math.min(Math.max(Math.floor(fi), -1), n - 1), j = Math.min(Math.max(Math.floor(fj), -1), n - 1);
+    let tx = fi - i, ty = fj - j;
+    const uu = lerp(lerp(this.U(i, j), this.U(i + 1, j), tx), lerp(this.U(i, j + 1), this.U(i + 1, j + 1), tx), ty);
+    fi = x * n - 0.5; fj = y * n;                           // v nodes at ((i+1/2) h, j h)
+    i = Math.min(Math.max(Math.floor(fi), -1), n - 1); j = Math.min(Math.max(Math.floor(fj), -1), n - 1);
+    tx = fi - i; ty = fj - j;
+    const vv = lerp(lerp(this.V(i, j), this.V(i + 1, j), tx), lerp(this.V(i, j + 1), this.V(i + 1, j + 1), tx), ty);
+    return [uu, vv];
+  }
+
+  allocParticles() {
+    const n = this.nPart;
+    this.part = { x: new Float64Array(n), y: new Float64Array(n), px: new Float64Array(n), py: new Float64Array(n),
+      age: new Float64Array(n), life: new Float64Array(n) };    // zero lifetimes: all spawn on the first frame
+    if (this.trail) this.trail.getContext('2d').clearRect(0, 0, this.trail.width, this.trail.height);
+  }
+
+  setParticles(count, fade) {
+    if (fade !== undefined) this.fade = fade;
+    if (count === this.nPart) return;
+    this.nPart = count;
+    this.allocParticles();
+  }
+
+  async sampleVelocity(points) { return points.flatMap(([x, y]) => this.velAt(x, y)); }
+
+  // move the particles over the simulated time tau (RK2 substeps) and add their moves to the faded trails
+  updateParticles(tau) {
+    const W = this.canvas.width;
+    if (!this.trail || this.trail.width !== W) {
+      this.trail = document.createElement('canvas');
+      this.trail.width = this.trail.height = W;
+    }
+    const tc = this.trail.getContext('2d'), P = this.part, n = this.nPart, p = this.p;
+    if (!n || !(tau > 0)) { if (!n) tc.clearRect(0, 0, W, W); return; }
+    const umax = Math.abs(p.Us) + Math.abs(p.omega_o) * (p.ro + p.R) || 1;
+    const sub = Math.min(32, Math.max(1, Math.ceil(tau * umax / (0.5 * p.h)))), dt = tau / sub;
+    const cx = 0.5 + p.ro * Math.cos(this.phi), cy = 0.5 + p.ro * Math.sin(this.phi);
+    const sref = 0.5 * (Math.max(Math.abs(p.Us), Math.abs(p.Uo)) || 1);
+    tc.globalCompositeOperation = 'destination-out';         // fade: ink *= 1 - k
+    tc.fillStyle = `rgba(0,0,0,${this.fade})`;
+    tc.fillRect(0, 0, W, W);
+    tc.globalCompositeOperation = 'source-over';
+    const ink = this.field === 1 || this.field === 3 ? '255,255,255' : '26,28,38';
+    const buckets = [[], [], [], []];                          // segments grouped by ink strength
+    for (let k = 0; k < n; k++) {
+      let x = P.x[k], y = P.y[k];
+      for (let s = 0; s < sub; s++) {
+        const [u1, v1] = this.velAt(x, y), [u2, v2] = this.velAt(x + 0.5 * dt * u1, y + 0.5 * dt * v1);
+        x += dt * u2; y += dt * v2;
+      }
+      P.age[k] += tau;
+      const out = x < 0 || x > 1 || y < 0 || y > 1;
+      const inside = Math.hypot(x - cx, y - cy) < p.R;
+      if (P.age[k] >= P.life[k] || out || inside) {           // respawn somewhere random, no streak
+        P.x[k] = P.px[k] = Math.random(); P.y[k] = P.py[k] = Math.random();
+        P.age[k] = 0; P.life[k] = 2 + 2 * Math.random();
+        continue;
+      }
+      P.px[k] = P.x[k]; P.py[k] = P.y[k]; P.x[k] = x; P.y[k] = y;
+      const a = Math.min(1, Math.max(0.15, Math.hypot(x - P.px[k], y - P.py[k]) / tau / sref));
+      buckets[Math.min(3, Math.floor(a * 4))].push(k);
+    }
+    tc.lineWidth = 1;
+    buckets.forEach((ks, b) => {
+      tc.strokeStyle = `rgba(${ink},${(b + 1) / 4})`;
+      tc.beginPath();
+      for (const k of ks) { tc.moveTo(P.px[k] * W, (1 - P.py[k]) * W); tc.lineTo(P.x[k] * W, (1 - P.y[k]) * W); }
+      tc.stroke();
+    });
+  }
+
+  render(tau = 0) {
     if (!this.ctx) return;
+    this.updateParticles(tau);
     const p = this.p, n = p.N, cv = this.canvas, ctx = this.ctx;
     if (!this.img || this.img.width !== n) {
       this.off = document.createElement('canvas');
@@ -289,6 +370,7 @@ class CpuSolver {
     const W = cv.width;
     ctx.imageSmoothingEnabled = true;
     ctx.drawImage(this.off, 0, 0, W, W);
+    if (this.nPart) ctx.drawImage(this.trail, 0, 0, W, W);
     const cx = (0.5 + p.ro * Math.cos(this.phi)) * W, cy = (1 - 0.5 - p.ro * Math.sin(this.phi)) * W, R = p.R * W;
     ctx.fillStyle = 'rgba(140,145,158,0.8)';
     ctx.strokeStyle = '#31333f'; ctx.lineWidth = 2;

@@ -105,6 +105,13 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
     <select id="in-field"><option value="0">Vorticity &omega;</option><option value="1">Speed |u|</option>
       <option value="2">Pressure p</option><option value="3">Dye (passive tracer)</option></select></div>
   <div class="row2">
+    <div class="field"><label for="in-part">Flow particles</label>
+      <select id="in-part"><option value="0">off</option><option value="3000">3 000</option>
+        <option value="8000" selected>8 000</option><option value="20000">20 000</option><option value="50000">50 000</option></select></div>
+    <div class="field"><label for="in-trail">Trail length</label>
+      <input id="in-trail" type="range" min="0" max="1" step="0.05" value="0.5"></div>
+  </div>
+  <div class="row2">
     <div class="field check"><input id="in-auto" type="checkbox" checked><label for="in-auto">Auto colour range</label></div>
     <div class="field"><input id="in-crange" type="number" step="any" min="0" aria-label="Colour range"></div>
   </div>
@@ -162,6 +169,10 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
           <div class="chart" id="chart-spec"></div>
         </div>
       </div>
+      <div class="note"><b>Flow particles</b> are massless tracers carried by the computed velocity. Each draws its
+      path as a fading trail, so the trails point along the flow and are longer and darker where the fluid moves faster.
+      They are <i>pathlines</i>, where fluid has been, which in unsteady flow differ from the instantaneous streamlines
+      (Theory &sect;9). Particles that age, leave the box or enter the cylinder are re-seeded at random.</div>
       <div class="note">The grey disc is the cylinder; the line inside it turns with the spin. The small &times; marks the
       fixed velocity probe whose spectrum is plotted on the right. An orbiting cylinder passes the probe once per orbit,
       so peaks at the orbit frequency (dotted line) and its harmonics are forced, even in laminar flow. A new peak at

@@ -258,6 +258,35 @@ def advect_dye(c, u, v, p):
     return c - dt / h * (fx[:, 1:] - fx[:, :-1] + fy[1:, :] - fy[:-1, :])
 
 
+# ----------------------------------------------------------------- tracer particles
+def interp_velocity(u, v, x, y):
+    """Velocity at arbitrary points: bilinear interpolation of each MAC component
+    between its own four nearest faces, with the ghost values of pad_u / pad_v
+    (so the normal velocity vanishes on the walls and the tangential one too)."""
+    N = u.shape[0]
+    x = np.clip(np.asarray(x, float), 0.0, 1.0)
+    y = np.clip(np.asarray(y, float), 0.0, 1.0)
+
+    def bilinear(F, fi, fj, imax, jmax):          # F padded by 2; (fi, fj) in node units
+        i0 = np.clip(np.floor(fi), -1, imax).astype(int)
+        j0 = np.clip(np.floor(fj), -1, jmax).astype(int)
+        tx, ty = fi - i0, fj - j0
+        a = (1 - tx) * F[j0 + 2, i0 + 2] + tx * F[j0 + 2, i0 + 3]
+        b = (1 - tx) * F[j0 + 3, i0 + 2] + tx * F[j0 + 3, i0 + 3]
+        return (1 - ty) * a + ty * b
+
+    up = bilinear(pad_u(u), x * N, y * N - 0.5, N - 1, N - 1)    # u nodes at (i h, (j+1/2) h)
+    vp = bilinear(pad_v(v), x * N - 0.5, y * N, N - 1, N - 1)    # v nodes at ((i+1/2) h, j h)
+    return up, vp
+
+
+def advect_particles(xp, yp, u, v, dt):
+    """One midpoint (RK2) step of dx/dt = u(x) in the frozen velocity field."""
+    u1, v1 = interp_velocity(u, v, xp, yp)
+    u2, v2 = interp_velocity(u, v, xp + 0.5 * dt * u1, yp + 0.5 * dt * v1)
+    return np.clip(xp + dt * u2, 0, 1), np.clip(yp + dt * v2, 0, 1)
+
+
 # ----------------------------------------------------------------- one time step
 def step(s, p):
     """Advance the state dict s by one time step dt (in place)."""

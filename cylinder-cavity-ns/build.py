@@ -145,7 +145,10 @@ def selftest_reference():
     ms = (time.perf_counter() - t0) / SELFTEST["steps"] * 1e3
     b64 = lambda a: base64.b64encode(np.asarray(a, dtype="<f8").ravel().tobytes()).decode()
     st = {k: float(v) for k, v in ns2d.stats(s, p).items()}
-    return dict(SELFTEST, u=b64(s["u"]), v=b64(s["v"]), stats=st, t=s["t"], numpy_ms=ms)
+    pts = np.random.default_rng(5).uniform(0.0, 1.0, (64, 2))      # particle-velocity check points
+    pu, pv = ns2d.interp_velocity(s["u"], s["v"], pts[:, 0], pts[:, 1])
+    return dict(SELFTEST, u=b64(s["u"]), v=b64(s["v"]), stats=st, t=s["t"], numpy_ms=ms,
+                pts=pts.tolist(), vel=np.column_stack([pu, pv]).ravel().tolist())
 
 
 def js_json(obj):

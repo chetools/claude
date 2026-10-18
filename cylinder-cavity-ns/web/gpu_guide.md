@@ -76,6 +76,24 @@ Energy, enstrophy, torque and the maxima need a sum or maximum over the whole gr
 The first thread writes the workgroup's result to `partials`. The CPU adds up the $(N/16)^2$ partial results
 after `mapAsync`.
 
+## Flow particles: compute, then draw from the same buffer
+
+The tracer particles show two more WebGPU idioms.
+
+1. **Compute writes, render reads.** `advect_particles` updates `pos[k] = (x, y, x_prev, y_prev)` for every
+   particle (one thread each). It integrates with midpoint RK2 through `vel_at`, the WGSL twin of
+   `ns2d.interp_velocity`, and re-seeds expired particles from an integer hash. The vertex shader `vs_line` then
+   reads the *same* storage buffer: vertex $2k$ is the old position of particle $k$ and vertex $2k+1$ the new
+   one, drawn with `topology: 'line-list'`. No vertex buffer is built and no data goes back to the CPU.
+2. **Trails by blending.** The segments go into an off-screen "ink" texture that persists between frames. Each
+   frame starts with a full-screen pass whose blend state is
+   `{srcFactor: 'zero', dstFactor: 'one-minus-constant'}`, which multiplies all the old ink by $1-k$ (the
+   *trail length* slider sets $k$). The new segments are then drawn with blend operation `max`. The field
+   shader samples the ink texture and mixes it over the colour map: dark ink on the light maps, white on the
+   dark ones.
+
+One frame can cover many solver steps, so the particle step is split into substeps of at most half a cell.
+
 ## Single precision
 
 GPUs compute in `f32` (about 7 significant digits); numpy and the JavaScript fallback use `f64`. After 100 steps

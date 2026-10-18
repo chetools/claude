@@ -7,8 +7,10 @@
 const KERNELS = {
   momentum: [1, 2, 3, 4, 5, 6, 7], penalise: [1, 2, 3, 4, 5], divergence: [2, 3, 9], project: [2, 3, 8],
   advect_dye: [2, 3, 10, 11], record_probe: [1, 2, 3, 14], advance: [1], field: [1, 2, 3, 8, 10, 12],
-  stats: [1, 2, 3, 4, 5, 8, 13],
+  stats: [1, 2, 3, 4, 5, 8, 13], advect_particles: [1, 2, 3, 15, 16, 17], sample_velocity: [2, 3, 15, 16, 17],
 };
+const UNIFORMS = new Set([0, 17]);                 // the other bindings are storage buffers
+const INK_FORMAT = 'rgba8unorm';
 const MG_KERNELS = ['mg_smooth', 'mg_residual', 'mg_restrict', 'mg_prolong', 'mg_coarse'];
 const WG = 16;
 
@@ -47,7 +49,7 @@ class GpuSolver {
     dev.pushErrorScope('validation');
     for (const [name, bind] of Object.entries(KERNELS)) {
       const layout = dev.createBindGroupLayout({ entries: [{ binding: 0, visibility: C, buffer: { type: 'uniform' } },
-        ...bind.map(b => ({ binding: b, visibility: C, buffer: { type: 'storage' } }))] });
+        ...bind.map(b => ({ binding: b, visibility: C, buffer: { type: UNIFORMS.has(b) ? 'uniform' : 'storage' } }))] });
       this.layouts[name] = layout;
       this.pipes[name] = dev.createComputePipeline({ layout: dev.createPipelineLayout({ bindGroupLayouts: [layout] }),
         compute: { module, entryPoint: name } });
@@ -70,17 +72,41 @@ class GpuSolver {
         this.ctx.configure({ device: dev, format: this.format, alphaMode: 'opaque' });
       }
       const rmod = dev.createShaderModule({ code: renderWGSL });
-      const F = GPUShaderStage.FRAGMENT;
+      const F = GPUShaderStage.FRAGMENT, Vx = GPUShaderStage.VERTEX;
       this.renderLayout = dev.createBindGroupLayout({ entries: [
         { binding: 0, visibility: F, buffer: { type: 'uniform' } },
         { binding: 1, visibility: F, buffer: { type: 'read-only-storage' } },
-        { binding: 2, visibility: F, buffer: { type: 'read-only-storage' } }] });
+        { binding: 2, visibility: F, buffer: { type: 'read-only-storage' } },
+        { binding: 3, visibility: F, texture: { sampleType: 'float' } },
+        { binding: 4, visibility: F, sampler: { type: 'filtering' } }] });
       this.renderPipe = dev.createRenderPipeline({
         layout: dev.createPipelineLayout({ bindGroupLayouts: [this.renderLayout] }),
         vertex: { module: rmod, entryPoint: 'vs_main' },
         fragment: { module: rmod, entryPoint: 'fs_main', targets: [{ format: this.format }] },
         primitive: { topology: 'triangle-list' } });
+      // particle trails: fade the ink texture (dst *= 1 - k), then draw each particle's last move
+      this.fadePipe = dev.createRenderPipeline({
+        layout: dev.createPipelineLayout({ bindGroupLayouts: [] }),
+        vertex: { module: rmod, entryPoint: 'vs_main' },
+        fragment: { module: rmod, entryPoint: 'fs_fade', targets: [{ format: INK_FORMAT, blend: {
+          color: { srcFactor: 'zero', dstFactor: 'one-minus-constant' },
+          alpha: { srcFactor: 'zero', dstFactor: 'one-minus-constant' } } }] },
+        primitive: { topology: 'triangle-list' } });
+      this.lineLayout = dev.createBindGroupLayout({ entries: [
+        { binding: 5, visibility: Vx, buffer: { type: 'read-only-storage' } },
+        { binding: 6, visibility: Vx, buffer: { type: 'uniform' } }] });
+      this.linePipe = dev.createRenderPipeline({
+        layout: dev.createPipelineLayout({ bindGroupLayouts: [this.lineLayout] }),
+        vertex: { module: rmod, entryPoint: 'vs_line' },
+        fragment: { module: rmod, entryPoint: 'fs_line', targets: [{ format: INK_FORMAT, blend: {
+          color: { srcFactor: 'one', dstFactor: 'one', operation: 'max' },
+          alpha: { srcFactor: 'one', dstFactor: 'one', operation: 'max' } } }] },
+        primitive: { topology: 'line-list' } });
+      this.sampler = dev.createSampler({ magFilter: 'linear', minFilter: 'linear' });
+      this.inkBuf = dev.createBuffer({ size: 16, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
     }
+    this.frameBuf = dev.createBuffer({ size: 16, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+    this.nPart = 0; this.fade = 0.06; this.seed = 1;
     const err = await dev.popErrorScope();
     if (err) throw new Error('WebGPU pipeline: ' + err.message);
     this.params = new ArrayBuffer(64);
@@ -127,14 +153,11 @@ class GpuSolver {
     this.nwg = Math.ceil(N / WG) ** 2;
     B[13] = this.buffer(this.nwg * 32);                        // stats partials
     B[14] = this.buffer(4096 * 8);                             // probe ring
+    B[17] = this.frameBuf;
     this.bufs = B;
     this.resetDye();
     this.parity = 0;
-    const group = (name, swap) => dev.createBindGroup({ layout: this.layouts[name], entries: [
-      { binding: 0, resource: { buffer: this.paramBuf } },
-      ...KERNELS[name].map(b => ({ binding: b, resource: { buffer: B[swap && (b === 10 || b === 11) ? 21 - b : b] } }))] });
-    this.groups = {};
-    for (const name of Object.keys(KERNELS)) this.groups[name] = [group(name, false), group(name, true)];
+    this.allocParticles();
     // multigrid levels N, N/2, ..., 4; level 0 works in place on q (x) and rhs (b)
     this.levels = [];
     for (let n = N, l = 0; n >= 4; n /= 2, l++) {
@@ -160,13 +183,110 @@ class GpuSolver {
           { binding: 5, resource: { buffer: next ? next.b : dummy[1] } }] });
       });
     });
-    if (this.canvas) this.renderGroup = dev.createBindGroup({ layout: this.renderLayout, entries: [
-      { binding: 0, resource: { buffer: this.paramBuf } }, { binding: 1, resource: { buffer: B[1] } },
-      { binding: 2, resource: { buffer: B[12] } }] });
     const stage = 32 + this.nwg * 32 + 4096 * 8;
     this.staging = dev.createBuffer({ size: stage, usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST });
     this.owned.push(this.staging);
     this.reading = false;
+  }
+
+  // particle buffers (at least 64, for the self-test) and every bind group that uses them
+  allocParticles() {
+    const dev = this.device, B = this.bufs, cap = Math.max(this.nPart, 64);
+    for (const b of this.pOwned || []) b.destroy();
+    B[15] = dev.createBuffer({ size: cap * 16, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST });
+    B[16] = dev.createBuffer({ size: cap * 8, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST });
+    this.pOwned = [B[15], B[16]];                  // zero ages and lifetimes: all spawn on the first frame
+    const group = (name, swap) => dev.createBindGroup({ layout: this.layouts[name], entries: [
+      { binding: 0, resource: { buffer: this.paramBuf } },
+      ...KERNELS[name].map(b => ({ binding: b, resource: { buffer: B[swap && (b === 10 || b === 11) ? 21 - b : b] } }))] });
+    this.groups = {};
+    for (const name of Object.keys(KERNELS)) this.groups[name] = [group(name, false), group(name, true)];
+    if (this.canvas) this.lineGroup = dev.createBindGroup({ layout: this.lineLayout, entries: [
+      { binding: 5, resource: { buffer: B[15] } }, { binding: 6, resource: { buffer: this.inkBuf } }] });
+    this.inkSize = null;                           // re-create the ink texture and the field bind group
+  }
+
+  setParticles(count, fade) {
+    if (fade !== undefined) this.fade = fade;
+    if (count === this.nPart) return;
+    this.nPart = count;
+    if (this.bufs) this.allocParticles();
+  }
+
+  // the ink texture holds the trails; it matches the canvas size
+  ensureInk() {
+    const W = this.canvas.width, H = this.canvas.height;
+    if (this.inkSize === `${W}x${H}`) return;
+    if (this.inkTex) this.inkTex.destroy();
+    this.inkTex = this.device.createTexture({ size: [W, H], format: INK_FORMAT,
+      usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING });
+    this.inkSize = `${W}x${H}`;
+    this.renderGroup = this.device.createBindGroup({ layout: this.renderLayout, entries: [
+      { binding: 0, resource: { buffer: this.paramBuf } }, { binding: 1, resource: { buffer: this.bufs[1] } },
+      { binding: 2, resource: { buffer: this.bufs[12] } }, { binding: 3, resource: this.inkTex.createView() },
+      { binding: 4, resource: this.sampler }] });
+    this.clearInk();
+  }
+
+  clearInk() {
+    if (!this.inkTex) return;
+    const enc = this.device.createCommandEncoder();
+    enc.beginRenderPass({ colorAttachments: [{ view: this.inkTex.createView(), loadOp: 'clear', storeOp: 'store',
+      clearValue: { r: 0, g: 0, b: 0, a: 0 } }] }).end();
+    this.device.queue.submit([enc.finish()]);
+  }
+
+  // move the particles over the simulated time tau and add their moves to the faded trails
+  updateParticles(tau) {
+    this.ensureInk();
+    if (!this.nPart) { if (this.inkHasTrails) { this.clearInk(); this.inkHasTrails = false; } return; }
+    this.inkHasTrails = true;
+    if (!(tau > 0)) return;                        // paused: particles and trails stay as they are
+    const p = this.p, dev = this.device;
+    const umax = Math.abs(p.Us) + Math.abs(p.omega_o) * (p.ro + p.R) || 1;
+    const sub = Math.min(32, Math.max(1, Math.ceil(tau * umax / (0.5 * p.h))));   // <= half a cell per substep
+    const fr = new ArrayBuffer(16);
+    new Float32Array(fr)[0] = tau;
+    new Uint32Array(fr).set([sub, this.seed++, this.nPart], 1);
+    dev.queue.writeBuffer(this.frameBuf, 0, fr);
+    dev.queue.writeBuffer(this.inkBuf, 0, new Float32Array([tau, 0.5 * (Math.max(Math.abs(p.Us), Math.abs(p.Uo)) || 1), 0, 0]));
+    const enc = dev.createCommandEncoder();
+    const cp = enc.beginComputePass();
+    cp.setPipeline(this.pipes.advect_particles);
+    cp.setBindGroup(0, this.groups.advect_particles[0]);
+    cp.dispatchWorkgroups(Math.ceil(this.nPart / 256));
+    cp.end();
+    const rp = enc.beginRenderPass({ colorAttachments: [{ view: this.inkTex.createView(), loadOp: 'load', storeOp: 'store' }] });
+    rp.setPipeline(this.fadePipe);
+    rp.setBlendConstant([this.fade, this.fade, this.fade, this.fade]);
+    rp.draw(3);
+    rp.setPipeline(this.linePipe);
+    rp.setBindGroup(0, this.lineGroup);
+    rp.draw(2 * this.nPart);
+    rp.end();
+    dev.queue.submit([enc.finish()]);
+  }
+
+  // self-test: the interpolated velocity at the given points [[x, y], ...]
+  async sampleVelocity(points) {
+    const dev = this.device, n = points.length;
+    if (n > Math.max(this.nPart, 64)) throw new Error('too many sample points');
+    dev.queue.writeBuffer(this.bufs[15], 0, new Float32Array(points.flatMap(([x, y]) => [x, y, x, y])));
+    const fr = new ArrayBuffer(16);
+    new Uint32Array(fr).set([1, 0, n], 1);
+    dev.queue.writeBuffer(this.frameBuf, 0, fr);
+    const st = dev.createBuffer({ size: n * 8, usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST });
+    const enc = dev.createCommandEncoder(), cp = enc.beginComputePass();
+    cp.setPipeline(this.pipes.sample_velocity);
+    cp.setBindGroup(0, this.groups.sample_velocity[0]);
+    cp.dispatchWorkgroups(Math.ceil(n / 256));
+    cp.end();
+    enc.copyBufferToBuffer(this.bufs[16], 0, st, 0, n * 8);
+    dev.queue.submit([enc.finish()]);
+    await st.mapAsync(GPUMapMode.READ);
+    const a = Array.from(new Float32Array(st.getMappedRange().slice(0)));
+    st.destroy();
+    return a;                                      // [u0, v0, u1, v1, ...]
   }
 
   reset() { this.allocate(); this.writeParams(); }
@@ -236,8 +356,10 @@ class GpuSolver {
     return enc;
   }
 
-  render() {
+  // tau: simulated time covered since the last frame (moves the particles)
+  render(tau = 0) {
     if (!this.canvas) return;
+    this.updateParticles(tau);
     if (this.blit) { this.blitFrame(); return; }
     this.device.queue.submit([this.draw(this.ctx.getCurrentTexture()).finish()]);
   }
@@ -253,6 +375,7 @@ class GpuSolver {
 
   // the current frame as ImageData (render to a texture, copy to a buffer, read back)
   async snapshot() {
+    this.ensureInk();
     const W = this.canvas.width, H = this.canvas.height, dev = this.device;
     const tex = dev.createTexture({ size: [W, H], format: this.format,
       usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC });
@@ -321,7 +444,7 @@ class GpuSolver {
   async finish() { await this.device.queue.onSubmittedWorkDone(); }
 
   destroy() {
-    for (const b of this.owned || []) b.destroy();
-    this.owned = [];
+    for (const b of [...(this.owned || []), ...(this.pOwned || [])]) b.destroy();
+    this.owned = []; this.pOwned = [];
   }
 }

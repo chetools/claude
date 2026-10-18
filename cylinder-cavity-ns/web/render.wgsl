@@ -1,4 +1,7 @@
-// Draws the scalar field (bilinear between cell centres, colour-mapped) and the cylinder.
+// Draws the scalar field (bilinear between cell centres, colour-mapped), the particle
+// trails and the cylinder.  Trails live in an "ink" texture: each frame it is faded
+// (fs_fade with a blend constant) and the particles' last moves are drawn into it as
+// line segments (vs_line / fs_line); fs_main then mixes the ink over the field.
 struct Params {
   n: i32, probe_every: u32, probe_i: i32, probe_j: i32,
   h: f32, nu: f32, dt: f32, R: f32,
@@ -10,6 +13,11 @@ struct State { t: f32, phi: f32, spin: f32, dt_prev: f32, nstep: u32, p0: u32, p
 @group(0) @binding(0) var<uniform> P: Params;
 @group(0) @binding(1) var<storage, read> S: State;
 @group(0) @binding(2) var<storage, read> scalar: array<f32>;
+@group(0) @binding(3) var ink_tex: texture_2d<f32>;
+@group(0) @binding(4) var ink_samp: sampler;
+struct Ink { tau: f32, sref: f32, p0: f32, p1: f32 };
+@group(0) @binding(5) var<storage, read> pos: array<vec4<f32>>;
+@group(0) @binding(6) var<uniform> I: Ink;
 
 @vertex
 fn vs_main(@builtin(vertex_index) k: u32) -> @builtin(position) vec4<f32> {
@@ -45,10 +53,31 @@ fn sample(x: f32, y: f32) -> f32 {
   return mix(a, b, ty);
 }
 
+// ---------------------------------------------------------------- particle trails
+struct LineOut { @builtin(position) clip: vec4<f32>, @location(0) ink: f32 };
+
+@vertex
+fn vs_line(@builtin(vertex_index) vid: u32) -> LineOut {
+  let p = pos[vid / 2u];                       // (x, y, x_prev, y_prev): a segment per particle
+  let xy = select(p.zw, p.xy, vid % 2u == 1u);
+  let speed = length(p.xy - p.zw) / max(I.tau, 1e-9);
+  var o: LineOut;
+  o.clip = vec4<f32>(xy * 2.0 - 1.0, 0.0, 1.0);
+  o.ink = clamp(speed / I.sref, 0.15, 1.0);    // faster particles leave darker ink
+  return o;
+}
 @fragment
-fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
-  let x = pos.x / P.view_w;
-  let y = 1.0 - pos.y / P.view_h;
+fn fs_line(i: LineOut) -> @location(0) vec4<f32> { return vec4<f32>(i.ink); }
+
+@fragment
+fn fs_fade() -> @location(0) vec4<f32> { return vec4<f32>(0.0); }   // blend: ink *= 1 - k
+
+// ---------------------------------------------------------------- field + overlays
+@fragment
+fn fs_main(@builtin(position) frag: vec4<f32>) -> @location(0) vec4<f32> {
+  let ink = textureSample(ink_tex, ink_samp, frag.xy / vec2<f32>(P.view_w, P.view_h)).r;
+  let x = frag.x / P.view_w;
+  let y = 1.0 - frag.y / P.view_h;
   let s = sample(x, y);
   var col: vec3<f32>;
   switch P.field {
@@ -56,6 +85,9 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     case 1u: { col = sequential(s / P.crange); }
     default: { col = dyemap(s); }
   }
+  // particle ink: white on the dark colour maps (speed, dye), near-black on the light ones
+  let ink_col = select(vec3<f32>(0.1, 0.11, 0.15), vec3<f32>(1.0), P.field == 1u || P.field == 3u);
+  col = mix(col, ink_col, 0.75 * ink);
   // the cylinder: translucent grey disc, a radius that turns with the spin, dark outline
   let px = 1.0 / P.view_w;
   let c = vec2<f32>(0.5 + P.ro * cos(S.phi), 0.5 + P.ro * sin(S.phi));

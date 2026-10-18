@@ -250,6 +250,7 @@ async function frame() {
     if (S && S.lost && !sim.lostShown) { sim.lostShown = true; showErr('The GPU device was lost. Reload the page.'); }
     return;
   }
+  let tau = 0;                                     // simulated time covered this frame (moves the particles)
   if (sim.playing && !sim.stepping) {
     const fixed = +$('in-spf').value;
     if (sim.kind === 'gpu') {
@@ -257,6 +258,7 @@ async function frame() {
       sim.stepping = true;
       const t0 = performance.now(), k = sim.k;
       S.step(k);
+      tau = k * S.p.dt;
       S.device.queue.onSubmittedWorkDone().then(() => {
         const ms = (performance.now() - t0) / k;
         sim.msPerStep = sim.msPerStep ? 0.8 * sim.msPerStep + 0.2 * ms : ms;
@@ -267,11 +269,12 @@ async function frame() {
       const t0 = performance.now();
       sim.k = fixed || sim.k;
       S.step(sim.k);
+      tau = sim.k * S.p.dt;
       const ms = (performance.now() - t0) / sim.k;
       if (!fixed) sim.k = Math.max(1, Math.min(50, Math.round(25 / ms)));
     }
   }
-  S.render();
+  S.render(tau);
   const now = performance.now();
   if (now - sim.statsAt > 250) {
     sim.statsAt = now;
@@ -295,6 +298,8 @@ function wire() {
   $('in-n').addEventListener('change', () => applyParams(true));
   $('in-field').addEventListener('change', () => { if ($('in-auto').checked && sim.lastStats) sim.crange = NaN; setView(); });
   $('in-auto').addEventListener('change', setView);
+  $('in-part').addEventListener('change', setParticles);
+  $('in-trail').addEventListener('input', setParticles);
   $('in-crange').addEventListener('change', () => { $('in-auto').checked = false; setView(); });
   $('b-play').addEventListener('click', () => {
     sim.playing = !sim.playing;
@@ -305,6 +310,11 @@ function wire() {
   $('b-png').addEventListener('click', savePng);
   $('val-go').addEventListener('click', runValidation);
   window.addEventListener('resize', sizeCanvas);
+}
+
+function setParticles() {
+  const fade = 10 ** (-0.5 - 1.5 * +$('in-trail').value);     // ink lost per frame: 0.32 (short) .. 0.01 (long)
+  sim.solver.setParticles(+$('in-part').value, fade);
 }
 
 async function savePng() {
@@ -350,7 +360,9 @@ async function runValidation() {
     c.step(K);
     const cpuMs = (performance.now() - t0) / K;
     const cs = await c.readStats(), cerr = compare(await c.readUV64(), ref);
-    let gs = null, gerr = NaN, gpuMs = NaN;
+    const velErr = (a) => Math.max(...a.map((x, i) => Math.abs(x - REF.vel[i]))) / Math.max(...REF.vel.map(Math.abs));
+    const cverr = velErr(await c.sampleVelocity(REF.pts));
+    let gs = null, gerr = NaN, gpuMs = NaN, gverr = NaN;
     if (sim.kind === 'gpu') {
       status.textContent = 'WebGPU solver…';
       const g = await GpuSolver.create(null, COMPUTE_WGSL, RENDER_WGSL, sim.solver.device);
@@ -362,20 +374,25 @@ async function runValidation() {
       gpuMs = (performance.now() - t0) / K;
       gs = await g.readStats();
       gerr = compare(await g.readUV(), ref);
+      gverr = velErr(await g.sampleVelocity(REF.pts));
       g.destroy();
     }
     const R = REF.stats;
     const row = (name, key, d) => `<tr><td>${name}</td><td>${fmtG(R[key], d)}</td><td>${fmtG(cs[key], d)}</td>` +
       `<td>${gs ? fmtG(gs[key], d) : '–'}</td></tr>`;
     const cpuOk = cerr < 1e-10, gpuOk = !gs || gerr < 5e-3;
-    result.ok = cpuOk && gpuOk;
-    Object.assign(result, { cpuErr: cerr, gpuErr: gerr, cpuMs, gpuMs, cs, gs });
+    const cvOk = cverr < 1e-10, gvOk = !gs || gverr < 5e-3;
+    result.ok = cpuOk && gpuOk && cvOk && gvOk;
+    Object.assign(result, { cpuErr: cerr, gpuErr: gerr, cpuVelErr: cverr, gpuVelErr: gverr, cpuMs, gpuMs, cs, gs });
+    const verdict = (ok, e) => `<td class="${ok ? 'pass' : 'fail'}">${fmtE(e, 1)} ${ok ? 'pass' : 'FAIL'}</td>`;
     $('val-table').innerHTML = `<h3>Self-test: ${p.N}×${p.N}, Re ${REF.inp.Re}, ${K} steps (t = ${REF.t.toFixed(4)})</h3>
       <table class="data"><tr><th></th><th>numpy (f64, build time)</th><th>JavaScript CPU (f64)</th><th>WebGPU (f32)</th></tr>
       ${row('kinetic energy E', 'E', 10)}${row('enstrophy Z', 'Z', 10)}${row('torque', 'torque', 8)}
       ${row('max |div u|', 'maxdiv', 4)}${row('max speed', 'maxspeed', 8)}
       <tr><td>max |u − u<sub>numpy</sub>| / max |u|</td><td>0</td><td class="${cpuOk ? 'pass' : 'fail'}">${fmtE(cerr, 1)} ${cpuOk ? 'pass' : 'FAIL'}</td>
         <td class="${gs ? (gpuOk ? 'pass' : 'fail') : ''}">${gs ? `${fmtE(gerr, 1)} ${gpuOk ? 'pass' : 'FAIL'}` : 'no WebGPU'}</td></tr>
+      <tr><td>particle velocity at 64 points (interpolated), max error / max |u|</td><td>0</td>${verdict(cvOk, cverr)}
+        ${gs ? verdict(gvOk, gverr) : '<td>no WebGPU</td>'}</tr>
       <tr><td>time per step</td><td>${REF.numpy_ms.toFixed(1)} ms (build machine)</td><td>${cpuMs.toFixed(1)} ms</td>
         <td>${gs ? gpuMs.toFixed(2) + ' ms' : '–'}</td></tr></table>
       <p class="caption">Pass criteria: 10<sup>−10</sup> for the double-precision CPU port, 5·10<sup>−3</sup> for
@@ -457,7 +474,11 @@ async function main() {
   if (URLQ.get('N') && [...$('in-n').options].some((o) => o.value === URLQ.get('N') && !o.disabled)) pr.N = +URLQ.get('N');
   if (URLQ.has('field')) $('in-field').value = URLQ.get('field');
   setInputs(pr);
+  if (sim.kind === 'cpu') {
+    $('in-part').innerHTML = '<option value="0">off</option><option value="1500">1 500</option><option value="3000" selected>3 000</option>';
+  }
   sizeCanvas();
+  setParticles();
   applyParams(true);
   setView();
   requestAnimationFrame(frame);

@@ -109,3 +109,38 @@ def test_spin_torque_opposes_rotation():
     p = ns2d.make_params(N=64, ro=0.0, Us=1.0, Re=100)
     s, _ = ns2d.run(p, 50)
     assert ns2d.stats(s, p)["torque"] < 0
+
+
+def test_velocity_interpolation():
+    """Exact for linear fields inside, equal to the face value at a face, zero on the walls."""
+    N, h = 16, 1 / 16
+    xu, yu = np.arange(N + 1) * h, (np.arange(N) + 0.5) * h
+    xv, yv = (np.arange(N) + 0.5) * h, np.arange(N + 1) * h
+    u_lin = 1 + 2 * xu[None, :] + 3 * yu[:, None]
+    v_lin = -2 + 0.5 * xv[None, :] - yv[:, None]
+    x, y = rng.uniform(0.1, 0.9, 50), rng.uniform(0.1, 0.9, 50)
+    up, vp = ns2d.interp_velocity(u_lin, v_lin, x, y)
+    assert np.allclose(up, 1 + 2 * x + 3 * y) and np.allclose(vp, -2 + 0.5 * x - y)
+    u, v = random_velocity(N)
+    assert np.isclose(ns2d.interp_velocity(u, v, xu[3], yu[5])[0], u[5, 3])
+    assert np.isclose(ns2d.interp_velocity(u, v, xv[7], yv[2])[1], v[2, 7])
+    wx = np.array([0.0, 1.0, 0.3, 0.6])
+    wy = np.array([0.4, 0.7, 0.0, 1.0])
+    up, vp = ns2d.interp_velocity(u, v, wx, wy)    # points on the four walls
+    assert np.abs(up).max() < 1e-14 and np.abs(vp).max() < 1e-14
+
+
+def test_rk2_particles_in_solid_body_rotation():
+    """u = (-(y-1/2), x-1/2) is linear, so interpolation is exact inside; RK2 keeps the
+    radius to O(dt^3) per step."""
+    N, h = 32, 1 / 32
+    xu, yu = np.arange(N + 1) * h, (np.arange(N) + 0.5) * h
+    xv, yv = (np.arange(N) + 0.5) * h, np.arange(N + 1) * h
+    u = np.broadcast_to(-(yu[:, None] - 0.5), (N, N + 1)).copy()
+    v = np.broadcast_to(xv[None, :] - 0.5, (N + 1, N)).copy()
+    xp, yp = np.array([0.7, 0.5, 0.35]), np.array([0.5, 0.25, 0.6])
+    r0 = np.hypot(xp - 0.5, yp - 0.5)
+    dt = 0.05
+    for _ in range(int(2 * np.pi / dt)):
+        xp, yp = ns2d.advect_particles(xp, yp, u, v, dt)
+    assert np.abs(np.hypot(xp - 0.5, yp - 0.5) - r0).max() < 2e-3

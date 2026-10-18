@@ -243,6 +243,44 @@ figure([dict(type="heatmap", z=st["dye"], x=xc_, y=xc_, colorscale=[[0, "#1f2959
        title="Dye", height=420, width=420, xaxis=dict(title="x", scaleanchor="y"), yaxis=dict(title="y"))
 '''),
 
+dict(title="Seeing the flow: tracer particles", md=r"""
+Colour maps of vorticity or speed show *how much* is happening, not *which way* the fluid goes. **Tracer
+particles** do: massless points carried by the computed velocity, $\mathrm d\mathbf x_p/\mathrm dt = \mathbf
+u(\mathbf x_p, t)$, integrated here with the midpoint (RK2) rule once per time step.
+
+The velocity between grid points comes from `interp_velocity`. Each MAC component is interpolated bilinearly
+between its own four nearest faces, using the same ghost values as the solver, so the interpolated velocity is
+zero on the walls. The page's animated particles use the same interpolation (in WGSL and JavaScript), and the
+Validation tab checks it against this code at 64 points.
+
+The curves below are **pathlines**: where each particle went during the next 150 steps. In unsteady flow they
+differ from the streamlines of any single instant, which are the curves tangent to $\mathbf u$ at one time.
+""", code=r'''
+st_p = {k: (val.copy() if isinstance(val, np.ndarray) else val) for k, val in st.items()}   # continue a copy
+gx, gy = np.meshgrid(np.linspace(0.04, 0.96, 18), np.linspace(0.04, 0.96, 18))
+xp, yp = gx.ravel(), gy.ravel()
+paths = [(xp, yp)]
+for _k in range(150):
+    ns2d.step(st_p, p)
+    xp, yp = ns2d.advect_particles(xp, yp, st_p["u"], st_p["v"], p["dt"])
+    if _k % 5 == 4:
+        paths.append((xp, yp))
+lengths = sum(np.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(paths[:-1], paths[1:]))
+print(f"{len(xp)} particles over t = {150 * p['dt']:.3f}: path length mean {lengths.mean():.3f}, max {lengths.max():.3f}")
+_lx, _ly = [], []
+for _i in range(len(xp)):
+    _lx += [q[0][_i] for q in paths] + [None]
+    _ly += [q[1][_i] for q in paths] + [None]
+_w = ns2d.cell_vorticity(st_p["u"], st_p["v"], p["h"])
+_lim = 3 * np.sqrt(np.mean(_w ** 2))
+figure([dict(type="heatmap", z=_w, x=xc_, y=xc_, zmin=-_lim, zmax=_lim, colorscale="RdBu", reversescale=True,
+             showscale=False, opacity=0.6),
+        dict(x=_lx, y=_ly, mode="lines", line=dict(color="#1a1c26", width=1.2), name="pathlines"),
+        dict(x=xp, y=yp, mode="markers", marker=dict(size=4, color="#1a1c26"), name="particles now")],
+       title="Pathlines of 324 tracer particles over vorticity", height=460, width=480, showlegend=False,
+       xaxis=dict(title="x", range=[0, 1], scaleanchor="y"), yaxis=dict(title="y", range=[0, 1]))
+'''),
+
 dict(title="Checks", md=r"""
 Two quick checks, both also in `test_ns2d.py`:
 - **Symmetry.** A cylinder spinning at the centre of the box defines a problem that is unchanged by a half
