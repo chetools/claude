@@ -131,7 +131,7 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
     <p class="intro">A cylinder spins, orbits the centre of a closed square box, or both, and stirs the fluid
     inside. The incompressible <b>Navier&ndash;Stokes equations</b> are solved by finite volumes, live, on your
     graphics card (WebGPU compute shaders). Raise the Reynolds number to go from steady, laminar flow, through unsteady
-    vortex shedding, to chaotic two-dimensional turbulence. A Python/numpy reference explains the method step by step
+    vortex shedding, to chaotic two-dimensional turbulence. No turbulence model is imposed: the flow is resolved directly where the grid allows, and the advection scheme supplies the sub-grid dissipation where it doesn't (Theory &sect;8). A Python/numpy reference explains the method step by step
     and checks the GPU results value by value.</p>
     <div id="warn" class="warn" hidden></div>
     <div id="err" class="err" hidden></div>

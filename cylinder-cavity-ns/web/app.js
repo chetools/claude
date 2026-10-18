@@ -24,9 +24,9 @@ function baseLayout(title, extra) {
     font: FONT, xaxis: { title: { text: 't' } } }, extra || {});
 }
 function resolution(cellRe) {           // cell Reynolds number U h / nu
-  if (cellRe < 2) return 'fully resolved';
-  if (cellRe < 30) return 'well resolved';
-  return 'thin layers under-resolved';
+  if (cellRe < 2) return 'DNS, fully resolved';
+  if (cellRe < 30) return 'DNS, large eddies resolved';
+  return 'implicit LES (limiter acts as sub-grid model)';
 }
 
 // ---------------------------------------------------------------- tabs
@@ -137,7 +137,9 @@ function autoRange(s) {
   else if (f === 1) target = s.maxspeed;
   else if (f === 2) target = 0.5 * s.maxp;
   if (!(target > 0)) return;
-  sim.crange = sim.crange > 0 && Number.isFinite(sim.crange) ? 0.7 * sim.crange + 0.3 * target : target;
+  const smooth = sim.crange > 0 && Number.isFinite(sim.crange) && !sim.crangeFresh;
+  sim.crange = smooth ? 0.7 * sim.crange + 0.3 * target : target;
+  sim.crangeFresh = false;
   $('in-crange').value = fmtG(sim.crange, 3);
 }
 
@@ -296,7 +298,8 @@ function wire() {
     $(id).addEventListener('change', () => applyParams(false));
   }
   $('in-n').addEventListener('change', () => applyParams(true));
-  $('in-field').addEventListener('change', () => { if ($('in-auto').checked && sim.lastStats) sim.crange = NaN; setView(); });
+  // a manual range set for one field is meaningless for another: go back to auto on every switch
+  $('in-field').addEventListener('change', () => { $('in-auto').checked = true; sim.crangeFresh = true; setView(); });
   $('in-auto').addEventListener('change', setView);
   $('in-part').addEventListener('change', setParticles);
   $('in-trail').addEventListener('input', setParticles);

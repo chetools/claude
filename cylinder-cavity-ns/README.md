@@ -11,6 +11,9 @@ two-dimensional turbulence.
   limiter, time stepping is variable-step Adams–Bashforth 2, and incompressibility comes from a projection whose
   pressure equation is solved by geometric multigrid (red–black Gauss–Seidel V-cycles). The moving cylinder is a
   smoothed mask (Brinkman volume penalisation), so the grid never moves.
+- **Turbulence treatment.** No explicit model (no RANS, no Smagorinsky). The flow is a DNS where the cell Reynolds
+  number U h/ν is small. At the high-Re presets (cell Re ≈ 50–100) the minmod limiter's numerical dissipation acts as
+  an implicit sub-grid model: implicit LES / MILES. The page's Theory §8 explains this.
 - **WebGPU** (`web/shaders.wgsl`, `web/gpu.js`). Every part of a time step is a compute kernel. The page runs
   grids up to 1024² live in the browser, with vorticity, speed, pressure or a passive dye drawn by a fragment
   shader together with animated tracer particles (pathlines with fading trails), and diagnostics computed by parallel reductions: energy, enstrophy, torque, divergence and a probe spectrum.

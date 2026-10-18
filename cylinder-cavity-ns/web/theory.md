@@ -167,6 +167,17 @@ swirls along, the cylinder moves through it more slowly than $U_o$, so the effec
 below the nominal one, and the flow stays laminar to higher nominal $Re$ than the flow past a fixed cylinder
 (which sheds vortices from $Re \approx 47$).
 
+**Spinning versus orbiting: why even a slow orbit moves the whole box at once.** A circle spinning in place
+displaces no fluid. The only thing that sets the fluid moving is viscous drag at its surface, so the motion spreads
+outward by diffusion, over a distance of about $\sqrt{\nu t}$. At $Re = 562$ and $t = 0.13$ that is only about 0.01.
+For a long time after the start, only a thin ring of fluid round the cylinder moves. A cylinder whose centre
+*moves* must push fluid out of its way. Because the fluid is incompressible, the pressure (the projection of §4)
+makes room *instantly*, and a displacement flow with speed of order $U_o(R/r)^2$ fills the whole box. In a
+confined box it is stronger still, because the displaced fluid has to squeeze through the gap between the cylinder
+and the walls. In the numpy reference ($N = 128$, $R = 0.2$, $r_o = 0.18$, $U_s = 1$, $t = 0.13$), the mean speed
+more than 0.1 from the cylinder surface is 0.0006 with spin only, and 0.07 with an added orbit of just
+$U_o = 0.2$. A gentle orbit therefore dominates the far field long before a fast spin does.
+
 **2D is not 3D.** A two-dimensional flow has no vortex stretching. Enstrophy $Z = \tfrac12\int\omega^2$ is then an
 inviscid invariant as well as energy, which produces a **dual cascade**: energy moves to *large* scales
 (the inverse cascade, which builds big coherent vortices), and enstrophy moves to small scales, with an
@@ -174,14 +185,55 @@ energy spectrum close to $E(k)\propto k^{-3}$ (Kraichnan, 1967). Real flows roun
 three-dimensional at moderate $Re$, so the chaotic regime here is a model of 2D turbulence (as in soap
 films, stratified layers or planetary atmospheres), not of the flow in a real 3D cavity.
 
-## 8. Resolution and accuracy
+## 8. Turbulence modelling: DNS and implicit LES
 
-The smallest viscous scale must be resolved for the computation to be a direct numerical simulation (DNS).
-A rough measure is the **cell Reynolds number** $U h/\nu = Re\,h/(2R)$. Below about 2, central and limited
-schemes agree. At $Re = 10\,000$ with $N = 512$ and $R = 0.1$ it is about 100: the thinnest shear layers are then
-under-resolved, and the limiter's numerical diffusion acts as an implicit sub-grid model (in the spirit of
-MILES / implicit LES). The large vortices are still meaningful, but statistics would change as $N$ grows.
-Try the same preset at two grid sizes.
+**No explicit turbulence model is used.** The solver integrates the full unsteady Navier–Stokes equations of §1. The
+only dissipation added on purpose is the molecular viscosity $\nu = U\,2R/Re$. There is no eddy viscosity, no
+$k$–$\varepsilon$, and no Smagorinsky term. What the computation *is* depends on whether the grid can hold the
+smallest eddies.
+
+**Direct numerical simulation (DNS) where the grid resolves the flow.** A convenient measure is the **cell Reynolds
+number**
+
+$$Re_h = \frac{U h}{\nu} = Re\,\frac{h}{2R},$$
+
+the Reynolds number of one grid cell. When $Re_h \lesssim 2$, viscosity smooths every gradient over at least a
+couple of cells. Every eddy is then computed, nothing is modelled, and the limiter of §3 is essentially inactive.
+Up to $Re_h \approx 30$ the large eddies and the boundary layers are still captured by several cells, so the
+result remains a DNS, if a marginal one in the thinnest layers. The Reynolds-number card in the App tab shows
+$Re_h$ and this classification live.
+
+**Implicit large-eddy simulation (ILES) when the grid is too coarse.** At higher $Re_h$ the thinnest shear layers
+are thinner than a cell. A central scheme would then produce grid-scale oscillations and blow up. The minmod
+limiter instead switches to first-order upwinding wherever the field is steep or has a local extremum. First-order
+upwinding behaves like an added diffusion of about $\nu_{\text{num}} \approx \tfrac12|u|\,h$ (the 1D estimate),
+switched on only where the resolution runs out. That dissipation removes the energy and enstrophy that would have
+cascaded to the unresolved scales. It plays the role of a sub-grid model, even though no model is written down.
+This is **implicit LES**, also called MILES (*monotonically integrated LES*; Boris et al., 1992; Grinstein, Margolin
+& Rider, 2007).
+
+| preset | $Re$ | $N$ | $Re_h$ | what the computation is |
+|---|---|---|---|---|
+| spinning, laminar | 50 | 256 | 1.0 | DNS, fully resolved |
+| orbiting, laminar wake | 300 | 256 | 5.9 | DNS |
+| orbiting, vortex shedding | 3000 | 256 | 59 | implicit LES |
+| spinning, unsteady | 5000 | 512 | 49 | implicit LES |
+| orbit + counter-spin, chaotic | 10 000 | 512 | 98 | implicit LES |
+
+**What to trust in the implicit-LES runs.** The large vortices are well represented: their number, size, path and
+lifetime, the swirl of the whole box, and the qualitative regime. Quantities set by the small scales will change if
+the grid is refined, because the limiter's dissipation shrinks as $h$ does: peak vorticity, enstrophy, the
+high-frequency tail of the probe spectrum, and the sharpness of the dye filaments. Run the same preset at two grid
+sizes to see which features survive.
+
+**Why not a standard turbulence model?** RANS models ($k$–$\varepsilon$, $k$–$\omega$, Spalart–Allmaras) solve
+for the *time-averaged* flow and represent all the eddies by an eddy viscosity. They would average away exactly the
+unsteady vortices this page is about. Their constants are calibrated on three-dimensional turbulence, whose
+energy cascades to small scales, whereas in 2D energy cascades to *large* scales (§7). An explicit LES model, for
+example Smagorinsky's $\nu_t = (C_s\Delta)^2|\bar S|$, could be added to $\nu$. On this grid it would add
+dissipation on top of the limiter's, and $C_s$ would still have to be calibrated for 2D flow. For a teaching code
+in which all dissipation comes either from the physics or from a scheme property you can explain in a paragraph,
+DNS/ILES is the more honest choice.
 
 The method is second order in space (first order at extrema, where the limiter is active), second order
 in time for the convective and viscous terms, and first order in the splitting and penalisation errors.
@@ -219,4 +271,6 @@ develops gaps and clumps. Each particle is therefore re-seeded at a random point
 - B. van Leer, *J. Comput. Phys.* 32, 101 (1979): MUSCL; P. L. Roe, *Annu. Rev. Fluid Mech.* 18, 337 (1986): limiters.
 - A. Brandt, *Math. Comp.* 31, 333 (1977); W. L. Briggs et al., *A Multigrid Tutorial* (SIAM, 2000).
 - P. Angot, C.-H. Bruneau, P. Fabrie, *Numer. Math.* 81, 497 (1999): volume penalisation.
+- J. P. Boris, F. F. Grinstein, E. S. Oran, R. L. Kolbe, *Fluid Dyn. Res.* 10, 199 (1992): MILES.
+- F. F. Grinstein, L. G. Margolin, W. J. Rider (eds.), *Implicit Large Eddy Simulation* (Cambridge, 2007).
 - R. H. Kraichnan, *Phys. Fluids* 10, 1417 (1967); G. Boffetta, R. E. Ecke, *Annu. Rev. Fluid Mech.* 44, 427 (2012): 2D turbulence.
