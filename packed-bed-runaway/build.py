@@ -4,7 +4,8 @@
     python build.py --pages DIR     # also copy it to DIR/index.html (gh-pages)
 
 Steps: compile the Rust solver to WebAssembly; run the Python breakdown with
-CPython to capture its outputs and figures; prerender all LaTeX with KaTeX;
+CPython to capture its outputs and figures; generate the editable MoLab
+(marimo) notebook notebook/walkthrough_molab.py from the same cells; prerender all LaTeX with KaTeX;
 syntax-highlight the sources with Pygments; inline Plotly and everything else
 into one HTML file.  Needs: cargo (+ wasm32-unknown-unknown), node/npm,
 python packages numpy scipy pygments markdown-it-py.
@@ -25,6 +26,7 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer, RustLexer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+MOLAB_URL = "https://molab.marimo.io/github/chetools/claude/blob/gh-pages/packed-bed-runaway/walkthrough_molab.py"
 WEB = os.path.join(ROOT, "web")
 PYDIR = os.path.join(ROOT, "python")
 SOLVER = os.path.join(ROOT, "solver")
@@ -148,6 +150,12 @@ def main():
     print(f"  {len(wasm) / 1024:.0f} kB")
     print("running the Python breakdown (CPython)")
     wt_html, wt_plots, wt_cells = build_walkthrough(mods)
+    print("generating the MoLab notebook")
+    import make_molab
+    nb = os.path.join(ROOT, "notebook", "walkthrough_molab.py")
+    os.makedirs(os.path.dirname(nb), exist_ok=True)
+    with open(nb, "w", encoding="utf-8") as f:
+        f.write(make_molab.generate())          # also checks one-definition-per-name
     print("rendering markdown + KaTeX")
     parts = {
         "COUETTE_CSS": read("web", "base.css"),
@@ -167,6 +175,7 @@ def main():
         "PY_FILES": js_json({"pbr.py": read("python", "pbr.py"), "runner.py": read("python", "runner.py")}),
         "PLOTLY": read(os.path.relpath(os.path.join(mods, "plotly.js-dist-min", "plotly.min.js"), ROOT)),
         "APP_JS": read("web", "app.js"),
+        "MOLAB_URL": MOLAB_URL,
     }
     tpl = read("web", "template.html")
     missing = set(re.findall(r"@@([A-Z0-9_]+)@@", tpl)) - set(parts)
@@ -181,7 +190,8 @@ def main():
     if args.pages:
         os.makedirs(args.pages, exist_ok=True)
         shutil.copy(dst, os.path.join(args.pages, "index.html"))
-        print(f"copied to {args.pages}/index.html")
+        shutil.copy(nb, os.path.join(args.pages, "walkthrough_molab.py"))
+        print(f"copied index.html and walkthrough_molab.py to {args.pages}")
 
 
 if __name__ == "__main__":

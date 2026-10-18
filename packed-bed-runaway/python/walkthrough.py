@@ -31,8 +31,8 @@ gr, T0 = pbr.groups_from_dimensional(q)
 dT_ad = q["dH"] * q["p0"] / (q["M_m"] * q["cp"])
 print(f"inlet T0 = {T0:.1f} K,  adiabatic rise dT_ad = {dT_ad:.0f} K")
 print(f"one theta unit = T0/gamma = {T0/gr['gamma']:.1f} K")
-for k, v in gr.items():
-    print(f"  {k:8s} = {v:10.4f}")
+for _k, _v in gr.items():
+    print(f"  {_k:8s} = {_v:10.4f}")
 print(f"N/S = St/(Da S) = {gr['St']/(gr['Da']*gr['S']):.3f}   (Semenov: e = 2.718)")
 '''),
 
@@ -112,10 +112,10 @@ We check the hand-derived Jacobian against finite differences of `rhs`. A small 
 silently slow the solver down. Rust avoids the question entirely by computing the rate derivatives
 with automatic differentiation.
 """, code=r'''
-y = np.linspace(0, 1, 2 * grid.n) * np.tile([0.3, 2.0], grid.n)    # some non-trivial state
-J = pbr.jacobian_sparse(y, gr, grid).toarray()
+y_test = np.linspace(0, 1, 2 * grid.n) * np.tile([0.3, 2.0], grid.n)    # some non-trivial state
+J = pbr.jacobian_sparse(y_test, gr, grid).toarray()
 eps = 1e-7
-Jfd = np.column_stack([(pbr.rhs(y + eps*e, gr, grid) - pbr.rhs(y - eps*e, gr, grid)) / (2*eps)
+Jfd = np.column_stack([(pbr.rhs(y_test + eps*e, gr, grid) - pbr.rhs(y_test - eps*e, gr, grid)) / (2*eps)
                        for e in np.eye(2 * grid.n)])
 print("max |J - J_fd| / max|J| =", f"{np.abs(J - Jfd).max() / np.abs(J).max():.1e}")
 nz = (J[:16, :16] != 0).astype(float)
@@ -149,13 +149,13 @@ drives the step-size control. `pbr.integrate` runs exactly this loop with accept
 from scipy.linalg import solve_banded
 h = 1e-3
 d, e32 = 1/(2 + np.sqrt(2)), 6 + np.sqrt(2)
-y = np.zeros(2 * grid.n)
-ab = pbr.w_banded(y, gr, grid, False, h * d)       # W in banded storage
-F0 = pbr.rhs(y, gr, grid)
+y_n = np.zeros(2 * grid.n)
+ab = pbr.w_banded(y_n, gr, grid, False, h * d)       # W in banded storage
+F0 = pbr.rhs(y_n, gr, grid)
 k1 = solve_banded((2, 2), ab, F0)
-F1 = pbr.rhs(y + 0.5*h*k1, gr, grid)
+F1 = pbr.rhs(y_n + 0.5*h*k1, gr, grid)
 k2 = solve_banded((2, 2), ab, F1 - k1) + k1
-y1 = y + h * k2                                    # 2nd-order solution
+y1 = y_n + h * k2                                    # 2nd-order solution
 F2 = pbr.rhs(y1, gr, grid)
 k3 = solve_banded((2, 2), ab, F2 - e32*(k2 - F1) - 2*(k1 - F0))
 err = h/6 * (k1 - 2*k2 + k3)
@@ -190,13 +190,13 @@ because heat produced at the centre must be **conducted across the bed** before 
 remove it. The radial profile at the hot spot is close to a parabola, the shape behind the
 $R/(4\lambda_{er})$ term of the 1D–2D link.
 """, code=r'''
-k = int(np.argmin(np.abs(run["xi"] - run["xi_star"])))
+k_hot = int(np.argmin(np.abs(run["xi"] - run["xi_star"])))
 rr = np.concatenate([-grid.rho[::-1], grid.rho]) * q["d_t"] / 2 * 100     # cm, mirrored
 TT = np.hstack([T[:, ::-1], T])
 figure([dict(type="heatmap", x=z, y=rr, z=TT.T, colorscale="Inferno", colorbar=dict(title="T [K]"))],
        title="T(z, r): mirrored tube cross-section", xaxis=dict(title="z [m]", range=[0, min(1.0, q["L"])]),
        yaxis=dict(title="r [cm]"))
-figure([dict(x=grid.rho, y=T[k], mode="lines+markers", name=f"z = {z[k]:.3f} m")],
+figure([dict(x=grid.rho, y=T[k_hot], mode="lines+markers", name=f"z = {z[k_hot]:.3f} m")],
        title="Radial profile at the hot spot", xaxis=dict(title="r/R"), yaxis=dict(title="T [K]"))
 '''),
 
@@ -211,9 +211,9 @@ discretization are shared, and are checked separately (Bessel series and grid or
 """, code=r'''
 ref = pbr.integrate(gr, rtol=1e-9, atol=1e-12, record=False)
 bdf = pbr.integrate_bdf(gr, rtol=1e-9, atol=1e-12)
-for name, r in [("Rosenbrock rtol=1e-5", run), ("Rosenbrock rtol=1e-9", ref), ("scipy BDF  rtol=1e-9", bdf)]:
-    print(f"{name}:  T* = {pbr.to_kelvin(r['theta_star'], gr, T0):.4f} K   "
-          f"z* = {r['xi_star']*q['L']:.4f} m   steps = {r['steps']}")
+for _name, _r in [("Rosenbrock rtol=1e-5", run), ("Rosenbrock rtol=1e-9", ref), ("scipy BDF  rtol=1e-9", bdf)]:
+    print(f"{_name}:  T* = {pbr.to_kelvin(_r['theta_star'], gr, T0):.4f} K   "
+          f"z* = {_r['xi_star']*q['L']:.4f} m   steps = {_r['steps']}")
 print("outlet conversion (cup-mixing):", round(pbr.cup_mixing(ref["y_out"], ref["grid"]), 5))
 '''),
 
@@ -259,8 +259,8 @@ with Rust in milliseconds.
 p0s = np.linspace(0.6, 2.0, 13) * q["p0"]
 res = [pbr.sensitivity_fd(dict(q, p0=p), "p0", rel_h=1e-3) for p in p0s]
 Ts = np.array([r[0] for r in res]); sv = np.array([r[2] for r in res])
-k = int(np.argmax(np.abs(sv)))
-print(f"MV critical p0 ~ {p0s[k]:.5f} atm  (max |s| = {abs(sv[k]):.1f});  current p0 = {q['p0']:.5f} atm")
+k_c = int(np.argmax(np.abs(sv)))
+print(f"MV critical p0 ~ {p0s[k_c]:.5f} atm  (max |s| = {abs(sv[k_c]):.1f});  current p0 = {q['p0']:.5f} atm")
 figure([dict(x=p0s, y=Ts, name="T* [K]"),
         dict(x=p0s, y=np.abs(sv), name="|s(T*; p0)|", yaxis="y2", line=dict(color="firebrick"))],
        title="Hot spot and its sensitivity vs feed partial pressure", xaxis=dict(title="p0 [atm]"),

@@ -20,6 +20,10 @@ fixed-bed reactor (o-xylene → phthalic anhydride, Froment's data):
     - the same Rosenbrock algorithm takes the identical step sequence and agrees to about 1e-10 K;
     - scipy BDF independently agrees to within the requested tolerance;
     - Python finite differences agree with the Rust AD sensitivities.
+- An **editable MoLab (marimo) notebook**, `notebook/walkthrough_molab.py`, generated from the same cells as the
+  page's breakdown with `pbr.py` embedded:
+  [open in MoLab](https://molab.marimo.io/github/chetools/claude/blob/gh-pages/packed-bed-runaway/walkthrough_molab.py)
+  (run all cells once after opening; edit `USER_INPUTS` and re-run).
 - A click-to-run **performance race** (Python ≈ 10 s vs Rust) and a panel on why Rust is fast
   and why WebGPU would not help here.
 
@@ -34,6 +38,8 @@ python/
   pbr.py           reference implementation (same function names as lib.rs)
   walkthrough.py   the step-by-step breakdown shown on the page
   runner.py        runs the breakdown cells (CPython at build time, Pyodide live)
+  make_molab.py    generates notebook/walkthrough_molab.py (single-file marimo notebook for MoLab)
+notebook/          the generated MoLab notebook (also published on gh-pages)
   test_pbr.py      pytest: Bessel-series solution, scipy BDF, bit-level match with Rust
 web/               page template, app.js, theory / Rust guide / why-fast texts (Markdown + LaTeX)
 build.py           builds dist/packed-bed-runaway-standalone.html (single self-contained file)
@@ -42,14 +48,14 @@ build.py           builds dist/packed-bed-runaway-standalone.html (single self-c
 ## Build and test
 
 Requirements: Rust with the `wasm32-unknown-unknown` target, Node/npm, and Python with
-`numpy scipy pygments markdown-it-py pytest`.
+`numpy scipy pygments markdown-it-py pytest` (and `marimo plotly` to run the notebook).
 
 ```bash
 cd solver && cargo test --release                               # Rust checks
 cargo run --release --example dump > ref.json && cd ..          # reference values
 python -m pytest -q python/                                     # Python checks (incl. Rust parity)
 python build.py                                                 # -> dist/packed-bed-runaway-standalone.html
-python build.py --pages ../gh-pages-checkout/packed-bed-runaway # publish copy
+python build.py --pages ../gh-pages-checkout/packed-bed-runaway # publish page + notebook
 ```
 
 The page is self-contained: Plotly, the WASM module and the prerendered equations are

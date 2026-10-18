@@ -23,7 +23,7 @@
 .controls .field label{font-size:.82rem}
 .controls input,.controls select{padding:.35rem .5rem;border:1px solid #d0d3d9;border-radius:.4rem;
   font-size:.92rem;background:#fff;color:var(--text);width:100%}
-.btn{background:#fff;border:1px solid #d0d3d9;border-radius:.5rem;padding:.45rem .9rem;
+.btn{display:inline-block;text-decoration:none;background:#fff;border:1px solid #d0d3d9;border-radius:.5rem;padding:.45rem .9rem;
   font-size:.95rem;cursor:pointer;color:var(--text);font-family:inherit}
 .btn:hover{border-color:var(--st-red);color:var(--st-red)}
 .btn.primary{background:var(--st-red);border-color:var(--st-red);color:#fff}
@@ -264,8 +264,15 @@ details.wt-src summary{cursor:pointer;color:var(--muted);font-size:.88rem}
         inputs). Press <b>Run live</b> to re-execute all cells in your browser (Pyodide) with the
         inputs currently in the sidebar.</p>
         <div class="controls"><button class="btn primary" id="wt-live" disabled>Run live with my inputs</button>
+          <a class="btn" href="@@MOLAB_URL@@" target="_blank" rel="noopener">Open editable notebook in MoLab</a>
           <span class="status" id="wt-status">Waiting for Python to load&hellip;</span></div>
         @@WALKTHROUGH@@
+        <h3>Editable notebook</h3>
+        <ul><li><a href="@@MOLAB_URL@@" target="_blank" rel="noopener">Open the editable notebook in MoLab (signed in)</a></li>
+          <li><a href="walkthrough_molab.py" download>Download the notebook (.py)</a> to run locally with
+            <code>marimo edit walkthrough_molab.py</code></li></ul>
+        <p class="caption">The MoLab notebook is editable; run all cells once after opening (notebook-level Run).
+        It has the same steps and code as above, with <code>pbr.py</code> embedded and an inputs cell to edit.</p>
       </section>
       <section id="sub-pysrc" class="ppanel" hidden>
         <p>The complete reference implementation. Functions appear in the same order as in the Rust file.</p>
@@ -341,7 +348,6 @@ details.wt-src summary{cursor:pointer;color:var(--muted);font-size:.88rem}
       </div>
       <h3>Where the time goes</h3>
       <div id="micro-perf"><p class="status">Measured after the race (per call, current inputs, N radial cells).</p></div>
-      <div class="note">Why the gap is so large, and why WebGPU would not help here: <b>Rust &rarr; Why Rust is fast</b>.</div>
     </section>
   </div>
 </main>
