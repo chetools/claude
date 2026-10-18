@@ -311,7 +311,7 @@ class CpuSolver {
     const umax = Math.abs(p.Us) + Math.abs(p.omega_o) * (p.ro + p.R) || 1;
     const sub = Math.min(32, Math.max(1, Math.ceil(tau * umax / (0.5 * p.h)))), dt = tau / sub;
     const cx = 0.5 + p.ro * Math.cos(this.phi), cy = 0.5 + p.ro * Math.sin(this.phi);
-    const sref = 0.5 * (Math.max(Math.abs(p.Us), Math.abs(p.Uo)) || 1);
+    const sref = this.inkRef || 0.5 * (Math.max(Math.abs(p.Us), Math.abs(p.Uo)) || 1);
     tc.globalCompositeOperation = 'destination-out';         // fade: ink *= 1 - k
     tc.fillStyle = `rgba(0,0,0,${this.fade})`;
     tc.fillRect(0, 0, W, W);
@@ -333,7 +333,7 @@ class CpuSolver {
         continue;
       }
       P.px[k] = P.x[k]; P.py[k] = P.y[k]; P.x[k] = x; P.y[k] = y;
-      const a = Math.min(1, Math.max(0.15, Math.hypot(x - P.px[k], y - P.py[k]) / tau / sref));
+      const a = Math.min(1, Math.max(0.3, Math.sqrt(Math.hypot(x - P.px[k], y - P.py[k]) / tau / sref)));
       buckets[Math.min(3, Math.floor(a * 4))].push(k);
     }
     tc.lineWidth = 1;

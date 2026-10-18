@@ -249,7 +249,7 @@ class GpuSolver {
     new Float32Array(fr)[0] = tau;
     new Uint32Array(fr).set([sub, this.seed++, this.nPart], 1);
     dev.queue.writeBuffer(this.frameBuf, 0, fr);
-    dev.queue.writeBuffer(this.inkBuf, 0, new Float32Array([tau, 0.5 * (Math.max(Math.abs(p.Us), Math.abs(p.Uo)) || 1), 0, 0]));
+    dev.queue.writeBuffer(this.inkBuf, 0, new Float32Array([tau, this.inkRef || 0.5 * (Math.max(Math.abs(p.Us), Math.abs(p.Uo)) || 1), 0, 0]));
     const enc = dev.createCommandEncoder();
     const cp = enc.beginComputePass();
     cp.setPipeline(this.pipes.advect_particles);

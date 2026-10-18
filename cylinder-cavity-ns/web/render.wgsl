@@ -63,7 +63,8 @@ fn vs_line(@builtin(vertex_index) vid: u32) -> LineOut {
   let speed = length(p.xy - p.zw) / max(I.tau, 1e-9);
   var o: LineOut;
   o.clip = vec4<f32>(xy * 2.0 - 1.0, 0.0, 1.0);
-  o.ink = clamp(speed / I.sref, 0.15, 1.0);    // faster particles leave darker ink
+  // faster particles leave darker ink; the square root keeps slow far-field flow visible next to a fast body
+  o.ink = clamp(sqrt(speed / I.sref), 0.3, 1.0);
   return o;
 }
 @fragment

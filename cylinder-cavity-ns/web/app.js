@@ -201,6 +201,9 @@ function onStats(s) {
   $('m-speed').textContent = playing && sim.lastRate ? `${fmtG(sim.lastRate, 3)} /s` : '–';
   $('m-speed-sub').textContent = playing && sim.lastRate
     ? `steps per second · ${fmtG(sim.lastRate * p.N * p.N / 1e6, 3)} M cell-steps/s` : 'paused';
+  // trail darkness is relative to the flow's own rms speed (box area 1: u_rms = sqrt(2E)), not the body speed,
+  // so a slow far field stays visible next to a fast spinning cylinder
+  if (s.E > 0) sim.solver.inkRef = 2 * Math.sqrt(2 * s.E);
   $('m-e').textContent = fmtG(s.E, 3);
   $('m-e-sub').textContent = `enstrophy Z = ${fmtG(s.Z, 3)} · torque ${fmtG(s.torque, 2)}`;
   $('m-div').textContent = fmtE(s.maxdiv, 1);
@@ -294,7 +297,11 @@ function wire() {
     applyParams(true);
   });
   for (const id of ['in-re', 'in-us', 'in-uo', 'in-r', 'in-ro']) {
-    $(id).addEventListener('input', () => { $('in-preset').value = 'custom'; showValues(); });
+    $(id).addEventListener('input', () => {
+      $('in-preset').value = 'custom';
+      if (id !== 'in-re') keepViscosity();
+      showValues();
+    });
     $(id).addEventListener('change', () => applyParams(false));
   }
   $('in-n').addEventListener('change', () => applyParams(true));
@@ -313,6 +320,17 @@ function wire() {
   $('b-png').addEventListener('click', savePng);
   $('val-go').addEventListener('click', runValidation);
   window.addEventListener('resize', sizeCanvas);
+}
+
+// Re = U_ref 2R / nu with U_ref the larger speed. Moving a speed or size slider keeps the fluid (nu) the same
+// and lets Re follow; only the Re slider and the presets change the viscosity.
+function keepViscosity() {
+  const old = sim.solver && sim.solver.p;
+  if (!old) return;
+  const q = readInputs();
+  const Uref = q.ro < 0.02 ? Math.abs(q.Us) || 1 : Math.max(Math.abs(q.Us), Math.abs(q.Uo)) || 1;
+  const Re = Math.min(10 ** 4.5, Math.max(10, Uref * 2 * q.R / old.nu));
+  $('in-re').value = Math.log10(Re);
 }
 
 function setParticles() {

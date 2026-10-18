@@ -254,8 +254,8 @@ coincide only in **steady** flow:
 The App tab's **flow particles** draw pathlines with a fading memory. Each of many tracers is moved with the
 current velocity every frame, by midpoint RK2 over the simulated time the frame covered, and each step adds a
 short segment to a trail that fades a little every frame. The trail therefore shows where the particle came from
-over the last few dozen frames; the *trail length* slider sets how many. Its direction is the flow direction, and its length (and
-darkness) grows with the speed. The **dye** field shows the same thing collectively: an initially striped fluid
+over the last few dozen frames; the *trail length* slider sets how many. Its direction is the flow direction. Its length grows with the speed, and so does its darkness, as
+$\sqrt{|\mathbf u|/2u_{\text{rms}}}$. The square root keeps the slow far field visible next to a fast-spinning cylinder. The **dye** field shows the same thing collectively: an initially striped fluid
 being stretched and folded, a streakline-like picture of mixing.
 
 The velocity at a particle comes from bilinear interpolation of each staggered component between its own four
