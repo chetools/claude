@@ -1,5 +1,26 @@
 # chetools/claude: house rules
 
+## General working rules (apply to every task)
+
+- **Ask first, in one batch.** Before building anything non-trivial, ask the open design questions together, each
+  with a recommended option. Proceed on the recommendation for anything left unanswered, and say which defaults were used.
+- **Build only what was asked for.** No unrequested extras: derived verdicts, benchmark tabs, criteria, or "see also"
+  notes. When a request says "X or Y", ask which one. Extras added on my own initiative get removed later.
+- **No unverified claims.** Every number, comparison with the literature or physical statement shown to the user is
+  either computed and checked, or left out. Say plainly what was not verified.
+- **Teaching material.** Explain code for the audience's language (students know Python, not Rust). Keep a readable
+  reference implementation, and check any fast implementation against it with results shown side by side.
+- **Editable code.** Whenever Python code is shown on a page, link an editable MoLab (marimo) notebook of it (rule below).
+- **Validate numerics independently.** Check results against a second method or an exact solution, not only
+  against my own code. Check derivatives (AD vs. finite differences) on both sides of any steep region.
+- **Verify like a user before delivering.**
+  - Run every test suite.
+  - Load the real page in a browser with Playwright: no console errors, every tab works, no horizontal scroll at phone width.
+  - Look at screenshots.
+  - Confirm the published URL serves the new content.
+  - Only then hand over the shareable link.
+- **Make builds fail loudly.** Guard against silent no-ops, such as unfilled template placeholders.
+
 ## Interactive teaching pages (published on `gh-pages`)
 
 - **Style:** follow chetools/muse `gh-pages/muse-html/couette-standalone.html`:
