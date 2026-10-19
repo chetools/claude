@@ -48,6 +48,7 @@ web/
   app.js           page logic: sidebar, animation, metrics, RTD analysis, sweeps, comparisons
   parity.cjs       prints a CPU-solver run for the Python parity test
   gpu_check.cjs    runs the WebGPU solver in Chromium and compares it with the CPU solver
+  page_check.cjs   drives the built page in Chromium (scripted steps, screenshots, console errors)
   template.html, theory.md, gpu_guide.md, why_gpu.md, base.css
 build.py           builds dist/porous-media-lbm-standalone.html (single self-contained file)
 ```
@@ -60,6 +61,8 @@ notebook). The GPU check needs Playwright with Chromium.
 ```bash
 python -m pytest -q python/                                   # Python checks (incl. JS parity via node)
 node web/gpu_check.cjs                                        # WebGPU vs CPU solver (headless Chromium, SwiftShader)
+xvfb-run -a node web/page_check.cjs dist/porous-media-lbm-standalone.html /tmp/shots wait:15000 snap:flow
+                                                              # drive the page: clicks, inputs, screenshots (see header)
 python build.py                                               # -> dist/porous-media-lbm-standalone.html
 marimo check notebook/walkthrough_molab.py && python notebook/walkthrough_molab.py
 python build.py --pages ../gh-pages-checkout/porous-media-lbm # publish page + notebook

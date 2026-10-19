@@ -322,6 +322,7 @@ function injectPulse() {
   const Dm = uInt * bed.d / S.v.Pe;
   const pulse = Math.max(2, Math.round(S.v.pulse * bed.d / uInt));
   const warn = [];
+  if (!S.converged) warn.push('the flow is not steady yet (wait for the “steady” pill): D_m and the pulse width are set from the current velocity, so the RTD will not match the steady bed');
   if (Dm < 0.002) warn.push(`D_m = ${fmt(Dm)} lattice units is very small: raise Re-to-Pe ratio, τ, or lower Pe_m, or the tracer may oscillate`);
   if (S.maxU > 0.25) warn.push('the peak velocity is high for the tracer lattice (|u| > 0.25)');
   showErr(warn.length ? 'Note: ' + warn.join('; ') + '.' : '');
