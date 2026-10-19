@@ -121,3 +121,20 @@
   - at 390 px wide there is no horizontal scroll (let the tabs wrap).
 - Take screenshots and look at them.
 - Confirm the gh-pages URL serves the new content before handing over the link.
+
+## Single-directory workflow (default)
+
+Each task touches exactly one page directory (e.g. `packed-bed-runaway/`). The task names it; if it doesn't, ask
+before starting.
+
+- Treat that directory as the project root and use absolute paths.
+- Read only this file, the directory's own files, and the style reference when needed. Do not explore sibling pages.
+- Scope every Grep/Glob to the directory. Never edit outside it. Shared code outside the directory is read-only context.
+- Install toolchains (pip/npm, Rust with the `wasm32-unknown-unknown` target, a headless browser) once at session
+  start, and don't re-check them afterwards.
+- Rebuild wasm/WGSL only when its source changed. Run `python -m http.server` from the directory in the background on
+  a fixed port and test against localhost.
+- Batch edits, then run the tests once.
+- Git: `git add <dir>/` only (never `-A`); review with `git diff -- <dir>`; one branch per page.
+- Before delivering, follow the verification checklist above.
+- Don't spawn subagents to explore a single directory.
