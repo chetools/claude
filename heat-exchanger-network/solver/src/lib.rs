@@ -476,6 +476,32 @@ pub fn slacks(model: &Model, net: &Net, x: &[f64]) -> Vec<f64> {
     s
 }
 
+fn min_slack(model: &Model, net: &Net, x: &[f64]) -> f64 {
+    slacks(model, net, x).iter().cloned().fold(1.0f64, |a, b| if b < a { b } else { a })
+}
+
+/// x itself if strictly feasible; otherwise the loads scaled down by the
+/// largest factor theta (bisection) that makes them feasible, each kept
+/// above the tiny start value.  theta -> 0 is the (feasible) tiny start.
+pub fn feasible_start(model: &Model, net: &Net, x: &[f64]) -> Vec<f64> {
+    if min_slack(model, net, x) > 0.0 {
+        return x.to_vec();
+    }
+    let eps = start_point(model, net, 1e-4);
+    let at = |theta: f64| -> Vec<f64> { (0..x.len()).map(|m| (theta * x[m]).max(eps[m])).collect() };
+    let (mut lo, mut hi) = (0.0f64, 1.0f64);
+    for _ in 0..30 {
+        let mid = 0.5 * (lo + hi);
+        if min_slack(model, net, &at(mid)) > 0.0 {
+            lo = mid;
+        } else {
+            hi = mid;
+        }
+    }
+    let xs = at(lo);
+    if min_slack(model, net, &xs) > 0.0 { xs } else { eps }
+}
+
 pub fn max_feasible_step(model: &Model, net: &Net, x: &[f64], dx: &[f64]) -> f64 {
     let s0 = slacks(model, net, x);
     let xd: Vec<f64> = (0..x.len()).map(|m| x[m] + dx[m]).collect();
@@ -628,8 +654,7 @@ pub fn optimize_loads(model: &Model, net: &Net, x0: Option<&[f64]>, scale: Optio
     let n = net.matches.len();
     let sx = load_scale(model, net);
     let x0: Vec<f64> = match x0 {
-        Some(x) if slacks(model, net, x).iter().cloned().fold(1.0f64, |a, b| if b < a { b } else { a }) > 0.0
-            && x.len() == n => x.to_vec(),
+        Some(x) if x.len() == n => feasible_start(model, net, x),
         _ => start_point(model, net, 1e-4),
     };
     let scale = match scale {

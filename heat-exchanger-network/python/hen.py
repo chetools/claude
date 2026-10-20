@@ -893,6 +893,29 @@ def slacks(model, net, x):
     return s
 
 
+def min_slack(model, net, x):
+    return min([1.0] + slacks(model, net, x))
+
+
+def feasible_start(model, net, x):
+    """x itself if strictly feasible; otherwise the loads scaled down by the
+    largest factor theta (bisection) that makes them feasible, each kept
+    above the tiny start value (theta -> 0 is the feasible tiny start)."""
+    if min_slack(model, net, x) > 0.0:
+        return list(x)
+    eps = start_point(model, net)
+    at = lambda theta: [max(theta * x[m], eps[m]) for m in range(len(x))]
+    lo, hi = 0.0, 1.0
+    for _ in range(30):
+        mid = 0.5 * (lo + hi)
+        if min_slack(model, net, at(mid)) > 0.0:
+            lo = mid
+        else:
+            hi = mid
+    xs = at(lo)
+    return xs if min_slack(model, net, xs) > 0.0 else eps
+
+
 def max_feasible_step(model, net, x, dx):
     """Largest alpha with all slacks(x + alpha dx) > 0 (slacks are linear)."""
     s0 = slacks(model, net, x)
@@ -912,8 +935,7 @@ def optimize_loads(model, net, x0=None, scale=None, max_iter=200):
     dict(x, tac, ok, feasible (equalities met), ...)."""
     n = len(net["matches"])
     sx = load_scale(model, net)
-    if x0 is None or min(slacks(model, net, x0) or [1.0]) <= 0.0:
-        x0 = start_point(model, net)
+    x0 = start_point(model, net) if x0 is None else feasible_start(model, net, x0)
     if scale is None:
         scale = max(1.0, evaluate(model, net, x0)["tac"])
     y = [x0[m] / sx[m] for m in range(n)]
@@ -1355,3 +1377,49 @@ def flatten_net(net):
     for (i, j, k) in net["matches"]:
         v += [i, j, k]
     return [float(a) for a in v + list(net["hu"]) + list(net["cu"])]
+
+
+def page_data():
+    """Everything the page's JavaScript needs from this module (one source)."""
+    return dict(
+        SEIDER_FM=[[s, t, a, b] for (s, t), (a, b) in SEIDER_FM.items()],
+        SEIDER_CB=SEIDER_CB, SEIDER_CE=SEIDER_CE,
+        SEIDER_LENGTH_FACTOR={str(k): v for k, v in SEIDER_LENGTH_FACTOR.items()},
+        TURTON_K=TURTON_K, TURTON_B=TURTON_B, TURTON_C=TURTON_C, TURTON_FM=TURTON_FM,
+        TURTON_CE=TURTON_CE, MATERIALS=MATERIALS, M2_TO_FT2=M2_TO_FT2,
+        STEAM_TABLE=STEAM_TABLE, H_FEEDWATER=H_FEEDWATER, MMBTU_GJ=MMBTU_GJ,
+        DEFAULT_PRICES=DEFAULT_PRICES, BENCHMARKS=BENCHMARKS, ILLUSTRATIVE=ILLUSTRATIVE,
+    )
+
+
+DEFAULT_CASE = "Oxidation unit: oxygen vs hydrocarbons (illustrative)"
+
+
+def make_law(law):
+    """Cost law from the page's sidebar settings."""
+    annual = capital_recovery_factor(law["rate"], law["years"])
+    if law["kind"] == "seider":
+        return seider_law(cepci=law["cepci"], annual=annual, p_psig=law["p_psig"], tube_ft=law["tube_ft"],
+                          typ=law["type"])
+    if law["kind"] == "turton":
+        return dict(kind="turton", cepci=law["cepci"], annual=annual, p_barg=law["p_barg"])
+    raise ValueError(law["kind"])
+
+
+def problem_from_inputs(inp):
+    """The problem the page's sidebar describes (USER_INPUTS of the
+    breakdown).  Missing keys keep the case's own data."""
+    case = inp.get("case", DEFAULT_CASE)
+    prices = dict(DEFAULT_PRICES, **inp.get("prices", {}))
+    p = benchmark(case) if case in BENCHMARKS else illustrative(case, prices)
+    if inp.get("emat") is not None:
+        p["emat"] = inp["emat"]
+    if inp.get("stages"):
+        p["stages"] = inp["stages"]
+    law = inp.get("law")
+    if law and law["kind"] != "paper":
+        p["law"] = make_law(law)
+    for key in ("forbid", "mult", "material"):
+        if inp.get(key) is not None:
+            p[key] = inp[key]
+    return p
