@@ -1,0 +1,27 @@
+# Letsios, Kouyialis & Misener (2018), data/tex_tables/exact_methods.tex: transshipment MILP, 30 min limit
+10sp-la1 cplex_transship=12 time=0.03 gap= gurobi_transship=12 gap=
+10sp-ol1 cplex_transship=14 time=0.03 gap= gurobi_transship=14 gap=
+10sp1 cplex_transship=10 time=0.05 gap= gurobi_transship=10 gap=
+12sp1 cplex_transship=12 time=0.05 gap= gurobi_transship=12 gap=
+14sp1 cplex_transship=14 time=41.23 gap= gurobi_transship=14 gap=
+15sp-tkm cplex_transship=19 time=0.07 gap= gurobi_transship=19 gap=
+20sp1 cplex_transship=19 time=* gap=19\% gurobi_transship=19 gap=15
+22sp-ph cplex_transship=26 time=0.04 gap= gurobi_transship=26 gap=
+22sp1 cplex_transship=25 time=* gap=11\% gurobi_transship=25 gap=12
+23sp1 cplex_transship=23 time=* gap=28\% gurobi_transship=23 gap=26
+28sp-as1 cplex_transship=30 time=0.05 gap= gurobi_transship=30 gap=
+37sp-yfyv cplex_transship=36 time=7.36 gap= gurobi_transship=36 gap=
+4sp1 cplex_transship=5 time=0.02 gap= gurobi_transship=5 gap=
+6sp-cf1 cplex_transship=6 time=0.03 gap= gurobi_transship=6 gap=
+6sp-gg1 cplex_transship=3 time=0.02 gap= gurobi_transship=3 gap=
+6sp1 cplex_transship=6 time=0.02 gap= gurobi_transship=6 gap=
+7sp-cm1 cplex_transship=10 time=0.02 gap= gurobi_transship=10 gap=
+7sp-s1 cplex_transship=10 time=0.02 gap= gurobi_transship=10 gap=
+7sp-torw1 cplex_transship=10 time=0.02 gap= gurobi_transship=10 gap=
+7sp1 cplex_transship=7 time=0.04 gap= gurobi_transship=7 gap=
+7sp2 cplex_transship=7 time=0.03 gap= gurobi_transship=7 gap=
+7sp4 cplex_transship=8 time=0.02 gap= gurobi_transship=8 gap=
+8sp-fs1 cplex_transship=11 time=0.02 gap= gurobi_transship=11 gap=
+8sp1 cplex_transship=9 time=0.03 gap= gurobi_transship=9 gap=
+9sp-al1 cplex_transship=12 time=0.03 gap= gurobi_transship=12 gap=
+9sp-has1 cplex_transship=13 time=0.04 gap= gurobi_transship=13 gap=

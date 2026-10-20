@@ -1,0 +1,5 @@
+solver/target/
+.buildtools/
+__pycache__/
+.pytest_cache/
+notebook/__marimo__/
