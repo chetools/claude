@@ -1231,7 +1231,7 @@ def network_from_matches(prob, milp):
     return model, dict(matches=matches, hu=hu, cu=cu), x0
 
 
-def improve_placement(model, net, res, passes=2, max_iter=200):
+def improve_placement(model, net, res, passes=10, max_iter=200):
     """Greedy local search used after step 3: move single matches to other
     stages and switch single utilities on/off; keep a change if it lowers
     the SA objective (TAC + penalty for missed targets)."""

@@ -339,3 +339,24 @@ def test_rust_parity():
         model = hen.Model(hen.benchmark(case["problem"]))
         res = hen.anneal(model, case["iters"], case["seed"])
         assert res["best"]["tac"] == pytest.approx(case["best_tac"], rel=1e-6)
+
+
+def test_area_target_is_a_lower_bound():
+    """Benchmarks-tab area target: equals a direct numerical integration of
+    dH / (U dT) between the balanced composites, and is below the area of an
+    actual network (H5C1, equal film coefficients) with the same hot utility."""
+    import benchmarks
+    p = hen.benchmark("H5C1 (Yee & Grossmann)")
+    model = hen.Model(p)
+    net = dict(matches=[(0, 0, 0), (1, 0, 0), (2, 0, 0), (3, 0, 1), (4, 0, 1)], hu=[0], cu=[0, 0, 0, 0, -1])
+    r = hen.optimize_loads(model, net)
+    assert r["feasible"]
+    QH = [u for u in r["units"] if u["type"] == "heater"][0]["q"]
+    A_net = sum(u["A"] for u in r["units"])
+    A_t, dmin = benchmarks.area_target(p, QH)
+    (Th, Hh), (Tc, Hc), _ = benchmarks.balanced_composites(p, QH)
+    N, tot = 200000, Hh[-1]
+    num = sum((tot / N) / (0.25 * (benchmarks._at(Hh, Th, (k + 0.5) * tot / N) - benchmarks._at(Hc, Tc, (k + 0.5) * tot / N)))
+              for k in range(N))
+    assert A_t == pytest.approx(num, rel=1e-4)
+    assert A_t < A_net

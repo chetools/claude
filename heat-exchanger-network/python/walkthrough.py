@@ -24,11 +24,11 @@ import hen
 
 prob = hen.problem_from_inputs(USER_INPUTS)
 print(prob["name"], "  EMAT =", prob["emat"], "K")
-for s in prob["hot"] + prob["cold"]:
-    Q = s["F"] * abs(s["Tin"] - s["Tout"])
-    print(f"  {s['name']:32s} {s['Tin']:6.1f} -> {s['Tout']:6.1f} C   F = {s['F']:7.2f} kW/K   Q = {Q:8.1f} kW")
-for u in prob["hu"] + prob["cu"]:
-    print(f"  {u['name']:32s} {u['Tin']:6.1f} -> {u['Tout']:6.1f} C   price = {u['cost']:7.2f} $/(kW yr)")
+for _s in prob["hot"] + prob["cold"]:
+    _Q = _s["F"] * abs(_s["Tin"] - _s["Tout"])
+    print(f"  {_s['name']:32s} {_s['Tin']:6.1f} -> {_s['Tout']:6.1f} C   F = {_s['F']:7.2f} kW/K   Q = {_Q:8.1f} kW")
+for _u in prob["hu"] + prob["cu"]:
+    print(f"  {_u['name']:32s} {_u['Tin']:6.1f} -> {_u['Tout']:6.1f} C   price = {_u['cost']:7.2f} $/(kW yr)")
 '''),
 
 dict(title="Bottom-up utility prices", md=r"""
@@ -45,10 +45,10 @@ $c_{\text{CO}_2}\times$ (emission factor) to the fuel and electricity prices.
 """, code=r'''
 pr = dict(hen.DEFAULT_PRICES, **USER_INPUTS.get("prices", {}))
 print(f"{pr['hours']:.0f} h/yr -> 1 kW-yr = {pr['hours'] * 3600 / 1e6:.1f} GJ")
-for kind, Tin, Tout in [("steam", 165, 165), ("steam", 250, 250), ("furnace", 320, 280),
-                        ("cw", 25, 35), ("seawater", 20, 30), ("refrig", -20, -20)]:
-    c, how = hen.utility_price(kind, Tin, Tout, pr)
-    print(f"  {kind:9s} {Tin:5.0f} C  {c:8.2f} $/(kW yr)   ({how})")
+for _kind, _Tin, _Tout in [("steam", 165, 165), ("steam", 250, 250), ("furnace", 320, 280),
+                           ("cw", 25, 35), ("seawater", 20, 30), ("refrig", -20, -20)]:
+    _c, _how = hen.utility_price(_kind, _Tin, _Tout, pr)
+    print(f"  {_kind:9s} {_Tin:5.0f} C  {_c:8.2f} $/(kW yr)   ({_how})")
 '''),
 
 dict(title="Exchanger cost and the material of construction", md=r"""
@@ -63,15 +63,15 @@ scaled by $\text{CEPCI}/567$ and annualised by the capital recovery factor.
 """, code=r'''
 law = prob["law"]
 print("cost law:", law["kind"])
-for fluids in [(["Monel"], hen.MATERIALS), (["Monel"], ["Ti", "brass"]), (["SS", "Monel"], hen.MATERIALS)]:
-    pairs = hen.material_pairs(*fluids, hen.LAW_SEIDER)
-    print(f"  {str(fluids[0]):20s} with {str(fluids[1])[:28]:30s} -> {pairs}")
-A = [20, 50, 100, 200, 500, 1000]
-traces = []
-for pair in [("CS", "CS"), ("CS", "SS"), ("CS", "Monel"), ("CS", "Ti"), ("Ti", "Ti")]:
-    kind, p = hen.law_params(hen.seider_law(), pair, 1.0)
-    traces.append(dict(x=A, y=[hen.unit_cost(kind, p, a)[0] for a in A], name="/".join(pair), mode="lines+markers"))
-figure(traces, title="Annualised exchanger cost (Seider, CEPCI placeholder 800)",
+for _fluids in [(["Monel"], hen.MATERIALS), (["Monel"], ["Ti", "brass"]), (["SS", "Monel"], hen.MATERIALS)]:
+    _pairs = hen.material_pairs(*_fluids, hen.LAW_SEIDER)
+    print(f"  {str(_fluids[0]):20s} with {str(_fluids[1])[:28]:30s} -> {_pairs}")
+_A = [20, 50, 100, 200, 500, 1000]
+_traces = []
+for _pair in [("CS", "CS"), ("CS", "SS"), ("CS", "Monel"), ("CS", "Ti"), ("Ti", "Ti")]:
+    _kind, _p = hen.law_params(hen.seider_law(), _pair, 1.0)
+    _traces.append(dict(x=_A, y=[hen.unit_cost(_kind, _p, a)[0] for a in _A], name="/".join(_pair), mode="lines+markers"))
+figure(_traces, title="Annualised exchanger cost (Seider, CEPCI placeholder 800)",
        xaxis=dict(title="area [m2]", type="log"), yaxis=dict(title="$/yr", type="log"))
 '''),
 
@@ -82,10 +82,10 @@ EMAT), its overall coefficient $1/U = 1/h_\text{hot} + 1/h_\text{cold}$, and its
 lists the utilities that can serve each stream at its target temperature.
 """, code=r'''
 model = hen.Model(prob)
-for i, hs in enumerate(prob["hot"]):
-    for j, cs in enumerate(prob["cold"]):
-        what = "allowed, " + "/".join(model.pair_pc[i][j]) if model.allowed[i][j] else model.reason[i][j]
-        print(f"  {hs['name'][:22]:22s} x {cs['name'][:24]:24s} {what}")
+for _i, _hs in enumerate(prob["hot"]):
+    for _j, _cs in enumerate(prob["cold"]):
+        _what = "allowed, " + "/".join(model.pair_pc[_i][_j]) if model.allowed[_i][_j] else model.reason[_i][_j]
+        print(f"  {_hs['name'][:22]:22s} x {_cs['name'][:24]:24s} {_what}")
 print("coolers per hot stream :", [[prob["cu"][o["u"]]["name"] for o in c] for c in model.cool])
 print("heaters per cold stream:", [[prob["hu"][o["u"]]["name"] for o in h] for h in model.heat])
 '''),
@@ -124,8 +124,8 @@ the utility target **with** the restrictions; without them it equals the problem
 """, code=r'''
 lp = hen.lp_targets(prob, model.allowed)
 free = hen.lp_targets(prob, [[True] * model.nC for _ in range(model.nH)])
-print(f"with the restrictions   : {lp['cost']:12.1f} $/yr   QH = {[round(v, 1) for v in lp['QH']]}  QC = {[round(v, 1) for v in lp['QC']]}")
-print(f"without the restrictions: {free['cost']:12.1f} $/yr   QH = {[round(v, 1) for v in free['QH']]}  QC = {[round(v, 1) for v in free['QC']]}")
+print(f"with the restrictions   : {lp['cost']:12.1f} $/yr   QH = {[round(v, 1) + 0.0 for v in lp['QH']]}  QC = {[round(v, 1) + 0.0 for v in lp['QC']]}")
+print(f"without the restrictions: {free['cost']:12.1f} $/yr   QH = {[round(v, 1) + 0.0 for v in free['QH']]}  QC = {[round(v, 1) + 0.0 for v in free['QC']]}")
 print(f"energy penalty of the forbidden matches: {lp['cost'] - free['cost']:.1f} $/yr")
 '''),
 
@@ -139,8 +139,8 @@ mi = hen.milp_matches(prob, lp["QH"], lp["QC"], allowed_pc=model.allowed, time_l
 names_h = [s["name"].split()[0] for s in prob["hot"]] + [u["name"] for u in prob["hu"]]
 names_c = [s["name"].split()[0] for s in prob["cold"]] + [u["name"] for u in prob["cu"]]
 print(f"{mi['n']} matches (optimal: {mi['optimal']})")
-for m in sorted(mi["matches"], key=lambda m: -m["Tmean"]):
-    print(f"  {names_h[m['hot']][:24]:24s} -> {names_c[m['cold']][:24]:24s} {m['load']:9.1f} kW   around {m['Tmean']:6.1f} C")
+for _m in sorted(mi["matches"], key=lambda m: -m["Tmean"]):
+    print(f"  {names_h[_m['hot']][:24]:24s} -> {names_c[_m['cold']][:24]:24s} {_m['load']:9.1f} kW   around {_m['Tmean']:6.1f} C")
 '''),
 
 dict(title="The stage-wise network: temperatures, areas and TAC", md=r"""
@@ -166,13 +166,13 @@ with central differences.
 """, code=r'''
 xs = hen.start_point(seq_model, net, 0.05)
 e0 = hen.evaluate(seq_model, net, xs, 1e-3, 10.0, 1e5, want_grad=True)
-for m in range(min(4, len(xs))):
-    h = 1e-5 * xs[m]
-    xp, xm = list(xs), list(xs)
-    xp[m] += h
-    xm[m] -= h
-    fd = (hen.evaluate(seq_model, net, xp, 1e-3, 10.0, 1e5)["phi"] - hen.evaluate(seq_model, net, xm, 1e-3, 10.0, 1e5)["phi"]) / (2 * h)
-    print(f"  load {m}: adjoint {e0['grad'][m]: .10e}   finite difference {fd: .10e}")
+for _m in range(min(4, len(xs))):
+    _h = 1e-5 * xs[_m]
+    _xp, _xm = list(xs), list(xs)
+    _xp[_m] += _h
+    _xm[_m] -= _h
+    _fd = (hen.evaluate(seq_model, net, _xp, 1e-3, 10.0, 1e5)["phi"] - hen.evaluate(seq_model, net, _xm, 1e-3, 10.0, 1e5)["phi"]) / (2 * _h)
+    print(f"  load {_m}: adjoint {e0['grad'][_m]: .10e}   finite difference {_fd: .10e}")
 '''),
 
 dict(title="Step 3: NLP for the loads (log barrier + L-BFGS)", md=r"""
@@ -185,13 +185,13 @@ leave the region where every slack is positive. `improve_placement` then tries m
 to other stages and switching utilities.
 """, code=r'''
 import time
-t0 = time.perf_counter()
-r = hen.optimize_loads(seq_model, net, x0)
-seq = hen.improve_placement(seq_model, net, r)
-print(f"NLP at the MILP topology : TAC = {r['tac']:.0f} $/yr  (feasible {r['feasible']})")
-print(f"after stage placement    : TAC = {seq['tac']:.0f} $/yr  ({time.perf_counter() - t0:.1f} s)")
-for u in seq["units"]:
-    print(f"  {u['type']:7s} q = {u['q']:8.1f} kW   A = {u['A']:7.1f} m2   capital {u['cost']:9.0f} $/yr")
+_t0 = time.perf_counter()
+nlp = hen.optimize_loads(seq_model, net, x0)
+seq = hen.improve_placement(seq_model, net, nlp)
+print(f"NLP at the MILP topology : TAC = {nlp['tac']:.0f} $/yr  (feasible {nlp['feasible']})")
+print(f"after stage placement    : TAC = {seq['tac']:.0f} $/yr  ({time.perf_counter() - _t0:.1f} s)")
+for _u in seq["units"]:
+    print(f"  {_u['type']:7s} q = {_u['q']:8.1f} kW   A = {_u['A']:7.1f} m2   capital {_u['cost']:9.0f} $/yr")
 '''),
 
 dict(title="Simulated annealing over the topology", md=r"""
@@ -202,11 +202,11 @@ Forbidden and material-incompatible pairs are never proposed. A short run in Pyt
 long ones in Rust, several chains in parallel.
 """, code=r'''
 sa_model = hen.Model(prob)
-t0 = time.perf_counter()
+_t0 = time.perf_counter()
 trace = []
 res = hen.anneal(sa_model, 150, seed=1, log=lambda it, tac: trace.append((it, tac)))
 best = res["best"]
-print(f"150 SA moves in {time.perf_counter() - t0:.1f} s, {res['nfev']} NLP function evaluations")
+print(f"150 SA moves in {time.perf_counter() - _t0:.1f} s, {res['nfev']} NLP function evaluations")
 print(f"best TAC = {best['tac']:.0f} $/yr, matches (hot, cold, stage): {best['net']['matches']}")
 print(f"sequential result for comparison: {seq['tac']:.0f} $/yr")
 figure([dict(x=[t[0] for t in trace], y=[t[1] for t in trace], mode="lines+markers", line=dict(shape="hv"))],

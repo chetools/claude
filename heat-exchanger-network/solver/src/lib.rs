@@ -1031,3 +1031,19 @@ pub unsafe extern "C" fn bench_optimize(netp: *const f64, nn: usize, reps: usize
     }
     s
 }
+
+/// TAC of `n` load vectors (rows of xp, n x matches) of one network; NaN where
+/// a vector violates an approach temperature or a utility load (WebGPU comparison).
+#[no_mangle]
+pub unsafe extern "C" fn eval_batch(netp: *const f64, nn: usize, xp: *const f64, n: usize) -> usize {
+    let m = model();
+    let net = Net::from_flat(slice(netp, nn), m.nh, m.nc);
+    let nm = net.matches.len();
+    let xs = slice(xp, n * nm);
+    let mut v = Vec::with_capacity(n);
+    for b in 0..n {
+        let ev = evaluate(m, &net, &xs[b * nm..(b + 1) * nm], 0.0, 0.0, 1.0, false, false);
+        v.push(if ev.ok { ev.tac } else { f64::NAN });
+    }
+    set_out(v)
+}
