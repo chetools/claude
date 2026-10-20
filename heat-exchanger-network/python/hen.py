@@ -670,8 +670,10 @@ def evaluate(model, net, x, tau=0.0, mu=0.0, scale=1.0, want_grad=False):
 
     def slack(s):
         nonlocal barrier, ok
-        if s <= 0.0:
+        if s < 0.0 or (s == 0.0 and tau > 0.0):
             ok = False
+            return 0.0
+        if tau == 0.0:                          # plain TAC: s = 0 is allowed
             return 0.0
         barrier -= math.log(s)
         return -tau / s                         # d(barrier term)/d s
@@ -692,7 +694,7 @@ def evaluate(model, net, x, tau=0.0, mu=0.0, scale=1.0, want_grad=False):
         tac += C
         units.append(dict(type="match", i=i, j=j, k=k, q=q, A=A, cost=C, dT1=a, dT2=b))
         dCs = dC / scale
-        gq += dCs * A / q
+        gq += dCs * A / q if q > 0.0 else 0.0
         ga += -dCs * A / L * La
         gb += -dCs * A / L * Lb
         gx[m] += gq
@@ -724,7 +726,7 @@ def evaluate(model, net, x, tau=0.0, mu=0.0, scale=1.0, want_grad=False):
         tac += C + C_op
         units.append(dict(type="cooler", i=i, u=o["u"], q=Q, A=A, cost=C, op=C_op, dT1=a, dT2=b))
         dCs = dC / scale
-        gQ += dCs * A / Q + o["cost"] / scale
+        gQ += (dCs * A / Q if Q > 0.0 else 0.0) + o["cost"] / scale
         ga += -dCs * A / L * La
         gth[i][K] += gQ * model.Fh[i] + ga
 
@@ -751,7 +753,7 @@ def evaluate(model, net, x, tau=0.0, mu=0.0, scale=1.0, want_grad=False):
         tac += C + C_op
         units.append(dict(type="heater", j=j, u=o["u"], q=Q, A=A, cost=C, op=C_op, dT1=a, dT2=b))
         dCs = dC / scale
-        gQ += dCs * A / Q + o["cost"] / scale
+        gQ += (dCs * A / Q if Q > 0.0 else 0.0) + o["cost"] / scale
         gb += -dCs * A / L * Lb
         gtc[j][0] += -gQ * model.Fc[j] - gb
 
@@ -1167,3 +1169,158 @@ def load_furman(path):
             else:
                 prob["cu"].append(dict(name=w[0], Tin=a, Tout=b, h=1.0, cost=c))
     return prob
+
+
+# =========================================================================
+# Sequential synthesis, step 3: from MILP matches to an optimised network
+# =========================================================================
+
+
+def network_from_matches(prob, milp):
+    """Put each process match of the MILP into its own stage, ordered from
+    the hot end by the mean temperature of the heat it exchanges, and give
+    each stream the utility the MILP used for it.  Returns (model, net, x0)."""
+    nH, nC = len(prob["hot"]), len(prob["cold"])
+    proc = [m for m in milp["matches"] if m["hot"] < nH and m["cold"] < nC]
+    proc.sort(key=lambda m: -m["Tmean"])
+    model = Model(dict(prob, stages=max(1, len(proc))))
+    matches = [(m["hot"], m["cold"], k) for k, m in enumerate(proc)]
+    x0 = [m["load"] for m in proc]
+    hu, cu = [-1] * nC, [-1] * nH
+    for j in range(nC):
+        used = [m for m in milp["matches"] if m["hot"] >= nH and m["cold"] == j]
+        if used:
+            u = max(used, key=lambda m: m["load"])["hot"] - nH
+            opts = [o["u"] for o in model.heat[j]]
+            hu[j] = opts.index(u) if u in opts else (0 if opts else -1)
+        elif model.heat[j]:
+            hu[j] = 0                   # allowed, the NLP decides the load
+    for i in range(nH):
+        used = [m for m in milp["matches"] if m["cold"] >= nC and m["hot"] == i]
+        if used:
+            u = max(used, key=lambda m: m["load"])["cold"] - nC
+            opts = [o["u"] for o in model.cool[i]]
+            cu[i] = opts.index(u) if u in opts else (0 if opts else -1)
+        elif model.cool[i]:
+            cu[i] = 0
+    return model, dict(matches=matches, hu=hu, cu=cu), x0
+
+
+def improve_placement(model, net, res, passes=2, max_iter=200):
+    """Greedy local search used after step 3: move single matches to other
+    stages and switch single utilities on/off; keep a change if it lowers
+    the SA objective (TAC + penalty for missed targets)."""
+    ref = res["tac"] if math.isfinite(res["tac"]) else 1e6
+    best, best_obj = res, objective(model, res, ref)
+    for _ in range(passes):
+        improved = False
+        cands = []
+        for m, (i, j, k) in enumerate(best["net"]["matches"]):
+            for k2 in range(model.K):
+                if k2 != k and (i, j, k2) not in best["net"]["matches"]:
+                    M = list(best["net"]["matches"])
+                    M[m] = (i, j, k2)
+                    cands.append(dict(best["net"], matches=sorted(M)))
+        for i in range(model.nH):
+            for u in range(-1, len(model.cool[i])):
+                if u != best["net"]["cu"][i]:
+                    cu = list(best["net"]["cu"])
+                    cu[i] = u
+                    cands.append(dict(best["net"], cu=cu))
+        for j in range(model.nC):
+            for u in range(-1, len(model.heat[j])):
+                if u != best["net"]["hu"][j]:
+                    hu = list(best["net"]["hu"])
+                    hu[j] = u
+                    cands.append(dict(best["net"], hu=hu))
+        for cand_net in cands:
+            x0 = warm_start(best["net"], best["x"], cand_net, model)
+            r = optimize_loads(model, cand_net, x0, max_iter=max_iter)
+            obj = objective(model, r, ref)
+            if obj < best_obj - 1e-9 * abs(best_obj):
+                best, best_obj, improved = r, obj, True
+        if not improved:
+            break
+    return best
+
+
+def units_tac(units, law, emat=None):
+    """TAC of a network given exchanger by exchanger with its terminal
+    temperatures, e.g. a network read from a paper.  units: list of dicts
+    q, Th_in, Th_out, Tc_in, Tc_out, h_hot, h_cold, and op (utility cost
+    $/kW yr, 0 for process matches).  Counter-current, exact LMTD."""
+    kind, p = law_params(law, ("CS", "CS"), 1.0)
+    tot, area, rows = 0.0, 0.0, []
+    for u in units:
+        a = u["Th_in"] - u["Tc_out"]
+        b = u["Th_out"] - u["Tc_in"]
+        L = lmtd(a, b)[0]
+        A = u["q"] / (overall_U(u["h_hot"], u["h_cold"]) * L)
+        C = unit_cost(kind, p, A)[0] + u.get("op", 0.0) * u["q"]
+        rows.append(dict(A=A, C=C, dTmin=min(a, b)))
+        tot += C
+        area += A
+    return dict(tac=tot, area=area, rows=rows)
+
+
+# =========================================================================
+# Illustrative stream sets (made up to show the effects; not plant data)
+# =========================================================================
+
+ANY = MATERIALS
+
+
+def seider_law(cepci=800.0, annual=None, p_psig=150.0, tube_ft=20, typ="floating head"):
+    """Seider et al. bare-module cost, annualised.  cepci is an editable
+    placeholder (the current index is paywalled)."""
+    return dict(kind="seider", type=typ, cepci=cepci, p_psig=p_psig, tube_ft=tube_ft, fbm=3.17,
+                annual=capital_recovery_factor(0.10, 10) if annual is None else annual)
+
+
+def illustrative(name, prices=None):
+    """Illustrative cases.  Utility prices come from utility_price()."""
+    pr = dict(DEFAULT_PRICES, **(prices or {}))
+    C = ILLUSTRATIVE[name]
+    s = lambda t: [dict(name=n, Tin=a, Tout=b, F=f, h=h, mat=list(m), note=note)
+                   for n, a, b, f, h, m, note in t]
+    hu = [dict(name=n, kind=k, Tin=a, Tout=b, h=h, mat=list(m), cost=utility_price(k, a, b, pr)[0])
+          for n, k, a, b, h, m in C["hu"]]
+    cu = [dict(name=n, kind=k, Tin=a, Tout=b, h=h, mat=list(m), cost=utility_price(k, a, b, pr)[0])
+          for n, k, a, b, h, m in C["cu"]]
+    hot, cold = s(C["hot"]), s(C["cold"])
+    forbid = [[(hs["name"], cs["name"]) in C["forbid"] for cs in cold] for hs in hot]
+    return dict(name=name, hot=hot, cold=cold, hu=hu, cu=cu, emat=C["emat"], law=seider_law(),
+                forbid=forbid, mult=[[1.0] * len(cold) for _ in hot], stages=C.get("stages"),
+                description=C["description"])
+
+
+ILLUSTRATIVE = {
+    "HF alkylation (illustrative)": dict(
+        description="HF-bearing streams need Monel; seawater needs titanium (or brass) tubes, so an "
+                    "HF stream and seawater share no tube material and cannot be matched.",
+        hot=[("H1 reactor effluent (HF)", 95, 40, 60, 0.8, ["Monel"], "HF acid: Monel"),
+             ("H2 isobutane recycle", 150, 60, 30, 1.0, ANY, ""),
+             ("H3 alkylate product", 185, 45, 20, 0.9, ANY, "")],
+        cold=[("C1 isostripper feed", 45, 140, 50, 0.9, ANY, ""),
+              ("C2 depropanizer feed (HF)", 40, 110, 25, 0.8, ["Monel"], "HF acid: Monel"),
+              ("C3 isostripper reboiler", 155, 160, 400, 2.0, ANY, "")],
+        hu=[("LP steam 165 C", "steam", 165, 165, 3.0, ANY),
+            ("MP steam 200 C", "steam", 200, 200, 3.0, ANY)],
+        cu=[("Cooling water 25-35 C", "cw", 25, 35, 1.5, ANY),
+            ("Seawater 20-30 C", "seawater", 20, 30, 1.5, ["Ti", "brass"])],
+        forbid=[], emat=10),
+    "Oxidation unit: oxygen vs hydrocarbons (illustrative)": dict(
+        description="Oxygen-rich streams must not be matched with hydrocarbon streams (a tube leak "
+                    "would bring them together), so those pairs are forbidden matches.",
+        hot=[("H1 oxidiser effluent", 260, 150, 20, 0.8, ANY, ""),
+             ("H2 heavy hydrocarbon product", 150, 40, 20, 0.6, ANY, "hydrocarbon"),
+             ("H3 compressed oxygen", 120, 40, 5, 0.4, ["SS", "Monel"], "oxygen")],
+        cold=[("C1 hydrocarbon feed", 30, 220, 15, 0.7, ANY, "hydrocarbon"),
+              ("C2 oxygen feed", 25, 140, 12, 0.4, ["SS", "Monel"], "oxygen"),
+              ("C3 boiler feed water", 105, 180, 10, 1.5, ANY, "")],
+        hu=[("HP steam 250 C", "steam", 250, 250, 3.0, ANY),
+            ("Fired heater (hot oil 320-280 C)", "furnace", 320, 280, 0.8, ANY)],
+        cu=[("Cooling water 25-35 C", "cw", 25, 35, 1.5, ANY)],
+        forbid=[("H2 heavy hydrocarbon product", "C2 oxygen feed"),
+                ("H3 compressed oxygen", "C1 hydrocarbon feed")], emat=10),
+}
