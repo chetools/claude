@@ -821,6 +821,7 @@ def lbfgs_level(model, net, y, sx, tau, mu, scale, max_iter=200, mem=8):
     g = [ev["grad"][m] * sx[m] for m in range(n)]
     S, Y = [], []
     nfev = 1
+    small = 0
     for it in range(max_iter):
         # two-loop recursion
         d = [-v for v in g]
@@ -868,7 +869,8 @@ def lbfgs_level(model, net, y, sx, tau, mu, scale, max_iter=200, mem=8):
                 Y.pop(0)
         df = f - evn["phi"]
         y, f, g = yn, evn["phi"], gn
-        if df <= 1e-12 * (abs(f) + 1e-12) or max(abs(v) for v in s) < 1e-12:
+        small = small + 1 if df <= 1e-12 * (abs(f) + 1e-12) else 0
+        if small >= 3 or max(abs(v) for v in s) < 1e-14:     # 3 tiny decreases in a row
             return y, f, nfev, it + 1
     return y, f, nfev, max_iter
 
@@ -1044,7 +1046,8 @@ def anneal(model, iters, seed, net0=None, T0=0.05, T1=1e-4, max_iter=200, log=No
             nfev += cand["nfev"]
             obj = objective(model, cand, ref)
             d = obj - cur_obj
-            if d < 0.0 or (math.isfinite(d) and rng.random() < math.exp(-d / T)):
+            u = rng.random()            # always drawn, so round-off cannot shift the stream
+            if d < 0.0 or (math.isfinite(d) and u < math.exp(-d / T)):
                 cur_net, cur, cur_obj = cand_net, cand, obj
                 if cur["feasible"] and (best is None or cur["tac"] < best["tac"]):
                     best = cur
@@ -1324,3 +1327,31 @@ ILLUSTRATIVE = {
         forbid=[("H2 heavy hydrocarbon product", "C2 oxygen feed"),
                 ("H3 compressed oxygen", "C1 hydrocarbon feed")], emat=10),
 }
+
+
+# =========================================================================
+# Flat layout shared with the Rust solver (Model::from_flat, Net::from_flat)
+# =========================================================================
+
+
+def flatten_model(model):
+    v = [model.nH, model.nC, model.K, model.emat]
+    for i in range(model.nH):
+        v += [model.Th_in[i], model.Th_out[i], model.Fh[i]]
+    for j in range(model.nC):
+        v += [model.Tc_in[j], model.Tc_out[j], model.Fc[j]]
+    for i in range(model.nH):
+        for j in range(model.nC):
+            v += [1.0 if model.allowed[i][j] else 0.0, model.U_pc[i][j], model.kind_pc[i][j]] + list(model.par_pc[i][j])
+    for opts in model.cool + model.heat:
+        v.append(len(opts))
+        for o in opts:
+            v += [o["u"], o["U"], o["kind"]] + list(o["par"]) + [o["Tin"], o["Tout"], o["cost"]]
+    return [float(a) for a in v]
+
+
+def flatten_net(net):
+    v = [len(net["matches"])]
+    for (i, j, k) in net["matches"]:
+        v += [i, j, k]
+    return [float(a) for a in v + list(net["hu"]) + list(net["cu"])]
