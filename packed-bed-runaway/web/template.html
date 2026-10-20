@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Packed-Bed Reactor &mdash; Hot Spots &amp; Runaway</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+@@COUETTE_CSS@@
+/* --- additions for this page --- */
+.side-h small{font-weight:400;color:var(--muted)}
+.field.check{display:flex;align-items:center;gap:.45rem}
+.field.check input{width:auto}
+.field.check label{margin:0}
+.sidebar details{margin:.6rem 0}
+.sidebar summary{cursor:pointer;font-weight:600;font-size:1.02rem;margin:1.1rem 0 .2rem}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.m-sub{font-size:.8rem;color:var(--muted)}
+.controls{display:flex;flex-wrap:wrap;gap:.8rem;align-items:flex-end;margin:.4rem 0 .8rem}
+.controls .field{margin:0;min-width:120px}
+.controls .field label{font-size:.82rem}
+.controls input,.controls select{padding:.35rem .5rem;border:1px solid #d0d3d9;border-radius:.4rem;
+  font-size:.92rem;background:#fff;color:var(--text);width:100%}
+.btn{display:inline-block;text-decoration:none;background:#fff;border:1px solid #d0d3d9;border-radius:.5rem;padding:.45rem .9rem;
+  font-size:.95rem;cursor:pointer;color:var(--text);font-family:inherit}
+.btn:hover{border-color:var(--st-red);color:var(--st-red)}
+.btn.primary{background:var(--st-red);border-color:var(--st-red);color:#fff}
+.btn.primary:hover{background:#e03c3c;color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.progress{height:6px;background:#e6e8ec;border-radius:3px;overflow:hidden;margin:.5rem 0;max-width:520px}
+.progress>div{height:100%;width:0;background:var(--st-red);transition:width .15s}
+.status{font-size:.88rem;color:var(--muted)}
+.pill{display:inline-block;font-size:.78rem;padding:.12rem .55rem;border-radius:1rem;
+  background:#eef0f4;color:var(--muted);vertical-align:middle;margin-left:.4rem}
+.pill.ready{background:#dcf5e3;color:#1a7f37}.pill.busy{background:#fff1d6;color:#8a5a00}
+.pill.fail{background:#fdecea;color:#8f2b22}
+table.data{border-collapse:collapse;font-size:.92rem;margin:.6rem 0}
+table.data th,table.data td{border-bottom:1px solid var(--card-border);padding:.35rem .7rem;text-align:right}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{font-weight:600;background:#fafbfc}
+td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
+.theory table{border-collapse:collapse;font-size:.93rem;margin:.8rem 0}
+.theory th,.theory td{border-bottom:1px solid var(--card-border);padding:.3rem .6rem;text-align:left;vertical-align:top}
+.theory th{background:#fafbfc}
+.theory code{background:#f3f4f6;padding:.05rem .3rem;border-radius:.25rem;font-size:.9em}
+.wt-out pre{background:#fff;border:1px dashed #d0d3d9;border-radius:.5rem;padding:.7rem 1rem;
+  margin:0;font-size:.84rem;overflow-x:auto;white-space:pre}
+.wt-out pre.err{color:#8f2b22;border-color:#f5c6c1}
+.wt-stepnum{font-size:.82rem;font-weight:600;color:var(--st-red);text-transform:uppercase;letter-spacing:.04em}
+.wt-title{font-size:1.2rem;font-weight:600;margin:.1rem 0 .3rem}
+.wt-meta{font-size:.78rem;color:var(--muted);margin-top:.25rem}
+.wt-plots{display:flex;flex-wrap:wrap;gap:.6rem}
+.wt-plot{flex:1 1 420px;min-width:0}
+details.wt-src summary{cursor:pointer;color:var(--muted);font-size:.88rem}
+.race-num{font-size:2.2rem;font-weight:600}
+.flex2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media (max-width: 900px){
+  .sidebar{position:static;width:auto}
+  .main{margin-left:0;padding:1rem 16px 3rem}
+  .charts,.flex2{grid-template-columns:1fr}
+  .tabs{flex-wrap:wrap}
+  .chart,.wt-plot,table.data{max-width:100%;overflow-x:auto}
+  h1{font-size:1.8rem}
+}
+@@PYGMENTS_CSS@@
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="field"><label for="in-preset">Preset</label>
+    <select id="in-preset">
+      <option value="safe">o-xylene, Froment base case (p&#8320; = 0.011 atm)</option>
+      <option value="near">o-xylene, near runaway (p&#8320; = 0.016 atm)</option>
+      <option value="runaway">o-xylene, runaway (p&#8320; = 0.019 atm)</option>
+      <option value="wide">o-xylene, wider tube (d&#8348; = 3.5 cm)</option>
+      <option value="custom">Custom</option>
+    </select></div>
+  <div class="side-h">Operating conditions</div>
+  <div class="field"><label for="in-Tin">Inlet temperature T<sub>in</sub> [K]</label>
+    <input id="in-Tin" type="number" step="1"></div>
+  <div class="field check"><input id="in-tie" type="checkbox" checked>
+    <label for="in-tie">Coolant at inlet temperature (T<sub>c</sub> = T<sub>in</sub>)</label></div>
+  <div class="field"><label for="in-Tc">Coolant temperature T<sub>c</sub> [K]</label>
+    <input id="in-Tc" type="number" step="1"></div>
+  <div class="field"><label for="in-p0">Feed o-xylene partial pressure p&#8320; [atm]</label>
+    <input id="in-p0" type="number" step="0.0005" min="0.0001"></div>
+  <div class="field"><label for="in-G">Mass flux G [kg/(m&sup2;&middot;h)]</label>
+    <input id="in-G" type="number" step="100" min="1"></div>
+  <div class="side-h">Tube</div>
+  <div class="row2">
+    <div class="field"><label for="in-dt">Diameter d<sub>t</sub> [cm]</label>
+      <input id="in-dt" type="number" step="0.1" min="0.2"></div>
+    <div class="field"><label for="in-L">Length L [m]</label>
+      <input id="in-L" type="number" step="0.1" min="0.05"></div>
+  </div>
+  <div class="side-h">Radial transport</div>
+  <div class="field"><label for="in-lam">Effective conductivity &lambda;<sub>er</sub> [W/(m&middot;K)]</label>
+    <input id="in-lam" type="number" step="0.05" min="0.001"></div>
+  <div class="field"><label for="in-aw">Wall coefficient &alpha;<sub>w</sub> [W/(m&sup2;&middot;K)]</label>
+    <input id="in-aw" type="number" step="5" min="0.1"></div>
+  <div class="row2">
+    <div class="field"><label for="in-Pem">Pe<sub>mr</sub> = u d<sub>p</sub>/D<sub>er</sub></label>
+      <input id="in-Pem" type="number" step="1" min="0.1"></div>
+    <div class="field"><label for="in-dp">d<sub>p</sub> [mm]</label>
+      <input id="in-dp" type="number" step="0.5" min="0.1"></div>
+  </div>
+  <details>
+    <summary>Kinetics &amp; properties</summary>
+    <div class="row2">
+      <div class="field"><label for="in-ER">E/R [K]</label><input id="in-ER" type="number" step="100"></div>
+      <div class="field"><label for="in-lnA">ln A</label><input id="in-lnA" type="number" step="0.1"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="in-dH">&minus;&Delta;H [kJ/mol]</label><input id="in-dH" type="number" step="10"></div>
+      <div class="field"><label for="in-pO2">p<sub>O&#8322;</sub> [atm]</label><input id="in-pO2" type="number" step="0.01"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="in-rhoB">&rho;<sub>B</sub> [kg/m&sup3;]</label><input id="in-rhoB" type="number" step="50"></div>
+      <div class="field"><label for="in-cp">c<sub>p</sub> [J/(kg&middot;K)]</label><input id="in-cp" type="number" step="10"></div>
+    </div>
+    <div class="field"><label for="in-Mm">Mean molar mass M<sub>m</sub> [kg/kmol]</label><input id="in-Mm" type="number" step="0.1"></div>
+    <div class="side-cap">k = exp(ln A &minus; (E/R)/T) in kmol/(kg<sub>cat</sub>&middot;h&middot;atm&sup2;);
+      rate = k p p<sub>O&#8322;</sub> (Froment).</div>
+  </details>
+  <details>
+    <summary>Numerics</summary>
+    <div class="row2">
+      <div class="field"><label for="in-N">Radial cells N</label><input id="in-N" type="number" step="2" min="4" max="120"></div>
+      <div class="field"><label for="in-rtol">rtol</label>
+        <select id="in-rtol"><option>1e-4</option><option selected>1e-5</option><option>1e-6</option><option>1e-7</option></select></div>
+    </div>
+  </details>
+  <div class="side-foot">Steady 2D pseudo-homogeneous model (plug flow, radial dispersion),
+    method of lines + Rosenbrock 2(3). Visuals computed by Rust&nbsp;&rarr;&nbsp;WebAssembly;
+    Python (Pyodide) reference <span id="py-pill" class="pill">Python: idle</span></div>
+</aside>
+<main class="main">
+  <div id="fatal" class="err" hidden></div>
+  <div id="app">
+    <h1>Packed-bed reactor: hot spots &amp; runaway</h1>
+    <p class="intro">A wall-cooled catalytic tube (o-xylene &rarr; phthalic anhydride, Froment's data)
+    modelled in 2D (radial + axial) and solved by the method of lines. The hot spot is mapped together with
+    its <b>parametric sensitivity</b>: how strongly the hot-spot temperature responds to small changes
+    in the inputs, which is what makes runaway so abrupt. Rust (compiled to
+    WebAssembly) does the fast computing; a Python/numpy/scipy reference confirms it.</p>
+    <div id="err" class="err" hidden></div>
+    <div class="metrics">
+      <div class="metric"><div class="m-label">Hot-spot temperature T*</div>
+        <div class="m-value" id="m-T">&ndash;</div><div class="m-sub" id="m-T-sub"></div></div>
+      <div class="metric"><div class="m-label">Hot-spot location</div>
+        <div class="m-value" id="m-loc">&ndash;</div><div class="m-sub" id="m-loc-sub"></div></div>
+      <div class="metric"><div class="m-label">Outlet conversion (cup-mixing)</div>
+        <div class="m-value" id="m-x">&ndash;</div><div class="m-sub" id="m-x-sub"></div></div>
+      <div class="metric"><div class="m-label">Sensitivity s(T*; p&#8320;)</div>
+        <div class="m-value" id="m-s">&ndash;</div><div class="m-sub" id="m-s-sub"></div></div>
+    </div>
+    <p class="caption" id="groups-cap"></p>
+    <nav class="tabs" data-panels="tpanel">
+      <button data-tab="panel-app" class="active">App</button>
+      <button data-tab="panel-theory">Theory</button>
+      <button data-tab="panel-python">Python (step by step)</button>
+      <button data-tab="panel-rust">Rust</button>
+      <button data-tab="panel-compare">Rust vs Python</button>
+      <button data-tab="panel-perf">Performance</button>
+    </nav>
+
+    <!-- ============================== APP ============================== -->
+    <section id="panel-app" class="tpanel">
+      <nav class="tabs" data-panels="spanel">
+        <button data-tab="sub-hot" class="active">Hot spot</button>
+        <button data-tab="sub-sweep">Sensitivity sweep</button>
+        <button data-tab="sub-map">Sensitivity map</button>
+      </nav>
+      <section id="sub-hot" class="spanel">
+        <div class="charts">
+          <div class="chart" id="chart-T"></div>
+          <div class="chart" id="chart-X"></div>
+          <div class="chart" id="chart-ax"></div>
+          <div class="chart" id="chart-rad"></div>
+        </div>
+        <div class="note" id="hot-note">The tube is drawn mirrored about its axis (r &lt; 0 is the
+        other half). The hot spot sits on the axis: heat released there has to be conducted across
+        the packing before the coolant can take it away. Drag on a chart to zoom; double-click to reset.</div>
+      </section>
+      <section id="sub-sweep" class="spanel" hidden>
+        <div class="controls">
+          <div class="field"><label for="sw-param">Swept input &phi;</label>
+            <select id="sw-param">
+              <option value="p0">Feed partial pressure p&#8320;</option>
+              <option value="Tc">Coolant temperature T<sub>c</sub></option>
+              <option value="aw">Wall coefficient &alpha;<sub>w</sub></option>
+              <option value="lam">Conductivity &lambda;<sub>er</sub></option>
+              <option value="dt">Tube diameter d<sub>t</sub></option>
+              <option value="G">Mass flux G</option>
+            </select></div>
+          <div class="field"><label for="sw-lo">from (&times; current)</label><input id="sw-lo" type="number" value="0.5" step="0.05"></div>
+          <div class="field"><label for="sw-hi">to (&times; current)</label><input id="sw-hi" type="number" value="2" step="0.05"></div>
+          <div class="field"><label for="sw-n">points</label><input id="sw-n" type="number" value="61" step="10" min="5" max="400"></div>
+        </div>
+        <p class="caption">For temperatures the range is in kelvin around the current value (from/to are
+        then offsets, e.g. &minus;25 to +25). With T<sub>c</sub> tied to T<sub>in</sub>, both move together.</p>
+        <div class="charts">
+          <div class="chart" id="chart-swT"></div>
+          <div class="chart" id="chart-sws"></div>
+        </div>
+        <div class="note" id="sw-note"></div>
+      </section>
+      <section id="sub-map" class="spanel" hidden>
+        <div class="controls">
+          <div class="field"><label for="map-n">Grid</label>
+            <select id="map-n"><option value="24">24 &times; 24</option><option value="36" selected>36 &times; 36</option>
+              <option value="48">48 &times; 48</option><option value="64">64 &times; 64</option></select></div>
+          <div class="field"><label for="map-dT">T<sub>c</sub> range &plusmn; [K]</label><input id="map-dT" type="number" value="25" step="5"></div>
+          <div class="field"><label for="map-plo">p&#8320; from (&times;)</label><input id="map-plo" type="number" value="0.5" step="0.1"></div>
+          <div class="field"><label for="map-phi">p&#8320; to (&times;)</label><input id="map-phi" type="number" value="2" step="0.1"></div>
+          <div><button class="btn primary" id="map-go">Recompute map</button></div>
+        </div>
+        <div class="progress"><div id="map-bar"></div></div>
+        <div class="status" id="map-status"></div>
+        <div class="charts">
+          <div class="chart" id="chart-map"></div>
+          <div class="chart" id="chart-mapT"></div>
+        </div>
+        <div class="note">Each pixel is a full 2D solve with the sensitivity s = (p&#8320;/T*)&middot;&part;T*/&part;p&#8320;
+        computed by automatic differentiation in the same pass. The bright band of high |s| is where the
+        hot spot is most sensitive; beyond it (richer feed or hotter coolant) the hot-spot temperature
+        jumps by hundreds of kelvin, as the right-hand map shows.</div>
+      </section>
+    </section>
+
+    <!-- ============================== THEORY ============================== -->
+    <section id="panel-theory" class="tpanel" hidden>
+      <div class="theory">@@THEORY@@</div>
+    </section>
+
+    <!-- ============================== PYTHON ============================== -->
+    <section id="panel-python" class="tpanel" hidden>
+      <nav class="tabs" data-panels="ppanel">
+        <button data-tab="sub-wt" class="active">Step-by-step breakdown</button>
+        <button data-tab="sub-pysrc">pbr.py (full source)</button>
+        <button data-tab="sub-pytest">Tests</button>
+      </nav>
+      <section id="sub-wt" class="ppanel">
+        <p>The Python reference, <code>pbr.py</code>, explained one step at a time. Every output below
+        was produced by actually running the cell (CPython, when this page was built, with the base-case
+        inputs). Press <b>Run live</b> to re-execute all cells in your browser (Pyodide) with the
+        inputs currently in the sidebar.</p>
+        <div class="controls"><button class="btn primary" id="wt-live" disabled>Run live with my inputs</button>
+          <a class="btn" href="@@MOLAB_URL@@" target="_blank" rel="noopener">Open editable notebook in MoLab</a>
+          <span class="status" id="wt-status">Waiting for Python to load&hellip;</span></div>
+        @@WALKTHROUGH@@
+        <h3>Editable notebook</h3>
+        <ul><li><a href="@@MOLAB_URL@@" target="_blank" rel="noopener">Open the editable notebook in MoLab (signed in)</a></li>
+          <li><a href="walkthrough_molab.py" download>Download the notebook (.py)</a> to run locally with
+            <code>marimo edit walkthrough_molab.py</code></li></ul>
+        <p class="caption">The MoLab notebook is editable; run all cells once after opening (notebook-level Run).
+        It has the same steps and code as above, with <code>pbr.py</code> embedded and an inputs cell to edit.</p>
+      </section>
+      <section id="sub-pysrc" class="ppanel" hidden>
+        <p>The complete reference implementation. Functions appear in the same order as in the Rust file.</p>
+        @@PY_SRC@@
+      </section>
+      <section id="sub-pytest" class="ppanel" hidden>
+        <p><code>test_pbr.py</code>: an exact Bessel-series solution for cooling without reaction, agreement with
+        scipy's BDF, and a bit-level comparison against values printed by the Rust solver
+        (<code>cargo run --release --example dump</code>).</p>
+        @@PY_TEST@@
+      </section>
+    </section>
+
+    <!-- ============================== RUST ============================== -->
+    <section id="panel-rust" class="tpanel" hidden>
+      <nav class="tabs" data-panels="rpanel">
+        <button data-tab="sub-guide" class="active">Rust for Python readers</button>
+        <button data-tab="sub-why">Why Rust is fast</button>
+        <button data-tab="sub-rssrc">lib.rs (full source)</button>
+        <button data-tab="sub-rstest">Tests</button>
+      </nav>
+      <section id="sub-guide" class="rpanel"><div class="theory">@@RUST_GUIDE@@</div></section>
+      <section id="sub-why" class="rpanel" hidden><div class="theory">@@WHY_FAST@@</div></section>
+      <section id="sub-rssrc" class="rpanel" hidden>
+        <p>The solver that drives every chart in the App tab, compiled to a @@WASM_KB@@&nbsp;kB WebAssembly module
+        embedded in this page.</p>
+        @@RS_SRC@@
+      </section>
+      <section id="sub-rstest" class="rpanel" hidden>
+        <p><code>cargo test --release</code>: adiabatic invariant, AD gradient vs. hand-derived, block Thomas
+        vs. dense elimination, AD sensitivity vs. finite differences, and second-order grid convergence.</p>
+        @@RS_TEST@@
+      </section>
+    </section>
+
+    <!-- ============================== COMPARE ============================== -->
+    <section id="panel-compare" class="tpanel" hidden>
+      <p>Runs the <b>same case</b> (current sidebar inputs) three ways and compares the results.
+      <b>Rust Rosenbrock</b> is the WebAssembly solver behind the App tab. <b>Python Rosenbrock</b> is
+      <code>pbr.integrate</code>, the same algorithm in numpy, so it should agree to round-off and take
+      the identical steps. <b>scipy BDF</b> is an independent method at a tight tolerance, so it should agree
+      to within the requested tolerance. Sensitivities are compared too: Rust differentiates
+      automatically, Python uses central finite differences.</p>
+      <div class="controls"><button class="btn primary" id="cmp-go" disabled>Compare at current inputs</button>
+        <span class="status" id="cmp-status">Waiting for Python to load&hellip;</span></div>
+      <div id="cmp-table"></div>
+      <div class="charts">
+        <div class="chart" id="chart-cmp-prof"></div>
+        <div class="chart" id="chart-cmp-diff"></div>
+      </div>
+      <div id="cmp-sens"></div>
+    </section>
+
+    <!-- ============================== PERFORMANCE ============================== -->
+    <section id="panel-perf" class="tpanel" hidden>
+      <p>A race on identical work: a sweep of the coolant temperature, one full 2D solve per point.
+      Python first times a single solve, then picks the number of points K so that <b>its</b> sweep takes
+      about 10&nbsp;seconds. Rust then runs the same K solves on one thread, and again on all cores.
+      Both run in your browser as WebAssembly. Python runs in a background worker, so the page stays responsive.</p>
+      <div class="controls"><button class="btn primary" id="race-go" disabled>Run the race (&asymp; 15 s)</button>
+        <span class="status" id="race-status">Waiting for Python to load&hellip;</span></div>
+      <div class="progress"><div id="race-bar"></div></div>
+      <div class="metrics" id="race-metrics" hidden>
+        <div class="metric"><div class="m-label">Python (numpy/scipy)</div><div class="m-value" id="r-py">&ndash;</div><div class="m-sub" id="r-py-sub"></div></div>
+        <div class="metric"><div class="m-label">Rust, 1 thread</div><div class="m-value" id="r-rs1">&ndash;</div><div class="m-sub" id="r-rs1-sub"></div></div>
+        <div class="metric"><div class="m-label">Rust, all cores</div><div class="m-value" id="r-rsn">&ndash;</div><div class="m-sub" id="r-rsn-sub"></div></div>
+        <div class="metric"><div class="m-label">Speed-up (1 thread)</div><div class="m-value" id="r-x">&ndash;</div><div class="m-sub" id="r-x-sub"></div></div>
+      </div>
+      <div class="charts">
+        <div class="chart" id="chart-race"></div>
+        <div class="chart" id="chart-race-T"></div>
+      </div>
+      <h3>Where the time goes</h3>
+      <div id="micro-perf"><p class="status">Measured after the race (per call, current inputs, N radial cells).</p></div>
+    </section>
+  </div>
+</main>
+<script>@@PLOTLY@@</script>
+<script>
+const WASM_B64 = "@@WASM_B64@@";
+const WT_PLOTS = @@WT_PLOTS@@;
+const WT_CELLS = @@WT_CELLS@@;
+const PY_FILES = @@PY_FILES@@;
+</script>
+<script>@@APP_JS@@</script>
+</body>
+</html>
