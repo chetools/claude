@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Packed Bed on the GPU &mdash; Flow, Permeability &amp; RTD</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+@@COUETTE_CSS@@
+/* --- additions for this page --- */
+.side-h small{font-weight:400;color:var(--muted)}
+.field.check{display:flex;align-items:center;gap:.45rem}
+.field.check input{width:auto}
+.field.check label{margin:0}
+.sidebar details{margin:.6rem 0}
+.sidebar summary{cursor:pointer;font-weight:600;font-size:1.02rem;margin:1.1rem 0 .2rem}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.m-sub{font-size:.8rem;color:var(--muted)}
+.controls{display:flex;flex-wrap:wrap;gap:.8rem;align-items:flex-end;margin:.4rem 0 .8rem}
+.controls .field{margin:0;min-width:120px}
+.controls .field label{font-size:.82rem}
+.controls input,.controls select{padding:.35rem .5rem;border:1px solid #d0d3d9;border-radius:.4rem;
+  font-size:.92rem;background:#fff;color:var(--text);width:100%}
+.controls .field.check input{width:auto}
+.btn{display:inline-block;text-decoration:none;background:#fff;border:1px solid #d0d3d9;border-radius:.5rem;padding:.45rem .9rem;
+  font-size:.95rem;cursor:pointer;color:var(--text);font-family:inherit}
+.btn:hover{border-color:var(--st-red);color:var(--st-red)}
+.btn.primary{background:var(--st-red);border-color:var(--st-red);color:#fff}
+.btn.primary:hover{background:#e03c3c;color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.progress{height:6px;background:#e6e8ec;border-radius:3px;overflow:hidden;margin:.5rem 0;max-width:520px}
+.progress>div{height:100%;width:0;background:var(--st-red);transition:width .15s}
+.status{font-size:.88rem;color:var(--muted)}
+.pill{display:inline-block;font-size:.78rem;padding:.12rem .55rem;border-radius:1rem;
+  background:#eef0f4;color:var(--muted);vertical-align:middle;margin-left:.4rem}
+.pill.ready{background:#dcf5e3;color:#1a7f37}.pill.busy{background:#fff1d6;color:#8a5a00}
+.pill.fail{background:#fdecea;color:#8f2b22}
+table.data{border-collapse:collapse;font-size:.92rem;margin:.6rem 0}
+table.data th,table.data td{border-bottom:1px solid var(--card-border);padding:.35rem .7rem;text-align:right}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{font-weight:600;background:#fafbfc}
+td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
+.theory table{border-collapse:collapse;font-size:.93rem;margin:.8rem 0}
+.theory th,.theory td{border-bottom:1px solid var(--card-border);padding:.3rem .6rem;text-align:left;vertical-align:top}
+.theory th{background:#fafbfc}
+.theory code{background:#f3f4f6;padding:.05rem .3rem;border-radius:.25rem;font-size:.9em}
+.wt-out pre{background:#fff;border:1px dashed #d0d3d9;border-radius:.5rem;padding:.7rem 1rem;
+  margin:0;font-size:.84rem;overflow-x:auto;white-space:pre}
+.wt-out pre.err{color:#8f2b22;border-color:#f5c6c1}
+.wt-step{margin:1.6rem 0 2rem}
+.wt-stepnum{font-size:.82rem;font-weight:600;color:var(--st-red);text-transform:uppercase;letter-spacing:.04em}
+.wt-title{font-size:1.2rem;font-weight:600;margin:.1rem 0 .3rem}
+.wt-prose{max-width:78ch}
+.wt-prose .eq{text-align:center;margin:.8rem 0;overflow-x:auto}
+.wt-code summary{cursor:pointer;color:var(--muted);font-size:.88rem;margin:.4rem 0}
+.wt-meta{font-size:.78rem;color:var(--muted);margin-top:.25rem}
+.wt-plots{display:flex;flex-wrap:wrap;gap:.6rem}
+.wt-plot{flex:1 1 420px;min-width:0}
+.race-num{font-size:2.2rem;font-weight:600}
+.cv-wrap{position:relative;width:100%;background:#f4f6fa;border:1px solid var(--card-border);border-radius:.4rem;overflow:hidden}
+.lbm-canvas{width:100%;height:100%;display:block;image-rendering:auto;touch-action:none;cursor:crosshair}
+.cv-cap{font-size:.82rem;color:var(--muted);margin:.35rem 0 .6rem}
+@media (max-width: 900px){
+  .sidebar{position:static;width:auto}
+  .main{margin-left:0;padding:1rem 16px 3rem}
+  .charts{grid-template-columns:1fr}
+  .tabs{flex-wrap:wrap}
+  .chart,.wt-plot,table.data{max-width:100%;overflow-x:auto}
+  h1{font-size:1.8rem}
+}
+@@PYGMENTS_CSS@@
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="field"><label for="in-preset">Preset</label>
+    <select id="in-preset">
+      <option value="random">Random bed of disks, &epsilon; &asymp; 0.65</option>
+      <option value="dense">Dense random bed, &epsilon; &asymp; 0.55</option>
+      <option value="loose">Loose random bed, &epsilon; &asymp; 0.8</option>
+      <option value="poly">Polydisperse bed (&plusmn;45 % diameter)</option>
+      <option value="wall">Bed between two walls (wall channeling)</option>
+      <option value="square">Square array of cylinders</option>
+      <option value="staggered">Staggered array of cylinders</option>
+      <option value="channel">Empty channel: Poiseuille &amp; Taylor&ndash;Aris</option>
+      <option value="big">Large bed, 1280 &times; 512 cells</option>
+      <option value="custom">Custom</option>
+    </select></div>
+  <div class="side-h">Bed</div>
+  <div class="field"><label for="in-layout">Layout</label>
+    <select id="in-layout"><option value="random">random (sequential addition)</option><option value="square">square array</option>
+      <option value="staggered">staggered array</option><option value="empty">no particles</option></select></div>
+  <div class="row2">
+    <div class="field"><label for="in-porosity">Porosity &epsilon;</label><input id="in-porosity" type="number" step="0.01" min="0.3" max="0.97"></div>
+    <div class="field"><label for="in-gap">Min. gap / d</label><input id="in-gap" type="number" step="0.01" min="0"></div>
+  </div>
+  <div class="row2">
+    <div class="field"><label for="in-spread">Size spread &plusmn;</label><input id="in-spread" type="number" step="0.05" min="0" max="0.9"></div>
+    <div class="field"><label for="in-seed">Random seed</label><input id="in-seed" type="number" step="1"></div>
+  </div>
+  <div class="row2">
+    <div class="field"><label for="in-Lx">Length L<sub>x</sub> / d</label><input id="in-Lx" type="number" step="1" min="6"></div>
+    <div class="field"><label for="in-Ly">Height L<sub>y</sub> / d</label><input id="in-Ly" type="number" step="1" min="1"></div>
+  </div>
+  <div class="field check"><input id="in-walls" type="checkbox"><label for="in-walls">Solid walls top and bottom</label></div>
+  <div class="side-h">Lattice</div>
+  <div class="row2">
+    <div class="field"><label for="in-D">Cells per diameter D</label>
+      <select id="in-D"><option>8</option><option>10</option><option>12</option><option>16</option><option selected>24</option><option>32</option><option>48</option><option>64</option></select></div>
+    <div class="field"><label for="in-tau">Relaxation &tau;</label><input id="in-tau" type="number" step="0.05" min="0.505" max="3"></div>
+  </div>
+  <div class="field"><label for="in-coll">Collision model</label>
+    <select id="in-coll"><option value="trt316">TRT, &Lambda; = 3/16 (exact walls)</option><option value="trt14">TRT, &Lambda; = 1/4</option>
+      <option value="bgk">BGK (single relaxation time)</option></select></div>
+  <div class="side-h">Flow</div>
+  <div class="field"><label for="in-Re">Particle Reynolds number Re<sub>p</sub> = U<sub>s</sub>d/&nu;</label><input id="in-Re" type="number" step="0.5" min="0.01"></div>
+  <div class="field check"><input id="in-auto" type="checkbox" checked><label for="in-auto">Adjust the driving force to hold Re</label></div>
+  <div class="side-h">Tracer</div>
+  <div class="row2">
+    <div class="field"><label for="in-Pe">Pe<sub>m</sub> = u d / D<sub>m</sub></label><input id="in-Pe" type="number" step="5" min="0.1"></div>
+    <div class="field"><label for="in-pulse">Pulse width (d/u)</label><input id="in-pulse" type="number" step="0.1" min="0.05"></div>
+  </div>
+  <details>
+    <summary>Physical units</summary>
+    <div class="field"><label for="in-dp">Particle diameter d<sub>p</sub> [mm]</label><input id="in-dp" type="number" step="0.5" min="0.001"></div>
+    <div class="row2">
+      <div class="field"><label for="in-nuSI">&nu; [m&sup2;/s]</label><input id="in-nuSI" type="number" step="1e-7" min="1e-9"></div>
+      <div class="field"><label for="in-rhoSI">&rho; [kg/m&sup3;]</label><input id="in-rhoSI" type="number" step="10" min="0.01"></div>
+    </div>
+    <div class="side-cap">Used only to express results in SI units (water at 20 &deg;C: &nu; = 10<sup>&minus;6</sup> m&sup2;/s).</div>
+  </details>
+  <div class="side-foot">2D lattice-Boltzmann (D2Q9 TRT flow, D2Q5 tracer) running on your GPU through WebGPU.
+    <span id="backend-pill" class="pill">starting&hellip;</span><br>Python (Pyodide) reference
+    <span id="py-pill" class="pill">Python: idle</span></div>
+</aside>
+<main class="main">
+  <div id="fatal" class="err" hidden></div>
+  <div id="app">
+    <h1>Packed bed on the GPU: flow, permeability &amp; RTD</h1>
+    <p class="intro">Fluid flows through a bed of particles, solved at the pore scale with the lattice-Boltzmann method. Each cell
+    of the grid is updated in parallel by your graphics card (WebGPU), so the flow is computed live: millions of cell
+    updates per frame. From the simulated flow you can measure the <b>permeability</b> and compare it with Kozeny&ndash;Carman and Ergun,
+    see <b>channeling</b>, and release a tracer pulse to obtain the <b>residence-time distribution</b> and the axial dispersion coefficient.</p>
+    <div id="gpu-warn" class="warn" hidden></div>
+    <div id="err" class="err" hidden></div>
+    <div class="metrics">
+      <div class="metric"><div class="m-label">Porosity &epsilon;</div><div class="m-value" id="m-eps">&ndash;</div><div class="m-sub" id="m-eps-sub"></div></div>
+      <div class="metric"><div class="m-label">Reynolds Re<sub>p</sub></div><div class="m-value" id="m-re">&ndash;</div><div class="m-sub" id="m-re-sub"></div></div>
+      <div class="metric"><div class="m-label">Permeability k/d&sup2;</div><div class="m-value" id="m-k">&ndash;</div><div class="m-sub" id="m-k-sub"></div></div>
+      <div class="metric"><div class="m-label">Pressure gradient</div><div class="m-value" id="m-dp">&ndash;</div><div class="m-sub" id="m-dp-sub"></div></div>
+      <div class="metric"><div class="m-label">Axial dispersion D<sub>L</sub>/D<sub>m</sub></div><div class="m-value" id="m-dl">&ndash;</div><div class="m-sub" id="m-dl-sub"></div></div>
+      <div class="metric"><div class="m-label">Throughput (MLUPS)</div><div class="m-value" id="m-mlups">&ndash;</div><div class="m-sub" id="m-mlups-sub"></div></div>
+    </div>
+    <nav class="tabs" data-panels="tpanel">
+      <button data-tab="panel-app" class="active">App</button>
+      <button data-tab="panel-theory">Theory</button>
+      <button data-tab="panel-python">Python (step by step)</button>
+      <button data-tab="panel-gpu">WebGPU</button>
+      <button data-tab="panel-compare">GPU vs Python</button>
+      <button data-tab="panel-perf">Performance</button>
+    </nav>
+
+    <!-- ============================== APP ============================== -->
+    <section id="panel-app" class="tpanel">
+      <nav class="tabs" data-panels="spanel">
+        <button data-tab="sub-flow" class="active">Flow field</button>
+        <button data-tab="sub-rtd">Tracer &amp; RTD</button>
+        <button data-tab="sub-perm">Permeability &amp; Ergun</button>
+      </nav>
+      <section id="sub-flow" class="spanel">
+        <div class="controls">
+          <div><button class="btn primary" id="btn-play">Pause</button></div>
+          <div><button class="btn" id="btn-inject">Inject tracer pulse</button></div>
+          <div><button class="btn" id="btn-reset">Restart flow</button></div>
+          <div><button class="btn" id="btn-seed">New random bed</button></div>
+          <div class="field"><label for="view-mode">Show</label>
+            <select id="view-mode"><option value="speed">speed |u|</option><option value="vort">vorticity</option>
+              <option value="tracer">tracer concentration</option><option value="tracerlog">tracer, log scale</option><option value="pressure">pressure</option></select></div>
+          <div class="field"><label for="view-scale">Colour gain</label>
+            <select id="view-scale"><option>0.5</option><option selected>1</option><option>2</option><option>4</option><option>10</option></select></div>
+          <div class="field"><label for="edit-mode">Mouse</label>
+            <select id="edit-mode"><option value="off">look only</option><option value="add">add particles</option><option value="remove">remove particles</option></select></div>
+          <div class="field check"><input id="btn-freeze" type="checkbox"><label for="btn-freeze">Freeze flow (tracer only)</label></div>
+        </div>
+        <div class="cv-wrap" id="cv-wrap"><canvas id="lbm-canvas" class="lbm-canvas"></canvas></div>
+        <div class="cv-cap"><span id="bed-info"></span> <span id="conv" class="pill">developing</span></div>
+        <div class="charts">
+          <div class="chart" id="chart-k"></div>
+          <div class="chart" id="chart-det"></div>
+        </div>
+        <div class="note">Flow is from left to right, driven by a uniform body force that stands in for the pressure gradient. The domain is
+        periodic, so particles leaving one edge re-enter at the opposite one. Most of the flow goes through a few connected wide pores:
+        this is <b>channeling</b>. Switch the view to <i>vorticity</i> to see the shear layers around the particles. Use <i>Mouse: add particles</i>
+        to block a channel and watch the permeability drop. The colours are scaled to the current maximum anywhere in the bed (gain &times;1). The tracer's <i>log scale</i> spans three decades, showing
+        the slow release from stagnant pockets that makes the long RTD tail.</div>
+      </section>
+      <section id="sub-rtd" class="spanel" hidden>
+        <p>Once the flow is steady, press <b>Inject tracer pulse</b> on the <i>Flow field</i> tab. A square pulse of tracer (width set in the
+        sidebar) enters at the inlet, <i>x</i> = 0. Two detectors 2&nbsp;<i>d</i> from either end record the flow-weighted (cup-mixing)
+        concentration. The analysis below uses the <b>difference</b> between the two detectors, so it does not depend on what happens at the
+        inlet and outlet (Theory &sect;9). Ticking <i>Freeze flow</i> runs only the tracer, which is about twice as fast once the flow is steady.</p>
+        <p class="status" id="rtd-status">No pulse yet.</p>
+        <div class="charts">
+          <div class="chart" id="chart-E"></div>
+          <div class="chart" id="chart-F"></div>
+        </div>
+        <div id="rtd-table"></div>
+        <div class="note">Try raising <i>Pe<sub>m</sub></i> (slower molecular diffusion): D<sub>L</sub>/D<sub>m</sub> grows almost in
+        proportion. This is mechanical dispersion, where streams that take different paths through the bed spread the pulse
+        regardless of molecular diffusion. In the empty-channel preset, compare the result with Taylor&ndash;Aris dispersion.</div>
+      </section>
+      <section id="sub-perm" class="spanel" hidden>
+        <h3>Permeability vs porosity</h3>
+        <p>Builds a series of beds with the current layout, seed and grid, runs each to steady creeping flow (Re<sub>p</sub> = 0.05,
+        &tau; = 1.5) and measures k. The Kozeny constant fitted to all beds shows how far the capillary-bundle picture holds.</p>
+        <div class="controls"><button class="btn primary" id="sw-eps-go">Run porosity sweep</button>
+          <span class="status" id="sw-eps-status"></span></div>
+        <div class="progress"><div id="sw-eps-bar"></div></div>
+        <div class="chart" id="chart-eps"></div>
+        <p class="caption" id="sw-eps-note"></p>
+        <h3>From Darcy to Ergun: the Reynolds sweep</h3>
+        <p>The current bed is driven harder and harder. To keep the lattice Mach number low, the viscosity is lowered at
+        high Re, which is allowed because with TRT the steady flow does not depend on &tau; (Theory &sect;5). The friction factor is
+        compared with Ergun's equation.</p>
+        <div class="controls"><button class="btn primary" id="sw-re-go">Run Reynolds sweep</button>
+          <span class="status" id="sw-re-status"></span></div>
+        <div class="progress"><div id="sw-re-bar"></div></div>
+        <div class="chart" id="chart-re"></div>
+        <p class="caption" id="sw-re-note"></p>
+      </section>
+    </section>
+
+    <!-- ============================== THEORY ============================== -->
+    <section id="panel-theory" class="tpanel" hidden>
+      <div class="theory">@@THEORY@@</div>
+    </section>
+
+    <!-- ============================== PYTHON ============================== -->
+    <section id="panel-python" class="tpanel" hidden>
+      <nav class="tabs" data-panels="ppanel">
+        <button data-tab="sub-wt" class="active">Step-by-step breakdown</button>
+        <button data-tab="sub-pysrc">lbm.py (full source)</button>
+        <button data-tab="sub-pytest">Tests</button>
+      </nav>
+      <section id="sub-wt" class="ppanel">
+        <p>The Python reference, <code>lbm.py</code>, explained one step at a time. Every output below was produced by actually
+        running the cell (CPython, when this page was built, with the default inputs). Press <b>Run live</b> to re-execute all cells
+        in your browser (Pyodide) with the bed and flow inputs from the sidebar. Plain numpy is far slower than the GPU, so the live run uses
+        a coarser grid (about 10 cells per diameter) of the same bed.</p>
+        <div class="controls"><button class="btn primary" id="wt-live" disabled>Run live with my inputs</button>
+          <a class="btn" href="@@MOLAB_URL@@" target="_blank" rel="noopener">Open editable notebook in MoLab</a>
+          <span class="status" id="wt-status">Waiting for Python to load&hellip;</span></div>
+        @@WALKTHROUGH@@
+        <h3>Editable notebook</h3>
+        <ul><li><a href="@@MOLAB_URL@@" target="_blank" rel="noopener">Open the editable notebook in MoLab (signed in)</a></li>
+          <li><a href="walkthrough_molab.py" download>Download the notebook (.py)</a> to run locally with
+            <code>marimo edit walkthrough_molab.py</code></li></ul>
+        <p class="caption">The MoLab notebook is editable; run all cells once after opening (notebook-level Run).
+        It has the same steps and code as above, with <code>lbm.py</code> embedded and an inputs cell to edit.</p>
+      </section>
+      <section id="sub-pysrc" class="ppanel" hidden>
+        <p>The complete reference implementation. The WebGPU shaders implement the same functions under the same names.</p>
+        @@PY_SRC@@
+      </section>
+      <section id="sub-pytest" class="ppanel" hidden>
+        <p><code>test_lbm.py</code> checks the lattice symmetries and exact conservation. It also checks exact plane Poiseuille flow with TRT,
+        the permeability of square arrays against Sangani &amp; Acrivos and Gebart, the &tau;-independence of the TRT permeability,
+        tracer dispersion in uniform flow, the moment analysis, and agreement with the page's JavaScript solver on the same bed.</p>
+        @@PY_TEST@@
+      </section>
+    </section>
+
+    <!-- ============================== WEBGPU ============================== -->
+    <section id="panel-gpu" class="tpanel" hidden>
+      <nav class="tabs" data-panels="gpanel">
+        <button data-tab="sub-guide" class="active">WGSL for Python readers</button>
+        <button data-tab="sub-why">Why the GPU is fast here</button>
+        <button data-tab="sub-wgsl">lbm.wgsl (compute)</button>
+        <button data-tab="sub-render">render.wgsl &amp; gpu.js</button>
+      </nav>
+      <section id="sub-guide" class="gpanel"><div class="theory">@@GPU_GUIDE@@</div></section>
+      <section id="sub-why" class="gpanel" hidden><div class="theory">@@WHY_GPU@@</div></section>
+      <section id="sub-wgsl" class="gpanel" hidden>
+        <p>The compute shaders behind every chart in the App tab. Each function runs once per lattice cell, in parallel.</p>
+        @@WGSL_SRC@@
+      </section>
+      <section id="sub-render" class="gpanel" hidden>
+        <p>The fragment shader that colours the canvas straight from the simulation buffers, so no data leaves the GPU, followed by the
+        JavaScript that creates the buffers and records the steps.</p>
+        @@RENDER_SRC@@
+        @@GPUJS_SRC@@
+      </section>
+    </section>
+
+    <!-- ============================== COMPARE ============================== -->
+    <section id="panel-compare" class="tpanel" hidden>
+      <p>Runs the <b>same case</b> twice: once with the GPU shaders (in 32-bit floats) and once with <code>lbm.py</code> in Python
+      (numpy, 64-bit floats, running in your browser). The case uses the current sidebar bed on a coarse grid of about 12k cells, 600 flow
+      steps from rest, then 400 steps of a tracer pulse. The bed comes from the same random seed in both languages,
+      so the masks must be identical cell by cell. The fields should then agree to float32 round-off.</p>
+      <div class="controls"><button class="btn primary" id="cmp-go" disabled>Compare at current inputs</button>
+        <span class="status" id="cmp-status">Waiting for Python to load&hellip;</span></div>
+      <div id="cmp-table"></div>
+      <div class="chart" id="chart-cmp"></div>
+    </section>
+
+    <!-- ============================== PERFORMANCE ============================== -->
+    <section id="panel-perf" class="tpanel" hidden>
+      <p>A race on identical work: the current bed and grid, flow + tracer, for about 2.5 seconds each. The contestants are the WebGPU
+      shaders, the same algorithm in plain JavaScript on one CPU core, and the numpy reference (in Pyodide, i.e. WebAssembly). The animation
+      pauses during the race.</p>
+      <div class="controls"><button class="btn primary" id="race-go">Run the race (&asymp; 8 s)</button>
+        <span class="status" id="race-status">Python loads in the background; without it the race has two contestants.</span></div>
+      <div class="progress"><div id="race-bar"></div></div>
+      <div class="metrics" id="race-metrics" hidden>
+        <div class="metric"><div class="m-label">WebGPU</div><div class="m-value" id="r-gpu">&ndash;</div><div class="m-sub" id="r-gpu-sub"></div></div>
+        <div class="metric"><div class="m-label">JavaScript, 1 core</div><div class="m-value" id="r-cpu">&ndash;</div><div class="m-sub" id="r-cpu-sub"></div></div>
+        <div class="metric"><div class="m-label">Python numpy</div><div class="m-value" id="r-py">&ndash;</div><div class="m-sub" id="r-py-sub"></div></div>
+        <div class="metric"><div class="m-label">GPU speed-up</div><div class="m-value" id="r-x">&ndash;</div><div class="m-sub" id="r-x-sub"></div></div>
+      </div>
+      <div class="chart" id="chart-race"></div>
+      <p class="caption" id="race-bw"></p>
+      <div class="note">MLUPS = million lattice-cell updates per second. A desktop GPU typically reaches 1,000&ndash;5,000 MLUPS for this
+      kernel, an integrated laptop GPU a few hundred, and a single CPU core 10&ndash;40. The <i>WebGPU</i> tab explains why.</div>
+    </section>
+  </div>
+</main>
+<script>@@PLOTLY@@</script>
+<script>
+const LBM_WGSL = @@LBM_WGSL_JSON@@;
+const RENDER_WGSL = @@RENDER_WGSL_JSON@@;
+const WT_PLOTS = @@WT_PLOTS@@;
+const WT_CELLS = @@WT_CELLS@@;
+const PY_FILES = @@PY_FILES@@;
+</script>
+<script>@@APP_JS@@</script>
+</body>
+</html>
