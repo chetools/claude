@@ -21,6 +21,36 @@
   - Only then hand over the shareable link.
 - **Make builds fail loudly.** Guard against silent no-ops, such as unfilled template placeholders.
 
+## More general working practices (learned on cylinder-cavity-ns)
+
+- **Verify, don't recall.**
+  - Before stating a physical, numerical or performance claim (regime boundaries, accuracy, speed-ups), run the
+    code and report what it shows.
+  - Label anything not verified as an expectation.
+- **When a result looks wrong to the user, reproduce it before answering.** Re-run the exact case with the reference
+  code and quantify it. Then say whether it is real behaviour, a display or normalisation artefact, or a bug.
+  Usually it is not the first explanation that comes to mind.
+- **Cross-check independent implementations.** Wherever there are two codes for the same thing (reference vs fast,
+  CPU vs GPU), compare them value by value. Ship that comparison as a self-test in the deliverable, with stated
+  tolerances.
+- **Sweep the whole input range before shipping.** Cover the extremes, crossovers between regimes and limits, and
+  the largest and smallest sizes. Bugs hid exactly there: NaNs only at large grids, instability only where two
+  time-step limits crossed.
+- **Scale visual encodings to the data, not the inputs.** Colour ranges, line darkness and auto-scales should follow
+  the data's own statistics. Make clear what a control holds fixed when another changes.
+- **Check that the deployed artefact is the new one.** Compare the served bytes with the build (`cmp`), not just
+  an HTTP 200. Check that the CI or Pages run actually started; re-trigger if it didn't.
+- **Test the UI at two viewport widths** with a headless browser, and read the screenshots before reporting done.
+- **Shell hygiene.**
+  - Run long waits as background commands.
+  - Never `pkill -f` a pattern that also matches the current command.
+  - In `sed` replacements `&` means "the matched text", so escape it, or edit with Python instead.
+- **Headless WebGPU in this container.**
+  - Use `/opt/pw-browsers/chromium` with `--enable-unsafe-webgpu --use-webgpu-adapter=swiftshader`, on an
+    `http://localhost` page.
+  - Compute works but a WebGPU canvas cannot be presented, so render through an offscreen texture for tests.
+  - f32 `tanh`/`exp` overflow to NaN for large arguments, so clamp them.
+
 ## Interactive teaching pages (published on `gh-pages`)
 
 - **Style:** follow chetools/muse `gh-pages/muse-html/couette-standalone.html`:
@@ -122,19 +152,32 @@
 - Take screenshots and look at them.
 - Confirm the gh-pages URL serves the new content before handing over the link.
 
-## Single-directory workflow (default)
+## One directory per project, no branches
 
-Each task touches exactly one page directory (e.g. `packed-bed-runaway/`). The task names it; if it doesn't, ask
-before starting.
+All work lives on `master`, one top-level directory per project (`packed-bed-runaway/`, `porous-media-lbm/`, ...).
+Directories are independent: no project imports, edits or depends on another. The only other branch is `gh-pages`
+(the published pages). Do not create feature branches, and do not push to `claude/*` branches even if the session
+was started on one.
+
+Each task touches exactly one project directory. The task names it; if it doesn't, ask before starting. A new
+project gets a new top-level directory.
 
 - Treat that directory as the project root and use absolute paths.
-- Read only this file, the directory's own files, and the style reference when needed. Do not explore sibling pages.
+- Read only this file, the directory's own files (including its own `CLAUDE.md`, if it has one), and the style
+  reference when needed. Do not explore sibling projects.
 - Scope every Grep/Glob to the directory. Never edit outside it. Shared code outside the directory is read-only context.
+- Project-specific lessons go in `<dir>/CLAUDE.md`, not in this file. Only rules that apply to every project go here.
 - Install toolchains (pip/npm, Rust with the `wasm32-unknown-unknown` target, a headless browser) once at session
   start, and don't re-check them afterwards.
 - Rebuild wasm/WGSL only when its source changed. Run `python -m http.server` from the directory in the background on
   a fixed port and test against localhost.
 - Batch edits, then run the tests once.
-- Git: `git add <dir>/` only (never `-A`); review with `git diff -- <dir>`; one branch per page.
+- Git:
+  - work on `master`: `git checkout master && git pull --rebase origin master`;
+  - stage with `git add <dir>/` only (never `-A` or `.`); review with `git diff --cached -- <dir>`;
+  - every commit touches only `<dir>/`, so other projects are never affected;
+  - push with `git pull --rebase origin master && git push origin master`. Rebasing onto commits from other projects
+    never conflicts, because they touch other directories.
+- Publishing: update only `gh-pages:<dir>/` (and the root `index.html` link list), in a git worktree.
 - Before delivering, follow the verification checklist above.
 - Don't spawn subagents to explore a single directory.
