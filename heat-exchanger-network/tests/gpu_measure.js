@@ -24,7 +24,7 @@ const bench = Number(process.argv[3] || 4);       // row of the Benchmarks table
   const r = await page.evaluate(() => window.GPU_LAST || {error: document.getElementById('gpu-status').textContent});
   console.log(JSON.stringify(r), errs);
   if (r.error) process.exit(1);
-  const rec = Object.assign({}, r, {where: `headless-style Chromium ${browser.version()} with SwiftShader (software WebGPU), ${os.cpus().length}-core build container`, date: new Date().toISOString().slice(0, 10)});
+  const rec = Object.assign({}, r, {where: `Chromium ${browser.version()}, headed under Xvfb, SwiftShader software WebGPU, ${os.cpus().length}-core build container`, date: new Date().toISOString().slice(0, 10)});
   fs.writeFileSync(path.join(__dirname, '..', 'benchmarks', 'gpu_measurement.json'), JSON.stringify(rec, null, 1));
   await browser.close();
 })().catch((e) => { console.error(e); process.exit(2); });

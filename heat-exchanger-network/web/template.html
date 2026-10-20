@@ -44,7 +44,8 @@ table.mm td{text-align:left;padding:.25rem .35rem}
 table.mm select{font-size:.8rem;padding:.15rem;max-width:150px}
 table.mm input{width:3.6rem;font-size:.8rem;padding:.15rem}
 table.mm td.forb{background:#eceef1}
-.theory table{border-collapse:collapse;font-size:.93rem;margin:.8rem 0}
+.theory table{border-collapse:collapse;font-size:.93rem;margin:.8rem 0;display:block;max-width:100%;overflow-x:auto}
+.theory .katex-display{overflow-x:auto;overflow-y:hidden}
 .theory th,.theory td{border-bottom:1px solid var(--card-border);padding:.3rem .6rem;text-align:left;vertical-align:top}
 .theory th{background:#fafbfc}
 .theory code{background:#f3f4f6;padding:.05rem .3rem;border-radius:.25rem;font-size:.9em}
@@ -343,7 +344,7 @@ svg .match{cursor:pointer}
       <p>A race on identical work: simulated-annealing moves on the current case (each move is one NLP solve), same seed.
         Python first times a short run and picks the number of moves K so that <b>its</b> run takes about 10&nbsp;seconds; Rust then
         runs the same K moves on one thread, and K moves in each of several workers. All three run in your browser.</p>
-      <div class="controls"><button class="btn primary" id="race-go" disabled>Run the race (&asymp; 20 s)</button>
+      <div class="controls"><button class="btn primary" id="race-go" disabled>Run the race (&asymp; 25 s)</button>
         <span class="status" id="race-status">Waiting for Python to load&hellip;</span></div>
       <div class="progress"><div id="race-bar"></div></div>
       <div class="metrics" id="race-metrics" hidden>

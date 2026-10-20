@@ -157,7 +157,7 @@ def run_furman(time_limit=60.0):
     for l in open(os.path.join(D, "published_min_matches.txt")):
         if not l.startswith("#"):
             w = l.split()
-            mm[w[0]] = (int(w[1].split("=")[1]), w[3].split("=")[1] if "gap=" in w[3] else "")
+            mm[w[0]] = (int(w[1].split("=")[1]), w[3].split("=")[1].replace("\\%", "%") if "gap=" in w[3] else "")
     out = []
     for name in sorted(cost, key=lambda n: (int(n.split("sp")[0]), n)):
         p = hen.load_furman(os.path.join(D, name + ".dat"))

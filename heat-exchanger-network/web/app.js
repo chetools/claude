@@ -135,7 +135,10 @@ const WORKER_SRC = `${makeApi.toString()}\n${warmStart.toString()}\n${loadScale.
 let api = null;
 onmessage = async (e) => {
   const m = e.data;
-  if (m.type === 'init') { const inst = await WebAssembly.instantiate(m.module, {}); api = makeApi(inst.exports); postMessage({type: 'ready'}); return; }
+  if (m.type === 'init') {
+    const r = await WebAssembly.instantiate(m.module, {});      // bytes -> {instance}, Module -> Instance
+    api = makeApi((r.instance || r).exports); postMessage({type: 'ready'}); return;
+  }
   try { const t0 = performance.now(); const res = runJob(api, m.item); postMessage({type: 'done', id: m.id, res, ms: performance.now() - t0}); }
   catch (err) { postMessage({type: 'done', id: m.id, error: String(err && err.message || err)}); }
 };`;
@@ -173,7 +176,13 @@ const HIGHS_FACTORY = Module;
 let highs = null;
 onmessage = async (e) => {
   const m = e.data;
-  if (m.type === 'init') { highs = await HIGHS_FACTORY({wasmBinary: m.wasm}); postMessage({type: 'ready'}); return; }
+  if (m.type === 'init') {
+    // hand Emscripten the compiled module ourselves: no fetch / XHR of highs.wasm
+    const mod = await WebAssembly.compile(m.wasm);
+    highs = await HIGHS_FACTORY({wasmBinary: m.wasm, locateFile: (f) => f,
+      instantiateWasm: (imports, done) => { WebAssembly.instantiate(mod, imports).then((inst) => done(inst, mod)); return {}; }});
+    postMessage({type: 'ready'}); return;
+  }
   try { const t0 = performance.now(); const sol = highs.solve(m.text, m.options || {});
     postMessage({type: 'done', id: m.id, sol, ms: performance.now() - t0}); }
   catch (err) { postMessage({type: 'done', id: m.id, error: String(err && err.message || err)}); }
@@ -830,17 +839,19 @@ $('race-go').addEventListener('click', async () => {
   if (!S.inp) return;
   $('race-go').disabled = true; setBar('race-bar', 0);
   try {
-    $('race-status').textContent = 'Calibrating Python (short runs, two seeds)…';
-    const cal = await pyCall(`
+    // calibrate in two stages: later moves (bigger networks) cost more than the first ones
+    const timeIt = (K, seed) => pyCall(`
 p = hen.problem_from_inputs(json.loads(ARGS["inputs"])); m = hen.Model(p)
-ts = []
-for s in (3, 4):
-    t = time.perf_counter(); hen.anneal(m, 12, s); ts.append(time.perf_counter() - t)
-json.dumps(ts)`, {inputs: JSON.stringify(pyInputs())});
-    const per = (cal[0] + cal[1]) / 24;
-    const K = Math.max(10, Math.round(10 / per));
-    setBar('race-bar', 0.1);
-    $('race-status').textContent = `Python: ${K} moves (≈ ${fmt(K * per, 0)} s)…`;
+t = time.perf_counter(); hen.anneal(m, int(ARGS["K"]), int(ARGS["seed"])); json.dumps(time.perf_counter() - t)`,
+    {inputs: JSON.stringify(pyInputs()), K, seed});
+    $('race-status').textContent = 'Calibrating Python (1/2)…';
+    const t1c = await timeIt(15, 3);
+    const K2 = Math.max(15, Math.round(15 * 2.5 / Math.max(t1c, 1e-3)));
+    $('race-status').textContent = `Calibrating Python (2/2: ${K2} moves)…`;
+    const t2c = await timeIt(K2, 4);
+    const K = Math.max(15, Math.round(K2 * 10 / Math.max(t2c, 1e-3)));
+    setBar('race-bar', 0.25);
+    $('race-status').textContent = `Python: ${K} moves (≈ 10 s)…`;
     const pr = await pyCall(`
 p = hen.problem_from_inputs(json.loads(ARGS["inputs"])); m = hen.Model(p)
 t = time.perf_counter(); r = hen.anneal(m, int(ARGS["K"]), 11); dt = time.perf_counter() - t

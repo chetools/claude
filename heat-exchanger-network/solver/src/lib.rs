@@ -203,6 +203,12 @@ impl Net {
 // ---------------------------------------------------------------------------
 // 5. Network evaluation
 // ---------------------------------------------------------------------------
+//
+// The hot path (L-BFGS inside annealing) calls evaluate many thousand times,
+// so it works in a reusable workspace `Work` and allocates nothing: in a
+// browser, small allocations in parallel Web Workers were measured to slow
+// every worker down several-fold.  The arithmetic and its order are those of
+// hen.py; `evaluate`, `slacks` and `temperatures` below are thin wrappers.
 
 /// Log-mean temperature difference and its partial derivatives.
 pub fn lmtd(a: f64, b: f64) -> (f64, f64, f64) {
@@ -217,30 +223,106 @@ pub fn lmtd(a: f64, b: f64) -> (f64, f64, f64) {
     (l, (lr - d / a) / (lr * lr), (d / b - lr) / (lr * lr))
 }
 
+/// Buffers for one network (stage temperatures and their adjoints, stage
+/// membership lists, slack vectors, scratch loads).  th[i*(K+1)+k] is hot i
+/// entering stage k; tc[j*(K+1)+k] is cold j leaving stage k.
+pub struct Work {
+    k: usize,
+    th: Vec<f64>,
+    tc: Vec<f64>,
+    dh: Vec<f64>,
+    dc: Vec<f64>,
+    gth: Vec<f64>,
+    gtc: Vec<f64>,
+    pub grad: Vec<f64>,
+    hot_start: Vec<usize>,
+    hot_idx: Vec<usize>,
+    cold_start: Vec<usize>,
+    cold_idx: Vec<usize>,
+    s0: Vec<f64>,
+    s1: Vec<f64>,
+    xd: Vec<f64>,
+}
+
+impl Work {
+    pub fn new(model: &Model, net: &Net) -> Work {
+        let kk = model.k;
+        let n = net.matches.len();
+        // matches of hot i in stage k, in match order (CSR layout)
+        let mut hot_start = vec![0usize; model.nh * kk + 1];
+        let mut cold_start = vec![0usize; model.nc * kk + 1];
+        for &(i, j, k) in &net.matches {
+            hot_start[i * kk + k + 1] += 1;
+            cold_start[j * kk + k + 1] += 1;
+        }
+        for c in 1..hot_start.len() {
+            hot_start[c] += hot_start[c - 1];
+        }
+        for c in 1..cold_start.len() {
+            cold_start[c] += cold_start[c - 1];
+        }
+        let mut hot_idx = vec![0usize; n];
+        let mut cold_idx = vec![0usize; n];
+        let mut fh = hot_start.clone();
+        let mut fc = cold_start.clone();
+        for (m, &(i, j, k)) in net.matches.iter().enumerate() {
+            hot_idx[fh[i * kk + k]] = m;
+            fh[i * kk + k] += 1;
+            cold_idx[fc[j * kk + k]] = m;
+            fc[j * kk + k] += 1;
+        }
+        let ns = 3 * n + 2 * (model.nh + model.nc);
+        Work {
+            k: kk,
+            th: vec![0.0; model.nh * (kk + 1)],
+            tc: vec![0.0; model.nc * (kk + 1)],
+            dh: vec![0.0; model.nh * kk],
+            dc: vec![0.0; model.nc * kk],
+            gth: vec![0.0; model.nh * (kk + 1)],
+            gtc: vec![0.0; model.nc * (kk + 1)],
+            grad: vec![0.0; n],
+            hot_start,
+            hot_idx,
+            cold_start,
+            cold_idx,
+            s0: Vec::with_capacity(ns),
+            s1: Vec::with_capacity(ns),
+            xd: vec![0.0; n],
+        }
+    }
+
+    /// Stage temperatures from the loads (into th, tc).
+    fn temperatures(&mut self, model: &Model, net: &Net, x: &[f64]) {
+        let kk = self.k;
+        self.dh.iter_mut().for_each(|v| *v = 0.0);
+        self.dc.iter_mut().for_each(|v| *v = 0.0);
+        for (m, &(i, j, k)) in net.matches.iter().enumerate() {
+            self.dh[i * kk + k] += x[m];
+            self.dc[j * kk + k] += x[m];
+        }
+        for i in 0..model.nh {
+            let b = i * (kk + 1);
+            self.th[b] = model.th_in[i];
+            for k in 0..kk {
+                self.th[b + k + 1] = self.th[b + k] - self.dh[i * kk + k] / model.fh[i];
+            }
+        }
+        for j in 0..model.nc {
+            let b = j * (kk + 1);
+            self.tc[b + kk] = model.tc_in[j];
+            for k in (0..kk).rev() {
+                self.tc[b + k] = self.tc[b + k + 1] + self.dc[j * kk + k] / model.fc[j];
+            }
+        }
+    }
+}
+
 /// th[i][k]: hot i entering stage k; tc[j][k]: cold j leaving stage k.
 pub fn temperatures(model: &Model, net: &Net, x: &[f64]) -> (Vec<Vec<f64>>, Vec<Vec<f64>>) {
+    let mut w = Work::new(model, net);
+    w.temperatures(model, net, x);
     let kk = model.k;
-    let mut th = vec![vec![0.0; kk + 1]; model.nh];
-    let mut tc = vec![vec![0.0; kk + 1]; model.nc];
-    let mut dh = vec![vec![0.0; kk]; model.nh];
-    let mut dc = vec![vec![0.0; kk]; model.nc];
-    for (m, &(i, j, k)) in net.matches.iter().enumerate() {
-        dh[i][k] += x[m];
-        dc[j][k] += x[m];
-    }
-    for i in 0..model.nh {
-        th[i][0] = model.th_in[i];
-        for k in 0..kk {
-            th[i][k + 1] = th[i][k] - dh[i][k] / model.fh[i];
-        }
-    }
-    for j in 0..model.nc {
-        tc[j][kk] = model.tc_in[j];
-        for k in (0..kk).rev() {
-            tc[j][k] = tc[j][k + 1] + dc[j][k] / model.fc[j];
-        }
-    }
-    (th, tc)
+    (w.th.chunks(kk + 1).map(|c| c.to_vec()).collect(), w.tc.chunks(kk + 1).map(|c| c.to_vec()).collect())
 }
 
 /// One exchanger of a result: kind 0 match, 1 cooler, 2 heater.
@@ -267,6 +349,15 @@ pub struct Eval {
     pub units: Vec<Unit>,
 }
 
+/// Result of evaluate_into (the gradient, if asked for, is in work.grad).
+#[derive(Clone, Copy, Debug)]
+pub struct Val {
+    pub ok: bool,
+    pub phi: f64,
+    pub tac: f64,
+    pub penalty: f64,
+}
+
 struct Acc {
     tau: f64,
     barrier: f64,
@@ -289,24 +380,25 @@ impl Acc {
 }
 
 /// phi = TAC/scale - tau * sum(log slack) + mu * sum((residual/duty)^2), its
-/// gradient (if asked) and, with `want_units`, the exchanger table.
-pub fn evaluate(model: &Model, net: &Net, x: &[f64], tau: f64, mu: f64, scale: f64, want_grad: bool,
-                want_units: bool) -> Eval {
+/// gradient (into w.grad, if asked) and, with `units`, the exchanger table.
+#[allow(clippy::too_many_arguments)]
+pub fn evaluate_into(model: &Model, net: &Net, x: &[f64], tau: f64, mu: f64, scale: f64, want_grad: bool,
+                     w: &mut Work, mut units: Option<&mut Vec<Unit>>) -> Val {
     let kk = model.k;
+    let k1 = kk + 1;
     let e = model.emat;
-    let (th, tc) = temperatures(model, net, x);
-    let mut gth = vec![vec![0.0; kk + 1]; model.nh];
-    let mut gtc = vec![vec![0.0; kk + 1]; model.nc];
-    let mut gx = vec![0.0; x.len()];
+    w.temperatures(model, net, x);
+    w.gth.iter_mut().for_each(|v| *v = 0.0);
+    w.gtc.iter_mut().for_each(|v| *v = 0.0);
+    w.grad.iter_mut().for_each(|v| *v = 0.0);
     let mut tac = 0.0;
     let mut penalty = 0.0;
     let mut acc = Acc { tau, barrier: 0.0, ok: true };
-    let mut units = Vec::new();
 
     for (m, &(i, j, k)) in net.matches.iter().enumerate() {
         let q = x[m];
-        let a = th[i][k] - tc[j][k];
-        let b = th[i][k + 1] - tc[j][k + 1];
+        let a = w.th[i * k1 + k] - w.tc[j * k1 + k];
+        let b = w.th[i * k1 + k + 1] - w.tc[j * k1 + k + 1];
         let mut gq = acc.slack(q);
         let mut ga = acc.slack(a - e);
         let mut gb = acc.slack(b - e);
@@ -318,32 +410,33 @@ pub fn evaluate(model: &Model, net: &Net, x: &[f64], tau: f64, mu: f64, scale: f
         let area = q / (u * l);
         let (c, dc) = unit_cost(model.kind_pc[i * model.nc + j], &model.par_pc[i * model.nc + j], area);
         tac += c;
-        if want_units {
-            units.push(Unit { typ: 0, i, j, k, q, a: area, cost: c, op: 0.0, dt1: a, dt2: b });
+        if let Some(us) = units.as_deref_mut() {
+            us.push(Unit { typ: 0, i, j, k, q, a: area, cost: c, op: 0.0, dt1: a, dt2: b });
         }
         let dcs = dc / scale;
         gq += if q > 0.0 { dcs * area / q } else { 0.0 };
         ga += -dcs * area / l * la;
         gb += -dcs * area / l * lb;
-        gx[m] += gq;
-        gth[i][k] += ga;
-        gtc[j][k] -= ga;
-        gth[i][k + 1] += gb;
-        gtc[j][k + 1] -= gb;
+        w.grad[m] += gq;
+        w.gth[i * k1 + k] += ga;
+        w.gtc[j * k1 + k] -= ga;
+        w.gth[i * k1 + k + 1] += gb;
+        w.gtc[j * k1 + k + 1] -= gb;
     }
 
     for i in 0..model.nh {
-        let q = model.fh[i] * (th[i][kk] - model.th_out[i]);
+        let t_out = w.th[i * k1 + kk];
+        let q = model.fh[i] * (t_out - model.th_out[i]);
         let u = net.cu[i];
         if u < 0 {
             let r = q / model.qh[i];
             penalty += r * r;
-            gth[i][kk] += mu * 2.0 * r / model.qh[i] * model.fh[i];
+            w.gth[i * k1 + kk] += mu * 2.0 * r / model.qh[i] * model.fh[i];
             continue;
         }
         let o = &model.cool[i][u as usize];
         let mut gq = acc.slack(q);
-        let a = th[i][kk] - o.tout;
+        let a = t_out - o.tout;
         let b = model.th_out[i] - o.tin;
         let mut ga = acc.slack(a - e);
         if !acc.ok {
@@ -354,28 +447,29 @@ pub fn evaluate(model: &Model, net: &Net, x: &[f64], tau: f64, mu: f64, scale: f
         let (c, dc) = unit_cost(o.kind, &o.par, area);
         let c_op = o.cost * q;
         tac += c + c_op;
-        if want_units {
-            units.push(Unit { typ: 1, i, j: o.u, k: kk, q, a: area, cost: c, op: c_op, dt1: a, dt2: b });
+        if let Some(us) = units.as_deref_mut() {
+            us.push(Unit { typ: 1, i, j: o.u, k: kk, q, a: area, cost: c, op: c_op, dt1: a, dt2: b });
         }
         let dcs = dc / scale;
         gq += (if q > 0.0 { dcs * area / q } else { 0.0 }) + o.cost / scale;
         ga += -dcs * area / l * la;
-        gth[i][kk] += gq * model.fh[i] + ga;
+        w.gth[i * k1 + kk] += gq * model.fh[i] + ga;
     }
 
     for j in 0..model.nc {
-        let q = model.fc[j] * (model.tc_out[j] - tc[j][0]);
+        let t_out = w.tc[j * k1];
+        let q = model.fc[j] * (model.tc_out[j] - t_out);
         let u = net.hu[j];
         if u < 0 {
             let r = q / model.qc[j];
             penalty += r * r;
-            gtc[j][0] += -mu * 2.0 * r / model.qc[j] * model.fc[j];
+            w.gtc[j * k1] += -mu * 2.0 * r / model.qc[j] * model.fc[j];
             continue;
         }
         let o = &model.heat[j][u as usize];
         let mut gq = acc.slack(q);
         let a = o.tin - model.tc_out[j];
-        let b = o.tout - tc[j][0];
+        let b = o.tout - t_out;
         let mut gb = acc.slack(b - e);
         if !acc.ok {
             continue;
@@ -385,52 +479,65 @@ pub fn evaluate(model: &Model, net: &Net, x: &[f64], tau: f64, mu: f64, scale: f
         let (c, dc) = unit_cost(o.kind, &o.par, area);
         let c_op = o.cost * q;
         tac += c + c_op;
-        if want_units {
-            units.push(Unit { typ: 2, i: o.u, j, k: 0, q, a: area, cost: c, op: c_op, dt1: a, dt2: b });
+        if let Some(us) = units.as_deref_mut() {
+            us.push(Unit { typ: 2, i: o.u, j, k: 0, q, a: area, cost: c, op: c_op, dt1: a, dt2: b });
         }
         let dcs = dc / scale;
         gq += (if q > 0.0 { dcs * area / q } else { 0.0 }) + o.cost / scale;
         gb += -dcs * area / l * lb;
-        gtc[j][0] += -gq * model.fc[j] - gb;
+        w.gtc[j * k1] += -gq * model.fc[j] - gb;
     }
 
     if !acc.ok {
-        return Eval { ok: false, phi: f64::INFINITY, tac: f64::INFINITY, penalty, grad: vec![], units: vec![] };
+        return Val { ok: false, phi: f64::INFINITY, tac: f64::INFINITY, penalty };
     }
     let phi = tac / scale + tau * acc.barrier + mu * penalty;
-    let grad = if want_grad { backprop(model, net, &gx, &gth, &gtc) } else { vec![] };
-    Eval { ok: true, phi, tac, penalty, grad, units }
+    if want_grad {
+        backprop(model, w);
+    }
+    Val { ok: true, phi, tac, penalty }
 }
 
-/// Chain rule through th[i][k+1] = th[i][k] - sum q/Fh, tc[j][k] = tc[j][k+1] + sum q/Fc.
-fn backprop(model: &Model, net: &Net, gx: &[f64], gth: &[Vec<f64>], gtc: &[Vec<f64>]) -> Vec<f64> {
-    let kk = model.k;
-    let mut stage_hot = vec![vec![Vec::new(); kk]; model.nh];
-    let mut stage_cold = vec![vec![Vec::new(); kk]; model.nc];
-    for (m, &(i, j, k)) in net.matches.iter().enumerate() {
-        stage_hot[i][k].push(m);
-        stage_cold[j][k].push(m);
-    }
-    let mut g = gx.to_vec();
+/// Chain rule through th[i][k+1] = th[i][k] - sum q/Fh, tc[j][k] = tc[j][k+1] + sum q/Fc
+/// (w.grad holds the direct part on entry and the full gradient on exit).
+fn backprop(model: &Model, w: &mut Work) {
+    let kk = w.k;
+    let k1 = kk + 1;
     for i in 0..model.nh {
         let mut acc = 0.0;
         for k in (0..kk).rev() {
-            acc += gth[i][k + 1];
-            for &m in &stage_hot[i][k] {
-                g[m] -= acc / model.fh[i];
+            acc += w.gth[i * k1 + k + 1];
+            for c in w.hot_start[i * kk + k]..w.hot_start[i * kk + k + 1] {
+                let m = w.hot_idx[c];
+                w.grad[m] -= acc / model.fh[i];
             }
         }
     }
     for j in 0..model.nc {
         let mut acc = 0.0;
         for k in 0..kk {
-            acc += gtc[j][k];
-            for &m in &stage_cold[j][k] {
-                g[m] += acc / model.fc[j];
+            acc += w.gtc[j * k1 + k];
+            for c in w.cold_start[j * kk + k]..w.cold_start[j * kk + k + 1] {
+                let m = w.cold_idx[c];
+                w.grad[m] += acc / model.fc[j];
             }
         }
     }
-    g
+}
+
+/// Allocating convenience wrapper (tests, dump, reports).
+#[allow(clippy::too_many_arguments)]
+pub fn evaluate(model: &Model, net: &Net, x: &[f64], tau: f64, mu: f64, scale: f64, want_grad: bool,
+                want_units: bool) -> Eval {
+    let mut w = Work::new(model, net);
+    let mut units = Vec::new();
+    let v = evaluate_into(model, net, x, tau, mu, scale, want_grad, &mut w,
+                          if want_units { Some(&mut units) } else { None });
+    if !v.ok {
+        return Eval { ok: false, phi: v.phi, tac: v.tac, penalty: v.penalty, grad: vec![], units: vec![] };
+    }
+    Eval { ok: true, phi: v.phi, tac: v.tac, penalty: v.penalty, grad: if want_grad { w.grad.clone() } else { vec![] },
+           units }
 }
 
 // ---------------------------------------------------------------------------
@@ -448,72 +555,95 @@ pub fn start_point(model: &Model, net: &Net, frac: f64) -> Vec<f64> {
     load_scale(model, net).iter().map(|s| frac * s).collect()
 }
 
-/// All barrier slacks in a fixed order (same as evaluate).
-pub fn slacks(model: &Model, net: &Net, x: &[f64]) -> Vec<f64> {
+/// All barrier slacks in a fixed order (same as evaluate), into `s`.
+fn slacks_into(model: &Model, net: &Net, x: &[f64], w: &mut Work, which: usize) {
     let kk = model.k;
+    let k1 = kk + 1;
     let e = model.emat;
-    let (th, tc) = temperatures(model, net, x);
-    let mut s = Vec::with_capacity(3 * x.len() + 2 * (model.nh + model.nc));
+    w.temperatures(model, net, x);
+    let s = if which == 0 { &mut w.s0 } else { &mut w.s1 };
+    s.clear();
     for (m, &(i, j, k)) in net.matches.iter().enumerate() {
         s.push(x[m]);
-        s.push(th[i][k] - tc[j][k] - e);
-        s.push(th[i][k + 1] - tc[j][k + 1] - e);
+        s.push(w.th[i * k1 + k] - w.tc[j * k1 + k] - e);
+        s.push(w.th[i * k1 + k + 1] - w.tc[j * k1 + k + 1] - e);
     }
     for i in 0..model.nh {
         let u = net.cu[i];
         if u >= 0 {
-            s.push(model.fh[i] * (th[i][kk] - model.th_out[i]));
-            s.push(th[i][kk] - model.cool[i][u as usize].tout - e);
+            s.push(model.fh[i] * (w.th[i * k1 + kk] - model.th_out[i]));
+            s.push(w.th[i * k1 + kk] - model.cool[i][u as usize].tout - e);
         }
     }
     for j in 0..model.nc {
         let u = net.hu[j];
         if u >= 0 {
-            s.push(model.fc[j] * (model.tc_out[j] - tc[j][0]));
-            s.push(model.heat[j][u as usize].tout - tc[j][0] - e);
+            s.push(model.fc[j] * (model.tc_out[j] - w.tc[j * k1]));
+            s.push(model.heat[j][u as usize].tout - w.tc[j * k1] - e);
         }
     }
-    s
 }
 
-fn min_slack(model: &Model, net: &Net, x: &[f64]) -> f64 {
-    slacks(model, net, x).iter().cloned().fold(1.0f64, |a, b| if b < a { b } else { a })
+pub fn slacks(model: &Model, net: &Net, x: &[f64]) -> Vec<f64> {
+    let mut w = Work::new(model, net);
+    slacks_into(model, net, x, &mut w, 0);
+    w.s0
+}
+
+fn min_slack_w(model: &Model, net: &Net, x: &[f64], w: &mut Work) -> f64 {
+    slacks_into(model, net, x, w, 0);
+    w.s0.iter().cloned().fold(1.0f64, |a, b| if b < a { b } else { a })
 }
 
 /// x itself if strictly feasible; otherwise the loads scaled down by the
 /// largest factor theta (bisection) that makes them feasible, each kept
 /// above the tiny start value.  theta -> 0 is the (feasible) tiny start.
 pub fn feasible_start(model: &Model, net: &Net, x: &[f64]) -> Vec<f64> {
-    if min_slack(model, net, x) > 0.0 {
+    let mut w = Work::new(model, net);
+    if min_slack_w(model, net, x, &mut w) > 0.0 {
         return x.to_vec();
     }
     let eps = start_point(model, net, 1e-4);
-    let at = |theta: f64| -> Vec<f64> { (0..x.len()).map(|m| (theta * x[m]).max(eps[m])).collect() };
+    let mut xs = vec![0.0; x.len()];
     let (mut lo, mut hi) = (0.0f64, 1.0f64);
     for _ in 0..30 {
         let mid = 0.5 * (lo + hi);
-        if min_slack(model, net, &at(mid)) > 0.0 {
+        for m in 0..x.len() {
+            xs[m] = (mid * x[m]).max(eps[m]);
+        }
+        if min_slack_w(model, net, &xs, &mut w) > 0.0 {
             lo = mid;
         } else {
             hi = mid;
         }
     }
-    let xs = at(lo);
-    if min_slack(model, net, &xs) > 0.0 { xs } else { eps }
+    for m in 0..x.len() {
+        xs[m] = (lo * x[m]).max(eps[m]);
+    }
+    if min_slack_w(model, net, &xs, &mut w) > 0.0 { xs } else { eps }
 }
 
-pub fn max_feasible_step(model: &Model, net: &Net, x: &[f64], dx: &[f64]) -> f64 {
-    let s0 = slacks(model, net, x);
-    let xd: Vec<f64> = (0..x.len()).map(|m| x[m] + dx[m]).collect();
-    let s1 = slacks(model, net, &xd);
+fn max_feasible_step_w(model: &Model, net: &Net, x: &[f64], dx: &[f64], w: &mut Work) -> f64 {
+    slacks_into(model, net, x, w, 0);
+    for m in 0..x.len() {
+        w.xd[m] = x[m] + dx[m];
+    }
+    let xd = std::mem::take(&mut w.xd);
+    slacks_into(model, net, &xd, w, 1);
+    w.xd = xd;
     let mut amax = f64::INFINITY;
-    for (a, b) in s0.iter().zip(s1.iter()) {
+    for (a, b) in w.s0.iter().zip(w.s1.iter()) {
         let ds = b - a;
         if ds < 0.0 {
             amax = amax.min(-a / ds);
         }
     }
     amax
+}
+
+pub fn max_feasible_step(model: &Model, net: &Net, x: &[f64], dx: &[f64]) -> f64 {
+    let mut w = Work::new(model, net);
+    max_feasible_step_w(model, net, x, dx, &mut w)
 }
 
 fn dot(a: &[f64], b: &[f64]) -> f64 {
@@ -535,84 +665,115 @@ fn max_abs(a: &[f64]) -> f64 {
 }
 
 /// Minimise phi over scaled loads y at fixed tau, mu (see hen.lbfgs_level).
+/// The L-BFGS history is a ring buffer; no allocation inside the loop.
 /// Returns (y, f, nfev).
 #[allow(clippy::too_many_arguments)]
 pub fn lbfgs_level(model: &Model, net: &Net, y0: Vec<f64>, sx: &[f64], tau: f64, mu: f64, scale: f64,
-                   max_iter: usize, mem: usize) -> (Vec<f64>, f64, usize) {
+                   max_iter: usize, mem: usize, w: &mut Work) -> (Vec<f64>, f64, usize) {
     let n = y0.len();
-    let xs = |yy: &[f64]| -> Vec<f64> { (0..n).map(|m| yy[m] * sx[m]).collect() };
     let mut y = y0;
-    let ev = evaluate(model, net, &xs(&y), tau, mu, scale, true, false);
+    let mut xs = vec![0.0; n];
+    for m in 0..n {
+        xs[m] = y[m] * sx[m];
+    }
+    let ev = evaluate_into(model, net, &xs, tau, mu, scale, true, w, None);
     let mut f = ev.phi;
-    let mut g: Vec<f64> = (0..n).map(|m| ev.grad[m] * sx[m]).collect();
-    let mut ss: Vec<Vec<f64>> = Vec::new();
-    let mut yy: Vec<Vec<f64>> = Vec::new();
+    let mut g: Vec<f64> = (0..n).map(|m| w.grad[m] * sx[m]).collect();
+    let mut hs = vec![vec![0.0; n]; mem];
+    let mut hy = vec![vec![0.0; n]; mem];
+    let (mut h0, mut hl) = (0usize, 0usize);          // oldest entry, number of entries
+    let mut d = vec![0.0; n];
+    let mut dxs = vec![0.0; n];
+    let mut yn = vec![0.0; n];
+    let mut gn = vec![0.0; n];
+    let mut s = vec![0.0; n];
+    let mut yv = vec![0.0; n];
+    let mut al: Vec<(f64, f64)> = Vec::with_capacity(mem);
     let mut nfev = 1;
     let mut small = 0;
     for _it in 0..max_iter {
-        let mut d: Vec<f64> = g.iter().map(|v| -v).collect();
-        let mut al: Vec<(f64, f64)> = Vec::new();
-        for (s, yv) in ss.iter().rev().zip(yy.iter().rev()) {
-            let rho = 1.0 / dot(yv, s);
-            let a_ = rho * dot(s, &d);
+        for m in 0..n {
+            d[m] = -g[m];
+        }
+        al.clear();
+        for r in (0..hl).rev() {
+            let c = (h0 + r) % mem;
+            let rho = 1.0 / dot(&hy[c], &hs[c]);
+            let a_ = rho * dot(&hs[c], &d);
             al.push((a_, rho));
             for m in 0..n {
-                d[m] -= a_ * yv[m];
+                d[m] -= a_ * hy[c][m];
             }
         }
-        let gam = if !ss.is_empty() {
-            dot(&ss[ss.len() - 1], &yy[yy.len() - 1]) / dot(&yy[yy.len() - 1], &yy[yy.len() - 1])
+        let gam = if hl > 0 {
+            let c = (h0 + hl - 1) % mem;
+            dot(&hs[c], &hy[c]) / dot(&hy[c], &hy[c])
         } else {
             0.1 / 1e-300f64.max(max_abs(&g))
         };
         for v in d.iter_mut() {
             *v *= gam;
         }
-        for ((&(a_, rho), s), yv) in al.iter().rev().zip(ss.iter()).zip(yy.iter()) {
-            let b_ = rho * dot(yv, &d);
+        for (r, &(a_, rho)) in al.iter().rev().enumerate() {
+            let c = (h0 + r) % mem;
+            let b_ = rho * dot(&hy[c], &d);
             for m in 0..n {
-                d[m] += (a_ - b_) * s[m];
+                d[m] += (a_ - b_) * hs[c][m];
             }
         }
         let mut gd = dot(&g, &d);
         if gd >= 0.0 {
-            ss.clear();
-            yy.clear();
+            hl = 0;
+            h0 = 0;
             let gam = 0.1 / 1e-300f64.max(max_abs(&g));
-            d = g.iter().map(|v| -gam * v).collect();
+            for m in 0..n {
+                d[m] = -gam * g[m];
+            }
             gd = dot(&g, &d);
         }
-        let dxs: Vec<f64> = (0..n).map(|m| d[m] * sx[m]).collect();
-        let amax = max_feasible_step(model, net, &xs(&y), &dxs);
+        for m in 0..n {
+            dxs[m] = d[m] * sx[m];
+            xs[m] = y[m] * sx[m];
+        }
+        let amax = max_feasible_step_w(model, net, &xs, &dxs, w);
         let mut a = 1.0f64.min(0.99 * amax);
-        let (yn, evn) = loop {
-            let yn: Vec<f64> = (0..n).map(|m| y[m] + a * d[m]).collect();
-            let evn = evaluate(model, net, &xs(&yn), tau, mu, scale, true, false);
+        let evn = loop {
+            for m in 0..n {
+                yn[m] = y[m] + a * d[m];
+                xs[m] = yn[m] * sx[m];
+            }
+            let evn = evaluate_into(model, net, &xs, tau, mu, scale, true, w, None);
             nfev += 1;
             if evn.ok && evn.phi <= f + 1e-4 * a * gd {
-                break (yn, evn);
+                break evn;
             }
             a *= 0.5;
             if a < 1e-16 {
                 return (y, f, nfev);
             }
         };
-        let gn: Vec<f64> = (0..n).map(|m| evn.grad[m] * sx[m]).collect();
-        let s: Vec<f64> = (0..n).map(|m| yn[m] - y[m]).collect();
-        let yv: Vec<f64> = (0..n).map(|m| gn[m] - g[m]).collect();
+        for m in 0..n {
+            gn[m] = w.grad[m] * sx[m];
+            s[m] = yn[m] - y[m];
+            yv[m] = gn[m] - g[m];
+        }
         let sy = dot(&s, &yv);
         if sy > 1e-12 * (dot(&s, &s) * dot(&yv, &yv)).sqrt() {
-            ss.push(s.clone());
-            yy.push(yv);
-            if ss.len() > mem {
-                ss.remove(0);
-                yy.remove(0);
-            }
+            let c = if hl < mem {
+                hl += 1;
+                (h0 + hl - 1) % mem
+            } else {
+                let c = h0;
+                h0 = (h0 + 1) % mem;
+                c
+            };
+            hs[c].copy_from_slice(&s);
+            hy[c].copy_from_slice(&yv);
         }
         let df = f - evn.phi;
-        y = yn;
+        std::mem::swap(&mut y, &mut yn);
         f = evn.phi;
-        g = gn;
+        std::mem::swap(&mut g, &mut gn);
         small = if df <= 1e-12 * (f.abs() + 1e-12) { small + 1 } else { 0 };
         if small >= 3 || max_abs(&s) < 1e-14 {
             return (y, f, nfev);
@@ -657,21 +818,22 @@ pub fn optimize_loads(model: &Model, net: &Net, x0: Option<&[f64]>, scale: Optio
         Some(x) if x.len() == n => feasible_start(model, net, x),
         _ => start_point(model, net, 1e-4),
     };
+    let mut w = Work::new(model, net);
     let scale = match scale {
         Some(s) => s,
-        None => 1.0f64.max(evaluate(model, net, &x0, 0.0, 0.0, 1.0, false, false).tac),
+        None => 1.0f64.max(evaluate_into(model, net, &x0, 0.0, 0.0, 1.0, false, &mut w, None).tac),
     };
     let mut y: Vec<f64> = (0..n).map(|m| x0[m] / sx[m]).collect();
     let mut nfev = 0;
     for (&tau, &mu) in TAUS.iter().zip(MUS.iter()) {
         if n > 0 {
-            let (yn, _f, nf) = lbfgs_level(model, net, y, &sx, tau, mu, scale, max_iter, 8);
+            let (yn, _f, nf) = lbfgs_level(model, net, y, &sx, tau, mu, scale, max_iter, 8, &mut w);
             y = yn;
             nfev += nf;
         }
     }
     let x: Vec<f64> = (0..n).map(|m| y[m] * sx[m]).collect();
-    let ev = evaluate(model, net, &x, 0.0, 0.0, 1.0, false, false);
+    let ev = evaluate_into(model, net, &x, 0.0, 0.0, 1.0, false, &mut w, None);
     let resid = residuals(model, net, &x);
     let worst = resid.iter().fold(0.0f64, |a, &b| if b.abs() > a { b.abs() } else { a });
     let feasible = ev.ok && worst <= 1e-6;
@@ -1041,8 +1203,9 @@ pub unsafe extern "C" fn eval_batch(netp: *const f64, nn: usize, xp: *const f64,
     let nm = net.matches.len();
     let xs = slice(xp, n * nm);
     let mut v = Vec::with_capacity(n);
+    let mut w = Work::new(m, &net);
     for b in 0..n {
-        let ev = evaluate(m, &net, &xs[b * nm..(b + 1) * nm], 0.0, 0.0, 1.0, false, false);
+        let ev = evaluate_into(m, &net, &xs[b * nm..(b + 1) * nm], 0.0, 0.0, 1.0, false, &mut w, None);
         v.push(if ev.ok { ev.tac } else { f64::NAN });
     }
     set_out(v)

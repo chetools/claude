@@ -7,10 +7,10 @@ const {chromium} = require(process.env.PW || '/opt/node22/lib/node_modules/playw
 const url = process.argv[2] || 'http://localhost:8765/heat-exchanger-network-standalone.html';
 const out = process.argv[3] || '/tmp/hen-shots';
 require('fs').mkdirSync(out, {recursive: true});
-const proxy = process.env.HTTPS_PROXY ? {server: process.env.HTTPS_PROXY, bypass: 'localhost,127.0.0.1'} : undefined;
+
 
 (async () => {
-  const browser = await chromium.launch({proxy, args: ['--ignore-certificate-errors']});
+  const browser = await chromium.launch();
   const errors = [];
   const ctx = await browser.newContext({viewport: {width: 1400, height: 1000}, ignoreHTTPSErrors: true});
   const page = await ctx.newPage();

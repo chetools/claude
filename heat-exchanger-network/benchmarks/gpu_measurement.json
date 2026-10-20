@@ -1,0 +1,14 @@
+{
+ "n": 65536,
+ "nm": 11,
+ "gpu_ms": 201.90000000037253,
+ "cpu_ms": 109.09999999962747,
+ "workers": 4,
+ "agree": 65536,
+ "both": 9528,
+ "maxrel": 4.007787985782432e-7,
+ "adapter": "google",
+ "problem": "H10C10 (Luo et al.)",
+ "where": "Chromium 141.0.7390.37, headed under Xvfb, SwiftShader software WebGPU, 4-core build container",
+ "date": "2026-10-20"
+}

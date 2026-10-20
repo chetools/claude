@@ -170,6 +170,8 @@ model, 30 min limit; a gap means not proven optimal).
     for f in diff:
         note += (f"{f['name']}: HiGHS found {f['n']} matches within the time limit"
                  f"{' and did not prove optimality' if not f['optimal'] else ''}; CPLEX and Gurobi found {f['pub_n']}. ")
+        if f["name"] == "37sp-yfyv":
+            note += "A separate run with a 600 s limit also stopped at 37 matches. "
     t.append(f'<p class="caption">{e(note)}</p>')
     out.append("".join(t))
     return "\n".join(out), nets
