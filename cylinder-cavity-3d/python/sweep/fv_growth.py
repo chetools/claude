@@ -17,7 +17,7 @@ import fv3d  # noqa: E402
 name, N, Nz, Re, Us, Uo, t_end = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), float(sys.argv[4]), \
     float(sys.argv[5]), float(sys.argv[6]), float(sys.argv[7])
 seed = float(sys.argv[8]) if len(sys.argv) > 8 else 1e-3
-p = fv3d.make_params(N=N, Nz=Nz, Re=Re, Us=Us, Uo=Uo, ro=0.2, span="periodic", seed=seed)
+p = fv3d.make_params(N=N, Nz=Nz, Re=Re, Us=Us, Uo=Uo, ro=0.2, span="periodic", seed=seed)  # final code: inner-ramp mask, stream-function seed
 s = fv3d.init_state(p)
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results_fv", name + ".json")
 rows, every, t0, nxt = [], 0.1, time.time(), 0.0
