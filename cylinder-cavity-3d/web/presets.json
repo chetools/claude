@@ -1,0 +1,22 @@
+{
+  "agree": {
+    "label": "Low Re: 3D agrees with 2D",
+    "description": "Spinning cylinder at a Reynolds number where the 3D run is expected to stay spanwise-uniform, so the two panels should agree. TODO(measured): Re value and the claim above, to be filled after the parameter sweep.",
+    "inputs": {"method": "lbm", "span": "periodic", "Re": 100, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 16, "seed": 0.001}
+  },
+  "transition": {
+    "label": "Intermediate Re: the seed grows",
+    "description": "A Reynolds number near where the small 3D seed starts to grow. TODO(measured): Re value, to be filled after the parameter sweep.",
+    "inputs": {"method": "lbm", "span": "periodic", "Re": 400, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 128, "Nz": 32, "seed": 0.001}
+  },
+  "turbulent": {
+    "label": "High Re: fully three-dimensional",
+    "description": "A Reynolds number where the 3D flow clearly departs from the 2D baseline. TODO(measured): Re value, to be filled after the parameter sweep.",
+    "inputs": {"method": "lbm", "span": "periodic", "Re": 1600, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 128, "Nz": 32, "seed": 0.001}
+  },
+  "ekman": {
+    "label": "End walls: Ekman layers",
+    "description": "Same spinning cylinder, but with no-slip end walls at z = 0 and z = Lz instead of a periodic span. Compare with the periodic runs. TODO(measured): Re value, to be filled after the parameter sweep.",
+    "inputs": {"method": "lbm", "span": "walls", "Re": 400, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}
+  }
+}

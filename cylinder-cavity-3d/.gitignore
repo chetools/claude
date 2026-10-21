@@ -2,3 +2,7 @@
 __pycache__/
 .pytest_cache/
 notebook/__marimo__/
+python/sweep/results/progress.log
+python/sweep/results/sweep.out
+notes/verify/out/*.npz
+notes/verify/out/*.npy
