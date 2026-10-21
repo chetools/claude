@@ -1,9 +1,14 @@
 fv N=64 case=orbit  (windows of 0.05; mean values over the window)
    t     dE/dt      P_in     D1=2nuZtot  D2=2nuZfl   D3=2nu*SS   | resid1/P  resid2/P  resid3/P | dEf/dt-P+D3
-Traceback (most recent call last):
-  File "/home/user/claude/cylinder-cavity-3d/notes/verify/verify_energy.py", line 63, in <module>
-    Pm = np.trapz(P[sl], t[sl]) / (t[i + k] - t[i])
-         ^^^^^^^^
-  File "/usr/local/lib/python3.13/dist-packages/numpy/__init__.py", line 769, in __getattr__
-    raise AttributeError(f"module {__name__!r} has no attribute {attr!r}")
-AttributeError: module 'numpy' has no attribute 'trapz'. Did you mean: 'trace'?
+ 0.035    0.55022    1.38492    0.12095    0.09622    0.18316 |   -0.515   -0.533   -0.470 |   -0.67437
+ 0.236    0.35560    0.66996    0.13323    0.10827    0.20220 |   -0.270   -0.308   -0.167 |   -0.10368
+ 0.437    0.21184    0.51867    0.14340    0.11831    0.21791 |   -0.315   -0.363   -0.171 |   -0.09650
+ 0.637    0.12084    0.40369    0.14319    0.11806    0.22342 |   -0.346   -0.408   -0.147 |   -0.07473
+ 0.838    0.07362    0.33249    0.13854    0.11336    0.21297 |   -0.362   -0.438   -0.138 |   -0.02645
+ 1.039    0.05473    0.30769    0.13301    0.10800    0.20200 |   -0.390   -0.471   -0.166 |   -0.06192
+ 1.240   -0.00838    0.22510    0.12598    0.10086    0.18136 |   -0.478   -0.589   -0.232 |   -0.04441
+ 1.441   -0.10515    0.10550    0.11808    0.09318    0.17795 |   -0.878   -1.114   -0.310 |   -0.04238
+ integral over [0.01,1.50]: E gain 0.19269;  int P 0.62948;  int D1 0.19826; int D2 0.16110; int D3 0.30060
+   residual (E gain - intP + intD1) = -0.23853, with D2: -0.27569, with D3: -0.13619
+   Z_tot(t_end)=28.3333  of which body interior 2*pi*Om^2*R^2 = 6.2832; Z_fluid=22.0174
+   E_tot(t_end)=0.24177; body rigid KE pi R^4 Om^2/4 = 0.00785 (spin only); E_fluid(r>R)=0.21803

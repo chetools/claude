@@ -1,0 +1,59 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>fv gpu test</title></head>
+<body><pre id="out">running...</pre>
+<script src="../fv_cpu.js"></script>
+<script src="../fv_gpu.js"></script>
+<script>
+// GPU (f32) vs CPU (f64) vs numpy reference for the selftest cases; result in window.RESULT.
+(async () => {
+  const fv = CC3.fv, out = document.getElementById("out"), R = { log: [] };
+  const log = s => { R.log.push(s); out.textContent = R.log.join("\n"); };
+  window.addEventListener("error", e => log("ERROR " + e.message));
+  try {
+    const wgsl = await (await fetch("../fv.wgsl")).text();
+    const ref = await (await fetch("fv_reference.json")).json();
+    const dev = await fv.requestDevice();
+    R.limits = { maxStorageBufferBindingSize: dev.limits.maxStorageBufferBindingSize, maxBufferSize: dev.limits.maxBufferSize };
+    const mk = p => fv.createGpuSolver(dev, p, wgsl);
+    // 1. library self-test on the GPU (tolerance 2e-3)
+    R.selftest = await fv.selftest(mk, ref);
+    // 2. GPU vs CPU, whole fields
+    R.fields = [];
+    for (const cs of ref.cases) {
+      const p = fv.makeParams(cs.inp), g = await mk(p), c = new fv.CpuSolver(p);
+      g.step(cs.steps); c.step(cs.steps);
+      const vg = await g.readVelocity(), vc = c.velocity();
+      let d = 0, m = 0, l2 = 0, n2 = 0;
+      for (let i = 0; i < vc.length; i++) { d = Math.max(d, Math.abs(vg[i] - vc[i])); m = Math.max(m, Math.abs(vc[i])); l2 += (vg[i] - vc[i]) ** 2; n2 += vc[i] ** 2; }
+      const tg = g.torque(), tc = c.torque();
+      R.fields.push({ name: cs.name, maxabs_over_max: d / m, l2rel: Math.sqrt(l2 / n2), torque_rel: Math.abs(tg - tc) / Math.abs(tc),
+        maxdiv_gpu: g.maxdiv(), maxdiv_cpu: c.maxdiv(), nan: Array.from(vg).some(x => !Number.isFinite(x)) });
+      g.destroy();
+    }
+    // 3. spanwise uniformity on the GPU: seed = 0, Nz = 4 periodic, 50 steps
+    {
+      const p = fv.makeParams({ N: 16, Nz: 4, span: "periodic", Re: 100, Us: 1, Uo: 0.5, ro: 0.2, seed: 0 });
+      const g = await mk(p); g.step(50);
+      const v = await g.readVelocity(), nc = 4 * 256; let dz = 0, m = 0;
+      for (let c = 0; c < 3; c++) for (let k = 1; k < 4; k++) for (let n = 0; n < 256; n++) dz = Math.max(dz, Math.abs(v[c * nc + k * 256 + n] - v[c * nc + n]));
+      for (const x of v) m = Math.max(m, Math.abs(x));
+      R.uniform = { planeDiffOverMax: dz / m, maxW: Math.max(...Array.from(v.subarray(2 * nc)).map(Math.abs)) / m };
+      g.destroy();
+    }
+    // 4. refusal of an oversize grid
+    try { await fv.createGpuSolver(dev, fv.makeParams({ N: 1024, Nz: 1024, span: "periodic" }), wgsl); R.oversize = "NOT REFUSED"; }
+    catch (e) { R.oversize = e.message; }
+    // 5. step time at N=32, Nz=16 (swiftshader, for information only)
+    {
+      const p = fv.makeParams({ N: 32, Nz: 16, span: "periodic", Re: 200, Us: 1, Uo: 0.5, ro: 0.2 });
+      const g = await mk(p); g.step(2); await g.readVelocity();
+      const t0 = performance.now(); g.step(20); await g.finish(); const ms = (performance.now() - t0) / 20;
+      const v = await g.readVelocity();
+      R.timing = { N: 32, Nz: 16, msPerStep_gpu_swiftshader: ms, finite: Array.from(v).every(Number.isFinite) };
+      g.destroy();
+    }
+    R.done = true;
+  } catch (e) { R.error = String(e && e.stack || e); }
+  window.RESULT = R; out.textContent = JSON.stringify(R, null, 1);
+})();
+</script></body></html>
