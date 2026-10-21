@@ -89,6 +89,10 @@ These complement the rules above. They apply to every project.
   - Streamlit-like fixed sidebar, metric cards, App / Theory / Code tabs;
   - Plotly, KaTeX prerendered at build time;
   - one self-contained HTML file per page.
+- **The Theory tab has a table of contents on the left** that jumps to every section and subsection.
+  - Build it from the rendered `<h2>`/`<h3>` headings (give each an `id`, fail the build if there are none).
+  - Sticky, scrollable, current section highlighted while reading. On phones it becomes a collapsed "Contents" block above the text.
+  - Reference implementation: `cylinder-cavity-3d/` (`add_toc` in `build.py`, `.theory-layout` in `web/template.html`).
 - **Every page that shows Python code must link to an editable MoLab (marimo) version of that code.**
   - The notebook is a **single self-contained marimo `.py` file**, because MoLab opens one file from GitHub with no
     repository checkout. It has:
