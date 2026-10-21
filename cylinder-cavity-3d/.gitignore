@@ -6,3 +6,4 @@ python/sweep/results/progress.log
 python/sweep/results/sweep.out
 notes/verify/out/*.npz
 notes/verify/out/*.npy
+python/sweep/results_fv/*.log
