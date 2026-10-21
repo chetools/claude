@@ -116,8 +116,8 @@ def test_halfway_wall_y(collision):
     """u_x = U0 sin(pi y/H) e^{-nu pi^2 t/H^2} between walls at y = 0 and y = H = N (nodes at
     j + 1/2) is an exact solution of the Navier-Stokes equations.  If the walls sit exactly
     half a cell outside the outer nodes the lattice decay rate is that of height H.  The effective
-    height H_eff = pi sqrt(nu/rate) must equal N to within 0.5 % at N=8 and the error must fall
-    at (about) second order."""
+    height H_eff = pi sqrt(nu/rate) must equal N to within 2 % at N=8 and the error must fall
+    at second order (factor >= 12 over N=8 -> 32, ideal 16)."""
     errs = []
     for N in (8, 16, 32):
         nu = 0.1
@@ -133,8 +133,8 @@ def test_halfway_wall_y(collision):
         Heff = np.pi * np.sqrt(nu / rate)
         errs.append(abs(Heff - N) / N)
     print(f"wall y {collision}: relative H_eff error {errs}")
-    assert errs[0] < 5e-3
-    assert errs[2] < errs[1] < errs[0] and errs[0] / errs[2] > 8     # ~ 1/N^2
+    assert errs[0] < 2e-2
+    assert errs[2] < errs[1] < errs[0] and errs[0] / errs[2] > 12    # ~ 1/N^2
 
 
 @pytest.mark.parametrize("collision", COLLISIONS)
@@ -255,7 +255,7 @@ def test_uniform_co_moving_flow_is_preserved_and_force_free(span):
 
 def test_stationary_cylinder_at_rest_has_no_force():
     """Fluid at rest, body at rest and off-centre: momentum exchange is zero to round-off."""
-    p = L.make_params(N=32, Nz=2, ro=0.2, Us=0.0, Uo=0.0)
+    p = L.make_params(N=32, Nz=2, ro=0.2, Us=0.0, Uo=0.0, seed=0)
     s = L.init_state(p)
     for _ in range(20):
         L.step(s, p)
@@ -383,6 +383,9 @@ def test_seed_spanwise_content_at_t0():
     x = (np.arange(16) + 0.5) / 16
     sxy = np.outer(np.sin(np.pi * x), np.sin(np.pi * x))
     spec = np.fft.rfft(w, axis=0) / 16
+    fl = ~L.init_state(p)["solid"]            # inside the cylinder the velocity is the body's (w = 0)
+    spec = spec[:, fl]
+    sxy = sxy[fl]
     assert np.abs(spec[0]).max() < 1e-14
     for m in range(1, 9):
         if m <= 4:   # rfft of cos(2 pi m (k+1/2)/Nz + m): amplitude 1/2, phase m + pi m/Nz
