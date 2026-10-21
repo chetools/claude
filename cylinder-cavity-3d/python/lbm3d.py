@@ -255,6 +255,31 @@ def find_links(body, fluid, N):
     return links
 
 
+# ------------------------------------------------------------------ nodes that change state
+def node_exchange(f, mask, body, p, sign, mode):
+    """Momentum that the body receives from nodes that switch between fluid and body.
+    mask (N, N): the switching nodes.  sign = +1 for covered nodes (their fluid momentum
+    sum_q c_q f_q goes to the body), -1 for uncovered nodes (the body supplies the momentum of the
+    refilled populations).  This closes the momentum balance of the fluid: change of fluid momentum
+    = links + switching nodes + walls.  mode "abs" uses sum_q c_q f_q, "rel" uses the momentum
+    relative to the body, sum_q (c_q - u_b) f_q = rho (u - u_b); "none" switches it off.
+    Returns (Fx, Fy, Tz) in lattice units, summed over the span; the torque arm is the node
+    centre minus the body centre."""
+    if mode == "none" or not mask.any():
+        return np.zeros(3)
+    jj, ii = np.nonzero(mask)
+    fn = f[:, :, jj, ii]                                   # (19, Nz, n)
+    px = np.tensordot(C[:, 0].astype(float), fn, axes=(0, 0))
+    py = np.tensordot(C[:, 1].astype(float), fn, axes=(0, 0))
+    x, y = ii + 0.5, jj + 0.5
+    if mode == "rel":
+        rho = fn.sum(0)
+        ub, vb = body["velocity"](x, y)
+        px, py = px - rho * ub, py - rho * vb
+    rx, ry = x - body["cx"], y - body["cy"]
+    return sign * np.array([px.sum(), py.sum(), (rx * py - ry * px).sum()])
+
+
 # ------------------------------------------------------------------ step 4: moving body
 def bounce_back_body(f, fpost, links, fluid, body, p):
     """Interpolated bounce-back (Bouzidi, Firdaouss & Lallemand 2001) with moving wall.
@@ -354,12 +379,15 @@ def step(s, p):
     s["phi"] += p["omega_o"] * p["dt"]
     body = make_body(s["phi"], p)
     solid = solid_mask(body, N)
+    mode = p.get("node_exchange", "abs")
+    F_nodes = node_exchange(s["f"], ~s["solid"] & solid, body, p, +1.0, mode)       # covered: fluid -> body
     refill(s["f"], s["solid"], solid, body, p)
+    F_nodes += node_exchange(s["f"], s["solid"] & ~solid, body, p, -1.0, mode)      # uncovered: body -> fluid
     fpost = collide(s["f"], p)
     f = stream(fpost)
     bounce_back_walls(f, fpost, p)
     links = find_links(body, ~solid, N)
-    s["exchange"] = bounce_back_body(f, fpost, links, ~solid, body, p)
+    s["exchange"] = bounce_back_body(f, fpost, links, ~solid, body, p) + F_nodes
     mass_correction(f, solid, p)
     _reset_solid(f, solid, body)
     s["f"], s["solid"] = f, solid
