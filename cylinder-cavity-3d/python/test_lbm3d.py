@@ -330,10 +330,11 @@ def test_walls_span_mass_and_ekman_pumping():
     for _ in range(400):
         L.step(s, p)
     drift = abs(L.mass(s) / m0 - 1)
+    assert abs(L.mean_density(s, p) - 1) < 1e-10
     w = L.cell_velocity(s, p)[2]
     mid = w[p["Nz"] // 2 - 1: p["Nz"] // 2 + 1]
     print(f"walls span: mass drift {drift:.2e}, max|w| = {np.abs(w).max():.3e}, mid-plane {np.abs(mid).max():.3e}")
-    assert drift < 5e-3          # Bouzidi interpolation does not conserve mass exactly: measured ~1.6e-3 (reg) per 400 steps
+    assert drift < 1e-10         # global mass correction (without it the drift is ~1.6e-3 per 400 steps)
     assert np.abs(w).max() > 1e-4                          # about 1e-3 U measured; round-off is 1e-16
     # symmetric about the mid plane: w(z) = -w(Lz - z)
     assert np.abs(w + w[::-1]).max() < 1e-10 * max(1, np.abs(w).max())
@@ -424,3 +425,22 @@ def test_annular_couette_moving_wall_term_various_cuts(R):
     T, exact = annulus_torque(64, 2000, 400, "reg", R=R)
     print(f"annulus R={R}: torque {T:.6f} exact {exact:.6f} err {abs(T / exact - 1):.3%}")
     assert abs(T / exact - 1) < 0.03
+
+
+@pytest.mark.parametrize("span,Uo", (("periodic", 0.0), ("walls", 0.0), ("periodic", 1.0), ("walls", 1.0)))
+def test_mass_conserved_long_run(span, Uo):
+    """Mean density of the fluid nodes is 1 to <= 1e-10 after thousands of steps with spin (and
+    orbit, which also uncovers/covers nodes).  Without mass_correction it drifts linearly
+    (~2e-6 per step for spin only, 3e-7 with orbit, at N=32); the check below shows that too."""
+    p = L.make_params(N=32, Nz=2, Re=200, Us=1.0, Uo=Uo, span=span)
+    s = L.init_state(p)
+    for _ in range(2500):
+        L.step(s, p)
+    assert abs(L.mean_density(s, p) - 1) < 1e-10
+    assert np.isfinite(L.cell_velocity(s, p)).all()
+    p2 = dict(p, mass_fix=False)
+    s2 = L.init_state(p2)
+    for _ in range(300):
+        L.step(s2, p2)
+    if Uo == 0:                                  # with orbit the drift per step is 10x smaller
+        assert abs(L.mean_density(s2, p2) - 1) > 1e-4

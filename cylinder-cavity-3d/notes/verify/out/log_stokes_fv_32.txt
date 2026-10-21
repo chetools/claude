@@ -1,0 +1,1 @@
+fv 32 stokes done 90.6 s; steps 6304 T_end -0.5594438635235548

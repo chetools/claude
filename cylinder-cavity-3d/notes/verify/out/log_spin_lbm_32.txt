@@ -1,0 +1,1 @@
+lbm 32 spin done 56.8 s; steps 3200 T_end -0.003047093458836855

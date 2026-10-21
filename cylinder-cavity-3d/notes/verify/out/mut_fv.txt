@@ -1,0 +1,7 @@
+CAUGHT | torque x1.1 (10%) | {'nz1==ns2d': 'FAIL', 'uniform default': 'pass', 'exact w diffusion': 'pass', 'swap y-z': 'pass', 'ekman walls': 'pass'} | 25s
+CAUGHT | penalisation mask radius 10% larger | {'nz1==ns2d': 'FAIL', 'uniform default': 'pass', 'exact w diffusion': 'pass', 'swap y-z': 'pass', 'ekman walls': 'pass'} | 25s
+CAUGHT | mask width 2h instead of h | {'nz1==ns2d': 'FAIL', 'uniform default': 'pass', 'exact w diffusion': 'pass', 'swap y-z': 'pass', 'ekman walls': 'FAIL'} | 16s
+CAUGHT | viscous z-term x2 (3D only) | {'nz1==ns2d': 'pass', 'uniform default': 'pass', 'exact w diffusion': 'pass', 'swap y-z': 'FAIL', 'ekman walls': 'pass'} | 23s
+CAUGHT | z advection flux of top face uses wrong sign of upwind | {'nz1==ns2d': 'pass', 'uniform default': 'pass', 'exact w diffusion': 'pass', 'swap y-z': 'FAIL', 'ekman walls': 'FAIL'} | 16s
+CAUGHT | z-wall ghost for u free-slip instead of no-slip | {'nz1==ns2d': 'pass', 'uniform default': 'pass', 'exact w diffusion': 'pass', 'swap y-z': 'FAIL', 'ekman walls': 'pass'} | 24s
+CAUGHT | AB2 coefficient wrong (1+r/2 -> 1+r) | {'nz1==ns2d': 'FAIL', 'uniform default': 'pass', 'exact w diffusion': 'pass', 'swap y-z': 'pass', 'ekman walls': 'FAIL'} | 16s

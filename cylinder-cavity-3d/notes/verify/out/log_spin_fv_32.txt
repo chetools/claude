@@ -1,0 +1,1 @@
+fv 32 spin done 23.3 s; steps 739 T_end -0.011481827207149072

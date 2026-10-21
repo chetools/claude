@@ -360,11 +360,36 @@ def step(s, p):
     bounce_back_walls(f, fpost, p)
     links = find_links(body, ~solid, N)
     s["exchange"] = bounce_back_body(f, fpost, links, ~solid, body, p)
+    mass_correction(f, solid, p)
     _reset_solid(f, solid, body)
     s["f"], s["solid"] = f, solid
     s["t"] += p["dt"]
     s["nstep"] += 1
     return s
+
+
+# ------------------------------------------------------------------ global mass correction
+def mass_correction(f, solid, p):
+    """Keep the mean density of the fluid nodes at exactly 1.
+
+    The interpolated bounce-back (and the nodes covered / uncovered by a moving body) do not
+    conserve mass exactly.  After the body step the deficit is spread evenly over all fluid nodes
+    through the rest population only, so momentum and all moments except rho are untouched:
+        delta = (n_fluid - sum_fluid rho) / n_fluid,    f_0 += delta   on every fluid node.
+    A uniform shift of rho is the usual 'fix the reference density' correction of weakly
+    compressible schemes (no literature source verified by the author).  Every z-plane receives
+    the same delta, so spanwise-uniform flow stays spanwise-uniform."""
+    if not p.get("mass_fix", True):
+        return
+    fluid = ~solid
+    n = fluid.sum() * p["Nz"]
+    delta = (n - f[:, :, fluid].sum()) / n
+    f[0][:, fluid] += delta
+
+
+def mean_density(s, p):
+    """Mean density over the fluid nodes (1 after every step when mass_fix is on)."""
+    return s["f"][:, :, ~s["solid"]].sum() / ((~s["solid"]).sum() * p["Nz"])
 
 
 # ------------------------------------------------------------------ outputs

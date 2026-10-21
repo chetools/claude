@@ -1,0 +1,1 @@
+lbm 32 stokes done 17.8 s; steps 960 T_end -0.23428999213669988
