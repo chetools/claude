@@ -1,0 +1,6 @@
+{"defaults": {"N": 64, "Nz": 32, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "span": "periodic", "seed": 1e-3, "collision": "reg", "every_t": 0.1},
+ "cases": [
+  {"name": "s_Re50_long", "Re": 50, "t_end": 60},
+  {"name": "s_Re40_long", "Re": 40, "t_end": 60},
+  {"name": "s_Re60_long", "Re": 60, "t_end": 60}
+ ]}
