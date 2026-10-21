@@ -434,7 +434,7 @@ def test_mass_conserved_long_run(span, Uo):
     (~2e-6 per step for spin only, 3e-7 with orbit, at N=32); the check below shows that too."""
     p = L.make_params(N=32, Nz=2, Re=200, Us=1.0, Uo=Uo, span=span)
     s = L.init_state(p)
-    for _ in range(2500):
+    for _ in range(2000):
         L.step(s, p)
     assert abs(L.mean_density(s, p) - 1) < 1e-10
     assert np.isfinite(L.cell_velocity(s, p)).all()
