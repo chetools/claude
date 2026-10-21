@@ -26,13 +26,28 @@ LBM: u_lb (lattice speed of the fastest body point, default 0.05 → Ma ≈ 0.08
 (regularised) | "mrt" — choose default by measured stability), refill scheme as documented in the code.
 The 2D baseline is ALWAYS `Nz=1, span="periodic"`, same other inputs.
 
-### Deliberate 3D seed (both methods, identical formula in numpy / JS / WGSL)
-Input `seed` (default 1e-3, in units of U_ref; 0 disables). init_state adds to the fluid at rest
-  w0(x,y,z) = seed · sin(πx) sin(πy) · Σ_{m=1}^{M} cos(2π m z/Lz + m),   M = min(4, Nz//2)
-(nothing for Nz = 1). FV: applied to the w faces, then one projection; LBM: equilibrium at that velocity.
+### Deliberate 3D seed (both methods, identical formula in numpy / JS / WGSL) — revised after verification
+Input `seed` (default 1e-3, in units of U_ref; 0 disables; nothing for Nz = 1). The seed is an analytic,
+divergence-free velocity built from a stream function ψ ŷ (velocity = ∇×(ψ ŷ): u = −∂ψ/∂z, v = 0, w = ∂ψ/∂x):
+  ψ = seed·U_ref · F(x,y) · W(z) · S(z),   F = sin²(πx) sin(πy),
+  S(z) = Σ_{m=1}^{M} sin(k_m z + m)/k_m,  k_m = 2πm/Lz,   M = min(4, Nz//4)  (never the Nyquist mode; M = 0 → no seed)
+  W(z) = 1 (periodic) or sin²(πz/Lz) (walls), so u = w = 0 on every wall.
+  u = −seed·U_ref·F·(W' S + W S'),  w = seed·U_ref·(∂F/∂x)·W·S,  ∂F/∂x = π sin(2πx) sin(πy),  S' = Σ cos(k_m z + m).
+Evaluate at each method's own velocity points (FV faces, then one projection as before; LBM nodes, equilibrium).
 REQUIREMENT: with seed = 0 and a spanwise-uniform start, each solver must keep the flow spanwise-uniform to
 round-off (≤ 1e-12 relative) at DEFAULT settings, so that any 3D growth on the page comes from the known seed
-(or physics) and never from solver artefacts (e.g. z-dependent Gauss–Seidel colouring). Test it.
+(or physics) and never from solver artefacts. Test it.
+
+### Fluid-only integrals (revised)
+E, Z, Ew, E3d, Ekz and the spectrum input are integrals over the FLUID only: cells whose centre lies outside the
+cylinder (r > R from the body centre at the current φ) — the rigid body interior is excluded (it would add a
+constant ~Ω²πR² to Z and hide the flow). diagnostics functions take an optional `fluid` mask (Nz,N,N) bool;
+`summary(U, s, p)` builds it from p and s["phi"] (or ω_o·t). Both solvers store s["torque"] (last step) and
+FV s["maxdiv"], so summary/run histories carry them.
+
+### LBM lattice speed (revised)
+u_lb = min(0.05, ...) chosen so that τ stays ≤ 1 (bounce-back wall position is τ-dependent at large τ):
+u_lb = min(0.05, U_body_max/(6·ν·N))  [⇔ ν_lb ≤ 1/6, τ ≤ 1]. State the resulting τ and Ma in the UI.
 
 ## Array layout (numpy and flat GPU buffers alike): index order [k (z), j (y), i (x)]
 FV (MAC, staggered; extends ns2d exactly):
