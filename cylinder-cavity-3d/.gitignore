@@ -9,3 +9,5 @@ notes/verify/out/*.npy
 python/sweep/results_fv/*.log
 python/sweep/results_lowre/progress.log
 python/sweep/results_lowre/sweep.out
+python/sweep/results_final/progress.log
+python/sweep/results_final/sweep.out

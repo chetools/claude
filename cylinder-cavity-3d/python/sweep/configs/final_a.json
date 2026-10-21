@@ -1,0 +1,11 @@
+{"defaults": {"N": 64, "Nz": 32, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "span": "periodic", "seed": 1e-3, "t_end": 20, "collision": "reg", "every_t": 0.1},
+ "cases": [
+  {"name": "s_Re100", "Re": 100},
+  {"name": "s_Re50", "Re": 50},
+  {"name": "s_Re75", "Re": 75},
+  {"name": "s_Re150", "Re": 150},
+  {"name": "s_Re50_2d", "Re": 50, "Nz": 1},
+  {"name": "s_Re100_2d", "Re": 100, "Nz": 1},
+  {"name": "s_Re75_2d", "Re": 75, "Nz": 1},
+  {"name": "s_Re150_2d", "Re": 150, "Nz": 1}
+ ]}

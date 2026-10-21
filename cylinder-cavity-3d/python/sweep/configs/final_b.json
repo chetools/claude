@@ -1,0 +1,9 @@
+{"defaults": {"N": 64, "Nz": 32, "Us": 1.0, "Uo": 1.0, "ro": 0.2, "span": "periodic", "seed": 1e-3, "t_end": 20, "collision": "reg", "every_t": 0.1},
+ "cases": [
+  {"name": "so_Re800", "Re": 800},
+  {"name": "w_s_Re200", "Re": 200, "Uo": 0.0, "span": "walls"},
+  {"name": "so_Re800_2d", "Re": 800, "Nz": 1},
+  {"name": "w_s_Re200_2d", "Re": 200, "Uo": 0.0, "Nz": 1},
+  {"name": "so_Re25", "Re": 25},
+  {"name": "so_Re25_2d", "Re": 25, "Nz": 1}
+ ]}
