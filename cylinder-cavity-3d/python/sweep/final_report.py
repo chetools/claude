@@ -90,8 +90,8 @@ def main():
     names = sorted({os.path.basename(f)[:-5] for f in glob.glob(os.path.join(RES, "*.json"))})
     three = [n for n in names if not n.endswith("_2d")]
     lines += ["## Growth of the spanwise perturbation", "",
-              "| run | Re | span | U_s | U_o | t_end | σ (fit window) | E3d/E late | E_w/E late | dominant k_z |",
-              "|---|---|---|---|---|---|---|---|---|---|"]
+              "| run | Re | span | U_s | U_o | t_end | σ (fit window) | σ late (t ≥ t_end/3) | E3d/E late | E_w/E late | dominant k_z |",
+              "|---|---|---|---|---|---|---|---|---|---|---|"]
     for n in three:
         r, s = load(n)
         c = r["params"] if "params" in r else r["case"]
@@ -101,11 +101,16 @@ def main():
         if ek and ek[0] is not None and ek[0][1] is not None:
             a = np.array(ek, float)[s["t"] >= 0.75 * s["t"][-1]][:, 1:]
             kz = str(int(np.argmax(a.mean(axis=0)) + 1))
+        tl = s["t"] >= s["t"][-1] / 3
+        late_sig = float(np.polyfit(s["t"][tl], np.log(s["E3d"][tl]), 1)[0] / 2) if np.all(s["E3d"][tl] > 0) else None
         lines.append(f"| {n} | {c['Re']:g} | {c['span']} | {c['Us']:g} | {c['Uo']:g} | {s['t'][-1]:g} | "
                      f"{fmt(sig, '{:+.3f}')}{'' if win is None else f' ({win[0]:.1f}–{win[1]:.1f})'} | "
+                     f"{'–' if c['span'] != 'periodic' else (fmt(late_sig, '{:+.3f}') if s['E3d'][-1] / s['E'][-1] < 1e-3 else '(saturated)')} | "
                      f"{late_mean(s, 'E3d') / late_mean(s, 'E'):.3g} | {late_mean(s, 'Ew') / late_mean(s, 'E'):.3g} | {kz} |")
     lines += ["", "σ is the growth rate of the perturbation amplitude: E3d ∝ e^{2σt} while E3d/E is between "
-              "1e-7 and 1e-3 (t ≥ 1). A negative σ means the seed decays.", "",
+              "1e-7 and 1e-3 (t ≥ 1). A negative σ means the seed decays. σ late is fitted over the last two thirds "
+              "of the run while the perturbation is still small (E3d/E < 1e-3 at the end); it separates a slow "
+              "growth from the decay of the initial transient near onset.", "",
               "## 3D against the 2D baseline", "",
               "| run | quantity | 3D late mean | 2D late mean | 3D / 2D | first > 5 % apart at t |",
               "|---|---|---|---|---|---|"]
