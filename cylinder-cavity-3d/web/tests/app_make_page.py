@@ -16,7 +16,7 @@ scripts.append("../tracers.js")
 if os.path.exists(os.path.join(WEB, "render.js")): scripts.append("../render.js")
 scripts += ["../diagnostics.js", "../app.js"]
 fill = {"TITLE": "app test", "BASE_CSS": rd(WEB, "base.css"), "PYGMENTS_CSS": "", "PLOTLY": "",
-        "THEORY": "<p>theory stub</p>", "CODE_GUIDE": "<p>code stub</p>", "WALKTHROUGH": "", "WT_PLOTS": "{}", "PY_SRC": "{}",
+        "THEORY": "<p>theory stub</p>", "THEORY_TOC": "", "CODE_GUIDE": "<p>code stub</p>", "WALKTHROUGH": "", "WT_PLOTS": "{}", "PY_SRC": "{}",
         "WGSL_LBM": rd(WEB, "lbm.wgsl"), "WGSL_FV": rd(WEB, "fv.wgsl"),
         "WGSL_RENDER": rd(WEB, "render.wgsl"), "WGSL_ISO": rd(WEB, "iso.wgsl"), "WGSL_TRAILS": rd(WEB, "trails.wgsl"),
         "CPUJS_SRC": "", "GPUJS_SRC": "", "TRACERJS_SRC": "", "REF": ref, "MOLAB_URL": "#", "PRESETS": rd(WEB, "presets.json")}

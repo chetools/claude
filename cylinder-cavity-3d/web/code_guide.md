@@ -221,18 +221,26 @@ The trails are massless tracers moved by each panel's computed velocity. The rea
 1. **Velocity at a point** (`velAt`, WGSL `vel`): trilinear interpolation between the cell centres. Between the last centre and a wall
    the no-slip ghost value $-(\text{edge value})$ is used (the same `vg` rule as above), so the velocity is exactly zero on the walls.
    Periodic $z$ wraps around.
-2. **Moving** (`advectOne`, WGSL `cs_advect`): each frame the particles are moved over the simulated time $\tau$ that the frame covered, with the
-   velocity frozen at its current value. They use the midpoint rule (RK2) $\mathbf x \leftarrow \mathbf x + \Delta t\,\mathbf u(\mathbf x + \tfrac12\Delta t\,\mathbf u(\mathbf x))$,
-   in `substeps` steps, enough that one step moves at most $h/2$ at the body's top speed (at most 32 steps).
+2. **Moving** (`rk2`, `CpuTracers.advect`, WGSL `cs_advect`): each frame the particles are moved over the simulated time $\tau$ that the frame
+   covered, with the velocity frozen at its current value. They use the midpoint rule (RK2)
+   $\mathbf x \leftarrow \mathbf x + \Delta t\,\mathbf u(\mathbf x + \tfrac12\Delta t\,\mathbf u(\mathbf x))$, in substeps that move at most $h/2$ at the body's top speed.
 3. **Re-seeding:** a particle that has lived its lifetime (2 to 4 time units), left the box or entered the cylinder starts again at a random point.
    The new path is not joined to the old one.
-4. **Trails:** every particle keeps its last $K$ positions in a ring buffer (`K` from the *Trail length* slider, 4 to 64 points). The vertex shader
-   `vs_trail` draws the last $K-1$ moves as lines, fading with age and stronger where the move was faster. On a slice it keeps only the particles within
-   $2h$ of the plane. Storing positions, rather than painting into an image, keeps the trails correct when the 3D view is rotated.
+4. **Trails in simulated time** (`schedule`): a trail is the path over the last $T$ time units (the *Trail length* slider, 0.05 to 1), kept as 24 points
+   spaced $T/23$ apart in a ring buffer. The move of each frame is split exactly at those times, so a trail looks the same whatever time one frame
+   covers (a fast GPU covers more time per frame than a slow one).
+5. **Drawing** (`vs_trail`): the last 23 segments of each particle, coloured by the speed $\lvert\mathbf u\rvert$ at the newer end (light blue slow, near
+   black fast; the top of the scale is twice the rms speed of the more energetic run) and fading with age. While particles are on, the field is not
+   coloured, so only the trails, the box and the cylinder are drawn. A slice keeps only the particles within $2h$ of the plane.
+   - **Same density in both panels:** the 2D run has one cell of span, so every one of its particles is near an $xy$ plane, against only a slab of
+     $4h$ out of $L_z$ in 3D. The page (`trailDraw` in `app.js`) draws the subset `keepHash(p) < keep` that gives both panels the same number of
+     particles per unit area.
+   - **Opacity:** it is lowered where trails would overlap. The covered fraction is estimated as (particles per unit area) × (rms speed × $T$) × (one pixel).
+   - Storing positions, rather than painting into an image, keeps the trails correct when the 3D view is rotated.
 
 The Validation tab checks `velAt` on a linear field (trilinear interpolation reproduces it exactly) and on the walls (exactly zero). It checks RK2
-against the exact circle of a solid-body rotation (the error falls by 4 when the steps are halved). It compares `trails.wgsl` value by value with
-`tracers.js` on the same 32-bit velocity field.
+against the exact circle of a solid-body rotation (the error falls by 4 when the steps are halved), and that the same 0.5 time units in short or
+long frames give the same trail. It compares `trails.wgsl` value by value with `tracers.js` on the same 32-bit velocity field.
 
 ### What was not checked here
 

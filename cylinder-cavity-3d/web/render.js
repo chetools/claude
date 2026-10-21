@@ -18,7 +18,8 @@
 //                                       range: {lo, hi} | 'auto', colorRange: same for the colour field,
 //                                       isoValue: number (absolute) or isoFrac (fraction of the auto range, default 0.4),
 //                                       opacity (volume, default 1), phi, blit: bool (offscreen only),
-//                                       recompute: false to skip computeFields (camera-only redraw)}
+//                                       recompute: false to skip computeFields (camera-only redraw),
+//                                       plain: true = no field colouring: white slices / only box and cylinder in 3D}
 //                               draw() recomputes the fields unless view.recompute === false.  Returns a promise
 //                               (resolved when a blit copy is done; otherwise immediately).
 //   r.lastRange = {lo, hi, max, auto, signed}   range used by the colour bar (auto: read back asynchronously, so it
@@ -146,7 +147,7 @@
       const u = (pxx + 0.5 - L.ox) / L.sc, v = (L.oy - (py + 0.5)) / L.sc;
       let c = [0.965, 0.968, 0.975];
       if (u >= 0 && u <= A && v >= 0 && v <= B) {
-        c = signed ? diverging(Math.max(-1, Math.min(1, sample(u, v) / m))) : sequential((sample(u, v) - lo) / Math.max(hi - lo, 1e-30));
+        c = view.plain ? [1, 1, 1] : signed ? diverging(Math.max(-1, Math.min(1, sample(u, v) / m))) : sequential((sample(u, v) - lo) / Math.max(hi - lo, 1e-30));
         const wx = mode === "slice-yz" ? f : u, wy = mode === "slice-xy" ? v : (mode === "slice-xz" ? f : u);
         const r = Math.hypot(wx - cx, wy - cy) - g.R;
         if (r < 0) c = mix3(c, [0.55, 0.57, 0.62], 0.8);
@@ -449,7 +450,8 @@
       if (!(mode in MODES)) throw new Error("unknown mode " + mode);
       const phi = view.phi === undefined ? 0 : view.phi;
       const kind = FIELDS[r.field];
-      if (vb && view.recompute !== false) r.computeFields(vb, phi);
+      const plain = !!view.plain;                         // no field colouring (flow particles on)
+      if (vb && view.recompute !== false && !plain) r.computeFields(vb, phi);
       const auto = !view.range || view.range === "auto";
       if (!auto) r.lastRange = { lo: view.range.lo, hi: view.range.hi, max: NaN, auto: false, signed: SIGNED[kind] };
       const cam = camera(view.camera || r.camera, W, H);
@@ -459,7 +461,7 @@
       pF[4] = g.h; pF[5] = g.Lz; pF[6] = g.R; pF[7] = g.ro;
       pF[8] = phi; pF[9] = view.slice === undefined ? 0.5 : view.slice; pU[10] = MODES[mode]; pU[11] = auto ? 1 : 0;
       pF[12] = auto ? 0 : view.range.lo; pF[13] = auto ? 1 : view.range.hi; pF[14] = W; pF[15] = H;
-      pU[16] = steps; pF[17] = view.opacity === undefined ? 1 : view.opacity; pF[18] = 0; pF[19] = 0;
+      pU[16] = steps; pF[17] = view.opacity === undefined ? 1 : view.opacity; pF[18] = plain ? 1 : 0; pF[19] = 0;
       pF.set([...cam.eye, cam.tf], 20); pF.set([...cam.r, cam.asp], 24); pF.set([...cam.u, 0], 28); pF.set([...cam.f, 0], 32);
       pF.set([L.ox, L.oy, L.sc, 0], 36); pF.set(cam.vp, 40);
       device.queue.writeBuffer(paramsBuf, 0, pData);
@@ -475,7 +477,7 @@
 
       let lines;
       let isoBG = null;
-      if (mode === "isosurface") {
+      if (mode === "isosurface" && !plain) {
         const I = ensureIso();
         const hasC = r.colorField !== null, cAuto = !view.colorRange || view.colorRange === "auto";
         iI[0] = N; iI[1] = Nz; iU[2] = periodic ? 1 : 0; iU[3] = I.cap;
@@ -513,7 +515,8 @@
         rp.setPipeline(pp.slice); rp.setBindGroup(0, rbg); rp.draw(3);
         lines = sliceOverlay(L, mode, W, H);
       } else {
-        if (mode === "volume") { rp.setPipeline(pp.volume); rp.setBindGroup(0, rbg); rp.draw(3); }
+        if (plain) { rp.setPipeline(pp.cyl); rp.setBindGroup(0, rbg); rp.draw(3); }
+        else if (mode === "volume") { rp.setPipeline(pp.volume); rp.setBindGroup(0, rbg); rp.draw(3); }
         else {
           rp.setPipeline(pp.cyl); rp.setBindGroup(0, rbg); rp.draw(3);
           rp.setPipeline(pp.mesh); rp.setBindGroup(0, isoBG); rp.drawIndirect(iso.args, 0);
@@ -521,9 +524,8 @@
         lines = boxOverlay(cam, W, H);
       }
       if (r.tracers && view.trails !== false) {                // flow particles (web/tracers.js, trails.wgsl)
-        const ink = CC3.tracers.inkFor(mode.startsWith("slice"), SIGNED[kind]);
         r.tracers.encodeDraw(rp, { fmt: useOff ? "rgba8unorm" : format, mode: MODES[mode], vp: cam.vp, L, W, H,
-          slice: view.slice === undefined ? 0.5 : view.slice, ink });
+          slice: view.slice === undefined ? 0.5 : view.slice });
       }
       const nv = Math.min(lines.v.length / 8, lineCap);
       device.queue.writeBuffer(lineBuf, 0, new Float32Array(lines.v.slice(0, nv * 8)));
@@ -532,7 +534,7 @@
       device.queue.submit([enc.finish()]);
 
       let p = Promise.resolve();
-      if (mode === "isosurface" && iso.busy && !iso.skipRead) {
+      if (mode === "isosurface" && !plain && iso.busy && !iso.skipRead) {
         const I = iso;
         p = I.rd.mapAsync(GPUMapMode.READ).then(() => {
           const c = new Uint32Array(I.rd.getMappedRange().slice(0))[0]; I.rd.unmap(); I.busy = false;

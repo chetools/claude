@@ -78,7 +78,7 @@
       <div class="side-h">Display</div>
       ${select('in-field', 'Field', Object.keys(FIELDS).map((k) => [k, FIELDS[k].label]))}
       <div class="row2">${select('in-part', 'Flow particles', [[0, 'off'], [3000, '3 000'], [8000, '8 000'], [20000, '20 000'], [50000, '50 000']])}
-        <div class="field"><label for="in-trail">Trail length</label><input type="range" id="in-trail" min="0" max="1" step="0.05" value="0.5"></div></div>
+        <div class="field"><label for="in-trail">Trail length <span class="val" id="v-trail"></span></label><input type="range" id="in-trail" min="0" max="1" step="0.05" value="0.5"></div></div>
       ${slider('in-slice', 'Slice position', 0, 1, 0.01, 0.5)}
       ${select('in-spf', 'Steps per frame', [[0, 'auto'], [1, '1'], [2, '2'], [5, '5'], [10, '10'], [20, '20'], [50, '50'], [100, '100']])}
       <div class="field check"><input type="checkbox" id="in-raw"><label for="in-raw">show raw torque samples</label></div>
@@ -100,6 +100,12 @@
     const note = document.createElement('div');
     note.className = 'caption'; note.id = 'cap-scale';
     $('view3d').parentNode.insertAdjacentElement('afterend', note);
+    const bar = document.createElement('div');                  // colour bar of the trail speed
+    bar.className = 'caption'; bar.id = 'trail-bar';
+    const stops = CC3.tracers.SPEED_RAMP.map((c) => `rgb(${c.map((x) => Math.round(255 * x)).join(',')})`).join(',');
+    bar.innerHTML = `Trail colour, speed |u|: <span id="tb-lo">0</span> <span style="display:inline-block;width:160px;max-width:40vw;height:.7em;` +
+      `vertical-align:middle;border:1px solid #d0d3d9;background:linear-gradient(to right,${stops})"></span> <span id="tb-hi"></span>`;
+    $('view3d').parentNode.insertAdjacentElement('afterend', bar);
     $('validation').innerHTML = `
       <div class="controls">
         <button class="btn primary" id="val-cpu">Self-test: JavaScript CPU solvers</button>
@@ -181,8 +187,8 @@
       if (count > 0) {
         if (sim.backend === 'gpu') { T = new CC3.tracers.GpuTracers(sim.device, geomOf(p), count); await T.ready; }
         else T = new CC3.tracers.CpuTracers(geomOf(p), count);
-        T.tLast = S.t; T.sref = sim.sref || 1;
-        T.setLength(CC3.tracers.trailLength(+$('in-trail').value));
+        T.tLast = S.t; T.smax = sim.sref || 1;
+        T.trailTime = CC3.tracers.trailTime(+$('in-trail').value);
       }
       sim.tracers[w] = T;
       if (sim.renderers[w]) sim.renderers[w].tracers = T;
@@ -204,14 +210,37 @@
       if (cv.width !== px || cv.height !== px) { cv.width = cv.height = px; sim.dirty = true; }
     }
   }
+  // Trails on a slice: the same number of particles per unit area in both panels (the 2D panel's span is one cell,
+  // so all its particles lie near any xy plane; it draws a subset).  Opacity falls where trails would overlap:
+  // estimated covered fraction = (particles per unit area) x (mean trail length, rms speed x trail time) x (line width).
+  function trailDraw() {
+    const np = +$('in-part').value;
+    if (!np || !sim.p3) return;
+    const per = {};
+    for (const w of [2, 3]) {
+      const p = w === 2 ? sim.p2 : sim.p3, mode = sim.backend === 'cpu' && /volume|isosurface/.test($(`mode${w}d`).value) ? 'slice-xy' : $(`mode${w}d`).value;
+      const th = mode === 'slice-xy' ? Math.min(8 * p.h, p.Lz) : Math.min(8 * p.h, 1);      // slab of +-2 cells
+      per[w] = { mode, rho: mode.startsWith('slice') ? np / p.Lz * th : np };            // 3D: per unit of box footprint
+    }
+    const T = CC3.tracers.trailTime(+$('in-trail').value), urms = 0.5 * (sim.sref || 1);
+    for (const w of [2, 3]) {
+      if (!sim.tracers[w]) continue;
+      const target = per[2].mode === per[3].mode ? Math.min(per[2].rho, per[3].rho) : per[w].rho;
+      const px = 0.8 * (sim.canvases[w] ? sim.canvases[w].width : 640);                   // pixels per box side
+      const cover = target * urms * T / px;
+      sim.tracers[w].draw = { keep: target / per[w].rho, alpha: Math.min(0.85, Math.max(0.2, 0.3 / Math.max(cover, 1e-9))) };
+      sim.tracers[w].smax = sim.sref || 1;
+    }
+  }
   function viewFor(w, S, p) {
     const r = sim.range || [0, 1];
     const phi = S.phi !== undefined ? S.phi : (p.omega_o || 0) * S.t;
     return { field: RFIELD[$('in-field').value], mode: $(`mode${w}d`).value, slice: +$('in-slice').value,
-      range: { lo: r[0], hi: r[1] }, phi };
+      range: { lo: r[0], hi: r[1] }, phi, plain: +$('in-part').value > 0 };
   }
   async function drawPanels() {
     if (!sim.ready) return;
+    trailDraw();
     for (const w of [2, 3]) {
       const S = w === 2 ? sim.s2 : sim.s3, p = w === 2 ? sim.p2 : sim.p3, view = viewFor(w, S, p);
       if (sim.backend === 'gpu') {
@@ -225,7 +254,7 @@
         const ctx = sim.canvases[w].getContext('2d');
         advectTracers(w, S, p, view.phi, S.velocity());
         CC3.render.drawSliceCPU(ctx, S.velocity(), geomOf(p), view);
-        if (sim.tracers[w]) sim.tracers[w].drawSlice(ctx, Object.assign({ ink: CC3.tracers.inkFor(true, FIELDS[$('in-field').value].sym) }, view));
+        if (sim.tracers[w]) sim.tracers[w].drawSlice(ctx, view);
       }
     }
     sim.dirty = false;
@@ -233,13 +262,18 @@
   function setCaptions() {
     const f = FIELDS[$('in-field').value], r = sim.range;
     const rt = r ? (f.sym ? `±${fmtG(r[1], 3)}` : `${fmtG(r[0], 3)} … ${fmtG(r[1], 3)}`) : '–';
-    $('cap-scale').textContent = `Colour scale (the same in both panels): ${f.short} ${rt}. It follows the flow's own ` +
-      `statistics (3 × rms of the field, or the maximum speed), not the inputs.` + (+$('in-part').value ? ` Flow particles: ` +
-      `${(+$('in-part').value).toLocaleString()} massless tracers per panel, carried by that panel's computed velocity (trilinear ` +
-      `interpolation, RK2). Each draws its last moves as a trail that fades with age, and is more opaque where the fluid moves faster ` +
-      `(relative to 2 × the rms speed of the more energetic run, the same in both panels). Trails are pathlines, where fluid has been. ` +
-      `Slices show only the particles within 2 cells of the slice plane. Particles that age (2–4 time units), leave the box or ` +
-      `enter the cylinder are re-seeded at random.` : '');
+    const np = +$('in-part').value, T = CC3.tracers.trailTime(+$('in-trail').value);
+    $('v-trail').textContent = `${fmtG(T, 2)} t.u.`;
+    $('trail-bar').hidden = !np;
+    $('tb-hi').textContent = `${fmtG(sim.sref || 1, 3)} and faster (2 × the rms speed of the more energetic run)`;
+    $('cap-scale').textContent = !np ? `Colour scale (the same in both panels): ${f.short} ${rt}. It follows the flow's own ` +
+      `statistics (3 × rms of the field, or the maximum speed), not the inputs.` :
+      `Field colouring is off while flow particles are on (set Flow particles to off to see ${f.short}). ` +
+      `${np.toLocaleString()} massless tracers per panel are carried by that panel's computed velocity (trilinear interpolation, RK2). ` +
+      `Each trail is the particle's path over the last ${fmtG(T, 2)} time units, fading with age; its colour is the local speed, on the ` +
+      `same scale in both panels. Trails are pathlines, where fluid has been. Slices show only the particles within 2 cells of the ` +
+      `slice plane, and both panels show the same number per unit area (the 2D panel draws a subset). Opacity is lowered where ` +
+      `trails would overlap. Particles that age (2–4 time units), leave the box or enter the cylinder are re-seeded at random.`;
     const sub = (S, p, w) => !p ? '' : `${p.N}×${p.N}×${p.Nz} cells · ${sim.backend === 'gpu' ? 'WebGPU' : 'CPU fallback'} · ` +
       `${$(`mode${w}d`).value}${sim.backend === 'cpu' ? ' (CPU: slices only)' : ''}`;
     $('cap2d').textContent = sub(sim.s2, sim.p2, 2); $('cap3d').textContent = sub(sim.s3, sim.p3, 3);
@@ -406,7 +440,7 @@
     // trail ink is relative to the flow's own rms speed (box area 1: u_rms ~ sqrt(2E)), one reference for both panels
     const Emax = Math.max(r2.E, r3.E);
     sim.sref = Emax > 0 ? 2 * Math.sqrt(2 * Emax) : 0.5 * (Math.max(Math.abs(sim.inp.Us), Math.abs(sim.inp.Uo)) || 1);
-    for (const w of [2, 3]) if (sim.tracers[w]) sim.tracers[w].sref = sim.sref;
+    for (const w of [2, 3]) if (sim.tracers[w]) sim.tracers[w].smax = sim.sref;
     autoRange();
     updateMetrics();
     if (!Number.isFinite(r3.E) || !Number.isFinite(r2.E)) {
@@ -593,8 +627,8 @@
       try { if (sim.ready) await makeTracers(); setCaptions(); } finally { sim.busy = false; }
     });
     $('in-trail').addEventListener('input', () => {
-      for (const w of [2, 3]) if (sim.tracers[w]) sim.tracers[w].setLength(CC3.tracers.trailLength(+$('in-trail').value));
-      sim.dirty = true;
+      for (const w of [2, 3]) if (sim.tracers[w]) sim.tracers[w].trailTime = CC3.tracers.trailTime(+$('in-trail').value);
+      setCaptions(); sim.dirty = true;
     });
     for (const id of ['in-avg', 'in-avgw', 'in-raw']) $(id).addEventListener('change', () => { if (sim.last) drawPlots(); });
     $('b-play').addEventListener('click', () => { sim.playing = !sim.playing; $('b-play').textContent = sim.playing ? 'Pause' : 'Run'; });

@@ -38,11 +38,13 @@ async function trailsVisible(page, w, label, min = 300) {     // pause, compare 
 
 // ---- 1. CPU fallback (slices)
 {
-  const { page, errs } = await open('?cpu&preset=agree&method=fv&N=32&Nz=4&Re=200');
+  const { page, errs } = await open('?cpu&preset=agree&method=fv&N=32&Nz=16&Re=200');
   await wait(page, 'CC3APP && CC3APP.sim.ready && CC3APP.sim.last && CC3APP.sim.s3.t > 0.3 && CC3APP.sim.tracers[3] && CC3APP.sim.tracers[3].frame > 8');
-  const st = await page.evaluate(() => ({ n: +document.getElementById('in-part').value, K: CC3APP.sim.tracers[3].K, f: CC3APP.sim.tracers[3].frame, sref: CC3APP.sim.sref }));
+  const st = await page.evaluate(() => ({ n: +document.getElementById('in-part').value, T: CC3APP.sim.tracers[3].trailTime, keep2: CC3APP.sim.tracers[2].draw.keep, keep3: CC3APP.sim.tracers[3].draw.keep, f: CC3APP.sim.tracers[3].frame, sref: CC3APP.sim.sref }));
   console.log('cpu', JSON.stringify(st));
-  ok(st.n === 8000 && st.K === 16, 'cpu: default 8000 particles, K = 16');
+  ok(st.n === 8000 && Math.abs(st.T - 0.05 * Math.sqrt(20)) < 1e-12, 'cpu: default 8000 particles, trail time 0.05*sqrt(20)');
+  ok(Math.abs(st.keep2 - 0.5) < 1e-12 && st.keep3 === 1, `cpu xy slices, N = 32, Nz = 16 (slab = half the span): the 2D panel draws 1/2 (${st.keep2}), the 3D panel all (${st.keep3})`);
+  ok(await page.evaluate(() => [...document.querySelectorAll('#canvas2d')].length === 1 && !document.getElementById('trail-bar').hidden), 'cpu: speed colour bar shown');
   await page.click('#b-play');
   for (const m of ['slice-xy', 'slice-xz', 'slice-yz']) {
     await page.selectOption('#mode3d', m); await page.selectOption('#mode2d', m);
@@ -57,11 +59,11 @@ async function trailsVisible(page, w, label, min = 300) {     // pause, compare 
   await page.selectOption('#in-part', '3000'); await page.waitForTimeout(800);
   ok(await page.evaluate(() => CC3APP.sim.tracers[3].np === 3000), 'cpu: 3000 particles');
   await page.fill('#in-trail', '1'); await page.dispatchEvent('#in-trail', 'input');
-  ok(await page.evaluate(() => CC3APP.sim.tracers[3].K === 64), 'cpu: trail length 1 -> K = 64');
+  ok(await page.evaluate(() => CC3APP.sim.tracers[3].trailTime === 1), 'cpu: trail length 1 -> 1 time unit');
   const v = await page.evaluate(async () => { const r = await CC3APP.runValidation({ cpu: true });
     return r.rows.filter((x) => x.method === 'particles').map((x) => [x.name, x.got, x.tol, x.pass]); });
   v.forEach((r) => console.log('  ', r[3] ? 'pass' : 'FAIL', r[1], r[0]));
-  ok(v.length === 5 && v.every((r) => r[3]), `cpu: ${v.length} particle self-test rows pass`);
+  ok(v.length === 6 && v.every((r) => r[3]), `cpu: ${v.length} particle self-test rows pass`);
   ok(errs.length === 0, 'cpu: no console errors ' + errs.join(' / '));
   await page.context().close();
 }

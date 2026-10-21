@@ -137,7 +137,7 @@ struct Params {
   h: f32, Lz: f32, R: f32, ro: f32,
   phi: f32, slice: f32, mode: u32, auto_range: u32,
   lo: f32, hi: f32, view_w: f32, view_h: f32,
-  steps: u32, opacity: f32, p0: f32, p1: f32,
+  steps: u32, opacity: f32, p0: f32, p1: f32,          // p0: 1 = plain slice (no field colouring)
   cam_pos: vec4<f32>,      // xyz eye, w = tan(fov/2)
   cam_r: vec4<f32>,        // xyz right, w = aspect
   cam_u: vec4<f32>,        // xyz up
@@ -224,8 +224,8 @@ fn fs_slice(@builtin(position) frag: vec4<f32>) -> @location(0) vec4<f32> {
   let fr = length(d) - P.R;
   let fw = max(length(vec2<f32>(dpdx(fr), dpdy(fr))), 1.0e-6);
   if (u < 0.0 || u > 1.0 || v < 0.0 || v > vmax) { return vec4<f32>(BG, 1.0); }
-  let r = used_range();
-  var col = cmap(samp3(p), r);
+  var col = vec3<f32>(1.0);                         // P.p0 = 1: no field colouring (flow particles on)
+  if (P.p0 < 0.5) { col = cmap(samp3(p), used_range()); }
   if (fr < 0.0) { col = mix(col, GREY, 0.8); }
   if (abs(fr) < 1.0 * fw) { col = INK; }
   return vec4<f32>(col, 1.0);
