@@ -51,7 +51,7 @@ INPUTS = [
     "web/lbm.wgsl", "web/fv.wgsl", "web/render.wgsl", "web/iso.wgsl",
     *[f"web/{f}" for f in ("lbm_cpu.js", "fv_cpu.js", "lbm_gpu.js", "fv_gpu.js", "render.js",
                             "diagnostics.js", "app.js")],
-    "python/selftest_lbm.py", "python/selftest_fv.py",
+    "python/selftest_lbm.py", "python/selftest_fv.py", "python/selftest_exact.py", "notes/verify/annulus.py",
     "python/walkthrough.py", "python/runner.py",
     "python/lbm3d.py", "python/fv3d.py", "python/diagnostics.py",
 ]
@@ -220,10 +220,12 @@ def selftest_reference():
     """numpy reference values for the page's self-test (python/selftest_lbm.py, selftest_fv.py)."""
     import selftest_fv
     import selftest_lbm
+    import selftest_exact
     ref = {"lbm": selftest_lbm.reference(), "fv": selftest_fv.reference()}
     for k, v in ref.items():
         if not v.get("cases"):
             fail(f"selftest_{k}.reference() returned no cases")
+    ref["exact"] = selftest_exact.reference()          # spin-up vs the exact azimuthal solution
     return ref
 
 
