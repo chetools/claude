@@ -190,17 +190,19 @@ def _():
     def spectrum_h(U, h, fluid=None):
         """Horizontal energy spectrum.  Returns (k, E_k), k = 0, 1, 2, ... in units of 2 pi / L, L = 1.
 
-        With a `fluid` mask the body cells are set to zero before windowing (so the body interior,
-        which moves rigidly, does not enter the spectrum; the hole itself still leaks energy to
-        other shells).  For each z-plane: multiply every component by the Hann window W(x) W(y), W = sin^2(pi x),
-        take the 2D FFT, and add 1/2 |u_hat|^2 into the shell round(|k|) (kx, ky integer wavenumbers).
-        The box walls are not periodic, the window removes the jump at the edges.  Windowing removes
-        energy, so the result is divided by mean(W^2) (the average of the window squared), which
-        restores the energy of a statistically uniform field.  Then, per plane,
-            sum_k E_k = (1/2) mean(|W u|^2) / mean(W^2)
-        exactly (Parseval); it is only approximately the plane's energy because W weights the
-        centre more than the edges.  Shells go up to the corner of the FFT square, so nothing is
-        lost.  Planes are averaged.  Shell width is 1, so sum(E_k) * dk = sum(E_k).
+        "Windowed shape, rescaled to the true energy."  For each z-plane:
+          1. set the body cells to zero (if a `fluid` mask is given; the hole still leaks energy
+             into other shells);
+          2. multiply every component by the Hann window W(x) W(y), W = sin^2(pi x) at cell
+             centres (the box walls are not periodic; the window removes the jump at the edges);
+          3. 2D FFT, and add 1/2 |u_hat|^2 into the shell round(|k|), (kx, ky) integer wavenumbers;
+             shells run out to the corner of the FFT square, so nothing is lost;
+          4. multiply the plane's spectrum by one number so that its sum equals the plane's true
+             kinetic energy (1/2) int |u|^2 dA over the fluid cells (area of the box = 1).
+        The window only decides how that energy is shared among the shells.  The planes are then
+        averaged, so, exactly (to round-off),
+            sum_k E_k = energy(U, h, Lz, fluid).
+        Shell width is 1, so sum(E_k) * dk = sum(E_k).  A plane with no windowed energy gets a zero spectrum.
         """
         U = _fluid_only(U, fluid)
         _, Nz, N, _ = U.shape
@@ -208,10 +210,16 @@ def _():
         W = np.sin(np.pi * x) ** 2
         W2 = W[:, None] * W[None, :]                # window in (y, x)
         uhat = np.fft.fft2(U * W2, axes=(2, 3)) / N ** 2
-        e = 0.5 * np.sum(np.abs(uhat) ** 2, axis=0).mean(axis=0) / np.mean(W2 ** 2)   # (N, N), planes averaged
+        e = 0.5 * np.sum(np.abs(uhat) ** 2, axis=0)                  # (Nz, N, N) windowed spectrum per plane
+        true = 0.5 * np.sum(U ** 2, axis=(0, 2, 3)) * h ** 2         # true energy of each plane
         kk = np.fft.fftfreq(N, d=1.0 / N)
-        shell = np.rint(np.hypot(kk[:, None], kk[None, :])).astype(int)
-        Ek = np.bincount(shell.ravel(), weights=e.ravel())
+        shell = np.rint(np.hypot(kk[:, None], kk[None, :])).astype(int).ravel()
+        Ek = 0.0
+        for k in range(Nz):
+            ek = np.bincount(shell, weights=e[k].ravel())
+            tot = ek.sum()
+            Ek = Ek + (ek * (true[k] / tot) if tot > 0 else ek)
+        Ek = Ek / Nz
         return np.arange(len(Ek)), Ek
 
 
@@ -352,35 +360,38 @@ def _():
         return p
 
 
-    def seed_velocity(p):
-        """Deliberate 3D seed (SPEC.md), divergence-free, physical units, shape (3, Nz, N, N) at the nodes.
-        Stream function psi = seed Uref F(x,y) W(z) S(z) along y, velocity = curl(psi e_y):
-          F = sin^2(pi x) sin(pi y),  S = sum_{m=1}^{M} sin(k_m z + m)/k_m,  k_m = 2 pi m/Lz,
-          M = min(4, Nz//4),  W = 1 (periodic) or sin^2(pi z/Lz) (walls)
+    def seed_field(x, y, z, p):
+        """Deliberate 3D seed (SPEC.md) at physical points (arrays broadcast together): the velocity
+        (u, v, w) of the divergence-free field curl(psi e_y),
+          psi = seed Uref F(x,y) W(z) S(z),   F = sin^2(pi x) sin(pi y),
+          S = sum_{m=1}^{M} sin(k_m z + m)/k_m,  k_m = 2 pi m/Lz,  M = min(4, Nz//4),
+          W = 1 (periodic) or sin^2(pi z/Lz) (walls),
           u = -seed Uref F (W' S + W S'),   v = 0,   w = seed Uref (dF/dx) W S."""
-        N, Nz = p["N"], p["Nz"]
-        U = np.zeros((3, Nz, N, N))
-        M = min(4, Nz // 4)
-        if M == 0 or p["seed"] == 0:
-            return U
-        Lz = Nz / N
-        x = (np.arange(N) + 0.5) / N
-        z = ((np.arange(Nz) + 0.5) / N)[:, None, None]
-        X, Y = x[None, None, :], x[None, :, None]
-        F = np.sin(np.pi * X) ** 2 * np.sin(np.pi * Y)
-        dFdx = np.pi * np.sin(2 * np.pi * X) * np.sin(np.pi * Y)
-        ks = [2 * np.pi * m / Lz for m in range(1, M + 1)]
-        S = sum(np.sin(k * z + m) / k for m, k in zip(range(1, M + 1), ks))
-        Sp = sum(np.cos(k * z + m) for m, k in zip(range(1, M + 1), ks))
+        Lz = p["Nz"] / p["N"]
+        M = min(4, p["Nz"] // 4)
+        a = p["seed"] * p["Uref"] if M > 0 else 0.0
+        F = np.sin(np.pi * x) ** 2 * np.sin(np.pi * y)
+        dFdx = np.pi * np.sin(2 * np.pi * x) * np.sin(np.pi * y)
+        S = Sp = 0.0
+        for m in range(1, M + 1):
+            k = 2 * np.pi * m / Lz
+            S = S + np.sin(k * z + m) / k
+            Sp = Sp + np.cos(k * z + m)
         if p["span"] == "walls":
-            Wz = np.sin(np.pi * z / Lz) ** 2
-            Wp = (np.pi / Lz) * np.sin(2 * np.pi * z / Lz)
+            Wz, Wp = np.sin(np.pi * z / Lz) ** 2, (np.pi / Lz) * np.sin(2 * np.pi * z / Lz)
         else:
             Wz, Wp = 1.0, 0.0
-        a = p["seed"] * p["Uref"]
-        U[0] = -a * F * (Wp * S + Wz * Sp)
-        U[2] = a * dFdx * Wz * S
-        return U
+        u = -a * F * (Wp * S + Wz * Sp)
+        return u, 0.0 * u, a * dFdx * Wz * S
+
+
+    def seed_velocity(p):
+        """The seed at the node centres, physical units, shape (3, Nz, N, N)."""
+        N, Nz = p["N"], p["Nz"]
+        x = ((np.arange(N) + 0.5) / N)[None, None, :]
+        y = ((np.arange(N) + 0.5) / N)[None, :, None]
+        z = ((np.arange(Nz) + 0.5) / N)[:, None, None]
+        return np.array(np.broadcast_arrays(*seed_field(x, y, z, p)))
 
 
     def init_state(p):

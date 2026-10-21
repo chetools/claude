@@ -21,26 +21,29 @@ for (const c of cases) {
   const U = c.f32 ? Float32Array.from(c.U) : Float64Array.from(c.U);
   if (c.f32) for (let i = 0; i < U.length; i++) if (U[i] !== c.U[i]) throw new Error('float32 case values must be exactly representable');
   const { N, Nz, h, Lz, span } = c;
+  const fluid = c.fluid ? D.fluid_mask(c.p, c.s.phi !== undefined ? c.s.phi : c.p.omega_o * c.s.t) : null;
+  if (c.fluid) { let bad = 0; for (let i = 0; i < c.fluid.length; i++) if (fluid[i] !== c.fluid[i]) bad++; check(c.name, 'mask', bad, 0 + 0.0); if (bad) fails++; }
   check(c.name, 'vorticity', D.vorticity(U, Nz, N, h, span), c.vort);
   check(c.name, 'Q', D.q_criterion(U, Nz, N, h, span), c.Q);
-  check(c.name, 'energy', D.energy(U, Nz, N, h, Lz), c.E);
-  check(c.name, 'enstrophy', D.enstrophy(U, Nz, N, h, Lz, span), c.Z);
-  const sp = D.spanwise_energy(U, Nz, N, h, Lz, span);
+  check(c.name, 'energy', D.energy(U, Nz, N, h, Lz, fluid), c.E);
+  check(c.name, 'enstrophy', D.enstrophy(U, Nz, N, h, Lz, span, fluid), c.Z);
+  const sp = D.spanwise_energy(U, Nz, N, h, Lz, span, fluid);
   check(c.name, 'Ew', sp.Ew, c.Ew);
   check(c.name, 'E3d', sp.E3d, c.E3d);
   if (c.Ekz) {
     check(c.name, 'Ekz', sp.Ekz, c.Ekz);
     const sum = Array.from(sp.Ekz).reduce((a, b) => a + b, 0);
-    check(c.name, 'Parseval', sum, c.E);                 // sum(Ekz) = energy exactly
+    check(c.name, 'Parseval', sum, c.E);                 // sum(Ekz) = fluid energy exactly
   } else if (sp.Ekz !== null) { fails++; console.log('FAIL Ekz should be null for walls'); }
-  const [k, Ek] = D.spectrum_h(U, Nz, N, h);
+  const [k, Ek] = D.spectrum_h(U, Nz, N, h, fluid);
   check(c.name, 'spec k', k, c.k);
   check(c.name, 'spectrum', Ek, c.Ek);
-  const [, Ek2] = D.spectrum_h(U, Nz, N, h, { maxPlanes: Nz });
+  const [, Ek2] = D.spectrum_h(U, Nz, N, h, fluid, { maxPlanes: Nz });
   check(c.name, 'maxPlanes', Ek2, c.Ek);
-  const s = D.summary(U, { torque: 1.5, maxdiv: 2.5e-3 }, { N, Nz, h, Lz, span });
+  check(c.name, 'spec sum=E', Array.from(Ek).reduce((a, b) => a + b, 0), c.E);   // per-plane rescale: sum E_k = fluid energy
+  const s = D.summary(U, c.s, c.p);
   for (const key of ['E', 'Z', 'Ew', 'E3d', 'torque', 'maxdiv', 'maxspeed']) check(c.name, 'sum.' + key, s[key], c.summary[key]);
-  const s0 = D.summary(U, {}, { N, Nz, h, Lz, span });
+  const s0 = D.summary(U, { t: c.s.t, phi: c.s.phi }, c.p);
   if (!(Number.isNaN(s0.torque) && Number.isNaN(s0.maxdiv))) { fails++; console.log('FAIL missing torque/maxdiv must be NaN'); }
 }
 // the radix-2 FFT against the direct DFT (same function, non-power-of-2 path) on a pow2 length via a 2n padded check

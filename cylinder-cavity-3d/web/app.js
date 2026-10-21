@@ -77,12 +77,13 @@
       ${select('in-field', 'Field', Object.keys(FIELDS).map((k) => [k, FIELDS[k].label]))}
       ${slider('in-slice', 'Slice position', 0, 1, 0.01, 0.5)}
       ${select('in-spf', 'Steps per frame', [[0, 'auto'], [1, '1'], [2, '2'], [5, '5'], [10, '10'], [20, '20'], [50, '50'], [100, '100']])}
+      <div class="field check"><input type="checkbox" id="in-raw"><label for="in-raw">show raw torque samples</label></div>
       <div class="field check"><input type="checkbox" id="in-avg"><label for="in-avg">average spectra over the last</label></div>
       <div class="field"><input type="number" id="in-avgw" value="1" min="0.05" step="0.25"><div class="side-cap">time units</div></div>
       <div class="btns"><button class="btn primary" id="b-play">Pause</button><button class="btn" id="b-reset">Reset</button>
         <button class="btn" id="b-png">Save PNG</button></div>`;
-    const cards = [['t', 'time t'], ['re', 'Reynolds number'], ['e', 'E per unit span (3D)'], ['tq', 'torque on cylinder (3D)'],
-      ['r3', 'E3d / E (3D)'], ['dv', 'max |div u| (3D)']];
+    const cards = [['t', 'time t'], ['re', 'Reynolds number'], ['e', 'E per unit span, fluid only (3D)'], ['tq', 'torque, running mean (3D)'],
+      ['r3', 'E3d / E, fluid only (3D)'], ['dv', 'max |div u| (3D)']];
     $('metrics').innerHTML = cards.map(([k, l]) => `<div class="metric"><div class="m-label" id="m-${k}-l">${l}</div>` +
       `<div class="m-value" id="m-${k}">–</div><div class="m-sub" id="m-${k}-sub">&nbsp;</div></div>`).join('');
     // captions under the two panels
@@ -127,7 +128,8 @@
     $('v-us').textContent = q.Us.toFixed(2); $('v-uo').textContent = q.Uo.toFixed(2);
     $('v-ro').textContent = q.ro.toFixed(2); $('v-r').textContent = q.R.toFixed(2);
     $('v-slice').textContent = (+$('in-slice').value).toFixed(2);
-    $('cap-lz').textContent = `L_z = N_z / N = ${fmtG(q.Nz / q.N, 3)}  (${q.Nz} cells of size 1/${q.N})`;
+    $('cap-lz').textContent = `L_z = N_z / N = ${fmtG(q.Nz / q.N, 3)}  (${q.Nz} cells of size 1/${q.N})` +
+      (Math.min(4, q.Nz >> 2) === 0 ? '. N_z < 4: the seed has no modes (SPEC: M = min(4, N_z // 4) = 0).' : '');
   }
   function setInputs(q) {
     const set = (id, v) => { if (v !== undefined) $(id).value = String(v); };
@@ -263,6 +265,8 @@
     sim.inp = inp; sim.p2 = sim.s2.params || p2; sim.p3 = sim.s3.params || p3;
     sim.H = newHistory(); sim.SP = []; sim.range = null; sim.crangeFresh = true; sim.last = null; sim.msStep = null;
     sim.mass0 = { 2: await optional(sim.s2, 'mass'), 3: await optional(sim.s3, 'mass') };
+    sim.raw = { t: [], T2: [], T3: [] };
+    await sampleTorque();
     try { await makeRenderers(); } catch (e) { showErr('Could not create the renderers: ' + (e.message || e)); return; }
     sim.ready = true;
     const rel = Math.abs(sim.p2.dt - sim.p3.dt) / sim.p3.dt;
@@ -284,13 +288,15 @@
   // ------------------------------------------------------------------ stepping (lockstep in physical time)
   async function advance() {
     const fixed = +$('in-spf').value;
-    const n = fixed || sim.autoN;
+    let n = fixed || sim.autoN;
+    n = Math.max(1, Math.min(n, Math.floor(TORQUE_DT_MAX / sim.p3.dt)));       // torque is sampled after every frame
     const t0 = performance.now();
     await sim.s3.step(n);
     const T = sim.s3.t;
     const n2 = Math.max(0, Math.round((T - sim.s2.t) / sim.p2.dt));
     if (n2) await sim.s2.step(n2);
     if (sim.backend === 'gpu') await sim.device.queue.onSubmittedWorkDone();
+    await sampleTorque();
     const ms = (performance.now() - t0) / n;
     sim.msStep = sim.msStep ? 0.7 * sim.msStep + 0.3 * ms : ms;
     if (!fixed) {
@@ -300,19 +306,42 @@
     sim.dirty = true;
   }
 
+  // ------------------------------------------------------------------ torque: samples and running mean
+  // The per-step torque is noisy when the cylinder orbits, so the page shows a running mean over TORQUE_WIN time units.
+  // The torque is sampled after every frame; a frame covers at most TORQUE_DT_MAX time units.
+  const TORQUE_WIN = 0.25, TORQUE_DT_MAX = 0.05;
+  async function sampleTorque() {
+    const R = sim.raw, t = sim.s3.t;
+    if (R.t.length && t <= R.t[R.t.length - 1]) return;
+    const [a, b] = [await getTorque(sim.s2), await getTorque(sim.s3)];
+    R.t.push(t); R.T2.push(a); R.T3.push(b);
+    if (R.t.length > 4000) { for (const k of Object.keys(R)) R[k] = R[k].slice(-3000); }
+  }
+  function runningMean(key, t) {
+    const R = sim.raw;
+    let s = 0, n = 0;
+    for (let i = R.t.length - 1; i >= 0 && R.t[i] > t - TORQUE_WIN; i--) { if (R.t[i] <= t) { s += R[key][i]; n++; } }
+    return n ? s / n : NaN;
+  }
+
   // ------------------------------------------------------------------ diagnostics (host, from velocity read-back)
   async function diagnose() {
     if (!sim.ready) return;
     const t0 = performance.now();
     const D = CC3.diag, S2 = sim.s2, S3 = sim.s3, p2 = sim.p2, p3 = sim.p3;
     const [U2, U3] = [await S2.readVelocity(), await S3.readVelocity()];
-    const [tq2, tq3] = [await getTorque(S2), await getTorque(S3)];
     const [dv2, dv3] = [await optional(S2, 'maxdiv'), await optional(S3, 'maxdiv')];
     const [m2, m3] = [await optional(S2, 'mass'), await optional(S3, 'mass')];
-    const r2 = D.summary(U2, { torque: tq2, maxdiv: dv2 }, p2);
-    const r3 = D.summary(U3, { torque: tq3, maxdiv: dv3 }, p3);
-    const [k2, E2k] = D.spectrum_h(U2, p2.Nz, p2.N, p2.h);
-    const [k3, E3k] = D.spectrum_h(U3, p3.Nz, p3.N, p3.h, { maxPlanes: 8 });
+    await sampleTorque();
+    const ph = (S, p) => (S.phi !== undefined ? S.phi : (p.omega_o || 0) * S.t);
+    const f2 = D.fluid_mask(p2, ph(S2, p2)), f3 = D.fluid_mask(p3, ph(S3, p3));
+    const sOf = (S, dv) => ({ torque: NaN, maxdiv: dv, phi: S.phi, t: S.t });
+    const r2 = D.summary(U2, sOf(S2, dv2), p2);
+    const r3 = D.summary(U3, sOf(S3, dv3), p3);
+    const early = S3.t < TORQUE_WIN;                          // no torque mean before one window has passed
+    r2.torque = early ? NaN : runningMean('T2', S2.t); r3.torque = early ? NaN : runningMean('T3', S3.t);
+    const [k2, E2k] = D.spectrum_h(U2, p2.Nz, p2.N, p2.h, f2);
+    const [k3, E3k] = D.spectrum_h(U3, p3.Nz, p3.N, p3.h, f3, { maxPlanes: 8 });
     const field = $('in-field').value;
     let qr = 0;
     if (field === 'q') {
@@ -373,7 +402,7 @@
     const dE = L.r2.E > 0 ? (L.r3.E - L.r2.E) / L.r2.E : NaN;
     $('m-e-sub').textContent = `2D ${fmtG(L.r2.E, 4)} · 3D vs 2D ${Number.isFinite(dE) ? (dE >= 0 ? '+' : '') + (100 * dE).toFixed(2) + '%' : '–'}`;
     $('m-tq').textContent = fmtG(L.r3.torque, 4);
-    $('m-tq-sub').textContent = `2D ${fmtG(L.r2.torque, 4)}`;
+    $('m-tq-sub').textContent = Number.isFinite(L.r3.torque) ? `2D ${fmtG(L.r2.torque, 4)} · mean over ${TORQUE_WIN} t.u.` : `mean starts at t = ${TORQUE_WIN}`;
     $('m-r3').textContent = L.r3.E > 0 ? fmtE(L.r3.E3d / L.r3.E, 2) : '–';
     $('m-r3-sub').textContent = 'share of E that varies in z';
     if (inp.method === 'fv') {
@@ -382,10 +411,10 @@
       $('m-dv-sub').textContent = `2D ${fmtE(L.dv2, 1)}`;
     } else {
       const ma = Math.sqrt(3) * L.r3.maxspeed * p.dt / p.h;      // lattice speed of the fastest cell, in units of c_s
-      $('m-dv-l').textContent = 'Mach number (3D)';
+      $('m-dv-l').textContent = 'Mach number Ma (3D)';
       $('m-dv').textContent = fmtG(ma, 3);
       const drift = typeof L.m3 === 'number' && typeof sim.mass0[3] === 'number' && sim.mass0[3] !== 0 ? (L.m3 - sim.mass0[3]) / sim.mass0[3] : NaN;
-      $('m-dv-sub').textContent = `mass drift ${fmtE(drift, 1)}`;
+      $('m-dv-sub').textContent = `τ ${fmtG(p.tau, 3)} · u_lb ${fmtG(p.u_lb, 3)} · mass drift ${fmtE(drift, 1)}`;
     }
     document.querySelectorAll('.metrics .m-sub,.metrics .m-label').forEach((e) => { e.title = e.textContent; });
   }
@@ -412,7 +441,7 @@
       }
     }
     Plotly.react('plot-spanwise', tr, baseLayout('Spanwise energy (3D)', {
-      yaxis: { type: 'log', title: { text: 'energy per unit span' }, exponentformat: 'e' } }), PLOT_CFG);
+      yaxis: { type: 'log', title: { text: 'energy per unit span, fluid only' }, exponentformat: 'e' } }), PLOT_CFG);
     // (b) horizontal spectra
     const avg = $('in-avg').checked, w = Math.max(0.05, +$('in-avgw').value || 1), L = sim.last;
     let e2 = L.E2k, e3 = L.E3k, n = 1;
@@ -428,14 +457,21 @@
       Object.assign(kx(L.k3, e3), { name: '3D', line: { color: C3, width: 2 } })],
     baseLayout(avg ? `E(k), mean of ${n} sample${n > 1 ? 's' : ''}` : 'Horizontal spectrum E(k)', {
       xaxis: { type: 'log', title: { text: 'wavenumber k (units of 2π / box side)' } },
-      yaxis: { type: 'log', title: { text: 'E(k)' }, exponentformat: 'e' } }), PLOT_CFG);
+      yaxis: { type: 'log', title: { text: 'E(k), fluid only' }, exponentformat: 'e' } }), PLOT_CFG);
     // (c) history with a selector
-    const opts = { torque: ['T2', 'T3', 'torque on cylinder'], E: ['E2', 'E3', 'kinetic energy E'], Z: ['Z2', 'Z3', 'enstrophy Z'] };
+    const opts = { torque: ['T2', 'T3', 'torque, running mean over 0.25 time units'], E: ['E2', 'E3', 'kinetic energy E, per unit span, fluid only'], Z: ['Z2', 'Z3', 'enstrophy Z, per unit span, fluid only'] };
     const [a, b, lab] = opts[sim.histSel];
-    const k0 = sim.histSel === 'torque' ? Math.max(0, t.findIndex((x) => x > 0.03 * t[t.length - 1])) : 0;   // skip the start-up spike
-    Plotly.react('plot-history', [
-      { x: t.slice(k0), y: H[a].slice(k0), name: '2D', line: { color: C2, width: 2 } },
-      { x: t.slice(k0), y: H[b].slice(k0), name: '3D', line: { color: C3, width: 2 } }],
+    const k0 = sim.histSel === 'torque' ? Math.max(0, t.findIndex((x) => x >= TORQUE_WIN)) : 0;   // torque: skip t < 0.25
+    const none = sim.histSel === 'torque' && !t.some((x) => x >= TORQUE_WIN);
+    const traces = [
+      { x: none ? [] : t.slice(k0), y: none ? [] : H[a].slice(k0), name: '2D', line: { color: C2, width: 2 } },
+      { x: none ? [] : t.slice(k0), y: none ? [] : H[b].slice(k0), name: '3D', line: { color: C3, width: 2 } }];
+    if (sim.histSel === 'torque' && $('in-raw').checked) {
+      const R = sim.raw, i0 = Math.max(0, R.t.findIndex((x) => x >= TORQUE_WIN));
+      traces.push({ x: R.t.slice(i0), y: R.T2.slice(i0), name: '2D raw', line: { color: C2, width: 0.7 }, opacity: 0.35 },
+        { x: R.t.slice(i0), y: R.T3.slice(i0), name: '3D raw', line: { color: C3, width: 0.7 }, opacity: 0.35 });
+    }
+    Plotly.react('plot-history', traces,
     baseLayout(`History`, {
       yaxis: { title: { text: lab }, exponentformat: 'e' }, margin: { l: 62, r: 16, t: 46, b: 96 },
       updatemenus: [{ type: 'buttons', direction: 'right', x: 1, xanchor: 'right', y: 1.0, yanchor: 'bottom', showactive: true,
@@ -503,7 +539,7 @@
     $('in-slice').addEventListener('input', () => { sim.dirty = true; });
     $('in-field').addEventListener('change', () => { sim.crangeFresh = true; sim.diagNow = true; sim.dirty = true; });
     for (const id of ['mode2d', 'mode3d']) $(id).addEventListener('change', () => { sim.dirty = true; setCaptions(); });
-    for (const id of ['in-avg', 'in-avgw']) $(id).addEventListener('change', () => { if (sim.last) drawPlots(); });
+    for (const id of ['in-avg', 'in-avgw', 'in-raw']) $(id).addEventListener('change', () => { if (sim.last) drawPlots(); });
     $('b-play').addEventListener('click', () => { sim.playing = !sim.playing; $('b-play').textContent = sim.playing ? 'Pause' : 'Run'; });
     $('b-reset').addEventListener('click', () => { requestRebuild(); });
     $('b-png').addEventListener('click', savePng);
@@ -570,7 +606,8 @@
     const body = rows.map((r) => `<tr><td>${r.method.toUpperCase()} ${r.backend}</td><td>${esc(r.name)}</td><td>${fmtG(r.expected, 8)}</td>` +
       `<td>${fmtG(r.got, 8)}</td><td>${fmtE(r.reldiff, 1)}</td><td>${fmtE(r.tol, 0)}</td>` +
       `<td class="${r.pass ? 'pass' : 'fail'}">${r.pass ? 'pass' : 'FAIL'}</td></tr>`).join('');
-    return `<table class="data"><tr><th>solver</th><th>check</th><th>expected (numpy)</th><th>got</th><th>rel. diff</th><th>tol</th><th></th></tr>${body}</table>`;
+    return `<table class="data"><tr><th>solver</th><th>check</th><th>expected (numpy)</th><th>got</th><th>rel. diff</th><th>tolerance</th><th></th></tr>${body}</table>
+      <p class="caption">Tolerances are the defaults of each method module (<code>selftest</code> in lbm_cpu.js and fv_cpu.js), not set by this page.</p>`;
   }
   async function crossCase() {
     const N = sim.backend === 'gpu' ? 64 : 32, T = 2;
@@ -583,7 +620,7 @@
         let left = Math.ceil(T / p.dt - 1e-9);
         while (left > 0) { const n = Math.min(left, 100); await S.step(n); left -= n; await sleep(0); }
         const U = await S.readVelocity();
-        out[method] = { t: S.t, steps: S.nstep, E: CC3.diag.energy(U, p.Nz, p.N, p.h, p.Lz), torque: await getTorque(S), dt: p.dt };
+        out[method] = { t: S.t, steps: S.nstep, E: CC3.diag.energy(U, p.Nz, p.N, p.h, p.Lz, CC3.diag.fluid_mask(p, S.phi !== undefined ? S.phi : p.omega_o * S.t)), torque: await getTorque(S), dt: p.dt };
       } finally { S.destroy(); }
     }
     return { inp, T, out };
@@ -591,15 +628,15 @@
   function crossTable(c) {
     const a = c.out.lbm, b = c.out.fv;
     const row = (name, x, y, d) => `<tr><td>${name}</td><td>${fmtG(x, d)}</td><td>${fmtG(y, d)}</td><td>${fmtE(Math.abs(x - y), 1)}</td>` +
-      `<td>${fmtE(Math.abs(x - y) / Math.max(Math.abs(y), 1e-300), 1)}</td></tr>`;
-    return `<h3>LBM against FV, 2D case (measured)</h3>
-      <table class="data"><tr><th>quantity</th><th>LBM</th><th>FV</th><th>|difference|</th><th>relative</th></tr>
-      ${row('time reached t', a.t, b.t, 5)}${row('kinetic energy E', a.E, b.E, 6)}${row('torque on cylinder', a.torque, b.torque, 6)}
+      `<td>${fmtE(Math.abs(x - y) / Math.max(0.5 * Math.abs(x + y), 1e-300), 1)}</td></tr>`;
+    return `<h3>LBM and FV, same 2D case (measured values)</h3>
+      <table class="data"><tr><th>quantity</th><th>LBM</th><th>FV</th><th>|LBM − FV|</th><th>|LBM − FV| / mean of the two</th></tr>
+      ${row('time reached t', a.t, b.t, 5)}${row('kinetic energy E (fluid only)', a.E, b.E, 6)}${row('torque on cylinder', a.torque, b.torque, 6)}
       <tr><td>time step Δt</td><td>${fmtE(a.dt, 2)}</td><td>${fmtE(b.dt, 2)}</td><td></td><td></td></tr></table>
       <p class="caption">N = ${c.inp.N}, N<sub>z</sub> = 1, Re ${c.inp.Re}, U<sub>s</sub> = ${c.inp.Us}, U<sub>o</sub> = ${c.inp.Uo},
       r<sub>o</sub> = ${c.inp.ro}, R = ${c.inp.R}, from rest to t ≈ ${c.T} (each solver stops at its first step at or after t = ${c.T}, so the
-      reached times differ by less than one Δt). These are measured differences between two different discretisations;
-      no pass/fail is claimed because no tolerance has been derived for them.</p>`;
+      reached times differ by less than one Δt). These are the measured values of the two solvers at this one case and grid; the page makes no statement about which
+      is closer to the true solution and no pass/fail is claimed.</p>`;
   }
   async function runValidation(what) {
     const status = $('val-status'), btns = ['val-cpu', 'val-gpu', 'val-cross'].map($);

@@ -33,6 +33,7 @@ for (const method of ['lbm', 'fv']) {
   ok(st.n >= 3, `${method}: history grows (${st.n})`);
   ok(st.plots.every((n) => n >= 2), `${method}: three plots drawn ${st.plots}`);
   // controls
+  await page.click('#in-raw');
   await page.selectOption('#in-field', 'q'); await page.selectOption('#in-field', 'wz'); await page.selectOption('#mode3d', 'slice-xz');
   await page.click('#in-avg'); await page.click('#b-play');
   const n0 = await page.evaluate(() => CC3APP.sim.s3.nstep); await page.waitForTimeout(800);
@@ -86,6 +87,12 @@ for (const method of ['lbm', 'fv']) {
     const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 20000 }), page.click('#b-png')]);
     await dl.saveAs(SH + 'app_save.png'); ok(true, 'Save PNG downloaded ' + dl.suggestedFilename());
     await page.screenshot({ path: SH + 'app_gpu.png', fullPage: true });
+    const gv = await page.evaluate(async () => { const r = await CC3APP.runValidation({ cpu: false, gpu: true, cross: true });
+      return { ok: r.ok, err: r.error, rows: r.rows.map((x) => [x.method, x.name, x.expected, x.got, x.reldiff, x.tol, x.pass]), cross: r.cross && r.cross.out }; });
+    console.log('GPU SELFTEST', JSON.stringify(gv.rows.map((r) => [r[0], r[1].slice(-60), +r[4].toExponential(2), r[5], r[6]]), null, 0));
+    console.log('GPU cross', JSON.stringify(gv.cross), gv.err || '');
+    ok(gv.ok && gv.rows.length > 0, `GPU self-test rows ${gv.rows.length} pass=${gv.rows.filter((r) => r[6]).length}`);
+    await page.screenshot({ path: SH + 'app_gpu_validation.png', fullPage: true });
   }
   ok(errs.length === 0, 'gpu: no console errors ' + errs.join(' / '));
   await page.context().close();
