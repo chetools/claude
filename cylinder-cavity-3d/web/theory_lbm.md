@@ -247,7 +247,7 @@ $$\rho = \sum_q f_q, \qquad \rho u_i = \sum_q c_{qi}\,f_q .$$
 One time step has two parts.
 
 1. **Collision (local).** At each node, the populations relax towards an equilibrium $f_q^{eq}$ that depends only on
-   the local $\rho$ and $\mathbf u$. With the BGK ("single relaxation time") operator of Bhatnagar, Gross and Krook:
+   the local $\rho$ and $\mathbf u$. With the BGK ("single relaxation time") operator of Bhatnagar, Gross and Krook (1954):
    $$f_q^\star(\mathbf x,t) = f_q(\mathbf x,t) - \frac1\tau\left[f_q(\mathbf x,t) - f_q^{eq}(\rho,\mathbf u)\right].$$
    The star marks the **post-collision** population. $\tau$ is a dimensionless relaxation time.
 2. **Streaming (shift).** Each post-collision population moves to the neighbour in its own direction:
@@ -406,7 +406,7 @@ represent it). That missing term is the source of the $O(Ma^3)$ error found in �
 ## 5. Chapman–Enskog: from the lattice equation to Navier–Stokes
 
 Section 4 gave the equilibrium. Now we show what macroscopic equations the LBE (LBE) implies for $\rho$ and $\mathbf u$.
-The technique is the Chapman–Enskog expansion (Chapman & Cowling 1970), in the form used in Krüger et al. (2017).
+The technique is the Chapman–Enskog expansion (Chapman & Cowling 1970), following the standard route (a textbook treatment is Krüger et al. 2017; the chapter was not checked, and every step below is derived on this page).
 The idea has two parts: (i) the lattice step is small compared with the scales of the flow, so the lattice
 equation can be expanded in a Taylor series; (ii) the flow variables change on two time scales (a fast
 convective/acoustic one and a slow diffusive one), which we treat as independent.
@@ -1031,7 +1031,7 @@ Both formulas give the halfway rule at $q=\tfrac12$, and both use only fluid nod
 
 **Moving body: where the factor $1/(2q)$ comes from.** In the frame of the wall (velocity $\mathbf u_w$ at the cut point, taken uniform near the link) the wall is at rest, so the interpolation rules above apply to the wall-frame populations. A frame change shifts the population of direction $\mathbf c_q$ by $\delta=w_q\rho\,\mathbf c_q\!\cdot\!\mathbf u_w/c_s^2$ and that of $\mathbf c_{\bar q}$ by $-\delta$ (§8.2): lab $=$ wall frame $+\ \delta$ for $q$ and $-\delta$ for $\bar q$. So $f^{\star w}_q=f^\star_q-\delta$ and $f^{\star w}_{\bar q}=f^\star_{\bar q}+\delta$. Apply the rule in the wall frame, then shift the result (direction $\bar q$) back by $-\delta$:
 
-- $q<\tfrac12$: $\;2q(f^\star_q-\delta)+(1-2q)(f^\star_q{}' -\delta)-\delta = [\text{lab interpolation}]-2\delta$, since the two weights sum to $1$.
+- $q<\tfrac12$: $\;2q(f^\star_q(\mathbf x_f)-\delta)+(1-2q)(f^\star_q(\mathbf x_f-\mathbf c_q) -\delta)-\delta = [\text{lab interpolation}]-2\delta$, since the two weights sum to $1$.
 - $q\ge\tfrac12$: $\;\tfrac1{2q}(f^\star_q-\delta)+\tfrac{2q-1}{2q}(f^\star_{\bar q}+\delta)-\delta = [\text{lab interpolation}]-\delta\left(\tfrac{1}{2q}-\tfrac{2q-1}{2q}+1\right) = [\text{lab interpolation}]-\tfrac{\delta}{q}$.
 
 With $g\equiv-2\delta=-2w_q\rho\,\mathbf c_q\!\cdot\!\mathbf u_w/c_s^2$ (the wall term of §8.2) the correction is therefore
@@ -1066,62 +1066,86 @@ The Bouzidi rule places the wall exactly where it is for any linear profile, as 
 
 ### 8.4 Nodes uncovered by the moving cylinder: refilling
 
-A node is a *solid* node if its centre lies inside the cylinder; the solid nodes hold no meaningful populations. When the
-cylinder orbits, the set of solid nodes changes from step to step. At the **leading** edge, a fluid node becomes covered; its populations are just dropped. At the **trailing** edge, a solid node becomes fluid ("uncovered") and needs a full set of 19 populations at once, because the code
-never evolved them as a fluid state. (Per step the cylinder moves by at most $u_{lb}$ of a cell, so only a thin sliver of nodes changes in each step.)
+A node is a *solid* node if its centre lies inside the cylinder ($r<R$); solid nodes hold no meaningful populations (they are reset every step to the equilibrium at the body velocity, only to keep them finite). When the
+cylinder orbits, the set of solid nodes changes from step to step. At the **leading** edge, a fluid node becomes covered; its populations are simply overwritten by the reset. At the **trailing** edge, a solid node becomes fluid ("uncovered") and needs a full set of 19 populations at once, because the code
+never evolved them as a fluid state. (Per step the body moves by at most $u_{lb}$ of a cell, so only a thin sliver of nodes changes in each step.)
 
-Using stale or arbitrary values would insert mass and momentum that do not belong to the flow. Such a defect behaves like a sudden local pressure disturbance and can radiate as a sound pulse at speed $c_s$.
-The refilling scheme sets the new node's populations to
+Stale or arbitrary values would insert mass and momentum that do not belong to the flow: a local density or momentum error, which in a weakly compressible fluid travels as sound at $c_s$ (§5.4).
+The refill (`refill`) sets the populations of an uncovered node $\mathbf x$ to
 
-$$f_q(\mathbf x) = f_q^{eq}\big(\rho,\mathbf u_b(\mathbf x)\big) + f_q^{neq,\,\mathrm{nb}}.$$
+$$f_q(\mathbf x) = f_q^{eq}\big(\bar\rho,\ \mathbf u_b(\mathbf x)\big) + \overline{f^{neq}}_q .$$
 
-- The equilibrium part uses the **body velocity at that node**, $\mathbf u_b(\mathbf x)$. Until one step ago the node was inside the cylinder and moved with it, so the fluid there moves with the body velocity. It also uses a density $\rho$ taken from the neighbouring fluid nodes.
-- The non-equilibrium part is taken from the neighbouring fluid nodes, so that the stress of the boundary layer next to the body continues smoothly into the new node, rather than starting with a zero-stress "hole".
+- **Neighbours.** The up to 8 in-plane nodes around $\mathbf x$ (the $3\times3$ block without the centre) that were fluid both before and after the move. The same stencil is used in every $z$-plane, since the geometry does not depend on $z$. The refill is done at the start of the step, so the neighbours' populations are the pre-collision ones.
+- **Density.** $\bar\rho$ is the mean of the neighbours' densities (and $1$ if there is no valid neighbour).
+- **Velocity.** The equilibrium uses the **body velocity at the node**, $\mathbf u_b(\mathbf x)$: until one step ago the node was inside the cylinder and moved with it.
+- **Non-equilibrium part.** $\overline{f^{neq}}_q$ is the mean over the valid neighbours of $f_q-f_q^{eq}(\rho_n,\mathbf u_n)$, each neighbour with its own density and velocity (zero if there is no valid neighbour), so that the stress of the boundary layer next to the body continues smoothly into the new node rather than starting with a zero-stress "hole".
 
-This follows the idea of the equilibrium-plus-non-equilibrium refill compared by Caiazzo (2008). The details of the page's version (which neighbours, how the density is chosen, how the non-equilibrium part is averaged) are TODO(code: refill scheme exactly as implemented in lbm3d.py).
-Neither dropping nor refilling is exactly mass-conserving. Their effect on the total mass is TODO(measured: relative drift of total mass over one revolution, with and without refilling).
+This is the idea of an equilibrium-plus-non-equilibrium refill, of the kind analysed by Caiazzo (2008), whose abstract describes a study of how to set starting values at nodes that appear when a moving boundary changes the fluid domain. The specific choices above (which neighbours, plain averaging) are this page's own; the author did not have the paper's text, so the page does not claim that they are Caiazzo's.
 
-### 8.5 Force and torque by momentum exchange
+### 8.5 The global mass correction
 
-The force of the fluid on the body is obtained from the **momentum balance on the boundary links** (Ladd 1994). On a link with fluid node $\mathbf x_f$,
+**The problem.** In a closed box with exact walls the total mass can only change through the body. The body step does not conserve it exactly:
+
+- *Interpolated bounce-back.* For a stationary wall and halfway bounce-back $f_{\bar q}=f^\star_q$, so no mass crosses the link. With Bouzidi's rule for $q<\tfrac12$ the mass leaving through the link is $f^\star_q(\mathbf x_f)-f_{\bar q}=(1-2q)\left[f^\star_q(\mathbf x_f)-f^\star_q(\mathbf x_f-\mathbf c_q)\right]$, which is not zero where $f^\star_q$ varies along the link, and need not sum to zero over the links of a curved surface.
+- *Moving wall term.* It adds $g=-2w_q\rho\,\mathbf c_q\!\cdot\!\mathbf u_w/c_s^2$ to the mass of each link. For a rigid body the continuum flux $\oint\mathbf u_w\!\cdot\!\mathbf n\,dA$ is zero, but the sum of $g$ over the discrete links is not exactly zero.
+- *Covering and uncovering.* Covered nodes lose their mass and refilled nodes create it (§8.4).
+
+Measured on this page's code (project notes), a spinning body without any correction loses or gains mass **linearly in time, about $2$–$3\times10^{-6}$ per step** (mostly from the interpolated bounce-back, per the notes). Over the $\approx1.3\times10^{3}$ steps per time unit of §7.1 and a run to $t=20$ this would add up to roughly $0.05$–$0.08$ in the mean density if left alone (the product $2.5\times10^{-6}\times1280\times20$ of the quoted numbers, not a separate measurement; the notes do not say whether the per-step figure is relative to the total mass).
+
+**Why hold the mean density.** In the nearly incompressible limit only pressure *gradients* act (§5.9), so a uniform density level is physically arbitrary. In the lattice it is not: (i) the page converts lattice forces to physical ones with the density scale $\rho_0=1$ (§8.6), so a mean density that drifts away from $1$ rescales every force and torque by that factor; (ii) the Mach-number estimates and the moving-wall term use $\rho=1$. The correction therefore holds the **mean density over the fluid nodes** at exactly $1$. Holding the *total mass* constant would not be equivalent: the number of fluid nodes $n$ itself changes as nodes are covered and uncovered. We counted it for the orbiting body at $N=64$ ($R=0.1$, $r_o=0.2$, one revolution in 400 positions): $n$ ranges from $3964$ to $3973$ per plane (mean $3966.9$), against the exact area $L^2-\pi R^2$ of $3967.3$ cells, a spread of $0.2\,\%$ that a fixed total mass would turn into a density error of the same size.
+
+**The correction** (`mass_correction`, applied after the body step at every time step):
+
+$$\delta=\frac{n-\sum_{\text{fluid nodes}}\sum_qf_q}{n},\qquad f_0\leftarrow f_0+\delta\ \text{ on every fluid node},$$
+
+with $n$ the number of fluid nodes (all planes). After it $\sum_{\text{fluid}}\sum_q f_q=n$, so the mean density is exactly $1$ (measured: $1$ to $10^{-16}$). Only the rest population $f_0$ is changed, because $\mathbf c_0=0$: the momentum $\sum c_{qi}f_q$ and the second moment $\sum c_{qi}c_{qj}f_q$ of the populations are untouched and only $\rho$ changes. The node then sees a small isotropic non-equilibrium stress, $-\delta\,(c_s^2\delta_{ij}+u_iu_j)$, because $f^{eq}$ is recomputed with the new $\rho$; its size is $\delta$, the same $10^{-6}$ as the leak itself, and it relaxes in the next collisions. Every plane gets the same $\delta$, so a spanwise-uniform flow stays spanwise-uniform (measured: difference exactly $0$ in the independent review).
+
+**This is our own design choice.** The correction is a uniform shift of the reference density. No literature source for this particular correction was found by the author, and the page does not cite one. Its effect on accuracy was not measured against a run without it (the independent review had no pre-correction comparison).
+
+### 8.6 Force and torque by momentum exchange
+
+The force of the fluid on the body is obtained from the **momentum balance on the boundary links** (the approach of Ladd 1994, who computes the forces and torques on the solid from the momentum exchanged on the links; Bouzidi et al. 2001 analyse the torque obtained this way). On a link with fluid node $\mathbf x_f$,
 direction $\mathbf c_q$ pointing to the body, and cut point $\mathbf x_w$, during one step:
 
 - the population $f^\star_q$ arrives at the wall carrying momentum $\mathbf c_qf^\star_q$ (per unit lattice volume);
 - the population $f_{\bar q}$ leaves with momentum $\mathbf c_{\bar q}f_{\bar q}=-\mathbf c_qf_{\bar q}$.
 
-The fluid's momentum changes by $-\mathbf c_q f_{\bar q}-\mathbf c_qf^\star_q$. By Newton's third law the body receives the opposite,
+The fluid's momentum changes by $-\mathbf c_q f^\star_q-\mathbf c_qf_{\bar q}$. By Newton's third law the body receives the opposite,
 
-$$\Delta\mathbf P_q = \mathbf c_q\left(f_q^\star + f_{\bar q}\right)\qquad\text{per link and time step.}$$
+$$\Delta\mathbf P_q = \mathbf c_q\left(f_q^\star + f_{\bar q}\right)\qquad\text{per link and time step (Ladd's form, for a body at rest).}$$
 
 Summing over all boundary links gives the force on the body. This accounts for pressure and viscous forces together, since they are both carried by the
-populations. For a **moving** body the lab-frame formula has a flaw. When the wall moves, mass can enter the wall on one link and leave on another. This net mass absorbed per link is
-$f^\star_q-f_{\bar q}$, and carrying lab-frame momentum $\mathbf u_b$ it would be counted as a force, though it is only a change of reference frame. The
-Galilean-invariant form (Wen et al. 2014) subtracts it:
+populations. **Moving body.** The code uses the form of Wen, Zhang, Tu, Wang & Fang (2014), who argue that the interface treatment should respect Galilean invariance (their abstract; the equation below is the one in the code, and it agrees with the link force quoted from the paper's preprint, $(\mathbf e_i-\mathbf v)\tilde f_i-(\mathbf e_{\bar i}-\mathbf v)\tilde f_{\bar i}$, found in a secondary retrieval). The idea is to measure the momentum of each population **relative to the moving wall**, the velocity $\mathbf c-\mathbf u_w$:
 
-$$\boxed{\;\Delta\mathbf P_q = \mathbf c_q\left(f_q^\star+f_{\bar q}\right) - \mathbf u_b\left(f_q^\star - f_{\bar q}\right)\;}
-\quad\Longleftrightarrow\quad
-\Delta\mathbf P_q=(\mathbf c_q-\mathbf u_b)f_q^\star-(\mathbf c_{\bar q}-\mathbf u_b)f_{\bar q}.$$
+$$\boxed{\;\Delta\mathbf P_q = (\mathbf c_q-\mathbf u_w)\,f_q^\star(\mathbf x_f)+(\mathbf c_q+\mathbf u_w)\,f_{\bar q}(\mathbf x_f,t+\Delta t)\;}
+\quad=\ \mathbf c_q\left(f_q^\star+f_{\bar q}\right) - \mathbf u_w\left(f_q^\star - f_{\bar q}\right).$$
 
-The right-hand form shows the idea: the momentum is measured relative to the moving wall. It reduces to Ladd's formula for a body at rest. Here $f_{\bar q}$ is the population *as set by the boundary rule*, including its moving-wall term, and $\mathbf u_b$ is the body velocity at the cut point.
+(The second form follows by expanding; $\mathbf c_{\bar q}=-\mathbf c_q$ turns $-(\mathbf c_{\bar q}-\mathbf u_w)f_{\bar q}$ into $(\mathbf c_q+\mathbf u_w)f_{\bar q}$.) The extra term is $\mathbf u_w$ times the net mass $f^\star_q-f_{\bar q}$ absorbed by the wall on the link: that mass is not a force, only mass changing side, and the correction removes the momentum it would otherwise be credited with. It reduces to Ladd's formula for a body at rest. Here $f_{\bar q}$ is the population *as set by the boundary rule*, including its moving-wall term, and $\mathbf u_w$ is the body velocity at the cut point $\mathbf x_w$. In the independent review's mutation test, dropping this correction changed the torque in the review's annulus (rotating-cylinder) test by $2.7\,\%$ (`notes/verify/REPORT.md`, check 1).
 
-**Conversion and torque.** In lattice units the force on the body, per time step, is $\mathbf F_{lb} = \sum_{\text{links}}\Delta\mathbf P_q$. In physical units,
-with the page's density scale $\rho_0=1$, a momentum $\rho_0h^3(h/\Delta t)\,\Delta\mathbf P_q$ is exchanged per step, so the force on the body *per unit span* (divide by $L_z=N_zh$) is
+**Conversion and torque.** In lattice units the force on the body, per time step, is $\mathbf F_{lb} = \sum_{\text{links}}\Delta\mathbf P_q$ (summed over all planes). In physical units,
+with the page's density scale $\rho_0=1$: a lattice momentum $\Delta P$ is the mass of a lattice cell $\rho_0h^3$ times a velocity unit $h/\Delta t$, so a momentum $\rho_0h^3(h/\Delta t)\,\Delta P$ is exchanged per step; the force is that divided by $\Delta t$, and per unit span it is divided by $L_z=N_zh$:
 
 $$\mathbf F' = \frac{\rho_0\,h^3}{N_z\,\Delta t^2}\sum_{\text{links}}\Delta\mathbf P_q,\qquad
 T'_z=\frac{\rho_0\,h^4}{N_z\,\Delta t^2}\sum_{\text{links}}\left[\,(x_w-x_c)\,\Delta P_{q,y} - (y_w-y_c)\,\Delta P_{q,x}\,\right],$$
 
-where $(x_c,y_c)$ is the cylinder centre, $(x_w,y_w)$ the cut point in lattice units (so the lever arm is $\mathbf x_w-\mathbf x_c$), and the second formula is the $z$-component of the torque $\sum(\mathbf x_w-\mathbf x_c)\times\Delta\mathbf P_q$ about the centre. A positive value is counterclockwise as seen from $+z$. For a cylinder spinning counterclockwise in fluid
-at rest, the torque of the fluid on it is clockwise, i.e. negative: it resists the spin.
-TODO(code: confirm which point is used as the lever arm, the cut point or the link midpoint, and that the Galilean-invariant correction is used in lbm3d.py).
+where $(x_c,y_c)$ is the cylinder centre, $(x_w,y_w)$ the **cut point** in lattice units (so the lever arm is $\mathbf x_w-\mathbf x_c$, as in `bounce_back_body`), and the second formula is the $z$-component of the torque $\sum(\mathbf x_w-\mathbf x_c)\times\Delta\mathbf P_q$ about the centre (one extra factor $h$ converts the lever arm to physical length). A positive value is counterclockwise as seen from $+z$. For a cylinder spinning counterclockwise in fluid
+at rest, the torque of the fluid on it is clockwise, i.e. negative: it resists the spin (the sign was confirmed in the independent review).
 
-For a span-uniform flow every plane contributes equally, so the torque per unit span is the same for any $N_z$, and for $N_z=1$ it is the 2D torque. 
+For a span-uniform flow every plane contributes equally, so the torque per unit span is the same for any $N_z$, and for $N_z=1$ it is the 2D torque (measured: $N_z=1$ and $N_z=4$ agree to $5\times10^{-13}$ in the review).
 
-**Check (shear flow).** In the Couette channel of §5.8 with halfway or cut-link walls, the sum of $\Delta P_{q,x}$ over the links of one wall column equals $-\nu_{lb}u'$ per unit wall area, the viscous shear stress
-$\rho\nu\,\partial_yu$, to the accuracy of the iteration.
+**Check (shear flow, stationary halfway wall).** Take the lower wall of the Couette channel of §5.8, first node at $y_0=\tfrac12$, $u=u'y$. The links pointing down with $c_x\ne0$ are $(\pm1,-1,0)$, and for them $f_{\bar q}=f^\star_q$ so $\Delta P_x=2c_xf^\star_q$. With $f^\star_q=w_q(1+c_xu_0/c_s^2)+(1-\tfrac1\tau)\tau w_qc_xu'/c_s^2$ (§5.8, $c_y=-1$), summing over the two links ($c_x^2=1$, $w_q=\tfrac1{36}$):
 
-### 8.6 Periodic span versus end walls
+$$\sum\Delta P_x = 2\cdot2\cdot\tfrac1{36}\cdot3\left[u_0+(\tau-1)u'\right]=\tfrac13\left[\tfrac12+\tau-1\right]u'=\nu_{lb}\,u'$$
 
-Our box is periodic or walled in $z$ (the page's `span` input). The cylinder fills the whole span, so only in-plane links are cut by it.
+per wall node and time step. The force on the wall is $+\nu_{lb}u'$ in $+x$: the viscous shear stress $\rho\nu\,\partial_yu$ exactly, with no iteration (checked symbolically, `c1.py`).
+
+#### Torque noise and the running mean
+
+When the body orbits, the torque of a single step is noisy. Measured on this page's code (independent review, `notes/verify/REPORT.md` item 4 and the project notes): the scatter of the single-step torque about a smooth trend is $216\,\%$ ($N=32$) and $63\,\%$ ($N=64$) of the mean for the LBM, against $32\,\%$ and $24\,\%$ for the finite-volume solver. The spin-only torque is smooth after $t=0.25$; the review attributes the noise to the moving boundary (links appearing and disappearing, and the refill), and did not separate the two. Bookkeeping of the momentum carried by covered and uncovered nodes was tried and did **not** reduce the noise, so it is off: the page does not credit that momentum to the body. The page therefore shows a **running mean over the last $0.25$ time units** of the torque samples, and shows nothing before $t=0.25$. With that mean, the scatter of block means of the LBM torque is $7\,\%$ ($N=32$) and $3\,\%$ ($N=64$). The mean removes noise; it does not remove a bias, and it smooths real changes of the torque on time scales shorter than $0.25$ (the page's samples are taken after every frame, a frame covering at most $0.05$ time units).
+
+### 8.7 Periodic span versus end walls
+
+Our box is periodic or walled in $z$ (the page's `span` input). The cylinder fills the whole span. Every link with an in-plane part is cut by it (with the cut fraction of its in-plane projection, §8.3); only the links $(0,0,\pm1)$ are never cut.
 
 - **Periodic span.** Streaming wraps in $z$: a population leaving node $k=N_z-1$ with $c_z=+1$ arrives at node $k=0$, and vice versa.
   No boundary condition is applied. A flow that is uniform in $z$ stays uniform, except for instabilities that break the symmetry.
@@ -1131,7 +1155,7 @@ Our box is periodic or walled in $z$ (the page's `span` input). The cylinder fil
   at the same node, and symmetrically at $k=N_z-1$. The end walls are stationary, so there is no moving-wall term. The Ekman layers that
   form at the end walls are a flow phenomenon, treated in the physics part of the page.
 
-### 8.7 One layer, periodic in $z$: D3Q19 is exactly D2Q9
+### 8.8 One layer, periodic in $z$: D3Q19 is exactly D2Q9
 
 With $N_z=1$ and a periodic span, streaming in $z$ takes a population from a node to itself. Define the **summed populations**
 $F_{(a,b)}=\sum_{c_z}f_{(a,b,c_z)}$: for each in-plane direction $(a,b)$, add the populations of all vectors with that in-plane part.
@@ -1155,40 +1179,40 @@ $F^\star_{(a,b)}=F_{(a,b)}-\tfrac1\tau(F_{(a,b)}-F^{eq}_{(a,b)})$. Streaming of 
 
 *Boundaries.* Bounce-back and Bouzidi interpolation are linear, use only in-plane geometry (the cut fraction of a link $(a,b,c_z)$ with the cylinder is the same for all $c_z$ because the cylinder does not depend on $z$), and use the same weights summed. So they agree with the D2Q9 versions.
 
-Hence, for BGK, $N_z=1$ periodic D3Q19 *is* D2Q9. The page tests this with a value-by-value comparison.
+Hence, for BGK, $N_z=1$ periodic D3Q19 *is* D2Q9. The project's test `test_nz1_equals_d2q9_bgk` compares the summed D3Q19 populations with an independent D2Q9 BGK code over 60 steps on a periodic $16\times16$ box, and asserts agreement to $10^{-13}$. That test has no body and no walls. The weights table above was also summed by computer (`c1.py`).
 The statement is for BGK only: the regularised and MRT operators of §6 act on all 19 populations and are not a priori the same as their D2Q9 versions.
 
 ## 9. What the two methods do differently on this problem
 
-All statements below hold by construction of the two codes.
+The rows below describe the two codes as written (`fv3d.py`, `lbm3d.py`).
 
 | | finite volumes (the Navier–Stokes part of this page) | lattice Boltzmann |
 |---|---|---|
-| time step | explicit momentum update, then a **pressure Poisson equation** solved by multigrid at every step | explicit, **local** collision, then neighbour shift; no linear system |
+| time step | explicit Adams–Bashforth momentum update, then a **pressure Poisson equation** solved by multigrid at every step | explicit, **local** collision, then neighbour shift; no linear system |
 | pressure | Lagrange multiplier enforcing $\nabla\cdot\mathbf u=0$ | equation of state, $p=\rho c_s^2$ |
 | divergence of $\mathbf u$ | zero up to the Poisson solver's residual | nonzero, of order $Ma^2U/L$ (§5.9): the fluid is weakly compressible |
 | signals | pressure acts instantaneously across the domain | pressure waves travel at $c_s$ |
-| body boundary | a mask $\chi$ that pulls the velocity of the cells towards $\mathbf u_b$ (Brinkman-type) | sharp surface, interpolated bounce-back at the cut points (§8.3) |
-| walls | ghost cells with mirrored values | halfway bounce-back (§8.1) |
-| advection | MUSCL reconstruction with a limiter | exact shift along the lattice vectors, no interpolation |
+| body boundary | a mask $\chi$ (inner ramp, one cell wide) that pulls the velocity of the cells towards $\mathbf u_b$ (penalisation) | sharp surface, interpolated bounce-back at the cut points (§8.3) |
+| walls | ghost values (odd mirrors) | halfway bounce-back (§8.1) |
+| advection | MUSCL reconstruction with the min-mod limiter | exact shift along the lattice vectors, no interpolation |
 | state per cell | $u,v,w$ and the pressure $q$ | 19 populations |
 | time step size | from the CFL and diffusion limits ($\propto h$ where advection dominates) | $\Delta t=u_{lb}h/U_b$, $\propto h$ |
 
-The consequences for run time, accuracy and the smallest Reynolds number at which each method stays stable are not discussed
-here because they depend on measurements: TODO(measured: comparison of the two methods on the same cases).
+Measured comparisons on the final runs (`notes/results_final.md`; LBM and finite-volume solver, $N=64$, $N_z=32$, span $L_z=0.5$, periodic, spin only $U_s=1$, $Re=100$, 3D over 2D ratios of late means over $t=10$–$20$): perturbation growth rate $\sigma=0.61$ (LBM) and $0.48$ (FV); enstrophy ratio $2.57$ (LBM) and $2.39$ (FV); kinetic-energy ratio $0.785$ and $0.864$; torque ratio $1.17$ and $1.10$; saturated $E_{3d}/E$ $0.135$ and $0.104$. The two methods agree on the qualitative picture. The notes attribute the differences mostly to the different treatment of the cylinder surface, which is an interpretation of the author of the notes and not a separate test.
+
+Accuracy of the torque of a centred, impulsively started spinning cylinder against the exact solution ($Re=100$, $t=5$, $N_z=1$; project notes and review): LBM $+6.0\,\%$, $+0.7\,\%$, $+0.5\,\%$ at $N=32,64,128$; finite volumes with the inner-ramp mask $+7.5\,\%$, $-0.7\,\%$, $-2.9\,\%$ (not monotone).
+
+TODO(measured: run time per step and per unit physical time of the two methods on the same case, and the smallest Reynolds number at which each stays stable; neither is in `results_final.md`)
 
 ## References
 
-- Bhatnagar, P. L., Gross, E. P. & Krook, M. (1954). A model for collision processes in gases. *Phys. Rev.* 94, 511–525.
+- Bhatnagar, P. L., Gross, E. P. & Krook, M. (1954). A model for collision processes in gases. I. Small amplitude processes in charged and neutral one-component systems. *Phys. Rev.* 94, 511–525.
 - Bird, R. B., Stewart, W. E. & Lightfoot, E. N. (2002). *Transport Phenomena*, 2nd ed. Wiley.
 - Bouzidi, M., Firdaouss, M. & Lallemand, P. (2001). Momentum transfer of a Boltzmann-lattice fluid with boundaries. *Phys. Fluids* 13, 3452–3459.
 - Caiazzo, A. (2008). Analysis of lattice Boltzmann nodes initialisation in moving boundary problems. *Prog. Comput. Fluid Dyn.* 8, 3–10.
 - Chapman, S. & Cowling, T. G. (1970). *The Mathematical Theory of Non-uniform Gases*, 3rd ed. Cambridge University Press.
 - d'Humières, D., Ginzburg, I., Krafczyk, M., Lallemand, P. & Luo, L.-S. (2002). Multiple-relaxation-time lattice Boltzmann models in three dimensions. *Phil. Trans. R. Soc. A* 360, 437–451.
-- Ginzburg, I. & d'Humières, D. (2003). Multireflection boundary conditions for lattice Boltzmann models. *Phys. Rev. E* 68, 066614.
-- He, X., Zou, Q., Luo, L.-S. & Dembo, M. (1997). Analytic solutions of simple flows and analysis of nonslip boundary conditions for the lattice Boltzmann BGK model. *J. Stat. Phys.* 87, 115–136.
 - Krüger, T., Kusumaatmaja, H., Kuzmin, A., Shardt, O., Silva, G. & Viggen, E. M. (2017). *The Lattice Boltzmann Method: Principles and Practice*. Springer.
 - Ladd, A. J. C. (1994). Numerical simulations of particulate suspensions via a discretized Boltzmann equation. Part 1. Theoretical foundation. *J. Fluid Mech.* 271, 285–309.
 - Latt, J. & Chopard, B. (2006). Lattice Boltzmann method with regularized pre-collision distribution functions. *Math. Comput. Simul.* 72, 165–168.
-- Qian, Y. H., d'Humières, D. & Lallemand, P. (1992). Lattice BGK models for Navier–Stokes equation. *Europhys. Lett.* 17, 479–484.
 - Wen, B., Zhang, C., Tu, Y., Wang, C. & Fang, H. (2014). Galilean invariant fluid–solid interfacial dynamics in lattice Boltzmann simulations. *J. Comput. Phys.* 266, 161–170.
