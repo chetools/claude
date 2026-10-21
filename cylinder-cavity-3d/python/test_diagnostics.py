@@ -163,13 +163,15 @@ def test_spectrum_normalisation():
     U = rng.standard_normal((3, Nz, N, N))
     h = 1.0 / N
     k, Ek = dg.spectrum_h(U, h)
-    # exact: Parseval of the windowed, rescaled field
-    W = np.sin(np.pi * (np.arange(N) + 0.5) / N) ** 2
-    W2 = W[:, None] * W[None, :]
-    expect = 0.5 * np.mean((U * W2) ** 2, axis=(2, 3)).sum(axis=0).mean() / np.mean(W2 ** 2)
-    assert np.isclose(Ek.sum(), expect, rtol=1e-12)
-    # white noise is statistically uniform, so this is also close to the plane energy
-    assert np.isclose(Ek.sum(), dg.energy(U, h, Nz * h) * Nz / Nz, rtol=0.1)
+    assert np.isclose(Ek.sum(), dg.energy(U, h, Nz * h), rtol=1e-12)
+    # also with a body mask, and for a field concentrated in the middle of the box
+    m = dg.fluid_mask(dict(N=N, Nz=Nz, R=0.1, ro=0.2), 0.7)
+    k, Em = dg.spectrum_h(U, h, m)
+    assert np.isclose(Em.sum(), dg.energy(U, h, Nz * h, m), rtol=1e-12)
+    h, z, y, x = grid(N, Nz)
+    V = U * np.exp(-(((x - .5) ** 2 + (y - .5) ** 2) / 0.02)) * (1 + z)
+    assert np.isclose(dg.spectrum_h(V, h)[1].sum(), dg.energy(V, h, Nz * h), rtol=1e-12)
+    assert np.isclose(dg.spectrum_h(V, h, m)[1].sum(), dg.energy(V, h, Nz * h, m), rtol=1e-12)
 
 
 def test_summary():
@@ -261,7 +263,7 @@ def test_masked_spectrum():
     k, E1 = dg.spectrum_h(U, h, m)
     k, E2 = dg.spectrum_h(U * m, h)
     assert np.allclose(E1, E2, rtol=1e-12, atol=1e-30)         # masking = zeroing the body cells
-    assert E1.sum() < E0.sum()                                 # energy removed with the body cells
+    assert np.isclose(E1.sum(), dg.energy(U, h, 2 * h, m), rtol=1e-12) and E1.sum() < E0.sum()                                 # energy removed with the body cells
     assert np.argmax(E1) == 5
     # without the argument nothing changed
     assert np.array_equal(E0, dg.spectrum_h(U, h, None)[1])

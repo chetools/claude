@@ -136,17 +136,19 @@ def spanwise_energy(U, h, Lz, span="periodic", fluid=None):
 def spectrum_h(U, h, fluid=None):
     """Horizontal energy spectrum.  Returns (k, E_k), k = 0, 1, 2, ... in units of 2 pi / L, L = 1.
 
-    With a `fluid` mask the body cells are set to zero before windowing (so the body interior,
-    which moves rigidly, does not enter the spectrum; the hole itself still leaks energy to
-    other shells).  For each z-plane: multiply every component by the Hann window W(x) W(y), W = sin^2(pi x),
-    take the 2D FFT, and add 1/2 |u_hat|^2 into the shell round(|k|) (kx, ky integer wavenumbers).
-    The box walls are not periodic, the window removes the jump at the edges.  Windowing removes
-    energy, so the result is divided by mean(W^2) (the average of the window squared), which
-    restores the energy of a statistically uniform field.  Then, per plane,
-        sum_k E_k = (1/2) mean(|W u|^2) / mean(W^2)
-    exactly (Parseval); it is only approximately the plane's energy because W weights the
-    centre more than the edges.  Shells go up to the corner of the FFT square, so nothing is
-    lost.  Planes are averaged.  Shell width is 1, so sum(E_k) * dk = sum(E_k).
+    "Windowed shape, rescaled to the true energy."  For each z-plane:
+      1. set the body cells to zero (if a `fluid` mask is given; the hole still leaks energy
+         into other shells);
+      2. multiply every component by the Hann window W(x) W(y), W = sin^2(pi x) at cell
+         centres (the box walls are not periodic; the window removes the jump at the edges);
+      3. 2D FFT, and add 1/2 |u_hat|^2 into the shell round(|k|), (kx, ky) integer wavenumbers;
+         shells run out to the corner of the FFT square, so nothing is lost;
+      4. multiply the plane's spectrum by one number so that its sum equals the plane's true
+         kinetic energy (1/2) int |u|^2 dA over the fluid cells (area of the box = 1).
+    The window only decides how that energy is shared among the shells.  The planes are then
+    averaged, so, exactly (to round-off),
+        sum_k E_k = energy(U, h, Lz, fluid).
+    Shell width is 1, so sum(E_k) * dk = sum(E_k).  A plane with no windowed energy gets a zero spectrum.
     """
     U = _fluid_only(U, fluid)
     _, Nz, N, _ = U.shape
@@ -154,10 +156,16 @@ def spectrum_h(U, h, fluid=None):
     W = np.sin(np.pi * x) ** 2
     W2 = W[:, None] * W[None, :]                # window in (y, x)
     uhat = np.fft.fft2(U * W2, axes=(2, 3)) / N ** 2
-    e = 0.5 * np.sum(np.abs(uhat) ** 2, axis=0).mean(axis=0) / np.mean(W2 ** 2)   # (N, N), planes averaged
+    e = 0.5 * np.sum(np.abs(uhat) ** 2, axis=0)                  # (Nz, N, N) windowed spectrum per plane
+    true = 0.5 * np.sum(U ** 2, axis=(0, 2, 3)) * h ** 2         # true energy of each plane
     kk = np.fft.fftfreq(N, d=1.0 / N)
-    shell = np.rint(np.hypot(kk[:, None], kk[None, :])).astype(int)
-    Ek = np.bincount(shell.ravel(), weights=e.ravel())
+    shell = np.rint(np.hypot(kk[:, None], kk[None, :])).astype(int).ravel()
+    Ek = 0.0
+    for k in range(Nz):
+        ek = np.bincount(shell, weights=e[k].ravel())
+        tot = ek.sum()
+        Ek = Ek + (ek * (true[k] / tot) if tot > 0 else ek)
+    Ek = Ek / Nz
     return np.arange(len(Ek)), Ek
 
 
