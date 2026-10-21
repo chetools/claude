@@ -1,0 +1,4 @@
+GAP=2.0 h; exact fluid energy per unit span at t=2.0: 0.012270
+N= 32  exact-on-fluid-cells 0.001701  FV E=0.001120 (-34.1% vs exact on same cells, t=2.0051)  LBM E=0.002373 (+39.5% vs exact on same cells, t=2.0000)
+N= 64  exact-on-fluid-cells 0.005449  FV E=0.004422 (-18.8% vs exact on same cells, t=2.0017)  LBM E=0.005851 (+7.4% vs exact on same cells, t=2.0000)
+N=128  exact-on-fluid-cells 0.008111  FV E=0.007163 (-11.7% vs exact on same cells, t=2.0009)

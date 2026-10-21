@@ -82,8 +82,8 @@
       <div class="field"><input type="number" id="in-avgw" value="1" min="0.05" step="0.25"><div class="side-cap">time units</div></div>
       <div class="btns"><button class="btn primary" id="b-play">Pause</button><button class="btn" id="b-reset">Reset</button>
         <button class="btn" id="b-png">Save PNG</button></div>`;
-    const cards = [['t', 'time t'], ['re', 'Reynolds number'], ['e', 'E per unit span, fluid only (3D)'], ['tq', 'torque, running mean (3D)'],
-      ['r3', 'E3d / E, fluid only (3D)'], ['dv', 'max |div u| (3D)']];
+    const cards = [['t', 'time t'], ['re', 'Reynolds number'], ['e', 'E per unit span (3D)'], ['tq', 'torque, mean (3D)'],
+      ['r3', 'E3d / E (3D)'], ['dv', 'max |div u| (3D)']];
     $('metrics').innerHTML = cards.map(([k, l]) => `<div class="metric"><div class="m-label" id="m-${k}-l">${l}</div>` +
       `<div class="m-value" id="m-${k}">–</div><div class="m-sub" id="m-${k}-sub">&nbsp;</div></div>`).join('');
     // captions under the two panels
@@ -399,9 +399,9 @@
     const Uref = Math.max(Math.abs(inp.Us), Math.abs(inp.Uo)) || 1;
     $('m-re-sub').textContent = `cell Re ${fmtG(Uref * p.h / p.nu, 2)} (U h / ν)`;
     $('m-e').textContent = fmtG(L.r3.E, 4);
-    $('m-e-sub').textContent = `2D ${fmtG(L.r2.E, 4)}`;
+    $('m-e-sub').textContent = `2D ${fmtG(L.r2.E, 4)} · fluid only`;
     $('m-tq').textContent = fmtG(L.r3.torque, 4);
-    $('m-tq-sub').textContent = Number.isFinite(L.r3.torque) ? `2D ${fmtG(L.r2.torque, 4)}` : `mean starts at t = ${TORQUE_WIN}`;
+    $('m-tq-sub').textContent = Number.isFinite(L.r3.torque) ? `2D ${fmtG(L.r2.torque, 4)} · 0.25 t.u.` : `mean starts at t = ${TORQUE_WIN}`;
     $('m-r3').textContent = L.r3.E > 0 ? fmtE(L.r3.E3d / L.r3.E, 2) : '–';
     $('m-r3-sub').textContent = 'share of E that varies in z';
     if (inp.method === 'fv') {
@@ -439,8 +439,8 @@
         tr.push({ x: t, y: pos(H.Ekz[m]), name: `kz = ${m + 1}`, line: { color: cols[m], width: 1.2 } });
       }
     }
-    Plotly.react('plot-spanwise', tr, baseLayout('Spanwise energy (3D)', {
-      yaxis: { type: 'log', title: { text: 'energy per unit span, fluid only' }, exponentformat: 'e' } }), PLOT_CFG);
+    Plotly.react('plot-spanwise', tr, baseLayout('Spanwise energy (3D), fluid only', {
+      yaxis: { type: 'log', title: { text: 'energy per unit span' }, exponentformat: 'e' } }), PLOT_CFG);
     // (b) horizontal spectra
     const avg = $('in-avg').checked, w = Math.max(0.05, +$('in-avgw').value || 1), L = sim.last;
     let e2 = L.E2k, e3 = L.E3k, n = 1;
@@ -454,12 +454,12 @@
     Plotly.react('plot-spectra', [
       Object.assign(kx(L.k2, e2), { name: '2D', line: { color: C2, width: 2 } }),
       Object.assign(kx(L.k3, e3), { name: '3D', line: { color: C3, width: 2 } })],
-    baseLayout(avg ? `E(k), mean of ${n} sample${n > 1 ? 's' : ''}` : 'Horizontal spectrum E(k)', {
+    baseLayout(avg ? `E(k), fluid only, mean of ${n}` : 'E(k), fluid only', {
       xaxis: { type: 'log', title: { text: 'wavenumber k (units of 2π / box side)' } },
-      yaxis: { type: 'log', title: { text: 'E(k), fluid only' }, exponentformat: 'e' } }), PLOT_CFG);
+      yaxis: { type: 'log', title: { text: 'E(k)' }, exponentformat: 'e' } }), PLOT_CFG);
     // (c) history with a selector
-    const opts = { torque: ['T2', 'T3', 'torque, running mean over 0.25 time units'], E: ['E2', 'E3', 'kinetic energy E, per unit span, fluid only'], Z: ['Z2', 'Z3', 'enstrophy Z, per unit span, fluid only'] };
-    const [a, b, lab] = opts[sim.histSel];
+    const opts = { torque: ['T2', 'T3', 'torque', 'torque: running mean, 0.25 time units'], E: ['E2', 'E3', 'E', 'E per unit span, fluid only'], Z: ['Z2', 'Z3', 'Z', 'Z per unit span, fluid only'] };
+    const [a, b, lab, ttl] = opts[sim.histSel];
     const k0 = sim.histSel === 'torque' ? Math.max(0, t.findIndex((x) => x >= TORQUE_WIN)) : 0;   // torque: skip t < 0.25
     const none = sim.histSel === 'torque' && !t.some((x) => x >= TORQUE_WIN);
     const traces = [
@@ -471,8 +471,8 @@
         { x: R.t.slice(i0), y: R.T3.slice(i0), name: '3D raw', line: { color: C3, width: 0.7 }, opacity: 0.35 });
     }
     Plotly.react('plot-history', traces,
-    baseLayout(`History`, {
-      yaxis: { title: { text: lab }, exponentformat: 'e' }, margin: { l: 62, r: 16, t: 46, b: 96 },
+    baseLayout(ttl, {
+      yaxis: { title: { text: lab }, exponentformat: 'e' }, margin: { l: 62, r: 16, t: 84, b: 96 },
       updatemenus: [{ type: 'buttons', direction: 'right', x: 1, xanchor: 'right', y: 1.0, yanchor: 'bottom', showactive: true,
         active: ['torque', 'E', 'Z'].indexOf(sim.histSel), pad: { r: 0, t: 0 }, font: { size: 11 },
         buttons: ['torque', 'E', 'Z'].map((l) => ({ label: l, method: 'skip' })) }] }), PLOT_CFG);
