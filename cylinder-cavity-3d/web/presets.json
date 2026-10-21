@@ -1,8 +1,8 @@
 {
   "agree": {
-    "label": "Re 50, spin: 3D agrees with 2D",
-    "description": "TODO(measured: long-run result at Re 40/50 decides the Re and the text)",
-    "inputs": {"method": "lbm", "span": "periodic", "Re": 50, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}
+    "label": "Re 40, spin: 3D agrees with 2D",
+    "description": "Spinning cylinder, periodic span, below the onset of 3D flow. Measured (LBM, this grid): the small spanwise seed decays (σ ≈ −0.30 between t = 20 and 60), so the 3D run stays spanwise-uniform and matches the 2D baseline. On this grid the onset lies between Re 40 and Re 50 (σ ≈ +0.014 at Re 50).",
+    "inputs": {"method": "lbm", "span": "periodic", "Re": 40, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}
   },
   "transition": {
     "label": "Re 100, spin: the seed grows",
