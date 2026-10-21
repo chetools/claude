@@ -5,7 +5,7 @@ reference() runs a few small cases with the numpy reference lbm3d and returns a 
 that build.py embeds as window.REF.lbm and CC3.lbm.selftest(solverFactory, ref) compares against.
 
 Cases: N = 16, Nz = 4 and 1, periodic and walls, spin + orbit (so the cylinder moves, uncovers nodes and
-`refill` runs), seed > 0, every collision model at least once.  u_lb = 0.1 (not the page default 0.05)
+`refill` runs), seed > 0, every collision model at least once.  u_lb = 0.1 (explicit override of the default rule)
 so that the cylinder moves ~3 cells in 50 steps; the cases test equivalence of implementations, not accuracy.
 
 Outputs (physical units, SPEC.md):
@@ -65,16 +65,30 @@ def run_case(extra, steps=STEPS):
     return dict(inp=inp, steps=steps, outputs=out), refilled
 
 
+PARAM_INPUTS = [dict(N=64), dict(N=32, Re=2000.0, Uo=0.5), dict(N=128, Nz=64, Re=500.0, Us=0.0, Uo=1.0),
+                dict(N=16, Re=10.0, span="walls", Nz=4, collision="mrt"), dict(N=64, ro=0.0, Uo=0.7, u_lb=0.03)]
+
+
+def param_checks():
+    """make_params numbers (scalars only) for several inputs, including the default u_lb rule; the JS
+    makeParams must reproduce them (checked by web/tests/lbm_cpu_test.mjs)."""
+    out = []
+    for inp in PARAM_INPUTS:
+        p = lbm3d.make_params(**inp)
+        out.append(dict(inp=inp, params={k: v for k, v in p.items() if isinstance(v, (int, float)) and not isinstance(v, bool)}))
+    return out
+
+
 def reference():
     cases = []
     for extra in CASES:
         c, _ = run_case(extra)
         cases.append(c)
-    return dict(cases=cases)
+    return dict(cases=cases, param_checks=param_checks())
 
 
 if __name__ == "__main__":
-    ref = {"cases": []}
+    ref = {"cases": [], "param_checks": param_checks()}
     for extra in CASES:
         c, nref = run_case(extra)
         ref["cases"].append(c)

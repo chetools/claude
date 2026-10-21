@@ -19,6 +19,16 @@ else {
 // makeParams keys / numbers against python
 const p = lbm.makeParams(ref.cases[0].inp);
 console.log("makeParams: N=%d Nz=%d dt=%s tau=%s nu_lb=%s", p.N, p.Nz, p.dt, p.tau, p.nu_lb);
+let pbad = 0, pmax = 0;
+for (const pc of ref.param_checks || []) {
+  const q = lbm.makeParams(pc.inp);
+  for (const [k, v] of Object.entries(pc.params)) {
+    const r = Math.abs(q[k] - v) / Math.max(Math.abs(v), 1e-300);
+    pmax = Math.max(pmax, r);
+    if (!(r <= 1e-14) && !(q[k] === v)) { pbad++; console.log("PARAM MISMATCH", JSON.stringify(pc.inp), k, q[k], v); }
+  }
+}
+console.log("makeParams vs python:", (ref.param_checks || []).length, "input sets, max rel diff", pmax.toExponential(2), pbad ? "FAILED" : "ok");
 const rows = await lbm.selftest(async (pp) => new lbm.CpuSolver(pp), ref);
 let bad = 0, worst = 0;
 for (const r of rows) {
@@ -27,4 +37,4 @@ for (const r of rows) {
   worst = Math.max(worst, r.reldiff);
 }
 console.log("max relative difference over", rows.length, "rows:", worst.toExponential(2), bad ? "FAILED" : "PASSED");
-process.exit(bad ? 1 : 0);
+process.exit(bad || pbad ? 1 : 0);
