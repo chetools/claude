@@ -11,7 +11,7 @@
   },
   "turbulent": {
     "label": "Re 800, spin + orbit: strongly 3D",
-    "description": "Spinning and orbiting cylinder, periodic span. Measured (LBM, this grid): the perturbation grows fast (σ ≈ 1.7), 27 % of the kinetic energy varies along the span over t = 10–20, the energy is spread over all resolved spanwise modes, and the 3D enstrophy is 3.5 times the 2D value. The torque, averaged over t = 10–20, is about 5 times the 2D value.",
+    "description": "Spinning and orbiting cylinder, periodic span. Measured (LBM, this grid): the perturbation grows fast (σ ≈ 1.7), 27 % of the kinetic energy varies along the span over t = 10–20, shared by the spanwise modes k_z = 1, 2, 3, 4 in falling amounts (0.032, 0.0096, 0.0039, 0.0016), and the 3D enstrophy is 3.5 times the 2D value. The torque, averaged over t = 10–20, is about 5 times the 2D value.",
     "inputs": {"method": "lbm", "span": "periodic", "Re": 800, "Us": 1.0, "Uo": 1.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}
   },
   "ekman": {
