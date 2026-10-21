@@ -11,8 +11,10 @@ conditions (method, grid, span length). Key results there:
   150; 3.5 at spin+orbit Re 800; 5.9 with end walls at Re 200 (energy ratio 0.52, torque ratio 3.1);
 - FV cross-check at spin-only Re 100: 3D/2D enstrophy 2.39 (LBM 2.57), energy 0.86 (0.79), torque 1.10
   (1.17); growth rate 0.48 (LBM 0.61).
-The dominant spanwise mode is the longest that fits the span (k_z = 1, wavelength L_z = 0.5) in most runs, so
-the span length restricts the wavelengths available — say so wherever a wavelength or onset is quoted.
+Span-length check (spin only, Re 100): with L_z = 0.5 the dominant late mode is k_z = 1 (wavelength 0.5);
+with the span doubled (L_z = 1, N_z = 64) it is k_z = 2 — the same wavelength 0.5 (≈ 2.5 cylinder diameters) —
+with similar growth rate (0.54 vs 0.61) and the same saturated E3d/E (0.14). So the default span does not
+force the wavelength at this Re; still quote wavelengths with their grid and span.
 
 
 Every statement here was taken from the code or from a run; the source is given. Numbers marked
