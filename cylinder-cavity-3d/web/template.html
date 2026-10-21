@@ -43,6 +43,17 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
 .theory th,.theory td{border-bottom:1px solid var(--card-border);padding:.3rem .6rem;text-align:left;vertical-align:top}
 .theory th{background:#fafbfc}
 .theory code{background:#f3f4f6;padding:.05rem .3rem;border-radius:.25rem;font-size:.9em}
+.theory-layout{display:grid;grid-template-columns:15.5rem minmax(0,78ch);gap:2rem;align-items:start}
+.toc-box{position:sticky;top:.8rem;max-height:calc(100vh - 1.6rem);overflow-y:auto;font-size:.86rem;
+  border-right:1px solid var(--card-border);padding-right:.6rem}
+.toc-box summary{cursor:pointer;font-weight:600;font-size:.95rem;margin-bottom:.3rem}
+.toc a{display:block;color:var(--muted);text-decoration:none;padding:.12rem .4rem;line-height:1.3;
+  border-left:2px solid transparent}
+.toc a.toc2{margin-top:.45rem;font-weight:600;color:var(--text)}
+.toc a.toc3{padding-left:1.1rem}
+.toc a:hover{color:var(--st-red)}
+.toc a.active{color:var(--st-red);border-left-color:var(--st-red);background:#fff5f5}
+.theory h2,.theory h3{scroll-margin-top:.8rem}
 .wt-out pre{background:#fff;border:1px dashed #d0d3d9;border-radius:.5rem;padding:.7rem 1rem;
   margin:0;font-size:.84rem;overflow-x:auto;white-space:pre}
 .wt-step{margin:1.6rem 0 2rem}
@@ -69,6 +80,9 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
   .views,.plots{grid-template-columns:minmax(0,1fr)}
   .tabs{flex-wrap:wrap}
   .chart,.wt-plot,table.data{max-width:100%;overflow-x:auto}
+  .theory-layout{grid-template-columns:minmax(0,1fr)}
+  .toc-box{position:static;max-height:50vh;border-right:none;border-bottom:1px solid var(--card-border);
+    padding:0 0 .5rem}
   .theory table{display:block;max-width:100%;overflow-x:auto}
   h1{font-size:1.8rem}
 }
@@ -134,7 +148,13 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
 
     <!-- ============================== THEORY ============================== -->
     <section id="panel-theory" class="tpanel" hidden>
-      <div class="theory">@@THEORY@@</div>
+      <div class="theory-layout">
+        <details class="toc-box" id="toc-box" open>
+          <summary>Contents</summary>
+          <nav class="toc" id="toc" aria-label="Theory contents">@@THEORY_TOC@@</nav>
+        </details>
+        <div class="theory">@@THEORY@@</div>
+      </div>
     </section>
 
     <!-- ============================== CODE ============================== -->
@@ -177,5 +197,28 @@ window.WT_PLOTS = @@WT_PLOTS@@;
 window.PY_SRC = @@PY_SRC@@;
 </script>
 <script>@@APP_JS@@</script>
+<script>
+/* Theory table of contents: open on wide screens, closed on phones; highlight the section being read. */
+(function () {
+  var box = document.getElementById('toc-box'), links = [].slice.call(document.querySelectorAll('#toc a'));
+  if (!box || !links.length) return;
+  box.open = window.matchMedia('(min-width: 901px)').matches;
+  var heads = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+  var cur = -1;
+  function spy() {
+    if (document.getElementById('panel-theory').hidden) return;
+    var k = 0;
+    for (var i = 0; i < heads.length; i++) { if (heads[i].getBoundingClientRect().top <= 80) k = i; else break; }
+    if (k === cur) return;
+    if (cur >= 0) links[cur].classList.remove('active');
+    links[k].classList.add('active'); cur = k;
+    var r = links[k].getBoundingClientRect(), b = box.getBoundingClientRect();
+    if (box.open && (r.top < b.top || r.bottom > b.bottom)) box.scrollTop += r.top - b.top - b.height / 3;
+  }
+  window.addEventListener('scroll', spy, { passive: true });
+  document.querySelector('.tabs').addEventListener('click', function () { setTimeout(spy, 0); });
+  spy();
+})();
+</script>
 </body>
 </html>

@@ -157,6 +157,29 @@ def md_to_html(text, mods):
     return re.sub(r"MATHX(\d+)X", restore, out)
 
 
+def add_toc(body):
+    """Give every <h2>/<h3> of the rendered theory an id; return (body with ids, table-of-contents HTML)."""
+    used, items = set(), []
+
+    def tag(m):
+        level, inner = m.group(1), m.group(2)
+        plain = re.sub(r"<[^>]+>", "", inner)
+        num = re.match(r"(\d+(?:\.\d+)*)\.?\s", plain)
+        slug = f"sec-{num.group(1).replace('.', '-')}" if num else \
+            "sec-" + (re.sub(r"[^a-z0-9]+", "-", plain.lower()).strip("-") or "x")
+        while slug in used:
+            slug += "-b"
+        used.add(slug)
+        items.append((level, slug, inner))
+        return f'<h{level} id="{slug}">{inner}</h{level}>'
+
+    body = re.sub(r"<h([23])>(.*?)</h\1>", tag, body, flags=re.S)
+    if not items:
+        fail("the theory has no <h2>/<h3> headings, so the table of contents would be empty")
+    toc = "".join(f'<a class="toc{lv}" href="#{sid}">{inner}</a>' for lv, sid, inner in items)
+    return body, toc
+
+
 # ---------------------------------------------------------------- walkthrough
 def build_walkthrough(mods):
     import runner
@@ -263,6 +286,7 @@ def main():
 
     print("rendering markdown + KaTeX")
     theory = md_to_html(read("web", "theory_physics.md") + "\n\n" + read("web", "theory_lbm.md"), mods)
+    theory, theory_toc = add_toc(theory)
     code_guide = md_to_html(read("web", "code_guide.md"), mods)
     parts = {
         "TITLE": TITLE,
@@ -270,6 +294,7 @@ def main():
         "PYGMENTS_CSS": HtmlFormatter().get_style_defs(".codehilite"),
         "PLOTLY": raw_script(read_file(plotly_path), "plotly.min.js"),
         "THEORY": theory,
+        "THEORY_TOC": theory_toc,
         "CODE_GUIDE": code_guide,
         "WALKTHROUGH": wt_html,
         "WT_PLOTS": js_json(wt_plots),
