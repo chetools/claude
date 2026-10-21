@@ -1,0 +1,4 @@
+{"defaults": {"N": 64, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "span": "periodic", "seed": 1e-3, "collision": "reg", "every_t": 0.1},
+ "cases": [
+  {"name": "s_Re100_Lz1", "Re": 100, "Nz": 64, "t_end": 20}
+ ]}
