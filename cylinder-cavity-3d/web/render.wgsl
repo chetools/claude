@@ -116,11 +116,11 @@ fn cs_range() {
   let cnt = atomicLoad(&ST[1]);
   var hi = 1.0;
   if (cnt > 0u && mx > 0.0) {
-    let target = u32(ceil(C.pct * f32(cnt)));
+    let want = u32(ceil(C.pct * f32(cnt)));
     var acc = 0u; var bin = C.nbins - 1u;
     for (var b = 0u; b < C.nbins; b++) {
       acc += atomicLoad(&ST[2u + b]);
-      if (acc >= target) { bin = b; break; }
+      if (acc >= want) { bin = b; break; }
     }
     let q = f32(bin + 1u) / f32(C.nbins);
     hi = max(mx * q * q, 1.0e-30);
@@ -308,7 +308,10 @@ fn fs_volume(@builtin(position) frag: vec4<f32>) -> VOut {
     if (P.field == 1u || P.field == 4u) { sc = abs(v) / m; col = diverging(clamp(v / m, -1.0, 1.0)); }
     else if (P.field == 2u) { sc = max(v, 0.0) / m; col = sequential(sc); }
     else { sc = (v - r.x) / max(r.y - r.x, 1.0e-30); col = sequential(sc); }
-    let dens = P.opacity * 25.0 * smoothstep(0.15, 0.85, sc);
+    // square-root scaling: weak but coherent structures stay visible next to a few very strong cells
+    let sq = sqrt(clamp(sc, 0.0, 1.0));
+    if (P.field != 1u && P.field != 4u) { col = sequential(sq); }
+    let dens = P.opacity * 25.0 * smoothstep(0.12, 0.7, sq);
     let a = 1.0 - exp(-dens * dt);
     acc += T * a * col;
     T *= 1.0 - a;

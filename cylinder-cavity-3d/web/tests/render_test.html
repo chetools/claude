@@ -1,0 +1,156 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>render test</title>
+<style>body{font:13px sans-serif;margin:8px} canvas{border:1px solid #999;margin:4px;max-width:100%}</style></head>
+<body><pre id="out">running...</pre><div id="cv"></div>
+<script src="../render.js"></script>
+<script>
+// Field parity (GPU f32 vs python/diagnostics.py), marching-cubes parity, and a render of every mode.
+// Result in window.RESULT, PNGs as data URLs in window.SHOTS.
+(async () => {
+  const R = { log: [], parity: [], mc: [], range: [], timing: [], errors: [] }, SHOTS = {};
+  window.RESULT = R; window.SHOTS = SHOTS;
+  const out = document.getElementById("out");
+  const log = s => { R.log.push(s); out.textContent = R.log.join("\n"); };
+  try {
+    const wgsl = { render: await (await fetch("../render.wgsl")).text(), iso: await (await fetch("../iso.wgsl")).text() };
+    const ref = await (await fetch("render_ref.json")).json();
+    const adapter = await navigator.gpu.requestAdapter();
+    const dev = await adapter.requestDevice({ requiredLimits: { maxStorageBufferBindingSize: Math.min(adapter.limits.maxStorageBufferBindingSize, 1 << 28), maxBufferSize: Math.min(adapter.limits.maxBufferSize, 1 << 28) } });
+    dev.addEventListener("uncapturederror", e => R.errors.push(String(e.error.message)));
+    const mkbuf = (a) => { const b = dev.createBuffer({ size: a.byteLength, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC }); dev.queue.writeBuffer(b, 0, a); return b; };
+    const done = () => dev.queue.onSubmittedWorkDone();
+
+    // ---------------------------------------------------------- 1. field parity
+    for (const c of ref.cases) for (const span of ["periodic", "walls"]) {
+      const N = ref.N, Nz = ref.Nz, h = 1 / N;
+      const r = CC3.render.create(dev, null, { N, Nz, h, Lz: Nz * h, span, R: 0.1, ro: 0.2, wgsl, width: 64, height: 64 });
+      await r.ready;
+      const vb = mkbuf(new Float32Array(c.vel));
+      for (const f of ["vort_mag", "vort_z", "q", "speed", "w"]) {
+        r.setField(f); await r.computeFields(vb);
+        const g = await r.readField(), e = c[span][f];
+        let d = 0, m = 0;
+        for (let i = 0; i < e.length; i++) { d = Math.max(d, Math.abs(g[i] - e[i])); m = Math.max(m, Math.abs(e[i])); }
+        // also point-wise relative error where |ref| > 1e-3 max
+        let pr = 0; for (let i = 0; i < e.length; i++) if (Math.abs(e[i]) > 1e-3 * m) pr = Math.max(pr, Math.abs(g[i] - e[i]) / Math.abs(e[i]));
+        R.parity.push({ case: c.name, span, field: f, maxabs_over_max: d / (m || 1), maxpointrel: pr, refmax: m });
+        // auto range: hi should equal the 99.5 percentile of |ref| (within the histogram bin)
+        const a = Array.from(e, Math.abs).sort((p, q) => p - q), p995 = a[Math.ceil(0.995 * a.length) - 1];
+        R.range.push({ case: c.name, span, field: f, gpu_hi: r.lastRange.hi, cpu_p995: p995, gpu_max: r.lastRange.max, ref_max: a[a.length - 1] });
+      }
+      // CPU f64 port against numpy
+      for (const f of ["vort_mag", "vort_z", "q", "speed", "w"]) {
+        const cf = CC3.render.cpuField(Float64Array.from(c.vel), { N, Nz, h, span }, f), e = c[span][f];
+        let d = 0, m = 0; for (let i = 0; i < e.length; i++) { d = Math.max(d, Math.abs(cf[i] - e[i])); m = Math.max(m, Math.abs(e[i])); }
+        R.parity.push({ case: c.name, span, field: f + " (CPU f64)", maxabs_over_max: d / (m || 1), refmax: m });
+      }
+      r.destroy();
+    }
+    log("parity done");
+
+    // ---------------------------------------------------------- 2. marching cubes vs numpy emulation
+    for (const c of ref.mc.cases) {
+      const N = ref.mc.N, Nz = ref.mc.Nz, h = 1 / N;
+      const r = CC3.render.create(dev, null, { N, Nz, h, Lz: Nz * h, span: c.periodic ? "periodic" : "walls", R: 0.05, ro: 0, wgsl, width: 96, height: 96 });
+      await r.ready;
+      r._setFieldData(new Float32Array(c.field));
+      await r.computeFields(mkbuf(new Float32Array(3 * N * N * Nz)), undefined, { skipFields: true });
+      await r.draw(null, { mode: "isosurface", isoValue: c.iso, recompute: false, blit: true }); await done();
+      const m = await r.readMesh(), v = m.vertices;
+      let area = 0;
+      for (let t = 0; t < m.stored; t++) {
+        const P = [0, 1, 2].map(q => v.subarray((3 * t + q) * 8, (3 * t + q) * 8 + 3));
+        const a = [P[1][0] - P[0][0], P[1][1] - P[0][1], P[1][2] - P[0][2]], b = [P[2][0] - P[0][0], P[2][1] - P[0][1], P[2][2] - P[0][2]];
+        area += 0.5 * Math.hypot(a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]);
+      }
+      R.mc.push({ name: c.name, tris_gpu: m.triangles, tris_ref: c.triangles, area_gpu: area, area_ref: c.area, relarea: Math.abs(area - c.area) / c.area, capped: m.capped });
+      r.destroy();
+    }
+    // triangle cap
+    {
+      const c = ref.mc.cases[1], N = ref.mc.N, Nz = ref.mc.Nz, h = 1 / N;
+      const r = CC3.render.create(dev, null, { N, Nz, h, Lz: Nz * h, span: "periodic", R: 0.05, ro: 0, wgsl, width: 96, height: 96, maxTris: 100 });
+      await r.ready; r._setFieldData(new Float32Array(c.field));
+      await r.computeFields(mkbuf(new Float32Array(3 * N * N * Nz)), undefined, { skipFields: true });
+      await r.draw(null, { mode: "isosurface", isoValue: c.iso, recompute: false, blit: true }); await done();
+      const m = await r.readMesh(); R.mc.push({ name: "cap test (maxTris=100)", tris_gpu: m.triangles, stored: m.stored, capped: m.capped });
+      r.destroy();
+    }
+    log("mc done");
+
+    // ---------------------------------------------------------- 3. renders of a synthetic vortex-tube flow
+    function tubes(N, Nz, phi, ro, Rc) {
+      const h = 1 / N, Lz = Nz * h, U = new Float32Array(3 * Nz * N * N), n3 = Nz * N * N;
+      const T = [[0.30, 0.68, 1, 0.07, 0.03], [0.72, 0.70, -1, 0.06, 0.04], [0.62, 0.30, 1, 0.05, 0.03], [0.22, 0.30, -1, 0.05, 0.05]];
+      const cx = 0.5 + ro * Math.cos(phi), cy = 0.5 + ro * Math.sin(phi), Om = 6;
+      for (let k = 0; k < Nz; k++) for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+        const x = (i + .5) * h, y = (j + .5) * h, z = (k + .5) * h, id = (k * N + j) * N + i;
+        let u = 0, v = 0, w = 0;
+        for (const [tx, ty, G, rc, amp] of T) {
+          const xc = tx + amp * Math.sin(2 * Math.PI * z / Lz), yc = ty + 0.5 * amp * Math.cos(2 * Math.PI * z / Lz);
+          const dx = x - xc, dy = y - yc, r2 = dx * dx + dy * dy + 1e-12, f = G * (1 - Math.exp(-r2 / (rc * rc))) / r2 * 0.12;
+          u += -f * dy; v += f * dx; w += 0.3 * G * Math.exp(-r2 / (rc * rc)) * Math.sin(2 * Math.PI * z / Lz);
+        }
+        if ((x - cx) ** 2 + (y - cy) ** 2 < Rc * Rc) { u = -Om * (y - cy); v = Om * (x - cx); w = 0; }
+        U[id] = u; U[n3 + id] = v; U[2 * n3 + id] = w;
+      }
+      return U;
+    }
+    const N = 48, Nz = 24, h = 1 / N, geom = { N, Nz, h, Lz: Nz * h, span: "periodic", R: 0.1, ro: 0.2, blit: true, wgsl };
+    const phi = 0.9, Uh = tubes(N, Nz, phi, 0.2, 0.1), vb = mkbuf(Uh);
+    const cv = document.createElement("canvas"); cv.width = 640; cv.height = 460; document.getElementById("cv").appendChild(cv);
+    const r = CC3.render.create(dev, cv, geom); await r.ready;
+    const cam = { yaw: -1.2, pitch: 0.55, dist: 2.7 };
+    const shot = async (name, field, view, cfield) => {
+      r.setField(field); r.setColorField(cfield || null);
+      const t0 = performance.now();
+      await r.draw(vb, Object.assign({ phi, camera: cam }, view)); await done();
+      const t1 = performance.now();
+      const im = await r.readPixels();
+      const c2 = document.createElement("canvas"); c2.width = im.width; c2.height = im.height;
+      c2.getContext("2d").putImageData(new ImageData(im.data, im.width, im.height), 0, 0);
+      SHOTS[name] = c2.toDataURL("image/png");
+      let nz = 0; for (let i = 0; i < im.data.length; i += 4) if (Math.abs(im.data[i] - 246) + Math.abs(im.data[i + 1] - 247) > 6) nz++;
+      R.timing.push({ name, draw_ms: Math.round(t1 - t0), range: JSON.stringify(r.lastRange), nonbg_frac: nz / (im.width * im.height), iso: JSON.stringify(r.lastIso) });
+    };
+    await shot("slice_xy_vortz", "vort_z", { mode: "slice-xy", slice: 0.5 });
+    await shot("slice_xy_q", "q", { mode: "slice-xy", slice: 0.2 });
+    await shot("slice_xz_vortz", "vort_z", { mode: "slice-xz", slice: 0.7 });
+    await shot("slice_yz_speed", "speed", { mode: "slice-yz", slice: 0.3 });
+    await shot("slice_xy_vortmag", "vort_mag", { mode: "slice-xy", slice: 0.5 });
+    await shot("volume_q", "q", { mode: "volume" });
+    await shot("volume_vortmag", "vort_mag", { mode: "volume" });
+    await shot("iso_q_by_vortz", "q", { mode: "isosurface", isoFrac: 0.25 }, "vort_z");
+    await shot("iso_q_flat", "q", { mode: "isosurface", isoFrac: 0.25 });
+    // rotated camera (controls API edits r.camera; here set directly)
+    await shot("iso_q_rot", "q", { mode: "isosurface", isoFrac: 0.25, camera: { yaw: 0.4, pitch: 0.9, dist: 2.5 } }, "vort_z");
+    // cpu fallback
+    {
+      const c3 = document.createElement("canvas"); c3.width = 640; c3.height = 460; const x3 = c3.getContext("2d");
+      const U64 = Float64Array.from(Uh), t0 = performance.now();
+      const rg = CC3.render.drawSliceCPU(x3, U64, geom, { mode: "slice-xy", slice: 0.5, phi, field: "vort_z" });
+      SHOTS.cpu_slice_xy_vortz = c3.toDataURL("image/png");
+      R.timing.push({ name: "cpu_slice_xy_vortz", draw_ms: Math.round(performance.now() - t0), range: JSON.stringify(rg) });
+      CC3.render.drawSliceCPU(x3, U64, geom, { mode: "volume" });
+      SHOTS.cpu_volume_msg = c3.toDataURL("image/png");
+    }
+    // phone width, thin box (walls, Nz = 2)
+    {
+      const g2 = { N: 32, Nz: 2, h: 1 / 32, Lz: 2 / 32, span: "walls", R: 0.1, ro: 0.2, blit: true, wgsl };
+      const c4 = document.createElement("canvas"); c4.width = 360; c4.height = 300; document.getElementById("cv").appendChild(c4);
+      const r4 = CC3.render.create(dev, c4, g2); await r4.ready;
+      const U4 = tubes(32, 2, phi, 0.2, 0.1), vb4 = mkbuf(U4);
+      r4.setField("vort_z");
+      for (const [nm, mode] of [["phone_thin_xz", "slice-xz"], ["phone_thin_xy", "slice-xy"], ["phone_thin_iso", "isosurface"]]) {
+        r4.setField(mode === "isosurface" ? "q" : "vort_z");
+        await r4.draw(vb4, { mode, slice: 0.5, phi, isoFrac: 0.3 }); await done();
+        const im = await r4.readPixels(); const c5 = document.createElement("canvas"); c5.width = im.width; c5.height = im.height;
+        c5.getContext("2d").putImageData(new ImageData(im.data, im.width, im.height), 0, 0); SHOTS[nm] = c5.toDataURL("image/png");
+      }
+    }
+    await done();
+    R.done = true;
+    log("done");
+  } catch (e) { R.error = String(e && e.stack || e); log("ERROR " + R.error); }
+})();
+</script></body></html>

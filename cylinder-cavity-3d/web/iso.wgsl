@@ -1,8 +1,8 @@
 // iso.wgsl: marching cubes (classic 256-case table, Lorensen & Cline; corner/edge numbering of P. Bourke)
 // in a compute shader, plus the mesh vertex/fragment shaders.
 // Nodes are the cell centres.  Cell (i,j,kc) spans nodes i..i+1, j..j+1 and two z-nodes.  Periodic z adds
-// two copies of the wrap cell (nodes nz-1 and 0), placed above z=Lz-h/2 and below z=h/2 and clamped to
-// the box, so the surface fills the whole box; walls: only the nz-1 interior cells.
+// two copies of the wrap cell (nodes nz-1 and 0), placed above z=Lz-h/2 and below z=h/2 and clipped to
+// the box in the fragment shader, so the surface fills the whole box; walls: only the nz-1 interior cells.
 struct IP {
   n: i32, nz: i32, periodic: u32, max_tris: u32,
   h: f32, Lz: f32, iso: f32, frac: f32,
@@ -157,7 +157,6 @@ fn cs_mc(@builtin(workgroup_id) wid: vec3<u32>, @builtin(local_invocation_index)
       let pb = vec3<f32>((f32(ci + ob.x) + 0.5) * I.h, (f32(cj + ob.y) + 0.5) * I.h, zb + f32(ob.z) * I.h);
       var o: Vert;
       o.pos = mix(pa, pb, s);
-      o.pos.z = clamp(o.pos.z, 0.0, I.Lz);
       let ga = grad(ci + oa.x, cj + oa.y, ka); let gb = grad(ci + ob.x, cj + ob.y, kb);
       let g = mix(ga, gb, s);
       o.nrm = g / max(length(g), 1.0e-30);
@@ -202,6 +201,7 @@ fn sequential(t: f32) -> vec3<f32> {
 }
 @fragment
 fn fs_mesh(i: MOut) -> @location(0) vec4<f32> {
+  if (i.wp.z < 0.0 || i.wp.z > I.Lz) { discard; }     // the periodic wrap cells overshoot the box by h/2
   var n = normalize(i.nrm);
   let v = normalize(I.eye.xyz - i.wp);
   if (dot(n, v) < 0.0) { n = -n; }

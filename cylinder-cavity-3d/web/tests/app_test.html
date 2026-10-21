@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><link rel="icon" href="data:,">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>app test</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+/* Layout and typography from chetools/muse couette-standalone.html (Streamlit-like). */
+
+
+:root{
+  --st-red:#ff4b4b; --sidebar-bg:#f0f2f6; --text:#31333f; --muted:#808495;
+  --card-border:#e6e8ec;
+}
+*{box-sizing:border-box}
+body{font-family:"Source Sans Pro",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--text);margin:0;background:#fff;font-size:16px;line-height:1.55}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:308px;background:var(--sidebar-bg);
+  padding:1.4rem 1.2rem;overflow-y:auto}
+.side-h{font-size:1.02rem;font-weight:600;margin:1.3rem 0 .3rem}
+.side-h:first-child{margin-top:0}
+.field{margin:.55rem 0}
+.field label{display:block;font-size:.88rem;margin-bottom:.18rem}
+.field input,.field select{width:100%;padding:.42rem .55rem;border:1px solid #d0d3d9;
+  border-radius:.4rem;font-size:.95rem;background:#fff;color:var(--text)}
+.field input:focus,.field select:focus{outline:2px solid #a8c6fa;border-color:#7aa5f5}
+.side-cap{font-size:.82rem;color:var(--muted);margin:.3rem 0}
+.side-foot{margin-top:1.6rem;border-top:1px solid #d8dbe0;padding-top:.8rem;
+  font-size:.82rem;color:var(--muted)}
+.main{margin-left:308px;padding:1.6rem 2.6rem 4rem;max-width:1220px}
+h1{font-size:2.5rem;font-weight:600;margin:.2rem 0 .6rem;letter-spacing:-.01em}
+h2{font-size:1.55rem;font-weight:600;margin:1.6rem 0 .5rem}
+h3{font-size:1.2rem;font-weight:600;margin:1.2rem 0 .4rem}
+.intro{font-size:1.02rem;max-width:72ch}
+.metrics{display:flex;gap:1rem;flex-wrap:wrap;margin:1.1rem 0 .4rem}
+.metric{flex:1 1 190px;min-width:150px}
+.metric .m-label{font-size:.85rem;color:var(--muted);margin-bottom:.1rem}
+.metric .m-value{font-size:1.85rem;font-weight:600;letter-spacing:-.01em}
+.caption{font-size:.85rem;color:var(--muted);max-width:90ch}
+.tabs{display:flex;gap:.4rem;border-bottom:1px solid var(--card-border);margin:1.2rem 0 1rem}
+.tabs button{background:none;border:none;padding:.55rem .35rem;margin:0 .35rem 0 0;
+  font-size:1rem;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;
+  margin-bottom:-1px;font-family:inherit}
+.tabs button:hover{color:var(--text)}
+.tabs button.active{color:var(--text);border-bottom-color:var(--st-red);font-weight:600}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.chart{min-width:0}
+.note{background:#e8f4fd;border-radius:.5rem;padding:.8rem 1rem;margin:1rem 0;font-size:.95rem}
+.warn{background:#fff7e0;border:1px solid #f0dfa8;border-radius:.5rem;
+  padding:.8rem 1rem;margin:1rem 0;font-size:.95rem}
+.err{background:#fdecea;border:1px solid #f5c6c1;border-radius:.5rem;
+  padding:.8rem 1rem;margin:1rem 0;font-size:.95rem;color:#8f2b22}
+#field-img{max-width:640px;width:100%;height:auto;display:block;margin:0 auto}
+.theory{max-width:78ch}
+.theory .eq{text-align:center;margin:1rem 0;overflow-x:auto}
+.theory .katex{font-size:1.06em}
+.theory blockquote{border-left:3px solid #d0d3d9;margin:1rem 0;padding:.4rem 1rem;
+  color:#4a4e5c;background:#fafbfc}
+.codehilite{background:#fafbfc;border:1px solid var(--card-border);border-radius:.5rem;
+  padding:1rem;overflow-x:auto;font-size:.85rem;line-height:1.45}
+.codehilite pre{margin:0}
+
+/* --- additions for this page --- */
+.field.check{display:flex;align-items:center;gap:.45rem}
+.field.check input{width:auto}
+.field.check label{margin:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.field input[type=range]{padding:0;border:none;background:none;accent-color:var(--st-red)}
+.field .val{float:right;font-weight:600;font-variant-numeric:tabular-nums}
+.m-sub{font-size:.8rem;color:var(--muted)}
+.metrics .m-sub,.metrics .m-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}   /* one line; full text on hover */
+.metrics .metric{flex:1 1 150px}
+.metrics .metric .m-value{font-size:1.6rem}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.4rem 0 .8rem}
+.btn{display:inline-block;text-decoration:none;background:#fff;border:1px solid #d0d3d9;border-radius:.5rem;padding:.45rem .9rem;
+  font-size:.95rem;cursor:pointer;color:var(--text);font-family:inherit}
+.btn:hover{border-color:var(--st-red);color:var(--st-red)}
+.btn.primary{background:var(--st-red);border-color:var(--st-red);color:#fff}
+.btn.primary:hover{background:#e03c3c;color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.sidebar .btns{display:flex;flex-wrap:wrap;gap:.4rem;margin:.8rem 0}
+.sidebar .btns .btn{padding:.35rem .7rem;font-size:.9rem}
+.status{font-size:.88rem;color:var(--muted)}
+.pill{display:inline-block;font-size:.78rem;padding:.12rem .55rem;border-radius:1rem;
+  background:#eef0f4;color:var(--muted);vertical-align:middle}
+.pill.ready{background:#dcf5e3;color:#1a7f37}.pill.busy{background:#fff1d6;color:#8a5a00}
+.pill.fail{background:#fdecea;color:#8f2b22}
+table.data{border-collapse:collapse;font-size:.92rem;margin:.6rem 0}
+table.data th,table.data td{border-bottom:1px solid var(--card-border);padding:.35rem .7rem;text-align:right}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{font-weight:600;background:#fafbfc}
+td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
+.theory table{border-collapse:collapse;font-size:.93rem;margin:.8rem 0}
+.theory th,.theory td{border-bottom:1px solid var(--card-border);padding:.3rem .6rem;text-align:left;vertical-align:top}
+.theory th{background:#fafbfc}
+.theory code{background:#f3f4f6;padding:.05rem .3rem;border-radius:.25rem;font-size:.9em}
+.wt-out pre{background:#fff;border:1px dashed #d0d3d9;border-radius:.5rem;padding:.7rem 1rem;
+  margin:0;font-size:.84rem;overflow-x:auto;white-space:pre}
+.wt-step{margin:1.6rem 0 2rem}
+.wt-stepnum{font-size:.82rem;font-weight:600;color:var(--st-red);text-transform:uppercase;letter-spacing:.04em}
+.wt-title{font-size:1.2rem;font-weight:600;margin:.1rem 0 .3rem}
+.wt-prose{max-width:78ch}
+.wt-prose .eq{text-align:center;margin:.8rem 0;overflow-x:auto}
+.wt-code summary{cursor:pointer;color:var(--muted);font-size:.88rem}
+.wt-meta{font-size:.78rem;color:var(--muted);margin-top:.25rem}
+.wt-plots{display:flex;flex-wrap:wrap;gap:.6rem}
+.wt-plot{flex:1 1 420px;min-width:0}
+.views{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.2rem;align-items:start}
+.view-panel{min-width:0}
+.view-panel h3{margin-top:.2rem}
+.view-panel canvas{width:100%;aspect-ratio:1;display:block;border:1px solid var(--card-border);
+  border-radius:.4rem;background:#f7f7f7}
+.view-panel .field{margin:.5rem 0}
+.plots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:1rem}
+.chart{min-width:0}
+@media (max-width: 1100px){ .plots{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+@media (max-width: 900px){
+  .sidebar{position:static;width:auto}
+  .main{margin-left:0;padding:1rem 16px 3rem}
+  .views,.plots{grid-template-columns:minmax(0,1fr)}
+  .tabs{flex-wrap:wrap}
+  .chart,.wt-plot,table.data{max-width:100%;overflow-x:auto}
+  .theory table{display:block;max-width:100%;overflow-x:auto}
+  h1{font-size:1.8rem}
+}
+
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div id="controls"></div>
+  <div class="side-foot">Solver: <span id="backend-pill" class="pill">starting&hellip;</span></div>
+</aside>
+<main class="main">
+  <div id="app">
+    <h1>Cylinder in a box, in 3D</h1>
+    <p class="intro">A cylinder spins and orbits inside a closed box, and the flow is computed in three dimensions.
+    The 2D page is the same code with one spanwise cell (N<sub>z</sub> = 1). Two solvers, lattice Boltzmann and
+    finite volumes, take the same inputs and are checked against each other.</p>
+    <div id="warn" class="warn" hidden></div>
+    <div id="err" class="err" hidden></div>
+    <div id="metrics" class="metrics"></div>
+    <nav class="tabs" data-panels="tpanel">
+      <button data-tab="panel-app" class="active">App</button>
+      <button data-tab="panel-theory">Theory</button>
+      <button data-tab="panel-code">Code</button>
+    </nav>
+
+    <!-- ============================== APP ============================== -->
+    <section id="panel-app" class="tpanel">
+      <div class="views">
+        <div class="view-panel" id="view2d">
+          <h3>2D baseline (Nz = 1)</h3>
+          <canvas id="canvas2d" width="640" height="640"></canvas>
+          <div class="field"><label for="mode2d">View</label>
+            <select id="mode2d">
+              <option value="slice-xy" selected>slice xy</option>
+              <option value="slice-xz">slice xz</option>
+              <option value="slice-yz">slice yz</option>
+              <option value="volume">volume</option>
+              <option value="isosurface">isosurface</option>
+            </select></div>
+        </div>
+        <div class="view-panel" id="view3d">
+          <h3>3D</h3>
+          <canvas id="canvas3d" width="640" height="640"></canvas>
+          <div class="field"><label for="mode3d">View</label>
+            <select id="mode3d">
+              <option value="slice-xy" selected>slice xy</option>
+              <option value="slice-xz">slice xz</option>
+              <option value="slice-yz">slice yz</option>
+              <option value="volume">volume</option>
+              <option value="isosurface">isosurface</option>
+            </select></div>
+        </div>
+      </div>
+      <div class="plots">
+        <div class="chart" id="plot-spanwise"></div>
+        <div class="chart" id="plot-spectra"></div>
+        <div class="chart" id="plot-history"></div>
+      </div>
+      <h2>Validation</h2>
+      <div id="validation"></div>
+    </section>
+
+    <!-- ============================== THEORY ============================== -->
+    <section id="panel-theory" class="tpanel" hidden>
+      <div class="theory"><p>theory stub</p></div>
+    </section>
+
+    <!-- ============================== CODE ============================== -->
+    <section id="panel-code" class="tpanel" hidden>
+      <div class="theory"><p>code stub</p></div>
+      <h2>Step-by-step breakdown</h2>
+      <p>The Python reference explained one step at a time. Every output below was produced by actually running the
+      cell (CPython, when this page was built).</p>
+      <div class="controls">
+        <button class="btn primary" id="b-pyodide">Run in browser (Pyodide)</button>
+        <a class="btn" href="#" target="_blank" rel="noopener">Open in MoLab</a>
+        <span class="status" id="pyodide-status"></span>
+      </div>
+      
+      <h2>Editable notebook</h2>
+      <div class="controls">
+        <a class="btn primary" href="#" target="_blank" rel="noopener">Open in MoLab</a>
+        <a class="btn" href="walkthrough_molab.py" download>Download walkthrough_molab.py</a>
+      </div>
+      <p class="caption">The MoLab notebook is editable; run all cells once after opening</p>
+      <details>
+        <summary>Browser solver source (JavaScript)</summary>
+        <h3>cpu.js</h3>
+        
+        <h3>gpu.js</h3>
+        
+      </details>
+    </section>
+  </div>
+</main>
+<script src="vendor/plotly.min.js"></script>
+<script type="text/wgsl" id="wgsl-lbm">// lbm.wgsl -- D3Q19 lattice Boltzmann with a moving cylinder: WebGPU compute kernels (float32).
+// Port of python/lbm3d.py (see also web/lbm_cpu.js, the float64 JS port with the same kernel structure).
+//
+// One time step = 6 dispatches (the body position of the step comes from the table `body`, row ctl[0]):
+//   geometry       solid mask of the new body position (bit0 = solid now, bit1 = solid before)
+//   refill         nodes the body has just left get equilibrium(body velocity, mean neighbour rho) + mean neighbour f_neq
+//   collide_stream collide every fluid node (bgk | regularised | mrt), push the post-collision populations to
+//                  x + c_q (halfway bounce-back at the walls; a push into the body is a cut link and is left to
+//                  `links`); solid nodes get the equilibrium of the body velocity; workgroup partial sums of (rho-1)
+//   links          cut links of the body: Bouzidi interpolated bounce-back with moving-wall term, Wen momentum
+//                  exchange; workgroup partial sums of (Fx, Fy, Tz, dM)
+//   reduce         one workgroup sums the partials: torque/force, mass deficit -> delta, step counter += 1
+//   massadd        f_0 += delta on every fluid node (mean fluid density back to exactly 1)
+// Layout: population q of node (k, j, i): F[q*vol + (k*N + j)*N + i], vol = N*N*Nz.
+// All kernels do identical arithmetic in every z-plane (no z-dependent branches except the wall
+// conditions of span = "walls"), so a z-uniform flow stays z-uniform bit for bit.
+
+struct Params {
+  v0: vec4<u32>,      // N, Nz, wallz (1 = no-slip end walls), kind (0 bgk, 1 reg, 2 mrt)
+  v1: vec4<f32>,      // omega = 1/tau, R (cells), wo (rad/step), Om (rad/step)
+  v2: vec4<u32>,      // B (link box side), massfix, nwgA (workgroups of node kernels), nwgB (workgroups of links)
+  v3: vec4<f32>,      // hsc = h/dt (velocity scale), 0, 0, 0
+  A: array<vec4<f32>, 91>,   // MRT collision matrix (19 x 19, row major) packed in vec4s
+}
+
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read_write> F: array<f32>;      // populations, current state
+@group(0) @binding(2) var<storage, read_write> G: array<f32>;      // populations, next state
+@group(0) @binding(3) var<storage, read_write> mask: array<u32>;   // N*N: bit0 solid now, bit1 solid before
+@group(0) @binding(4) var<storage, read_write> FPL: array<f32>;    // post-collision populations of the link-box nodes
+@group(0) @binding(5) var<storage, read> body: array<vec4<f32>>;   // per step: (cx, cy, 0, 0) in cells
+@group(0) @binding(6) var<storage, read_write> ctl: array<f32>;    // 0 step counter, 1 delta, 2 Fx, 3 Fy, 4 Tz, 5 dM, 6 S
+@group(0) @binding(7) var<storage, read_write> part: array<f32>;   // workgroup partial sums
+@group(0) @binding(8) var<storage, read_write> VEL: array<f32>;    // output velocity (3, Nz, N, N), physical units
+
+const CX = array<i32, 19>(0, 1, -1, 0, 0, 0, 0, 1, -1, 1, -1, 1, -1, 1, -1, 0, 0, 0, 0);
+const CY = array<i32, 19>(0, 0, 0, 1, -1, 0, 0, 1, -1, -1, 1, 0, 0, 0, 0, 1, -1, 1, -1);
+const CZ = array<i32, 19>(0, 0, 0, 0, 0, 1, -1, 0, 0, 0, 0, 1, -1, -1, 1, 1, -1, -1, 1);
+const OPP = array<u32, 19>(0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15, 18, 17);
+const WQ = array<f32, 19>(1.0 / 3.0, 1.0 / 18.0, 1.0 / 18.0, 1.0 / 18.0, 1.0 / 18.0, 1.0 / 18.0, 1.0 / 18.0,
+  1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0,
+  1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0);
+const CS2: f32 = 1.0 / 3.0;
+
+var<workgroup> sh: array<f32, 256>;      // 4 channels x 64 threads
+var<workgroup> sh2: array<f32, 1536>;    // 6 channels x 256 threads (reduce kernel)
+
+// ---------------------------------------------------------------- helpers
+fn wglin(wid: vec3<u32>, nwg: vec3<u32>) -> u32 { return wid.y * nwg.x + wid.x; }
+
+// tree sum over the 64 threads of a workgroup, 4 channels at sh[c*64 + lid]; result in sh[c*64]
+fn wg_reduce4(lid: u32) {
+  for (var s = 32u; s > 0u; s = s >> 1u) {
+    workgroupBarrier();
+    if (lid < s) {
+      for (var c = 0u; c < 4u; c++) { sh[c * 64u + lid] += sh[c * 64u + lid + s]; }
+    }
+  }
+  workgroupBarrier();
+}
+
+fn feq(q: u32, rho: f32, ux: f32, uy: f32, uz: f32, uu: f32) -> f32 {
+  let cu = f32(CX[q]) * ux + f32(CY[q]) * uy + f32(CZ[q]) * uz;
+  return WQ[q] * rho * (1.0 + 3.0 * cu + 4.5 * cu * cu - 1.5 * uu);
+}
+
+fn body_u(cx: f32, cy: f32, y: f32) -> f32 {      // -wo (cy - N/2) - Om (y - cy)
+  return -P.v1.z * (cy - f32(P.v0.x) * 0.5) - P.v1.w * (y - cy);
+}
+fn body_v(cx: f32, cy: f32, x: f32) -> f32 {      // wo (cx - N/2) + Om (x - cx)
+  return P.v1.z * (cx - f32(P.v0.x) * 0.5) + P.v1.w * (x - cx);
+}
+
+fn is_solid_now(m: u32) -> bool { return (m & 1u) != 0u; }
+
+// ---------------------------------------------------------------- geometry
+@compute @workgroup_size(64)
+fn geometry(@builtin(local_invocation_index) lid: u32, @builtin(workgroup_id) wid: vec3<u32>,
+            @builtin(num_workgroups) nwg: vec3<u32>) {
+  let N = P.v0.x;
+  let n = wglin(wid, nwg) * 64u + lid;
+  if (n >= N * N) { return; }
+  let b = body[u32(ctl[0])];
+  let i = n % N;
+  let j = n / N;
+  let dx = f32(i) + 0.5 - b.x;
+  let dy = f32(j) + 0.5 - b.y;
+  var nw = 0u;
+  if (sqrt(dx * dx + dy * dy) < P.v1.y) { nw = 1u; }
+  mask[n] = ((mask[n] & 1u) << 1u) | nw;
+}
+
+// ---------------------------------------------------------------- refill of uncovered nodes (in place on F)
+@compute @workgroup_size(64)
+fn refill(@builtin(local_invocation_index) lid: u32, @builtin(workgroup_id) wid: vec3<u32>,
+          @builtin(num_workgroups) nwg: vec3<u32>) {
+  let N = P.v0.x;
+  let vol = N * N * P.v0.y;
+  let n = wglin(wid, nwg) * 64u + lid;
+  if (n >= vol) { return; }
+  let i0 = i32(n % N);
+  let j0 = i32((n / N) % N);
+  let k = n / (N * N);
+  if (mask[u32(j0) * N + u32(i0)] != 2u) { return; }       // was solid, is fluid now
+  let b = body[u32(ctl[0])];
+  let ub = body_u(b.x, b.y, f32(j0) + 0.5);
+  let vb = body_v(b.x, b.y, f32(i0) + 0.5);
+  var acc: array<f32, 19>;
+  for (var q = 0u; q < 19u; q++) { acc[q] = 0.0; }
+  var accr = 0.0;
+  var cnt = 0.0;
+  let Ni = i32(N);
+  for (var dj = -1; dj <= 1; dj++) {
+    for (var di = -1; di <= 1; di++) {
+      if (dj == 0 && di == 0) { continue; }
+      let jn = (j0 + dj + Ni) % Ni;
+      let inn = (i0 + di + Ni) % Ni;
+      if ((mask[u32(jn) * N + u32(inn)] & 3u) != 0u) { continue; }
+      let nn = (k * N + u32(jn)) * N + u32(inn);
+      var rho = 0.0;
+      var mx = 0.0;
+      var my = 0.0;
+      var mz = 0.0;
+      for (var q = 0u; q < 19u; q++) {
+        let v = F[q * vol + nn];
+        rho += v; mx += f32(CX[q]) * v; my += f32(CY[q]) * v; mz += f32(CZ[q]) * v;
+      }
+      let ux = mx / rho; let uy = my / rho; let uz = mz / rho;
+      let uu = ux * ux + uy * uy + uz * uz;
+      for (var q = 0u; q < 19u; q++) { acc[q] += F[q * vol + nn] - feq(q, rho, ux, uy, uz, uu); }
+      accr += rho;
+      cnt += 1.0;
+    }
+  }
+  let c = max(cnt, 1.0);
+  var r = 1.0;
+  if (cnt > 0.0) { r = accr / c; }
+  let uub = ub * ub + vb * vb;
+  let n0 = (k * N + u32(j0)) * N + u32(i0);
+  for (var q = 0u; q < 19u; q++) { F[q * vol + n0] = feq(q, r, ub, vb, 0.0, uub) + acc[q] / c; }
+}
+
+// ---------------------------------------------------------------- collide + stream + walls
+@compute @workgroup_size(64)
+fn collide_stream(@builtin(local_invocation_index) lid: u32, @builtin(workgroup_id) wid: vec3<u32>,
+                  @builtin(num_workgroups) nwg: vec3<u32>) {
+  let N = P.v0.x;
+  let Nz = P.v0.y;
+  let vol = N * N * Nz;
+  let wl = wglin(wid, nwg);
+  let n = wl * 64u + lid;
+  var s = 0.0;       // sum of (rho - 1) over the fluid nodes of this workgroup
+  var cnt = 0.0;     // number of fluid nodes
+  if (n < vol) {
+    let i = n % N;
+    let j = (n / N) % N;
+    let k = n / (N * N);
+    let b = body[u32(ctl[0])];
+    if (is_solid_now(mask[j * N + i])) {
+      // solid node: equilibrium of the body velocity (lbm3d._reset_solid)
+      let ub = body_u(b.x, b.y, f32(j) + 0.5);
+      let vb = body_v(b.x, b.y, f32(i) + 0.5);
+      let uu = ub * ub + vb * vb;
+      for (var q = 0u; q < 19u; q++) { G[q * vol + n] = feq(q, 1.0, ub, vb, 0.0, uu); }
+    } else {
+      var fp: array<f32, 19>;
+      var tmp: array<f32, 19>;
+      var rho = 0.0;
+      var mx = 0.0;
+      var my = 0.0;
+      var mz = 0.0;
+      for (var q = 0u; q < 19u; q++) {
+        let v = F[q * vol + n];
+        fp[q] = v;
+        rho += v; mx += f32(CX[q]) * v; my += f32(CY[q]) * v; mz += f32(CZ[q]) * v;
+      }
+      let ux = mx / rho; let uy = my / rho; let uz = mz / rho;
+      let uu = ux * ux + uy * uy + uz * uz;
+      let omega = P.v1.x;
+      let kind = P.v0.w;
+      if (kind == 0u) {
+        for (var q = 0u; q < 19u; q++) { fp[q] = fp[q] - omega * (fp[q] - feq(q, rho, ux, uy, uz, uu)); }
+      } else if (kind == 1u) {
+        var pxx = 0.0; var pyy = 0.0; var pzz = 0.0; var pxy = 0.0; var pxz = 0.0; var pyz = 0.0;
+        for (var q = 0u; q < 19u; q++) {
+          let cx = f32(CX[q]); let cy = f32(CY[q]); let cz = f32(CZ[q]);
+          let fn_ = fp[q] - feq(q, rho, ux, uy, uz, uu);
+          pxx += cx * cx * fn_; pyy += cy * cy * fn_; pzz += cz * cz * fn_;
+          pxy += cx * cy * fn_; pxz += cx * cz * fn_; pyz += cy * cz * fn_;
+        }
+        let a = 1.0 - omega;
+        let tr = pxx + pyy + pzz;
+        for (var q = 0u; q < 19u; q++) {
+          let cx = f32(CX[q]); let cy = f32(CY[q]); let cz = f32(CZ[q]);
+          let qp = cx * cx * pxx + cy * cy * pyy + cz * cz * pzz
+                 + 2.0 * (cx * cy * pxy + cx * cz * pxz + cy * cz * pyz) - CS2 * tr;
+          fp[q] = feq(q, rho, ux, uy, uz, uu) + a * ((0.5 / (CS2 * CS2)) * WQ[q] * qp);
+        }
+      } else {
+        for (var q = 0u; q < 19u; q++) { tmp[q] = fp[q] - feq(q, rho, ux, uy, uz, uu); }
+        var out: array<f32, 19>;
+        for (var q = 0u; q < 19u; q++) {
+          var acc = 0.0;
+          for (var m = 0u; m < 19u; m++) {
+            let e = q * 19u + m;
+            acc += P.A[e / 4u][e % 4u] * tmp[m];
+          }
+          out[q] = fp[q] - acc;
+        }
+        fp = out;
+      }
+      s = rho - 1.0;
+      cnt = 1.0;
+      // keep f* of the nodes that may carry cut links (box around the body)
+      let B = P.v2.x;
+      let jb = i32(j) - (i32(floor(b.y - P.v1.y)) - 2);
+      let ib = i32(i) - (i32(floor(b.x - P.v1.y)) - 2);
+      if (jb >= 0 && jb < i32(B) && ib >= 0 && ib < i32(B)) {
+        let base = ((u32(jb) * B + u32(ib)) * Nz + k) * 19u;
+        for (var q = 0u; q < 19u; q++) { FPL[base + q] = fp[q]; }
+      }
+      // push, halfway bounce-back at the walls
+      G[n] = fp[0];
+      let Ni = i32(N);
+      let Nzi = i32(Nz);
+      for (var q = 1u; q < 19u; q++) {
+        let tx = i32(i) + CX[q];
+        let ty = i32(j) + CY[q];
+        let tz = i32(k) + CZ[q];
+        if (tx < 0 || tx >= Ni || ty < 0 || ty >= Ni || (P.v0.z == 1u && (tz < 0 || tz >= Nzi))) {
+          G[OPP[q] * vol + n] = fp[q];
+        } else if (!is_solid_now(mask[u32(ty) * N + u32(tx)])) {
+          let tzw = u32((tz + Nzi) % Nzi);
+          G[q * vol + (tzw * N + u32(ty)) * N + u32(tx)] = fp[q];
+        }
+      }
+    }
+  }
+  sh[lid] = s;
+  sh[64u + lid] = cnt;
+  sh[128u + lid] = 0.0;
+  sh[192u + lid] = 0.0;
+  wg_reduce4(lid);
+  if (lid == 0u) { part[wl * 2u] = sh[0]; part[wl * 2u + 1u] = sh[64]; }
+}
+
+// ---------------------------------------------------------------- cut links of the body
+@compute @workgroup_size(64)
+fn links(@builtin(local_invocation_index) lid: u32, @builtin(workgroup_id) wid: vec3<u32>,
+         @builtin(num_workgroups) nwg: vec3<u32>) {
+  let N = P.v0.x;
+  let Nz = P.v0.y;
+  let vol = N * N * Nz;
+  let B = P.v2.x;
+  let wl = wglin(wid, nwg);
+  let t = wl * 64u + lid;
+  var Fx = 0.0; var Fy = 0.0; var Tz = 0.0; var dM = 0.0;
+  if (t < B * B * Nz) {
+    let k = t % Nz;
+    let nb = t / Nz;
+    let b = body[u32(ctl[0])];
+    let jb = nb / B;
+    let ib = nb % B;
+    let j = i32(floor(b.y - P.v1.y)) - 2 + i32(jb);
+    let i = i32(floor(b.x - P.v1.y)) - 2 + i32(ib);
+    let Ni = i32(N);
+    let Nzi = i32(Nz);
+    if (j >= 0 && j < Ni && i >= 0 && i < Ni && !is_solid_now(mask[u32(j) * N + u32(i)])) {
+      let dx = f32(i) + 0.5 - b.x;
+      let dy = f32(j) + 0.5 - b.y;
+      let R = P.v1.y;
+      let nn = (k * N + u32(j)) * N + u32(i);
+      for (var q = 1u; q < 19u; q++) {
+        let cx = CX[q]; let cy = CY[q]; let cz = CZ[q];
+        let a = f32(cx * cx + cy * cy);
+        if (a == 0.0) { continue; }
+        let ni = i + cx; let nj = j + cy;
+        if (ni < 0 || ni >= Ni || nj < 0 || nj >= Ni) { continue; }
+        if (!is_solid_now(mask[u32(nj) * N + u32(ni)])) { continue; }
+        let kz = i32(k) + cz;
+        if (P.v0.z == 1u && (kz < 0 || kz >= Nzi)) { continue; }   // that link is a z-wall
+        let qb = OPP[q];
+        let bq = dx * f32(cx) + dy * f32(cy);
+        let disc = max(bq * bq - a * (dx * dx + dy * dy - R * R), 0.0);
+        let sc = clamp((-bq - sqrt(disc)) / a, 0.0, 1.0);
+        let xw = f32(i) + 0.5 + sc * f32(cx);
+        let yw = f32(j) + 0.5 + sc * f32(cy);
+        let ub = body_u(b.x, b.y, yw);
+        let vb = body_v(b.x, b.y, xw);
+        let gw = -6.0 * WQ[q] * (f32(cx) * ub + f32(cy) * vb);
+        let base = ((jb * B + ib) * Nz + k) * 19u;
+        let fq = FPL[base + q];
+        let fqb = FPL[base + qb];
+        let i2 = i - cx; let j2 = j - cy; let k2 = i32(k) - cz;
+        var ok = i2 >= 0 && i2 < Ni && j2 >= 0 && j2 < Ni;
+        if (ok) { ok = !is_solid_now(mask[u32(j2) * N + u32(i2)]); }
+        if (ok && P.v0.z == 1u) { ok = k2 >= 0 && k2 < Nzi; }
+        var f2 = fq;
+        if (ok) { f2 = G[q * vol + nn]; }
+        var nw: f32;
+        if (sc < 0.5) { nw = 2.0 * sc * fq + (1.0 - 2.0 * sc) * f2 + gw; }
+        else { nw = (fq + (2.0 * sc - 1.0) * fqb + gw) / (2.0 * sc); }
+        G[qb * vol + nn] = nw;
+        let Px = (f32(cx) - ub) * fq + (f32(cx) + ub) * nw;
+        let Py = (f32(cy) - vb) * fq + (f32(cy) + vb) * nw;
+        Fx += Px; Fy += Py;
+        Tz += (xw - b.x) * Py - (yw - b.y) * Px;
+        dM += nw - fq;
+      }
+    }
+  }
+  sh[lid] = Fx;
+  sh[64u + lid] = Fy;
+  sh[128u + lid] = Tz;
+  sh[192u + lid] = dM;
+  wg_reduce4(lid);
+  if (lid == 0u) {
+    let o = 2u * P.v2.z + wl * 4u;
+    part[o] = sh[0]; part[o + 1u] = sh[64]; part[o + 2u] = sh[128]; part[o + 3u] = sh[192];
+  }
+}
+
+// ---------------------------------------------------------------- reduce the partial sums (one workgroup)
+@compute @workgroup_size(256)
+fn reduce(@builtin(local_invocation_index) lid: u32) {
+  var S = 0.0; var cnt = 0.0; var Fx = 0.0; var Fy = 0.0; var Tz = 0.0; var dM = 0.0;
+  for (var w = lid; w < P.v2.z; w += 256u) { S += part[w * 2u]; cnt += part[w * 2u + 1u]; }
+  for (var w = lid; w < P.v2.w; w += 256u) {
+    let o = 2u * P.v2.z + w * 4u;
+    Fx += part[o]; Fy += part[o + 1u]; Tz += part[o + 2u]; dM += part[o + 3u];
+  }
+  sh2[lid] = S; sh2[256u + lid] = cnt; sh2[512u + lid] = Fx; sh2[768u + lid] = Fy; sh2[1024u + lid] = Tz;
+  sh2[1280u + lid] = dM;
+  for (var s = 128u; s > 0u; s = s >> 1u) {
+    workgroupBarrier();
+    if (lid < s) {
+      for (var c = 0u; c < 6u; c++) { sh2[c * 256u + lid] += sh2[c * 256u + lid + s]; }
+    }
+  }
+  workgroupBarrier();
+  if (lid == 0u) {
+    let nf = sh2[256];
+    var delta = 0.0;
+    if (P.v2.y == 1u) { delta = -(sh2[0] + sh2[1280]) / nf; }
+    ctl[1] = delta;
+    ctl[2] = sh2[512]; ctl[3] = sh2[768]; ctl[4] = sh2[1024]; ctl[5] = sh2[1280]; ctl[6] = sh2[0];
+    ctl[0] = ctl[0] + 1.0;
+  }
+}
+
+// ---------------------------------------------------------------- mass correction: f_0 += delta on the fluid nodes
+@compute @workgroup_size(64)
+fn massadd(@builtin(local_invocation_index) lid: u32, @builtin(workgroup_id) wid: vec3<u32>,
+           @builtin(num_workgroups) nwg: vec3<u32>) {
+  let N = P.v0.x;
+  let n = wglin(wid, nwg) * 64u + lid;
+  if (n >= N * N * P.v0.y) { return; }
+  if (!is_solid_now(mask[n % (N * N)])) { G[n] = G[n] + ctl[1]; }
+}
+
+// ---------------------------------------------------------------- output: velocity and fluid mass
+@compute @workgroup_size(64)
+fn velocity(@builtin(local_invocation_index) lid: u32, @builtin(workgroup_id) wid: vec3<u32>,
+            @builtin(num_workgroups) nwg: vec3<u32>) {
+  let N = P.v0.x;
+  let vol = N * N * P.v0.y;
+  let n = wglin(wid, nwg) * 64u + lid;
+  if (n >= vol) { return; }
+  var rho = 0.0; var mx = 0.0; var my = 0.0; var mz = 0.0;
+  for (var q = 0u; q < 19u; q++) {
+    let v = F[q * vol + n];
+    rho += v; mx += f32(CX[q]) * v; my += f32(CY[q]) * v; mz += f32(CZ[q]) * v;
+  }
+  let sc = P.v3.x / rho;
+  VEL[n] = mx * sc; VEL[vol + n] = my * sc; VEL[2u * vol + n] = mz * sc;
+}
+
+// partial sums of (rho - 1) and of the fluid-node count over the whole state (zone after the step partials)
+@compute @workgroup_size(64)
+fn massdiag(@builtin(local_invocation_index) lid: u32, @builtin(workgroup_id) wid: vec3<u32>,
+            @builtin(num_workgroups) nwg: vec3<u32>) {
+  let N = P.v0.x;
+  let vol = N * N * P.v0.y;
+  let wl = wglin(wid, nwg);
+  let n = wl * 64u + lid;
+  var s = 0.0; var cnt = 0.0;
+  if (n < vol && !is_solid_now(mask[n % (N * N)])) {
+    var rho = 0.0;
+    for (var q = 0u; q < 19u; q++) { rho += F[q * vol + n]; }
+    s = rho - 1.0;
+    cnt = 1.0;
+  }
+  sh[lid] = s; sh[64u + lid] = cnt; sh[128u + lid] = 0.0; sh[192u + lid] = 0.0;
+  wg_reduce4(lid);
+  if (lid == 0u) {
+    let o = 2u * P.v2.z + 4u * P.v2.w + wl * 2u;
+    part[o] = sh[0]; part[o + 1u] = sh[64];
+  }
+}
+</script>
+<script type="text/wgsl" id="wgsl-fv">// 3D incompressible Navier-Stokes, finite volumes on a staggered (MAC) grid: WebGPU compute kernels.
+// The same algorithm, step for step, as python/fv3d.py and web/fv_cpu.js (float32 here).
+//
+// Flat buffers, index order [k (z)][j (y)][i (x)].  The three face arrays share ONE buffer
+// (so that a kernel needs few storage bindings):
+//   u at 0                      (Nz, N, N+1)   u[(k*N + j)*(N+1) + i]
+//   v at P.offv                 (Nz, N+1, N)   v[(k*(N+1) + j)*N + i]
+//   w at P.offw                 (Nz+1, N, N)   w[(k*N + j)*N + i]
+// q, rhs: cells (Nz, N, N).  Periodic z: w[Nz] is kept equal to w[0].
+// One time step = momentum -> penalise -> divergence -> V-cycles -> project -> advance.
+
+struct Params {
+  n: i32, nz: i32, periodic: i32, offv: i32,
+  offw: i32, nseed: i32, pad0: i32, pad1: i32,
+  h: f32, nu: f32, dt: f32, R: f32,
+  ro: f32, Omega: f32, omega_o: f32, eps: f32,
+  seed: f32, Lz: f32, Uref: f32, dphi: f32,
+};
+// written by the host: phi, phi0, local (words 2..4); everything else lives on the GPU
+struct State { dt_prev: f32, nstep: u32, phi: f32, phi0: f32, local: u32, torque: f32, maxdiv: f32, pad: f32 };
+
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read_write> S: State;
+@group(0) @binding(2) var<storage, read_write> F: array<f32>;      // u, v, w
+@group(0) @binding(3) var<storage, read_write> FS: array<f32>;     // u*, v*, w* (predictor)
+@group(0) @binding(4) var<storage, read_write> FR: array<f32>;     // previous right-hand sides
+@group(0) @binding(5) var<storage, read_write> q: array<f32>;
+@group(0) @binding(6) var<storage, read_write> rhs: array<f32>;
+@group(0) @binding(7) var<storage, read_write> vel: array<f32>;    // cell-centred velocity [c][k][j][i]
+@group(0) @binding(8) var<storage, read_write> partials: array<f32>;
+
+// ------------------------------------------------------------ ghost values (pad_u, pad_v, pad_w)
+// z index map for cell-type nodes (u, v): wrap, or odd mirror about the wall half a cell away.
+fn zcell(k: i32) -> vec2<i32> {
+  let nz = P.nz;
+  if (P.periodic == 1) { return vec2<i32>(((k % nz) + nz) % nz, 1); }
+  if (k < 0) { return vec2<i32>(-1 - k, -1); }
+  if (k > nz - 1) { return vec2<i32>(2 * nz - 1 - k, -1); }
+  return vec2<i32>(k, 1);
+}
+// z index map for w (nodes 0..nz): wrap (w[nz] = w[0]), or odd mirror about the wall ON the end node.
+fn zface(k: i32) -> vec2<i32> {
+  let nz = P.nz;
+  if (P.periodic == 1) { return vec2<i32>(((k % nz) + nz) % nz, 1); }
+  if (k < 0) { return vec2<i32>(-k, -1); }
+  if (k > nz) { return vec2<i32>(2 * nz - k, -1); }
+  return vec2<i32>(k, 1);
+}
+fn U(i0: i32, j0: i32, k0: i32) -> f32 {
+  let n = P.n;
+  var i = i0; var j = j0; var s = 1.0;
+  if (i < 0) { i = -i; s = -s; }                   // u sits on the x-walls
+  if (i > n) { i = 2 * n - i; s = -s; }
+  if (j < 0) { j = -1 - j; s = -s; }               // y-walls half a cell away
+  if (j > n - 1) { j = 2 * n - 1 - j; s = -s; }
+  let z = zcell(k0);
+  return s * f32(z.y) * F[(z.x * n + j) * (n + 1) + i];
+}
+fn V(i0: i32, j0: i32, k0: i32) -> f32 {
+  let n = P.n;
+  var i = i0; var j = j0; var s = 1.0;
+  if (i < 0) { i = -1 - i; s = -s; }
+  if (i > n - 1) { i = 2 * n - 1 - i; s = -s; }
+  if (j < 0) { j = -j; s = -s; }
+  if (j > n) { j = 2 * n - j; s = -s; }
+  let z = zcell(k0);
+  return s * f32(z.y) * F[P.offv + (z.x * (n + 1) + j) * n + i];
+}
+fn W(i0: i32, j0: i32, k0: i32) -> f32 {
+  let n = P.n;
+  var i = i0; var j = j0; var s = 1.0;
+  if (i < 0) { i = -1 - i; s = -s; }
+  if (i > n - 1) { i = 2 * n - 1 - i; s = -s; }
+  if (j < 0) { j = -1 - j; s = -s; }
+  if (j > n - 1) { j = 2 * n - 1 - j; s = -s; }
+  let z = zface(k0);
+  return s * f32(z.y) * F[P.offw + (z.x * n + j) * n + i];
+}
+
+// ------------------------------------------------------------ advection
+fn minmod(a: f32, b: f32) -> f32 {
+  if (a * b <= 0.0) { return 0.0; }
+  return sign(a) * min(abs(a), abs(b));
+}
+// MUSCL face value between nodes a and b (am, bp: the next nodes outward)
+fn face_value(am: f32, a: f32, b: f32, bp: f32, vel_: f32) -> f32 {
+  if (vel_ >= 0.0) { return a + 0.5 * minmod(a - am, b - a); }
+  return b + 0.5 * minmod(b - bp, a - b);
+}
+
+fn rhs_u(i: i32, j: i32, k: i32) -> f32 {
+  let c = U(i, j, k);
+  let ue = 0.5 * (c + U(i + 1, j, k));
+  let uw = 0.5 * (U(i - 1, j, k) + c);
+  let vn = 0.5 * (V(i - 1, j + 1, k) + V(i, j + 1, k));
+  let vs_ = 0.5 * (V(i - 1, j, k) + V(i, j, k));
+  let wt = 0.5 * (W(i - 1, j, k + 1) + W(i, j, k + 1));
+  let wb = 0.5 * (W(i - 1, j, k) + W(i, j, k));
+  let fe = ue * face_value(U(i - 1, j, k), c, U(i + 1, j, k), U(i + 2, j, k), ue);
+  let fw = uw * face_value(U(i - 2, j, k), U(i - 1, j, k), c, U(i + 1, j, k), uw);
+  let fn_ = vn * face_value(U(i, j - 1, k), c, U(i, j + 1, k), U(i, j + 2, k), vn);
+  let fs = vs_ * face_value(U(i, j - 2, k), U(i, j - 1, k), c, U(i, j + 1, k), vs_);
+  let ft = wt * face_value(U(i, j, k - 1), c, U(i, j, k + 1), U(i, j, k + 2), wt);
+  let fb = wb * face_value(U(i, j, k - 2), U(i, j, k - 1), c, U(i, j, k + 1), wb);
+  let lap = (U(i + 1, j, k) + U(i - 1, j, k) + U(i, j + 1, k) + U(i, j - 1, k) - 4.0 * c)
+          + (U(i, j, k + 1) + U(i, j, k - 1) - 2.0 * c);
+  return -((fe - fw + fn_ - fs) + (ft - fb)) / P.h + P.nu * lap / (P.h * P.h);
+}
+fn rhs_v(i: i32, j: i32, k: i32) -> f32 {
+  let c = V(i, j, k);
+  let ue = 0.5 * (U(i + 1, j - 1, k) + U(i + 1, j, k));
+  let uw = 0.5 * (U(i, j - 1, k) + U(i, j, k));
+  let vn = 0.5 * (c + V(i, j + 1, k));
+  let vs_ = 0.5 * (V(i, j - 1, k) + c);
+  let wt = 0.5 * (W(i, j - 1, k + 1) + W(i, j, k + 1));
+  let wb = 0.5 * (W(i, j - 1, k) + W(i, j, k));
+  let fe = ue * face_value(V(i - 1, j, k), c, V(i + 1, j, k), V(i + 2, j, k), ue);
+  let fw = uw * face_value(V(i - 2, j, k), V(i - 1, j, k), c, V(i + 1, j, k), uw);
+  let fn_ = vn * face_value(V(i, j - 1, k), c, V(i, j + 1, k), V(i, j + 2, k), vn);
+  let fs = vs_ * face_value(V(i, j - 2, k), V(i, j - 1, k), c, V(i, j + 1, k), vs_);
+  let ft = wt * face_value(V(i, j, k - 1), c, V(i, j, k + 1), V(i, j, k + 2), wt);
+  let fb = wb * face_value(V(i, j, k - 2), V(i, j, k - 1), c, V(i, j, k + 1), wb);
+  let lap = (V(i + 1, j, k) + V(i - 1, j, k) + V(i, j + 1, k) + V(i, j - 1, k) - 4.0 * c)
+          + (V(i, j, k + 1) + V(i, j, k - 1) - 2.0 * c);
+  return -((fe - fw + fn_ - fs) + (ft - fb)) / P.h + P.nu * lap / (P.h * P.h);
+}
+fn rhs_w(i: i32, j: i32, k: i32) -> f32 {
+  let c = W(i, j, k);
+  let ue = 0.5 * (U(i + 1, j, k - 1) + U(i + 1, j, k));
+  let uw = 0.5 * (U(i, j, k - 1) + U(i, j, k));
+  let vn = 0.5 * (V(i, j + 1, k - 1) + V(i, j + 1, k));
+  let vs_ = 0.5 * (V(i, j, k - 1) + V(i, j, k));
+  let wt = 0.5 * (c + W(i, j, k + 1));
+  let wb = 0.5 * (W(i, j, k - 1) + c);
+  let fe = ue * face_value(W(i - 1, j, k), c, W(i + 1, j, k), W(i + 2, j, k), ue);
+  let fw = uw * face_value(W(i - 2, j, k), W(i - 1, j, k), c, W(i + 1, j, k), uw);
+  let fn_ = vn * face_value(W(i, j - 1, k), c, W(i, j + 1, k), W(i, j + 2, k), vn);
+  let fs = vs_ * face_value(W(i, j - 2, k), W(i, j - 1, k), c, W(i, j + 1, k), vs_);
+  let ft = wt * face_value(W(i, j, k - 1), c, W(i, j, k + 1), W(i, j, k + 2), wt);
+  let fb = wb * face_value(W(i, j, k - 2), W(i, j, k - 1), c, W(i, j, k + 1), wb);
+  let lap = (W(i + 1, j, k) + W(i - 1, j, k) + W(i, j + 1, k) + W(i, j - 1, k) - 4.0 * c)
+          + (W(i, j, k + 1) + W(i, j, k - 1) - 2.0 * c);
+  return -((fe - fw + fn_ - fs) + (ft - fb)) / P.h + P.nu * lap / (P.h * P.h);
+}
+
+fn iu(i: i32, j: i32, k: i32) -> i32 { return (k * P.n + j) * (P.n + 1) + i; }
+fn iv(i: i32, j: i32, k: i32) -> i32 { return P.offv + (k * (P.n + 1) + j) * P.n + i; }
+fn iw(i: i32, j: i32, k: i32) -> i32 { return P.offw + (k * P.n + j) * P.n + i; }
+
+// Adams-Bashforth 2 (forward Euler on the first step): u* = u + dt (a R + b R_prev).
+// Threads cover i, j in 0..N and k in 0..Nz.
+@compute @workgroup_size(8, 8, 4)
+fn momentum(@builtin(global_invocation_id) g: vec3<u32>) {
+  let i = i32(g.x); let j = i32(g.y); let k = i32(g.z); let n = P.n; let nz = P.nz;
+  var a = 1.0; var b = 0.0;
+  if (S.dt_prev > 0.0) { let r = P.dt / S.dt_prev; a = 1.0 + 0.5 * r; b = -0.5 * r; }
+  // wall faces keep their value (R = 0 there): copy everything first, then overwrite the interior
+  if (k < nz && j < n && i <= n) {
+    let m = iu(i, j, k);
+    if (i >= 1 && i <= n - 1) {
+      let R = rhs_u(i, j, k);
+      FS[m] = F[m] + P.dt * (a * R + b * FR[m]);
+      FR[m] = R;
+    } else { FS[m] = F[m]; }
+  }
+  if (k < nz && i < n && j <= n) {
+    let m = iv(i, j, k);
+    if (j >= 1 && j <= n - 1) {
+      let R = rhs_v(i, j, k);
+      FS[m] = F[m] + P.dt * (a * R + b * FR[m]);
+      FR[m] = R;
+    } else { FS[m] = F[m]; }
+  }
+  if (i < n && j < n && k <= nz) {
+    let m = iw(i, j, k);
+    let wall = P.periodic == 0 && (k == 0 || k == nz);
+    if (wall) { FS[m] = F[m]; }
+    else {
+      var kk = k;
+      if (k == nz) { kk = 0; }                    // periodic: w[Nz] = w[0]
+      let R = rhs_w(i, j, kk);
+      FS[m] = F[m] + P.dt * (a * R + b * FR[m]);
+      FR[m] = R;
+    }
+  }
+}
+
+// ------------------------------------------------------------ the body
+fn centre(phi: f32) -> vec2<f32> { return vec2<f32>(0.5 + P.ro * cos(phi), 0.5 + P.ro * sin(phi)); }
+// smoothed indicator chi and rigid-body velocity (orbit + spin) at x; the body does not depend on z
+fn body(x: vec2<f32>, phi: f32) -> vec3<f32> {
+  let c = centre(phi);
+  let d = x - c;
+  // clamp: some f32 tanh implementations return NaN for large arguments (exp overflow)
+  let chi = 0.5 * (1.0 - tanh(clamp((length(d) - P.R) / P.eps, -20.0, 20.0)));
+  let ub = -P.omega_o * (c.y - 0.5) - P.Omega * d.y;
+  let vb = P.omega_o * (c.x - 0.5) + P.Omega * d.x;
+  return vec3<f32>(chi, ub, vb);
+}
+
+// u = u* + chi (u_body - u*) at the new time level (penalisation, eta -> 0); w_body = 0
+@compute @workgroup_size(8, 8, 4)
+fn penalise(@builtin(global_invocation_id) g: vec3<u32>) {
+  let i = i32(g.x); let j = i32(g.y); let k = i32(g.z); let n = P.n; let nz = P.nz; let h = P.h;
+  let phi = S.phi + P.omega_o * P.dt;
+  if (k < nz && j < n && i <= n) {
+    let m = iu(i, j, k);
+    if (i == 0 || i == n) { F[m] = 0.0; }
+    else {
+      let b = body(vec2<f32>(f32(i) * h, (f32(j) + 0.5) * h), phi);
+      F[m] = FS[m] + b.x * (b.y - FS[m]);
+    }
+  }
+  if (k < nz && i < n && j <= n) {
+    let m = iv(i, j, k);
+    if (j == 0 || j == n) { F[m] = 0.0; }
+    else {
+      let b = body(vec2<f32>((f32(i) + 0.5) * h, f32(j) * h), phi);
+      F[m] = FS[m] + b.x * (b.z - FS[m]);
+    }
+  }
+  if (i < n && j < n && k <= nz) {
+    let m = iw(i, j, k);
+    if (P.periodic == 0 && (k == 0 || k == nz)) { F[m] = 0.0; }
+    else {
+      let b = body(vec2<f32>((f32(i) + 0.5) * h, (f32(j) + 0.5) * h), phi);
+      F[m] = FS[m] + b.x * (0.0 - FS[m]);
+    }
+  }
+}
+
+// ------------------------------------------------------------ projection
+@compute @workgroup_size(8, 8, 4)
+fn divergence(@builtin(global_invocation_id) g: vec3<u32>) {
+  let i = i32(g.x); let j = i32(g.y); let k = i32(g.z); let n = P.n;
+  if (i >= n || j >= n || k >= P.nz) { return; }
+  rhs[(k * n + j) * n + i] = ((F[iu(i + 1, j, k)] - F[iu(i, j, k)] + F[iv(i, j + 1, k)] - F[iv(i, j, k)])
+                              + (F[iw(i, j, k + 1)] - F[iw(i, j, k)])) / P.h;
+}
+
+@compute @workgroup_size(8, 8, 4)
+fn project(@builtin(global_invocation_id) g: vec3<u32>) {
+  let i = i32(g.x); let j = i32(g.y); let k = i32(g.z); let n = P.n; let nz = P.nz;
+  if (k < nz && j < n && i >= 1 && i <= n - 1) {
+    F[iu(i, j, k)] -= (q[(k * n + j) * n + i] - q[(k * n + j) * n + i - 1]) / P.h;
+  }
+  if (k < nz && i < n && j >= 1 && j <= n - 1) {
+    F[iv(i, j, k)] -= (q[(k * n + j) * n + i] - q[(k * n + j - 1) * n + i]) / P.h;
+  }
+  if (i < n && j < n && k <= nz) {
+    if (k >= 1 && k <= nz - 1) {
+      F[iw(i, j, k)] -= (q[(k * n + j) * n + i] - q[((k - 1) * n + j) * n + i]) / P.h;
+    } else if (P.periodic == 1) {              // the face z = 0 (and its copy z = Nz) lies between cell Nz-1 and cell 0
+      F[iw(i, j, k)] -= (q[j * n + i] - q[((nz - 1) * n + j) * n + i]) / P.h;
+    }
+  }
+}
+
+// ------------------------------------------------------------ bookkeeping
+@compute @workgroup_size(1)
+fn advance() {
+  S.dt_prev = P.dt;
+  S.nstep += 1u;
+  S.local += 1u;
+  S.phi = S.phi0 + f32(S.local) * P.dphi;     // the host re-bases phi0 every few steps (f32 drift)
+}
+
+// cell-centred velocity, [c][k][j][i]
+@compute @workgroup_size(8, 8, 4)
+fn cell_velocity(@builtin(global_invocation_id) g: vec3<u32>) {
+  let i = i32(g.x); let j = i32(g.y); let k = i32(g.z); let n = P.n;
+  if (i >= n || j >= n || k >= P.nz) { return; }
+  let o = (k * n + j) * n + i; let nc = P.nz * n * n;
+  vel[o] = 0.5 * (F[iu(i + 1, j, k)] + F[iu(i, j, k)]);
+  vel[nc + o] = 0.5 * (F[iv(i, j + 1, k)] + F[iv(i, j, k)]);
+  vel[2 * nc + o] = 0.5 * (F[iw(i, j, k + 1)] + F[iw(i, j, k)]);
+}
+
+// ------------------------------------------------------------ deliberate 3D seed
+// w0 = seed Uref sin(pi x) sin(pi y) sum_{m=1}^{M} cos(2 pi m z/Lz + m) on the w faces
+@compute @workgroup_size(8, 8, 4)
+fn init_seed(@builtin(global_invocation_id) g: vec3<u32>) {
+  let i = i32(g.x); let j = i32(g.y); var k = i32(g.z); let n = P.n; let nz = P.nz;
+  if (i >= n || j >= n || k > nz) { return; }
+  let m = iw(i, j, k);
+  if (P.periodic == 0 && (k == 0 || k == nz)) { F[m] = 0.0; return; }
+  if (k == nz) { k = 0; }
+  let pi = 3.14159265358979;
+  let z = f32(k) * P.h;
+  var prof = 0.0;
+  for (var mm = 1; mm <= P.nseed; mm++) { prof += cos(2.0 * pi * f32(mm) * z / P.Lz + f32(mm)); }
+  let x = (f32(i) + 0.5) * P.h; let y = (f32(j) + 0.5) * P.h;
+  F[m] = P.seed * P.Uref * prof * (sin(pi * x) * sin(pi * y));
+}
+
+// ------------------------------------------------------------ diagnostics: torque and max |div|
+// torque: -(sum over v faces (x - cx) fy  -  sum over u faces (y - cy) fx) h^2 / Nz,
+// with f = chi (u_body - u*) / dt.  Each thread owns an (i, j) column; one partial per workgroup,
+// reduced by stats_final.
+var<workgroup> red: array<f32, 512>;
+@compute @workgroup_size(16, 16)
+fn stats(@builtin(global_invocation_id) g: vec3<u32>, @builtin(local_invocation_index) li: u32,
+         @builtin(workgroup_id) wg: vec3<u32>, @builtin(num_workgroups) nwg: vec3<u32>) {
+  let i = i32(g.x); let j = i32(g.y); let n = P.n; let nz = P.nz; let h = P.h;
+  var tq = 0.0; var md = 0.0;
+  if (i <= n && j <= n) {
+    let cb = centre(S.phi);
+    for (var k = 0; k < nz; k++) {
+      if (j >= 1 && j <= n - 1 && i < n) {             // v face
+        let x = vec2<f32>((f32(i) + 0.5) * h, f32(j) * h);
+        let b = body(x, S.phi);
+        let m = iv(i, j, k);
+        tq += (x.x - cb.x) * (b.x * (b.z - FS[m]) / P.dt);
+      }
+      if (i >= 1 && i <= n - 1 && j < n) {             // u face
+        let x = vec2<f32>(f32(i) * h, (f32(j) + 0.5) * h);
+        let b = body(x, S.phi);
+        let m = iu(i, j, k);
+        tq -= (x.y - cb.y) * (b.x * (b.y - FS[m]) / P.dt);
+      }
+      if (i < n && j < n) {
+        let d = ((F[iu(i + 1, j, k)] - F[iu(i, j, k)] + F[iv(i, j + 1, k)] - F[iv(i, j, k)])
+                 + (F[iw(i, j, k + 1)] - F[iw(i, j, k)])) / h;
+        md = max(md, abs(d));
+      }
+    }
+  }
+  red[li] = tq; red[256u + li] = md;
+  workgroupBarrier();
+  for (var s = 128u; s > 0u; s >>= 1u) {
+    if (li < s) {
+      red[li] += red[li + s];
+      red[256u + li] = max(red[256u + li], red[256u + li + s]);
+    }
+    workgroupBarrier();
+  }
+  if (li == 0u) {
+    let w = wg.y * nwg.x + wg.x;
+    partials[2u * w] = red[0]; partials[2u * w + 1u] = red[256];
+  }
+}
+
+// one workgroup sums the partials: S.torque (z-torque of the fluid on the body, per unit span), S.maxdiv
+@compute @workgroup_size(256)
+fn stats_final(@builtin(local_invocation_index) li: u32) {
+  let np = u32(arrayLength(&partials) / 2u);
+  var tq = 0.0; var md = 0.0;
+  for (var w = li; w < np; w += 256u) { tq += partials[2u * w]; md = max(md, partials[2u * w + 1u]); }
+  red[li] = tq; red[256u + li] = md;
+  workgroupBarrier();
+  for (var s = 128u; s > 0u; s >>= 1u) {
+    if (li < s) {
+      red[li] += red[li + s];
+      red[256u + li] = max(red[256u + li], red[256u + li + s]);
+    }
+    workgroupBarrier();
+  }
+  if (li == 0u) {
+    S.torque = -(red[0] * P.h * P.h / f32(P.nz));
+    S.maxdiv = red[256];
+  }
+}
+
+// ------------------------------------------------------------ multigrid
+// Cell-centred, zero-flux walls:  (sum of existing neighbours - count * x) / h^2 = b.
+// Semi-coarsening: z is coarsened together with x and y while nz >= 2 (nzc = nz/2, else 1).
+struct Level { n: i32, nz: i32, nzc: i32, colour: i32, h2: f32, sweeps: i32, periodic: i32, pad: i32 };
+@group(0) @binding(0) var<uniform> L: Level;
+@group(0) @binding(1) var<storage, read_write> xf: array<f32>;
+@group(0) @binding(2) var<storage, read_write> bf: array<f32>;
+@group(0) @binding(3) var<storage, read_write> rf: array<f32>;
+@group(0) @binding(4) var<storage, read_write> xc: array<f32>;
+@group(0) @binding(5) var<storage, read_write> bc: array<f32>;
+
+// (neighbour sum, neighbour count) of cell (i, j, k): same order of additions as fv3d.neighbour_sum
+fn nsum(i: i32, j: i32, k: i32) -> vec2<f32> {
+  let n = L.n; let nz = L.nz; let id = (k * n + j) * n + i; let nn = n * n;
+  var s = 0.0; var c = 0.0;
+  if (j > 0) { s += xf[id - n]; c += 1.0; }
+  if (j < n - 1) { s += xf[id + n]; c += 1.0; }
+  if (i > 0) { s += xf[id - 1]; c += 1.0; }
+  if (i < n - 1) { s += xf[id + 1]; c += 1.0; }
+  if (nz >= 2) {
+    if (L.periodic == 1) {
+      s += xf[((k + nz - 1) % nz) * nn + j * n + i] + xf[((k + 1) % nz) * nn + j * n + i]; c += 2.0;
+    } else {
+      if (k > 0) { s += xf[id - nn]; c += 1.0; }
+      if (k < nz - 1) { s += xf[id + nn]; c += 1.0; }
+    }
+  }
+  return vec2<f32>(s, c);
+}
+
+// One red-black colour for the whole (i, j) column, with z-independent colouring (colour = parity of
+// i+j in every layer).  A cell and its z-neighbours share a colour, so they must all be updated from
+// the OLD values (Jacobi in z, as numpy does): one thread owns the column and remembers the old
+// value of the layer below (and of layer 0 for the periodic wrap).
+fn smooth_column(i: i32, j: i32) {
+  let n = L.n; let nz = L.nz; let nn = n * n; let col = j * n + i;
+  let first_old = xf[col];
+  var prev_old = 0.0;
+  for (var k = 0; k < nz; k++) {
+    let id = k * nn + col;
+    let xo = xf[id];
+    var s = 0.0; var c = 0.0;
+    if (j > 0) { s += xf[id - n]; c += 1.0; }
+    if (j < n - 1) { s += xf[id + n]; c += 1.0; }
+    if (i > 0) { s += xf[id - 1]; c += 1.0; }
+    if (i < n - 1) { s += xf[id + 1]; c += 1.0; }
+    if (nz >= 2) {
+      if (L.periodic == 1) {
+        var zm = prev_old; if (k == 0) { zm = xf[(nz - 1) * nn + col]; }
+        var zp = first_old; if (k < nz - 1) { zp = xf[id + nn]; }
+        s += zm + zp; c += 2.0;
+      } else {
+        if (k > 0) { s += prev_old; c += 1.0; }
+        if (k < nz - 1) { s += xf[id + nn]; c += 1.0; }
+      }
+    }
+    xf[id] = (s - L.h2 * bf[id]) / c;
+    prev_old = xo;
+  }
+}
+
+@compute @workgroup_size(16, 16)
+fn mg_smooth(@builtin(global_invocation_id) g: vec3<u32>) {
+  let i = i32(g.x); let j = i32(g.y);
+  if (i >= L.n || j >= L.n || (i + j) % 2 != L.colour) { return; }
+  smooth_column(i, j);
+}
+
+@compute @workgroup_size(8, 8, 4)
+fn mg_residual(@builtin(global_invocation_id) g: vec3<u32>) {
+  let i = i32(g.x); let j = i32(g.y); let k = i32(g.z); let n = L.n;
+  if (i >= n || j >= n || k >= L.nz) { return; }
+  let s = nsum(i, j, k); let id = (k * n + j) * n + i;
+  rf[id] = bf[id] - (s.x - s.y * xf[id]) / L.h2;
+}
+
+@compute @workgroup_size(8, 8, 4)
+fn mg_restrict(@builtin(global_invocation_id) g: vec3<u32>) {  // over coarse cells
+  let I = i32(g.x); let J = i32(g.y); let K = i32(g.z); let n = L.n; let nc = n / 2;
+  if (I >= nc || J >= nc || K >= L.nzc) { return; }
+  var v = 0.0;
+  if (L.nz >= 2) {
+    let o0 = (2 * K * n + 2 * J) * n + 2 * I; let o1 = o0 + n * n;
+    let a = 0.25 * (rf[o0] + rf[o0 + n] + rf[o0 + 1] + rf[o0 + n + 1]);
+    let b = 0.25 * (rf[o1] + rf[o1 + n] + rf[o1 + 1] + rf[o1 + n + 1]);
+    v = 0.5 * (a + b);
+  } else {
+    let o = (K * n + 2 * J) * n + 2 * I;
+    v = 0.25 * (rf[o] + rf[o + n] + rf[o + 1] + rf[o + n + 1]);
+  }
+  let m = (K * nc + J) * nc + I;
+  bc[m] = v; xc[m] = 0.0;
+}
+
+fn plane(K: i32, i: i32, j: i32) -> f32 {      // 2D trilinear value of coarse layer K at fine (j, i)
+  let nc = L.n / 2;
+  let I = i / 2; let J = j / 2;
+  let I2 = clamp(I + select(1, -1, i % 2 == 0), 0, nc - 1);
+  let J2 = clamp(J + select(1, -1, j % 2 == 0), 0, nc - 1);
+  let o = K * nc * nc;
+  let a = 0.75 * xc[o + J * nc + I] + 0.25 * xc[o + J2 * nc + I];
+  let c = 0.75 * xc[o + J * nc + I2] + 0.25 * xc[o + J2 * nc + I2];
+  return 0.75 * a + 0.25 * c;
+}
+
+@compute @workgroup_size(8, 8, 4)
+fn mg_prolong(@builtin(global_invocation_id) g: vec3<u32>) {   // over fine cells
+  let i = i32(g.x); let j = i32(g.y); let k = i32(g.z); let n = L.n;
+  if (i >= n || j >= n || k >= L.nz) { return; }
+  var v = 0.0;
+  if (L.nz == L.nzc) { v = plane(k, i, j); }
+  else {
+    let K = k / 2; let off = select(1, -1, k % 2 == 0);
+    var K2 = clamp(K + off, 0, L.nzc - 1);
+    if (L.periodic == 1) { K2 = (K + off + L.nzc) % L.nzc; }
+    v = 0.75 * plane(K, i, j) + 0.25 * plane(K2, i, j);
+  }
+  xf[(k * n + j) * n + i] += v;
+}
+
+// coarsest grid (n = 4): one workgroup, one thread per (i, j) column, all sweeps, then the mean is removed
+var<workgroup> msum: array<f32, 256>;
+@compute @workgroup_size(256)
+fn mg_coarse(@builtin(local_invocation_index) li: u32) {
+  let n = L.n; let nz = L.nz; let col = i32(li);
+  let ncol = n * n;
+  let i = col % n; let j = col / n;
+  for (var sweep = 0; sweep < L.sweeps; sweep++) {
+    for (var colour = 0; colour < 2; colour++) {
+      if (col < ncol && (i + j) % 2 == colour) { smooth_column(i, j); }
+      storageBarrier();
+      workgroupBarrier();
+    }
+  }
+  var cs = 0.0;
+  if (col < ncol) { for (var k = 0; k < nz; k++) { cs += xf[k * ncol + col]; } }
+  msum[li] = cs;
+  workgroupBarrier();
+  for (var s = 128u; s > 0u; s >>= 1u) {
+    if (li < s) { msum[li] += msum[li + s]; }
+    workgroupBarrier();
+  }
+  let mean = msum[0] / f32(ncol * nz);
+  if (col < ncol) { for (var k = 0; k < nz; k++) { xf[k * ncol + col] -= mean; } }
+}
+</script>
+<script type="text/wgsl" id="wgsl-render">// render.wgsl: derived scalar fields (|omega|, omega_z, Q, speed, w), a GPU range reduction,
+// colour-mapped slices, a ray-marched volume, the 3D cylinder and the overlay lines.
+// All velocity/field buffers use the layout [k (z)][j (y)][i (x)] (velocity: [c][k][j][i]).
+// Cells are at x = (i+1/2) h, y = (j+1/2) h, z = (k+1/2) h; box x,y in [0,1], z in [0,Lz].
+
+// ------------------------------------------------------------------ field kernels
+struct CP {                       // parameters of the compute kernels
+  n: i32, nz: i32, periodic: u32, field: u32,
+  h: f32, R: f32, ro: f32, phi: f32,
+  mask: u32, use_body: u32, sgn: u32, nbins: u32,
+  pct: f32, p0: f32, p1: f32, p2: f32,
+};
+@group(0) @binding(0) var<uniform> C: CP;
+@group(0) @binding(1) var<storage, read> V: array<f32>;                 // velocity [c][k][j][i]
+@group(0) @binding(2) var<storage, read_write> OUT: array<f32>;         // derived field [k][j][i]
+@group(0) @binding(5) var<storage, read> FLD: array<f32>;               // field being reduced
+@group(0) @binding(6) var<storage, read_write> ST: array<atomic<u32>>;  // [0] max bits, [1] count, [2..] histogram
+@group(0) @binding(7) var<storage, read_write> RNG: array<f32>;         // [lo, hi, max, count]
+
+// velocity component c at cell (i,j,k); one index may lie one step outside the grid, where the
+// no-slip odd-mirror ghost value  -(edge value)  is used (periodic z wraps).  Same rule as diagnostics.py.
+fn vg(c: i32, i: i32, j: i32, k: i32) -> f32 {
+  let n = C.n; let nz = C.nz;
+  var ii = i; var jj = j; var kk = k; var s = 1.0;
+  if (ii < 0) { ii = 0; s = -s; } else if (ii >= n) { ii = n - 1; s = -s; }
+  if (jj < 0) { jj = 0; s = -s; } else if (jj >= n) { jj = n - 1; s = -s; }
+  if (kk < 0) { if (C.periodic != 0u) { kk = nz - 1; } else { kk = 0; s = -s; } }
+  else if (kk >= nz) { if (C.periodic != 0u) { kk = 0; } else { kk = nz - 1; s = -s; } }
+  return s * V[u32(((c * nz + kk) * n + jj) * n + ii)];
+}
+
+fn in_body(i: i32, j: i32) -> bool {
+  let x = (f32(i) + 0.5) * C.h - (0.5 + C.ro * cos(C.phi));
+  let y = (f32(j) + 0.5) * C.h - (0.5 + C.ro * sin(C.phi));
+  return x * x + y * y < C.R * C.R;
+}
+
+fn cell_index(wid: vec3<u32>, li: u32) -> u32 { return (wid.y * 65535u + wid.x) * 64u + li; }
+
+@compute @workgroup_size(64)
+fn cs_fields(@builtin(workgroup_id) wid: vec3<u32>, @builtin(local_invocation_index) li: u32) {
+  let idx = cell_index(wid, li);
+  let n = C.n; let nz = C.nz;
+  if (idx >= u32(n * n * nz)) { return; }
+  let i = i32(idx) % n; let j = (i32(idx) / n) % n; let k = i32(idx) / (n * n);
+  let f = C.field;
+  let inv2h = 0.5 / C.h;
+  // g[a][b] = d u_a / d x_b
+  var g: array<array<f32, 3>, 3>;
+  for (var a = 0; a < 3; a++) {
+    g[a][0] = (vg(a, i + 1, j, k) - vg(a, i - 1, j, k)) * inv2h;
+    g[a][1] = (vg(a, i, j + 1, k) - vg(a, i, j - 1, k)) * inv2h;
+    g[a][2] = (vg(a, i, j, k + 1) - vg(a, i, j, k - 1)) * inv2h;
+  }
+  var val = 0.0;
+  if (f == 0u || f == 1u) {
+    let wx = g[2][1] - g[1][2];
+    let wy = g[0][2] - g[2][0];
+    let wz = g[1][0] - g[0][1];
+    val = select(wz, sqrt(wx * wx + wy * wy + wz * wz), f == 0u);
+  } else if (f == 2u) {
+    var s2 = 0.0; var o2 = 0.0;
+    for (var a = 0; a < 3; a++) { for (var b = 0; b < 3; b++) {
+      let s = 0.5 * (g[a][b] + g[b][a]); let o = 0.5 * (g[a][b] - g[b][a]);
+      s2 += s * s; o2 += o * o;
+    } }
+    val = 0.5 * (o2 - s2);
+  } else if (f == 3u) {
+    let u = V[idx]; let v = V[idx + u32(n * n * nz)]; let w = V[idx + u32(2 * n * n * nz)];
+    val = sqrt(u * u + v * v + w * w);
+  } else {
+    val = V[idx + u32(2 * n * n * nz)];
+  }
+  if (C.mask != 0u && in_body(i, j)) { val = 0.0; }
+  OUT[idx] = val;
+}
+
+// ------------------------------------------------------------------ range reduction
+// robust range: |v| histogram on a square-root scale of |v|/max, percentile C.pct of the cells outside the body
+@compute @workgroup_size(64)
+fn cs_clear(@builtin(local_invocation_index) li: u32) {
+  let nb = C.nbins + 2u;
+  for (var b = li; b < nb; b += 64u) { atomicStore(&ST[b], 0u); }
+}
+
+fn counted(idx: u32) -> bool {
+  let n = C.n;
+  if (C.use_body != 0u && in_body(i32(idx) % n, (i32(idx) / n) % n)) { return false; }
+  let v = FLD[idx];
+  return v == v && abs(v) < 3.0e38;
+}
+
+@compute @workgroup_size(64)
+fn cs_max(@builtin(workgroup_id) wid: vec3<u32>, @builtin(local_invocation_index) li: u32) {
+  let idx = cell_index(wid, li);
+  if (idx >= u32(C.n * C.n * C.nz)) { return; }
+  if (!counted(idx)) { return; }
+  atomicMax(&ST[0], bitcast<u32>(abs(FLD[idx])));
+}
+
+@compute @workgroup_size(64)
+fn cs_hist(@builtin(workgroup_id) wid: vec3<u32>, @builtin(local_invocation_index) li: u32) {
+  let idx = cell_index(wid, li);
+  if (idx >= u32(C.n * C.n * C.nz)) { return; }
+  if (!counted(idx)) { return; }
+  let mx = bitcast<f32>(atomicLoad(&ST[0]));
+  let r = select(0.0, abs(FLD[idx]) / mx, mx > 0.0);
+  let b = min(u32(sqrt(r) * f32(C.nbins)), C.nbins - 1u);
+  atomicAdd(&ST[2u + b], 1u);
+  atomicAdd(&ST[1], 1u);
+}
+
+@compute @workgroup_size(1)
+fn cs_range() {
+  let mx = bitcast<f32>(atomicLoad(&ST[0]));
+  let cnt = atomicLoad(&ST[1]);
+  var hi = 1.0;
+  if (cnt > 0u && mx > 0.0) {
+    let want = u32(ceil(C.pct * f32(cnt)));
+    var acc = 0u; var bin = C.nbins - 1u;
+    for (var b = 0u; b < C.nbins; b++) {
+      acc += atomicLoad(&ST[2u + b]);
+      if (acc >= want) { bin = b; break; }
+    }
+    let q = f32(bin + 1u) / f32(C.nbins);
+    hi = max(mx * q * q, 1.0e-30);
+  }
+  RNG[0] = select(0.0, -hi, C.sgn != 0u);
+  RNG[1] = hi;
+  RNG[2] = mx;
+  RNG[3] = f32(cnt);
+}
+
+// ------------------------------------------------------------------ rendering
+struct Params {
+  n: i32, nz: i32, periodic: u32, field: u32,
+  h: f32, Lz: f32, R: f32, ro: f32,
+  phi: f32, slice: f32, mode: u32, auto_range: u32,
+  lo: f32, hi: f32, view_w: f32, view_h: f32,
+  steps: u32, opacity: f32, p0: f32, p1: f32,
+  cam_pos: vec4<f32>,      // xyz eye, w = tan(fov/2)
+  cam_r: vec4<f32>,        // xyz right, w = aspect
+  cam_u: vec4<f32>,        // xyz up
+  cam_f: vec4<f32>,        // xyz forward
+  plane: vec4<f32>,        // slice layout: x pixel of origin, y pixel of origin (from top), pixels per unit
+  vp: mat4x4<f32>,         // world -> clip (depth 0..1)
+};
+@group(0) @binding(8) var<uniform> P: Params;
+@group(0) @binding(9) var<storage, read> FA: array<f32>;
+@group(0) @binding(10) var<storage, read> RA: array<f32>;
+
+const BG = vec3<f32>(0.965, 0.968, 0.975);
+const INK = vec3<f32>(0.19, 0.2, 0.25);
+const GREY = vec3<f32>(0.55, 0.57, 0.62);
+
+fn diverging(t: f32) -> vec3<f32> {            // blue - white - red, t in [-1, 1]
+  let lo = vec3<f32>(0.23, 0.30, 0.75); let mid = vec3<f32>(0.97, 0.97, 0.97); let hi = vec3<f32>(0.71, 0.016, 0.15);
+  if (t < 0.0) { return mix(mid, lo, -t); }
+  return mix(mid, hi, t);
+}
+fn sequential(t: f32) -> vec3<f32> {           // viridis, 5 stops, t in [0, 1]
+  var c = array<vec3<f32>, 5>(vec3<f32>(0.267, 0.005, 0.329), vec3<f32>(0.230, 0.322, 0.546),
+    vec3<f32>(0.128, 0.567, 0.551), vec3<f32>(0.369, 0.789, 0.383), vec3<f32>(0.993, 0.906, 0.144));
+  let s = clamp(t, 0.0, 1.0) * 4.0;
+  let k = min(i32(floor(s)), 3);
+  return mix(c[k], c[k + 1], s - f32(k));
+}
+fn is_signed(f: u32) -> bool { return f == 1u || f == 2u || f == 4u; }
+fn used_range() -> vec2<f32> {
+  if (P.auto_range != 0u) { return vec2<f32>(RA[0], RA[1]); }
+  return vec2<f32>(P.lo, P.hi);
+}
+fn sym(r: vec2<f32>) -> f32 { return max(max(abs(r.x), abs(r.y)), 1.0e-30); }
+fn cmap(v: f32, r: vec2<f32>) -> vec3<f32> {
+  if (is_signed(P.field)) { return diverging(clamp(v / sym(r), -1.0, 1.0)); }
+  return sequential((v - r.x) / max(r.y - r.x, 1.0e-30));
+}
+
+fn fval(i: i32, j: i32, k: i32) -> f32 { return FA[u32((k * P.n + j) * P.n + i)]; }
+
+// trilinear interpolation between cell centres; clamped in x,y, wrapped or clamped in z
+fn samp3(p: vec3<f32>) -> f32 {
+  let n = P.n;
+  let fx = clamp(p.x * f32(n) - 0.5, 0.0, f32(n - 1));
+  let fy = clamp(p.y * f32(n) - 0.5, 0.0, f32(n - 1));
+  var fz = p.z / P.h - 0.5;
+  var k0 = 0; var k1 = 0; var tz = 0.0;
+  if (P.periodic != 0u) {
+    let nzf = f32(P.nz);
+    fz = fz - nzf * floor(fz / nzf);
+    k0 = min(i32(floor(fz)), P.nz - 1); tz = fz - f32(k0); k1 = (k0 + 1) % P.nz;
+  } else {
+    fz = clamp(fz, 0.0, f32(P.nz - 1));
+    k0 = min(i32(floor(fz)), max(P.nz - 2, 0)); k1 = min(k0 + 1, P.nz - 1); tz = fz - f32(k0);
+  }
+  let i0 = i32(floor(fx)); let j0 = i32(floor(fy));
+  let i1 = min(i0 + 1, n - 1); let j1 = min(j0 + 1, n - 1);
+  let tx = fx - f32(i0); let ty = fy - f32(j0);
+  let a0 = mix(mix(fval(i0, j0, k0), fval(i1, j0, k0), tx), mix(fval(i0, j1, k0), fval(i1, j1, k0), tx), ty);
+  let a1 = mix(mix(fval(i0, j0, k1), fval(i1, j0, k1), tx), mix(fval(i0, j1, k1), fval(i1, j1, k1), tx), ty);
+  return mix(a0, a1, tz);
+}
+
+@vertex
+fn vs_full(@builtin(vertex_index) k: u32) -> @builtin(position) vec4<f32> {
+  let xy = vec2<f32>(f32((k << 1u) & 2u), f32(k & 2u));      // one triangle covering the screen
+  return vec4<f32>(xy * 2.0 - 1.0, 0.0, 1.0);
+}
+
+fn cyl_centre() -> vec2<f32> { return vec2<f32>(0.5 + P.ro * cos(P.phi), 0.5 + P.ro * sin(P.phi)); }
+
+// ---- slices: mode 1 = xy (z = slice Lz), 2 = xz (y = slice), 3 = yz (x = slice)
+@fragment
+fn fs_slice(@builtin(position) frag: vec4<f32>) -> @location(0) vec4<f32> {
+  let u = (frag.x - P.plane.x) / P.plane.z;
+  let v = (P.plane.y - frag.y) / P.plane.z;
+  var p = vec3<f32>(0.0);
+  var vmax = 1.0;
+  if (P.mode == 1u) { p = vec3<f32>(u, v, P.slice * P.Lz); }
+  else if (P.mode == 2u) { p = vec3<f32>(u, P.slice, v); vmax = P.Lz; }
+  else { p = vec3<f32>(P.slice, u, v); vmax = P.Lz; }
+  // derivatives before any branch (uniform control flow)
+  let d = p.xy - cyl_centre();
+  let fr = length(d) - P.R;
+  let fw = max(length(vec2<f32>(dpdx(fr), dpdy(fr))), 1.0e-6);
+  if (u < 0.0 || u > 1.0 || v < 0.0 || v > vmax) { return vec4<f32>(BG, 1.0); }
+  let r = used_range();
+  var col = cmap(samp3(p), r);
+  if (fr < 0.0) { col = mix(col, GREY, 0.8); }
+  if (abs(fr) < 1.0 * fw) { col = INK; }
+  return vec4<f32>(col, 1.0);
+}
+
+// ---- 3D ray set-up
+fn ray_dir(frag: vec4<f32>) -> vec3<f32> {
+  let nx = (frag.x / P.view_w) * 2.0 - 1.0;
+  let ny = 1.0 - (frag.y / P.view_h) * 2.0;
+  let tf = P.cam_pos.w;
+  return normalize(P.cam_f.xyz + P.cam_r.xyz * (nx * tf * P.cam_r.w) + P.cam_u.xyz * (ny * tf));
+}
+// ray / box [0,1]x[0,1]x[0,Lz]: returns (tnear, tfar), tnear > tfar if missed
+fn ray_box(o: vec3<f32>, d: vec3<f32>) -> vec2<f32> {
+  let bmax = vec3<f32>(1.0, 1.0, P.Lz);
+  let inv = 1.0 / select(d, vec3<f32>(1.0e-9), abs(d) < vec3<f32>(1.0e-9));
+  let t0 = (vec3<f32>(0.0) - o) * inv; let t1 = (bmax - o) * inv;
+  let tn = min(t0, t1); let tf = max(t0, t1);
+  return vec2<f32>(max(max(max(tn.x, tn.y), tn.z), 0.0), min(min(tf.x, tf.y), tf.z));
+}
+// first point inside the cylinder (axis parallel to z) on the segment [t0,t1]: (t, nx, ny, nz), t < 0 if none
+fn cyl_hit(o: vec3<f32>, d: vec3<f32>, t0: f32, t1: f32) -> vec4<f32> {
+  let c = cyl_centre();
+  let oc = o.xy - c;
+  let a = dot(d.xy, d.xy);
+  let cc = dot(oc, oc) - P.R * P.R;
+  var tin = -1.0e30; var tout = 1.0e30;
+  if (a < 1.0e-12) {
+    if (cc >= 0.0) { return vec4<f32>(-1.0, 0.0, 0.0, 0.0); }
+  } else {
+    let b = dot(oc, d.xy);
+    let disc = b * b - a * cc;
+    if (disc <= 0.0) { return vec4<f32>(-1.0, 0.0, 0.0, 0.0); }
+    let s = sqrt(disc);
+    tin = (-b - s) / a; tout = (-b + s) / a;
+  }
+  let ts = max(tin, t0);
+  if (ts >= min(tout, t1)) { return vec4<f32>(-1.0, 0.0, 0.0, 0.0); }
+  if (tin >= t0) {                                       // enters through the side
+    let q = (o + d * ts).xy - c;
+    return vec4<f32>(ts, q / P.R, 0.0);
+  }
+  return vec4<f32>(ts, 0.0, 0.0, -sign(d.z));          // already inside at the box entry: an end face
+}
+fn cyl_colour(h: vec4<f32>, d: vec3<f32>) -> vec3<f32> {
+  let n = vec3<f32>(h.y, h.z, h.w);
+  return GREY * (0.55 + 0.6 * abs(dot(n, -d)));
+}
+fn depth_of(pw: vec3<f32>) -> f32 {
+  let c = P.vp * vec4<f32>(pw, 1.0);
+  return clamp(c.z / c.w, 0.0, 1.0);
+}
+
+struct VOut { @location(0) color: vec4<f32>, @builtin(frag_depth) depth: f32 };
+
+fn hash2(p: vec2<f32>) -> f32 { return fract(sin(dot(p, vec2<f32>(12.9898, 78.233))) * 43758.5453); }
+
+@fragment
+fn fs_volume(@builtin(position) frag: vec4<f32>) -> VOut {
+  var out: VOut;
+  let o = P.cam_pos.xyz;
+  let d = ray_dir(frag);
+  let tb = ray_box(o, d);
+  if (tb.x >= tb.y) { discard; }
+  var tm1 = tb.y;
+  let ch = cyl_hit(o, d, tb.x, tb.y);
+  var hit = false;
+  if (ch.x >= 0.0) { tm1 = ch.x; hit = true; }
+  let r = used_range();
+  let m = sym(r);
+  let nst = max(P.steps, 1u);
+  let dt = max(tm1 - tb.x, 0.0) / f32(nst);
+  let jit = hash2(frag.xy);
+  var T = 1.0;
+  var acc = vec3<f32>(0.0);
+  for (var s = 0u; s < nst; s++) {
+    let t = tb.x + (f32(s) + jit) * dt;
+    let v = samp3(o + d * t);
+    var sc = 0.0; var col = vec3<f32>(0.0);
+    if (P.field == 1u || P.field == 4u) { sc = abs(v) / m; col = diverging(clamp(v / m, -1.0, 1.0)); }
+    else if (P.field == 2u) { sc = max(v, 0.0) / m; col = sequential(sc); }
+    else { sc = (v - r.x) / max(r.y - r.x, 1.0e-30); col = sequential(sc); }
+    // square-root scaling: weak but coherent structures stay visible next to a few very strong cells
+    let sq = sqrt(clamp(sc, 0.0, 1.0));
+    if (P.field != 1u && P.field != 4u) { col = sequential(sq); }
+    let dens = P.opacity * 25.0 * smoothstep(0.12, 0.7, sq);
+    let a = 1.0 - exp(-dens * dt);
+    acc += T * a * col;
+    T *= 1.0 - a;
+    if (T < 0.02) { break; }
+  }
+  var depth = 1.0;
+  var bg = BG;
+  if (hit) {
+    bg = cyl_colour(ch, d);
+    depth = depth_of(o + d * ch.x);
+  }
+  out.color = vec4<f32>(acc + T * bg, 1.0);
+  out.depth = depth;
+  return out;
+}
+
+// the cylinder alone (isosurface mode): analytic ray cast, writes depth
+@fragment
+fn fs_cyl(@builtin(position) frag: vec4<f32>) -> VOut {
+  var out: VOut;
+  let o = P.cam_pos.xyz;
+  let d = ray_dir(frag);
+  let tb = ray_box(o, d);
+  if (tb.x >= tb.y) { discard; }
+  let ch = cyl_hit(o, d, tb.x, tb.y);
+  if (ch.x < 0.0) { discard; }
+  out.color = vec4<f32>(cyl_colour(ch, d), 1.0);
+  out.depth = depth_of(o + d * ch.x);
+  return out;
+}
+
+// ---------------------------------------------------------------- overlay lines (clip-space vertices)
+struct LOut { @builtin(position) pos: vec4<f32>, @location(0) col: vec4<f32> };
+@vertex
+fn vs_line(@location(0) p: vec4<f32>, @location(1) c: vec4<f32>) -> LOut {
+  var o: LOut; o.pos = p; o.col = c; return o;
+}
+@fragment
+fn fs_line(i: LOut) -> @location(0) vec4<f32> { return i.col; }
+</script>
+<script type="text/wgsl" id="wgsl-iso">// iso.wgsl: marching cubes (classic 256-case table, Lorensen & Cline; corner/edge numbering of P. Bourke)
+// in a compute shader, plus the mesh vertex/fragment shaders.
+// Nodes are the cell centres.  Cell (i,j,kc) spans nodes i..i+1, j..j+1 and two z-nodes.  Periodic z adds
+// two copies of the wrap cell (nodes nz-1 and 0), placed above z=Lz-h/2 and below z=h/2 and clipped to
+// the box in the fragment shader, so the surface fills the whole box; walls: only the nz-1 interior cells.
+struct IP {
+  n: i32, nz: i32, periodic: u32, max_tris: u32,
+  h: f32, Lz: f32, iso: f32, frac: f32,
+  use_frac: u32, has_c: u32, c_signed: u32, c_auto: u32,
+  clo: f32, chi: f32, p0: f32, p1: f32,
+  eye: vec4<f32>,
+  vp: mat4x4<f32>,
+};
+struct Vert { pos: vec3<f32>, cval: f32, nrm: vec3<f32>, pad: f32 };
+
+@group(0) @binding(0) var<uniform> I: IP;
+@group(0) @binding(1) var<storage, read> FA: array<f32>;
+@group(0) @binding(2) var<storage, read> FB: array<f32>;
+@group(0) @binding(3) var<storage, read_write> VW: array<Vert>;
+@group(0) @binding(4) var<storage, read> VR: array<Vert>;
+@group(0) @binding(5) var<storage, read_write> CNT: array<atomic<u32>>;
+@group(0) @binding(6) var<storage, read_write> ARGS: array<u32>;
+@group(0) @binding(7) var<storage, read> RA: array<f32>;
+@group(0) @binding(8) var<storage, read> RB: array<f32>;
+
+// 4-bit packed triangle table: entry t = case*16 + m, value 15 = end
+var<private> TRI: array<u32, 512> = array<u32, 512>(
+  4294967295u,4294967295u,4294964096u,4294967295u,4294965520u,4294967295u,4279800705u,4294967295u,
+  4294965793u,4294967295u,4288811904u,4294967295u,4287760937u,4294967295u,2592744322u,4294967288u,
+  4294963891u,4294967295u,4278944432u,4294967295u,4289929361u,4294967295u,2310607537u,4294967291u,
+  4282036643u,4294967295u,3098018208u,4294967290u,2879074451u,4294967289u,4290292361u,4294967295u,
+  4294965364u,4294967295u,4282609716u,4294967295u,4285827344u,4294967295u,924272916u,4294967281u,
+  4285827617u,4294967295u,557856579u,4294967290u,1210096169u,4294967287u,1920543138u,4294920563u,
+  4281022280u,4294967295u,37926731u,4294967284u,846496009u,4294967291u,3115621236u,4294906514u,
+  2276143523u,4294967284u,28580529u,4294921076u,3115358324u,4294914234u,3113962356u,4294967290u,
+  4294964313u,4294967295u,4281861209u,4294967295u,4278522960u,4294967295u,324240472u,4294967285u,
+  4282751521u,4294967295u,2493650947u,4294967285u,69491237u,4294967282u,1397896610u,4294935604u,
+  4289930329u,4294967295u,2495087280u,4294967285u,844170320u,4294967291u,2189763858u,4294924363u,
+  1496427322u,4294967284u,2820146580u,4294945665u,3048230981u,4294914234u,2326288453u,4294967291u,
+  4288108665u,4294967295u,1966444601u,4294967283u,1366362224u,4294967287u,4285870929u,4294967295u,
+  443914361u,4294967282u,889557530u,4294915920u,1481802248u,4294911399u,1395991970u,4294967287u,
+  3013113239u,4294967282u,690460505u,4294948640u,1904282418u,4294931736u,393326891u,4294967285u,
+  443910233u,4294947747u,3079688309u,4037779472u,1513140395u,4034228352u,4284183979u,4294967295u,
+  4294964586u,4294967295u,4285158272u,4294967295u,4285157641u,4294967295u,2777224065u,4294967286u,
+  4279641441u,4294967295u,56759649u,4294967288u,543200617u,4294967286u,623401109u,4294935094u,
+  4283870002u,4294967295u,1778563083u,4294967285u,2779982096u,4294967286u,3106477733u,4294949010u,
+  355822390u,4294967283u,1348144000u,4294929233u,1617102515u,4294939909u,2612619606u,4294967288u,
+  4287055525u,4294967295u,1446461492u,4294967290u,1214926993u,4294967287u,1903760746u,4294920563u,
+  1947558422u,4294967288u,56775969u,4294931508u,1615894344u,4294926853u,592017719u,4183976281u,
+  1783132851u,4294967285u,606553765u,4294948640u,847726864u,4294928987u,1227591977u,4138027899u,
+  1398486856u,4294929233u,23812885u,4215294843u,810944848u,4148704950u,1958308182u,4294941561u,
+  4288964938u,4294967295u,2158577316u,4294967283u,1174839562u,4294967280u,1751220536u,4294943076u,
+  1648499009u,4294967284u,1116870659u,4294919721u,4284630048u,4294967295u,608338488u,4294967286u,
+  726051146u,4294967283u,2495095424u,4294928970u,1616970419u,4294943076u,2225168710u,4055413025u,
+  425956457u,4294915763u,1795260856u,4047913361u,1611019955u,4294967284u,4287019078u,4294967295u,
+  2561177255u,4294967290u,2423915376u,4294944618u,1903826794u,4294903832u,1897375594u,4294967283u,
+  2173048353u,4294932105u,1981360482u,4181145865u,106983559u,4294967282u,4280771127u,4294967295u,
+  2324081458u,4294932105u,2427922178u,4155090791u,2709983361u,4214400871u,1785835819u,4294907745u,
+  427198104u,4130420406u,4285968784u,4294967295u,3009441927u,4294903472u,4294964919u,4294967295u,
+  4294966119u,4294967295u,4284987395u,4294967295u,4284987664u,4294967295u,2064877848u,4294967286u,
+  4286276122u,4294967295u,3061856801u,4294967287u,3063554194u,4294967287u,2319067062u,4294936995u,
+  4285686567u,4294967295u,637958151u,4294967280u,275981938u,4294967289u,2439516769u,4294928264u,
+  829531770u,4294967287u,2175211130u,4294934551u,2695300912u,4294933097u,2827647591u,4294967289u,
+  4285052038u,4294967295u,1080048483u,4294967286u,157584232u,4294967281u,959878729u,4294927281u,
+  2727044230u,4294967281u,1622161953u,4294927371u,548817076u,4294941225u,1227072410u,4083442611u,
+  1680114472u,4294967282u,4280697408u,4294967295u,1111695505u,4294935366u,1109660817u,4294967286u,
+  1209434904u,4294908518u,106995738u,4294967284u,2793620324u,4086993667u,4283065498u,4294967295u,
+  4290147732u,4294967295u,2069447552u,4294967286u,1728336133u,4294967291u,1396934267u,4294922548u,
+  1730258009u,4294967291u,2158106550u,4294924611u,614751079u,4294910026u,591738947u,4135265701u,
+  1160147751u,4294967289u,1617429593u,4294932578u,1365717603u,4294902864u,309880870u,4166080584u,
+  1902224473u,4294931222u,23534177u,4099475335u,811223556u,4201871978u,1166703207u,4294944842u,
+  2342217110u,4294967289u,1345719139u,4294924550u,280299696u,4294948437u,894657462u,4294967281u,
+  3115686433u,4294927800u,2427847600u,4196505174u,140883339u,4112524709u,2723374006u,4294915491u,
+  1703041413u,4294912050u,1611044441u,4294967282u,1695029329u,4163250232u,4284556881u,4294967295u,
+  2208699953u,4137195094u,1499504666u,4294903376u,4289091632u,4294967295u,4294964826u,4294967295u,
+  4290083419u,4294967295u,945273435u,4294967280u,2444908469u,4294967280u,2306581882u,4294906753u,
+  1461170715u,4294967281u,1903301504u,4294947445u,158504313u,4294933282u,2511499863u,4069098034u,
+  1934830162u,4294967285u,2015723560u,4294922917u,893014281u,4294912567u,2014483081u,4065809058u,
+  4283905329u,4294967295u,1897334656u,4294967285u,894669577u,4294967287u,4286142345u,4294967295u,
+  3129627781u,4294967288u,2768983045u,4294902715u,2829355280u,4294923435u,995402938u,4094891156u,
+  2992120146u,4294935880u,1413155648u,4212464427u,2996110624u,4119561541u,4282066249u,4294967295u,
+  1126513234u,4294920245u,608326309u,4294967280u,2208641699u,4178609477u,2437042853u,4294911122u,
+  1396016456u,4294967281u,4283438400u,4294967295u,154502472u,4294923013u,4294964553u,4294967295u,
+  2847492020u,4294967291u,3111732096u,4294949527u,1095441313u,4294947952u,2709795859u,4105876596u,
+  692819892u,4294910363u,427529337u,4085259051u,1109701755u,4294967280u,941929595u,4294918708u,
+  848767634u,4294939767u,709334953u,4144105351u,1193949811u,4194568730u,4282876577u,4294967295u,
+  393298324u,4294967283u,2154906004u,4294907777u,4281627396u,4294967295u,4294965124u,4294967295u,
+  4287342761u,4294967295u,2612607235u,4294967290u,2827618832u,4294967291u,4288920083u,4294967295u,
+  3113949985u,4294967288u,565786883u,4294941481u,4289760032u,4294967295u,4294966051u,4294967295u,
+  2326276146u,4294967289u,4280877737u,4294967295u,279455794u,4294937112u,4294963873u,4294967295u,
+  4286683185u,4294967295u,4294963600u,4294967295u,4294965296u,4294967295u,4294967295u,4294967295u,
+);
+var<private> EA: array<u32, 12> = array<u32, 12>(0u, 1u, 2u, 3u, 4u, 5u, 6u, 7u, 0u, 1u, 2u, 3u);
+var<private> EB: array<u32, 12> = array<u32, 12>(1u, 2u, 3u, 0u, 5u, 6u, 7u, 4u, 4u, 5u, 6u, 7u);
+var<private> CO: array<vec3<i32>, 8> = array<vec3<i32>, 8>(
+  vec3<i32>(0, 0, 0), vec3<i32>(1, 0, 0), vec3<i32>(1, 1, 0), vec3<i32>(0, 1, 0),
+  vec3<i32>(0, 0, 1), vec3<i32>(1, 0, 1), vec3<i32>(1, 1, 1), vec3<i32>(0, 1, 1));
+
+fn fa(i: i32, j: i32, k: i32) -> f32 { return FA[u32((k * I.n + j) * I.n + i)]; }
+fn fb(i: i32, j: i32, k: i32) -> f32 { return FB[u32((k * I.n + j) * I.n + i)]; }
+fn wrapk(k: i32) -> i32 {
+  if (I.periodic != 0u) { return (k + I.nz) % I.nz; }
+  return clamp(k, 0, I.nz - 1);
+}
+fn grad(i: i32, j: i32, k: i32) -> vec3<f32> {
+  let n = I.n;
+  let gx = fa(min(i + 1, n - 1), j, k) - fa(max(i - 1, 0), j, k);
+  let gy = fa(i, min(j + 1, n - 1), k) - fa(i, max(j - 1, 0), k);
+  let gz = fa(i, j, wrapk(k + 1)) - fa(i, j, wrapk(k - 1));
+  return vec3<f32>(gx, gy, gz);
+}
+
+@compute @workgroup_size(64)
+fn cs_mc(@builtin(workgroup_id) wid: vec3<u32>, @builtin(local_invocation_index) li: u32) {
+  let idx = i32((wid.y * 65535u + wid.x) * 64u + li);
+  let nc = I.n - 1;
+  var nzc = I.nz - 1;
+  if (I.periodic != 0u) { nzc = I.nz + 1; }
+  if (nc < 1 || nzc < 1) { return; }
+  if (idx >= nc * nc * nzc) { return; }
+  let ci = idx % nc; let cj = (idx / nc) % nc; let kc = idx / (nc * nc);
+  var k0 = kc; var k1 = kc + 1; var zb = (f32(kc) + 0.5) * I.h;
+  if (I.periodic != 0u && kc >= I.nz - 1) {
+    k0 = I.nz - 1; k1 = 0;
+    zb = select((f32(I.nz) - 0.5) * I.h, -0.5 * I.h, kc == I.nz);
+  }
+  let iso = select(I.iso, I.frac * RA[1], I.use_frac != 0u);
+  var val: array<f32, 8>;
+  var cube = 0u;
+  for (var c = 0u; c < 8u; c++) {
+    let o = CO[c];
+    let k = select(k0, k1, o.z == 1);
+    val[c] = fa(ci + o.x, cj + o.y, k);
+    if (val[c] < iso) { cube |= 1u << c; }
+  }
+  if (cube == 0u || cube == 255u) { return; }
+  // count triangles
+  var nt = 0u;
+  for (var m = 0u; m < 15u; m += 3u) {
+    let t = cube * 16u + m;
+    if (((TRI[t >> 3u] >> ((t & 7u) * 4u)) & 15u) == 15u) { break; }
+    nt++;
+  }
+  let base = atomicAdd(&CNT[0], nt);
+  if (base + nt > I.max_tris) { return; }
+  for (var q = 0u; q < nt; q++) {
+    for (var v = 0u; v < 3u; v++) {
+      let t = cube * 16u + q * 3u + v;
+      let e = (TRI[t >> 3u] >> ((t & 7u) * 4u)) & 15u;
+      let a = EA[e]; let b = EB[e];
+      let oa = CO[a]; let ob = CO[b];
+      let va = val[a]; let vb = val[b];
+      let den = vb - va;
+      let s = select(0.5, clamp((iso - va) / den, 0.0, 1.0), abs(den) > 1.0e-30);
+      let ka = select(k0, k1, oa.z == 1); let kb = select(k0, k1, ob.z == 1);
+      let pa = vec3<f32>((f32(ci + oa.x) + 0.5) * I.h, (f32(cj + oa.y) + 0.5) * I.h, zb + f32(oa.z) * I.h);
+      let pb = vec3<f32>((f32(ci + ob.x) + 0.5) * I.h, (f32(cj + ob.y) + 0.5) * I.h, zb + f32(ob.z) * I.h);
+      var o: Vert;
+      o.pos = mix(pa, pb, s);
+      let ga = grad(ci + oa.x, cj + oa.y, ka); let gb = grad(ci + ob.x, cj + ob.y, kb);
+      let g = mix(ga, gb, s);
+      o.nrm = g / max(length(g), 1.0e-30);
+      o.cval = 0.0;
+      if (I.has_c != 0u) { o.cval = mix(fb(ci + oa.x, cj + oa.y, ka), fb(ci + ob.x, cj + ob.y, kb), s); }
+      o.pad = 0.0;
+      VW[(base + q) * 3u + v] = o;
+    }
+  }
+}
+
+@compute @workgroup_size(1)
+fn cs_args() {
+  let t = min(atomicLoad(&CNT[0]), I.max_tris);
+  ARGS[0] = t * 3u; ARGS[1] = 1u; ARGS[2] = 0u; ARGS[3] = 0u;
+}
+
+// ---------------------------------------------------------------- mesh drawing
+struct MOut {
+  @builtin(position) pos: vec4<f32>,
+  @location(0) wp: vec3<f32>, @location(1) nrm: vec3<f32>, @location(2) cval: f32,
+};
+@vertex
+fn vs_mesh(@builtin(vertex_index) vi: u32) -> MOut {
+  let v = VR[vi];
+  var o: MOut;
+  o.pos = I.vp * vec4<f32>(v.pos, 1.0);
+  o.wp = v.pos; o.nrm = v.nrm; o.cval = v.cval;
+  return o;
+}
+fn diverging(t: f32) -> vec3<f32> {
+  let lo = vec3<f32>(0.23, 0.30, 0.75); let mid = vec3<f32>(0.97, 0.97, 0.97); let hi = vec3<f32>(0.71, 0.016, 0.15);
+  if (t < 0.0) { return mix(mid, lo, -t); }
+  return mix(mid, hi, t);
+}
+fn sequential(t: f32) -> vec3<f32> {
+  var c = array<vec3<f32>, 5>(vec3<f32>(0.267, 0.005, 0.329), vec3<f32>(0.230, 0.322, 0.546),
+    vec3<f32>(0.128, 0.567, 0.551), vec3<f32>(0.369, 0.789, 0.383), vec3<f32>(0.993, 0.906, 0.144));
+  let s = clamp(t, 0.0, 1.0) * 4.0;
+  let k = min(i32(floor(s)), 3);
+  return mix(c[k], c[k + 1], s - f32(k));
+}
+@fragment
+fn fs_mesh(i: MOut) -> @location(0) vec4<f32> {
+  if (i.wp.z < 0.0 || i.wp.z > I.Lz) { discard; }     // the periodic wrap cells overshoot the box by h/2
+  var n = normalize(i.nrm);
+  let v = normalize(I.eye.xyz - i.wp);
+  if (dot(n, v) < 0.0) { n = -n; }
+  var base = vec3<f32>(0.93, 0.55, 0.20);
+  if (I.has_c != 0u) {
+    var lo = I.clo; var hi = I.chi;
+    if (I.c_auto != 0u) { lo = RB[0]; hi = RB[1]; }
+    if (I.c_signed != 0u) { base = diverging(clamp(i.cval / max(max(abs(lo), abs(hi)), 1.0e-30), -1.0, 1.0)); }
+    else { base = sequential((i.cval - lo) / max(hi - lo, 1.0e-30)); }
+  }
+  let key = normalize(vec3<f32>(0.4, -0.5, 0.8));
+  let lit = 0.25 + 0.5 * dot(n, v) + 0.3 * max(dot(n, key), 0.0);
+  return vec4<f32>(base * min(lit, 1.2), 1.0);
+}
+</script>
+<script>
+window.REF = {"lbm": {"cases": [{"inp": {"N": 16, "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": 0.5, "Uo": 1.0, "u_lb": 0.1, "seed": 0.001, "Nz": 4, "span": "periodic", "collision": "reg"}, "steps": 50, "outputs": {"torque": -0.004965930940661194, "E": 0.07529099676551895, "mass": 992.0, "samples": [[0, 0, 7, 3, -0.019240983078777075], [1, 3, 10, 8, -0.03299589726630897], [2, 2, 13, 13, -0.00022662658680086932], [0, 1, 0, 2, 0.02883732316219506], [1, 0, 3, 7, 0.02802819090076522], [2, 3, 6, 12, 0.0005877689467720592], [0, 2, 9, 1, -0.011496275198653795], [1, 1, 12, 6, 0.0211289053500717], [2, 0, 15, 11, -8.927354391812168e-05], [0, 3, 2, 0, -0.01658345214688885], [1, 2, 5, 5, -0.16954713971231966], [2, 1, 8, 10, -2.2139683520807997e-05], [0, 0, 11, 15, -0.03055468197811368], [1, 3, 14, 4, -0.00924290056467109], [2, 2, 1, 9, -0.000247231729184141], [0, 1, 4, 14, 0.008541183019352387], [1, 0, 7, 3, -0.23880043159994746], [2, 3, 10, 8, -3.696566491803823e-05], [0, 2, 13, 13, 0.19545946742958564], [1, 1, 0, 2, -0.00220494537490129]], "checksum": 486.1242525937387}}, {"inp": {"N": 16, "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": 0.5, "Uo": 1.0, "u_lb": 0.1, "seed": 0.001, "Nz": 4, "span": "walls", "collision": "reg"}, "steps": 50, "outputs": {"torque": -0.01602916504352096, "E": 0.0721956181622504, "mass": 991.9999999999999, "samples": [[0, 0, 7, 3, 0.021661705142618382], [1, 3, 10, 8, -0.040992754379148316], [2, 2, 13, 13, 0.04313147554383839], [0, 1, 0, 2, 0.007406546706881585], [1, 0, 3, 7, -0.051314579068192576], [2, 3, 6, 12, 0.020990529460079673], [0, 2, 9, 1, -0.01535789988538752], [1, 1, 12, 6, -0.06771029126845741], [2, 0, 15, 11, -0.005590400156456946], [0, 3, 2, 0, 0.0013117452563922978], [1, 2, 5, 5, -0.3104064399171141], [2, 1, 8, 10, -0.028470222887798897], [0, 0, 11, 15, -0.02276880125956025], [1, 3, 14, 4, -0.014660265406389063], [2, 2, 1, 9, 0.006951916959124331], [0, 1, 4, 14, -0.08766462129310011], [1, 0, 7, 3, -0.1770470083616279], [2, 3, 10, 8, -0.138731567523349], [0, 2, 13, 13, 0.3505871321107043], [1, 1, 0, 2, -0.010052800131411693]], "checksum": 497.2391375001475}}, {"inp": {"N": 16, "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": 0.5, "Uo": 1.0, "u_lb": 0.1, "seed": 0.001, "Nz": 1, "span": "periodic", "collision": "bgk"}, "steps": 50, "outputs": {"torque": -0.0204169952996458, "E": 0.08413525101779303, "mass": 248.0, "samples": [[0, 0, 7, 3, 0.044625017022848525], [1, 0, 10, 8, -0.07519113361358927], [2, 0, 13, 13, 0.0], [0, 0, 0, 2, -0.056499221922622765], [1, 0, 3, 7, -0.016084891796978543], [2, 0, 6, 12, 0.0], [0, 0, 9, 1, -0.017177444103305295], [1, 0, 12, 6, 0.005746738908989104], [2, 0, 15, 11, 0.0], [0, 0, 2, 0, -0.0005473061047379253], [1, 0, 5, 5, -0.21303988776190994], [2, 0, 8, 10, 0.0], [0, 0, 11, 15, 0.06479985266518425], [1, 0, 14, 4, 0.09586533472870382], [2, 0, 1, 9, 0.0], [0, 0, 4, 14, 0.08950431058193044], [1, 0, 7, 3, -0.2674025559144229], [2, 0, 10, 8, 0.0], [0, 0, 13, 13, -0.0457060243881684], [1, 0, 0, 2, -0.0016763563837470237]], "checksum": 128.24363289472782}}, {"inp": {"N": 16, "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": 0.5, "Uo": 1.0, "u_lb": 0.1, "seed": 0.001, "Nz": 1, "span": "walls", "collision": "mrt"}, "steps": 50, "outputs": {"torque": -0.33178128003805796, "E": 0.022547629177083285, "mass": 247.99999999999997, "samples": [[0, 0, 7, 3, -0.000991433859530596], [1, 0, 10, 8, -0.08248774331813306], [2, 0, 13, 13, 4.077548889764087e-16], [0, 0, 0, 2, 0.00221432987407713], [1, 0, 3, 7, 0.014898916507221804], [2, 0, 6, 12, 6.245827191655357e-16], [0, 0, 9, 1, -6.329916337206635e-05], [1, 0, 12, 6, -0.004813496789582036], [2, 0, 15, 11, 0.0], [0, 0, 2, 0, 0.002978921199537679], [1, 0, 5, 5, -0.001592054563179165], [2, 0, 8, 10, -2.062713201770587e-16], [0, 0, 11, 15, -0.01089095398630217], [1, 0, 14, 4, 7.127253529048123e-05], [2, 0, 1, 9, -2.7528969387505924e-16], [0, 0, 4, 14, -0.038470600843721364], [1, 0, 7, 3, 0.0013535801530408587], [2, 0, 10, 8, 0.0], [0, 0, 13, 13, 0.028183403496065032], [1, 0, 0, 2, 0.0012340364759818678]], "checksum": 33.905816049330404}}, {"inp": {"N": 16, "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": 0.5, "Uo": 1.0, "u_lb": 0.1, "seed": 0.001, "Nz": 4, "span": "periodic", "collision": "mrt"}, "steps": 50, "outputs": {"torque": -0.004747562334607338, "E": 0.07865343778735323, "mass": 992.0000000000001, "samples": [[0, 0, 7, 3, 0.012206528252616993], [1, 3, 10, 8, -0.03355452740220178], [2, 2, 13, 13, -0.0002452666703131561], [0, 1, 0, 2, -0.005516850907899117], [1, 0, 3, 7, 0.013495883108538347], [2, 3, 6, 12, 0.0005791443505467361], [0, 2, 9, 1, -0.021128432161005364], [1, 1, 12, 6, -0.005314452904623158], [2, 0, 15, 11, -9.303888642035488e-05], [0, 3, 2, 0, -0.01886642968661273], [1, 2, 5, 5, -0.20992457395085756], [2, 1, 8, 10, -5.835877509676354e-05], [0, 0, 11, 15, 0.01353317050046813], [1, 3, 14, 4, 0.03058842212661856], [2, 2, 1, 9, -0.00024324172082122538], [0, 1, 4, 14, -0.004380351401148334], [1, 0, 7, 3, -0.24052862940091152], [2, 3, 10, 8, -1.5168777685159967e-05], [0, 2, 13, 13, 0.10946308313578208], [1, 1, 0, 2, 0.0005026655807173647]], "checksum": 472.55786376786375}}, {"inp": {"N": 16, "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": 0.5, "Uo": 1.0, "u_lb": 0.1, "seed": 0.001, "Nz": 4, "span": "walls", "collision": "bgk"}, "steps": 50, "outputs": {"torque": -0.020679663522848002, "E": 0.08993046952091391, "mass": 992.0, "samples": [[0, 0, 7, 3, 0.009896140530409428], [1, 3, 10, 8, 0.09513131683739956], [2, 2, 13, 13, 0.06720280039857458], [0, 1, 0, 2, 0.12790847909287678], [1, 0, 3, 7, -0.08096739960359575], [2, 3, 6, 12, -0.09233289642009962], [0, 2, 9, 1, 0.01902823536195252], [1, 1, 12, 6, -0.2974066487471646], [2, 0, 15, 11, 0.011553327222563758], [0, 3, 2, 0, 0.0007871179250879846], [1, 2, 5, 5, -0.2645006406606076], [2, 1, 8, 10, -0.1654712460441955], [0, 0, 11, 15, -0.06951495342405777], [1, 3, 14, 4, 0.0046482381415884995], [2, 2, 1, 9, 0.025019885610086615], [0, 1, 4, 14, -0.04454602442700546], [1, 0, 7, 3, -0.1601333659778302], [2, 3, 10, 8, -0.11193329651366618], [0, 2, 13, 13, 0.2186802261164958], [1, 1, 0, 2, -0.023554709959747934]], "checksum": 598.7416197487623}}]}, "fv": {"cases": [{"name": "periodic Nz=4 spin+orbit", "inp": {"N": 16, "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": 1.0, "Uo": 0.5, "seed": 0.001, "Nz": 4, "span": "periodic"}, "params": {"N": 16, "Nz": 4, "h": 0.0625, "Lz": 0.25, "span": "periodic", "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": 1.0, "Uo": 0.5, "nu": 0.002, "Uref": 1.0, "seed": 0.001, "Omega": 10.0, "omega_o": 2.5, "dt": 0.009654994850669412, "eps": 0.0625, "vcycles": 2, "nu1": 2, "nu2": 2, "ncoarse": 40}, "steps": 40, "outputs": {"torque": -0.09858270343916012, "E": 0.18816348687722115, "samples": [[0, 1, 3, 2, 0.07063147594403672], [1, 0, 8, 13, 1.0601750720767718], [2, 3, 13, 8, 1.9580849188820254e-05], [0, 2, 2, 3, 0.09797400797853226], [1, 1, 7, 14, 0.37630524496643714], [2, 0, 12, 9, -1.2980559470865213e-06], [0, 3, 1, 4, 0.11776582410940643], [1, 2, 6, 15, -0.18974112225234135], [2, 1, 11, 10, -1.2777921958271387e-06], [0, 0, 0, 5, 0.1086721233720448], [1, 3, 5, 0, -0.12364924488764734], [2, 2, 10, 11, 6.825362945617327e-07], [0, 1, 15, 6, -0.23579948413347945], [1, 0, 4, 1, -0.12673399647375086], [2, 3, 9, 12, 2.0242924198005245e-05], [0, 2, 14, 7, -0.41574851538583657], [1, 1, 3, 2, -0.09700576649155235], [2, 0, 8, 13, -4.142014919631399e-06], [0, 3, 13, 8, -1.2070040745179087], [1, 2, 2, 3, -0.06244800082957354]], "checksum": 385.3588211245489}}, {"name": "walls Nz=4 spin+orbit", "inp": {"N": 16, "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": 1.0, "Uo": 0.5, "seed": 0.001, "Nz": 4, "span": "walls"}, "params": {"N": 16, "Nz": 4, "h": 0.0625, "Lz": 0.25, "span": "walls", "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": 1.0, "Uo": 0.5, "nu": 0.002, "Uref": 1.0, "seed": 0.001, "Omega": 10.0, "omega_o": 2.5, "dt": 0.009654994850669412, "eps": 0.0625, "vcycles": 2, "nu1": 2, "nu2": 2, "ncoarse": 40}, "steps": 40, "outputs": {"torque": -0.11101379397194083, "E": 0.17151792989299003, "samples": [[0, 1, 3, 2, 0.07260149997432497], [1, 0, 8, 13, 0.9171874268332536], [2, 3, 13, 8, -0.006383176895884924], [0, 2, 2, 3, 0.10127516318662444], [1, 1, 7, 14, 0.389880575503632], [2, 0, 12, 9, 0.00944875447619318], [0, 3, 1, 4, 0.09995081471485662], [1, 2, 6, 15, -0.18320610008911506], [2, 1, 11, 10, 0.002670187217570135], [0, 0, 0, 5, 0.0931760113856851], [1, 3, 5, 0, -0.10517381890655911], [2, 2, 10, 11, -0.005393755965863347], [0, 1, 15, 6, -0.23476039985231334], [1, 0, 4, 1, -0.10557263190703725], [2, 3, 9, 12, -0.017847963298452903], [0, 2, 14, 7, -0.4124582784552897], [1, 1, 3, 2, -0.10247290463735274], [2, 0, 8, 13, 0.001918305614897752], [0, 3, 13, 8, -1.054254436441208], [1, 2, 2, 3, -0.06663198979257091]], "checksum": 351.2687204208436}}, {"name": "periodic Nz=1 spin+orbit", "inp": {"N": 16, "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": 1.0, "Uo": 0.5, "seed": 0.001, "Nz": 1, "span": "periodic"}, "params": {"N": 16, "Nz": 1, "h": 0.0625, "Lz": 0.0625, "span": "periodic", "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": 1.0, "Uo": 0.5, "nu": 0.002, "Uref": 1.0, "seed": 0.001, "Omega": 10.0, "omega_o": 2.5, "dt": 0.009654994850669412, "eps": 0.0625, "vcycles": 2, "nu1": 2, "nu2": 2, "ncoarse": 40}, "steps": 40, "outputs": {"torque": -0.09857864881017724, "E": 0.1881563293323268, "samples": [[0, 0, 3, 2, 0.07062531965919777], [1, 0, 8, 13, 1.060126879347382], [2, 0, 13, 8, 0.0], [0, 0, 2, 3, 0.09792677435081895], [1, 0, 7, 14, 0.3763170192669115], [2, 0, 12, 9, 0.0], [0, 0, 1, 4, 0.11776283852061445], [1, 0, 6, 15, -0.18970637265620766], [2, 0, 11, 10, 0.0], [0, 0, 0, 5, 0.10866656248679787], [1, 0, 5, 0, -0.1236418598835863], [2, 0, 10, 11, 0.0], [0, 0, 15, 6, -0.2357877058422719], [1, 0, 4, 1, -0.12671466952689114], [2, 0, 9, 12, 0.0], [0, 0, 14, 7, -0.41574610578393045], [1, 0, 3, 2, -0.09700069193546207], [2, 0, 8, 13, 0.0], [0, 0, 13, 8, -1.2069274060288646], [1, 0, 2, 3, -0.06249630139801002]], "checksum": 96.33604061815132}}, {"name": "walls Nz=2 spin only", "inp": {"N": 16, "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": -1.0, "Uo": 0.0, "seed": 0.002, "Nz": 2, "span": "walls"}, "params": {"N": 16, "Nz": 2, "h": 0.0625, "Lz": 0.125, "span": "walls", "Re": 100.0, "R": 0.1, "ro": 0.2, "Us": -1.0, "Uo": 0.0, "nu": 0.002, "Uref": 1.0, "seed": 0.002, "Omega": -10.0, "omega_o": 0.0, "dt": 0.01572986577181208, "eps": 0.0625, "vcycles": 2, "nu1": 2, "nu2": 2, "ncoarse": 40}, "steps": 30, "outputs": {"torque": 0.09111073977641149, "E": 0.09791861504655938, "samples": [[0, 1, 3, 2, 0.0006766608237963165], [1, 0, 8, 13, -1.173037202410212], [2, 1, 13, 8, -2.9046249959125677e-06], [0, 0, 2, 3, 0.002910866179555145], [1, 1, 7, 14, -0.9583252046671964], [2, 0, 12, 9, -8.785862772594519e-06], [0, 1, 1, 4, 0.005291861685292016], [1, 0, 6, 15, -0.209478226353476], [2, 1, 11, 10, -1.2595888853093876e-05], [0, 0, 0, 5, 0.005844598257381359], [1, 1, 5, 0, -0.0015671280656603423], [2, 0, 10, 11, -7.1389730523530025e-06], [0, 1, 15, 6, -0.007908502920892332], [1, 0, 4, 1, -0.002516564401720078], [2, 1, 9, 12, -5.082533308799021e-06], [0, 0, 14, 7, -0.010890811412828015], [1, 1, 3, 2, -0.0034048079559774735], [2, 0, 8, 13, -8.650423735676413e-06], [0, 1, 13, 8, 0.0045944660771060145], [1, 0, 2, 3, -0.003624343909740298]], "checksum": 100.2686618076768}}, {"name": "periodic Nz=8 orbit only", "inp": {"N": 16, "Re": 200.0, "R": 0.1, "ro": 0.2, "Us": 0.0, "Uo": 0.8, "seed": 0.001, "Nz": 8, "span": "periodic"}, "params": {"N": 16, "Nz": 8, "h": 0.0625, "Lz": 0.5, "span": "periodic", "Re": 200.0, "R": 0.1, "ro": 0.2, "Us": 0.0, "Uo": 0.8, "nu": 0.0008000000000000001, "Uref": 0.8, "seed": 0.001, "Omega": 0.0, "omega_o": 4.0, "dt": 0.014685150375939846, "eps": 0.0625, "vcycles": 2, "nu1": 2, "nu2": 2, "ncoarse": 40}, "steps": 30, "outputs": {"torque": 0.015562953696191957, "E": 0.07348559930409349, "samples": [[0, 1, 3, 2, 0.10929770285497184], [1, 0, 8, 13, 0.2646260636603227], [2, 7, 13, 8, 1.1081225102696263e-05], [0, 6, 2, 3, 0.15407802107379798], [1, 5, 7, 14, 0.11465754663650478], [2, 4, 12, 9, 2.7604339349972726e-07], [0, 3, 1, 4, 0.18894995005820897], [1, 2, 6, 15, 0.09397854531826612], [2, 1, 11, 10, -3.87752361328375e-07], [0, 0, 0, 5, 0.1978094827855315], [1, 7, 5, 0, -0.20824683388767712], [2, 6, 10, 11, 2.474205206058559e-05], [0, 5, 15, 6, 0.2756464463796566], [1, 4, 4, 1, -0.19681599946786643], [2, 3, 9, 12, -9.695527373715654e-07], [0, 2, 14, 7, 0.19339187154922582], [1, 1, 3, 2, -0.15411991298869815], [2, 0, 8, 13, 1.5176311341745256e-06], [0, 7, 13, 8, -0.4807385126400361], [1, 6, 2, 3, -0.10281523683684303]], "checksum": 300.9970147495669}}]}};
+window.PRESETS = {
+  "agree": {
+    "label": "Low Re: 3D agrees with 2D",
+    "description": "Spinning cylinder at a Reynolds number where the 3D run is expected to stay spanwise-uniform, so the two panels should agree. TODO(measured): Re value and the claim above, to be filled after the parameter sweep.",
+    "inputs": {"method": "lbm", "span": "periodic", "Re": 100, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 16, "seed": 0.001}
+  },
+  "transition": {
+    "label": "Intermediate Re: the seed grows",
+    "description": "A Reynolds number near where the small 3D seed starts to grow. TODO(measured): Re value, to be filled after the parameter sweep.",
+    "inputs": {"method": "lbm", "span": "periodic", "Re": 400, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 128, "Nz": 32, "seed": 0.001}
+  },
+  "turbulent": {
+    "label": "High Re: fully three-dimensional",
+    "description": "A Reynolds number where the 3D flow clearly departs from the 2D baseline. TODO(measured): Re value, to be filled after the parameter sweep.",
+    "inputs": {"method": "lbm", "span": "periodic", "Re": 1600, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 128, "Nz": 32, "seed": 0.001}
+  },
+  "ekman": {
+    "label": "End walls: Ekman layers",
+    "description": "Same spinning cylinder, but with no-slip end walls at z = 0 and z = Lz instead of a periodic span. Compare with the periodic runs. TODO(measured): Re value, to be filled after the parameter sweep.",
+    "inputs": {"method": "lbm", "span": "walls", "Re": 400, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}
+  }
+}
+;
+window.WT_PLOTS = {};
+window.PY_SRC = {};
+</script>
+<script src="../lbm_cpu.js"></script>
+<script src="../fv_cpu.js"></script>
+<script src="../lbm_gpu.js"></script>
+<script src="../fv_gpu.js"></script>
+<script src="../render.js"></script>
+<script src="../diagnostics.js"></script>
+<script src="../app.js"></script>
+</body>
+</html>

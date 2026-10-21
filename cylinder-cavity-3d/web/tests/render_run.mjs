@@ -1,0 +1,24 @@
+// node web/tests/render_run.mjs [port]   (needs: cd <project dir> && python3 -m http.server <port> &)
+import { createRequire } from "node:module";
+import { execSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+const require = createRequire(import.meta.url);
+const { chromium } = require(execSync("npm root -g").toString().trim() + "/playwright");
+const port = process.argv[2] || "8771";
+const here = path.dirname(fileURLToPath(import.meta.url));
+const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--enable-unsafe-webgpu", "--use-webgpu-adapter=swiftshader", "--no-sandbox"] });
+const page = await b.newPage();
+const errs = [];
+page.on("console", m => { if ((m.type() === "error" || m.type() === "warning") && !m.text().includes("404")) errs.push(m.type() + ": " + m.text()); });
+page.on("pageerror", e => errs.push(String(e)));
+await page.goto(`http://localhost:${port}/web/tests/render_test.html`);
+await page.waitForFunction(() => window.RESULT && (window.RESULT.done || window.RESULT.error), null, { timeout: 900000 });
+const R = await page.evaluate(() => window.RESULT), S = await page.evaluate(() => window.SHOTS);
+fs.mkdirSync(path.join(here, "shots"), { recursive: true });
+for (const [k, v] of Object.entries(S)) fs.writeFileSync(path.join(here, "shots", "render_" + k + ".png"), Buffer.from(v.split(",")[1], "base64"));
+await b.close();
+console.log(JSON.stringify(R, null, 1));
+if (errs.length) console.log("console messages:", errs);
+process.exit(R.error || R.errors.length || errs.length ? 1 : 0);

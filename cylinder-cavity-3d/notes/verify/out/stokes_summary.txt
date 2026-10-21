@@ -1,0 +1,7 @@
+bracket |T|: 0.2564566435365703 0.26179938779914946
+stokes fv 32 |T|=0.55944  vs bracket mid-low +118.1% / vs hi +113.7%
+stokes lbm 32 |T|=0.23429  vs bracket mid-low -8.6% / vs hi -10.5%
+stokes fv 64 |T|=0.39187  vs bracket mid-low +52.8% / vs hi +49.7%
+stokes lbm 64 |T|=0.24127  vs bracket mid-low -5.9% / vs hi -7.8%
+stokesU lbm 32 |T|=0.25015  vs bracket mid-low -2.5% / vs hi -4.5%
+stokesU lbm 64 |T|=0.25666  vs bracket mid-low +0.1% / vs hi -2.0%

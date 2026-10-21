@@ -6,13 +6,7 @@
 //   solver: params, t, nstep, step(n), readVelocity(), updateVelocity() + velocityBuffer (gpu), velocity() (cpu),
 //           torque() / readTorque(), maxdiv() (fv), mass() (lbm), destroy()
 //   CC3.diag.* (diagnostics.js)
-// Renderer interface ASSUMED (SPEC names only CC3.render.* and drawSliceCPU); everything that touches it is in the
-// block "renderer adapter" below, so a mismatch is fixed in one place:
-//   await CC3.render.createRenderer(device, canvas, {blit})  -> r;  r.draw(solver, view);  r.snapshot() -> ImageData|canvas;
-//   r.resize(w, h) (optional);  r.destroy() (optional)
-//   CC3.render.drawSliceCPU(canvas, U, p, view)   (U = Float64Array [c][k][j][i])
-//   view = { field: 'omega'|'wz'|'q'|'speed'|'w', mode: 'slice-xy'|'slice-xz'|'slice-yz'|'volume'|'isosurface',
-//            slice: 0..1 (position along the slice normal), range: [lo, hi] (colour scale), camera: {yaw, pitch, zoom} }
+// Renderer: web/render.js (see the block "renderer adapter" below).
 (function () {
   'use strict';
   const CC3 = globalThis.CC3;
@@ -47,8 +41,7 @@
     playing: true, busy: false, pendingRebuild: false, ready: false, dirty: true, diagNow: false,
     autoN: 4, msStep: null, diagMs: 20, lastDiagAt: 0, lastPlotAt: 0, rev: 0, histSel: 'torque', histBound: false,
     H: null, SP: [], range: null, crangeFresh: true, mass0: { 2: null, 3: null }, last: null,
-    cam: { 2: { yaw: 0.6, pitch: 0.5, zoom: 1 }, 3: { yaw: 0.6, pitch: 0.5, zoom: 1 } },
-    renderers: {}, canvases: {}, notes: [],
+        renderers: {}, detach: {}, canvases: {}, notes: [],
   };
   function newHistory() {
     return { t: [], E2: [], E3: [], Z2: [], Z3: [], T2: [], T3: [], Ew: [], E3d: [], Ekz: [[], [], [], []] };
@@ -149,40 +142,52 @@
     showValues();
   }
 
-  // ------------------------------------------------------------------ renderer adapter
-  async function setupRenderers() {
+  // ------------------------------------------------------------------ renderer adapter (web/render.js)
+  // GPU: r = CC3.render.create(device, canvas, geom) per solver (geometry-bound), r.setField(name), r.draw(vb, view),
+  // r.readPixels(), r.attachControls(canvas, cb).  CPU: CC3.render.drawSliceCPU(ctx2d, U, geom, view) (slices only).
+  const RFIELD = { omega: 'vort_mag', wz: 'vort_z', q: 'q', speed: 'speed', w: 'w' };
+  const geomOf = (p) => ({ N: p.N, Nz: p.Nz, h: p.h, Lz: p.Lz, span: p.span, R: p.R, ro: p.ro });
+  async function makeRenderers() {
     sim.canvases = { 2: $('canvas2d'), 3: $('canvas3d') };
+    for (const w of [2, 3]) {
+      if (sim.detach[w]) { sim.detach[w](); sim.detach[w] = null; }
+      if (sim.renderers[w]) { try { sim.renderers[w].destroy(); } catch (e) { /* ignore */ } sim.renderers[w] = null; }
+    }
     if (sim.backend !== 'gpu') return;
     for (const w of [2, 3]) {
-      sim.renderers[w] = await CC3.render.createRenderer(sim.device, sim.canvases[w], { blit: URLQ.has('blit') });
+      const p = w === 2 ? sim.p2 : sim.p3;
+      const r = CC3.render.create(sim.device, sim.canvases[w], Object.assign(geomOf(p), { blit: URLQ.has('blit') }));
+      await r.ready;
+      sim.renderers[w] = r;
+      sim.detach[w] = r.attachControls(sim.canvases[w], () => { sim.dirty = true; });
     }
   }
   function sizeCanvases() {
     for (const w of [2, 3]) {
       const cv = sim.canvases[w];
+      if (!cv) continue;
       const px = URLQ.has('blit') ? 640 : Math.max(160, Math.min(720, Math.round(cv.clientWidth * (window.devicePixelRatio || 1))));
-      if (cv.width !== px || cv.height !== px) {
-        cv.width = cv.height = px;
-        if (sim.renderers[w] && sim.renderers[w].resize) sim.renderers[w].resize(px, px);
-        sim.dirty = true;
-      }
+      if (cv.width !== px || cv.height !== px) { cv.width = cv.height = px; sim.dirty = true; }
     }
   }
-  function viewFor(w) {
+  function viewFor(w, S, p) {
     const r = sim.range || [0, 1];
-    return { field: $('in-field').value, mode: $(`mode${w}d`).value, slice: +$('in-slice').value, range: r.slice(),
-      camera: Object.assign({}, sim.cam[w]) };
+    const phi = S.phi !== undefined ? S.phi : (p.omega_o || 0) * S.t;
+    return { field: RFIELD[$('in-field').value], mode: $(`mode${w}d`).value, slice: +$('in-slice').value,
+      range: { lo: r[0], hi: r[1] }, phi };
   }
   async function drawPanels() {
     if (!sim.ready) return;
     for (const w of [2, 3]) {
-      const S = w === 2 ? sim.s2 : sim.s3, p = w === 2 ? sim.p2 : sim.p3, view = viewFor(w);
+      const S = w === 2 ? sim.s2 : sim.s3, p = w === 2 ? sim.p2 : sim.p3, view = viewFor(w, S, p);
       if (sim.backend === 'gpu') {
+        const r = sim.renderers[w];
         if (S.updateVelocity) S.updateVelocity();
-        sim.renderers[w].draw(S, view);
+        r.setField(view.field);
+        await r.draw(S.velocityBuffer, view);
       } else {
         if (view.mode === 'volume' || view.mode === 'isosurface') view.mode = 'slice-xy';
-        CC3.render.drawSliceCPU(sim.canvases[w], S.velocity(), p, view);
+        CC3.render.drawSliceCPU(sim.canvases[w].getContext('2d'), S.velocity(), geomOf(p), view);
       }
     }
     sim.dirty = false;
@@ -208,7 +213,11 @@
     if (S.readTorque) return S.readTorque();
     const t = S.torque; return typeof t === 'function' ? t.call(S) : t;
   };
-  const optional = async (S, name) => (typeof S[name] === 'function' ? S[name]() : undefined);
+  const optional = async (S, name) => {
+    const rd = 'read' + name[0].toUpperCase() + name.slice(1);           // GPU: readMaxdiv() refreshes the cached value
+    if (typeof S[rd] === 'function') return S[rd]();
+    return typeof S[name] === 'function' ? S[name]() : undefined;
+  };
 
   function gridBytes(method, N, Nz) {                       // largest single storage buffer (f32)
     return method === 'lbm' ? 19 * 4 * Nz * N * N : 4 * (Nz + 1) * N * (N + 1);
@@ -254,6 +263,7 @@
     sim.inp = inp; sim.p2 = sim.s2.params || p2; sim.p3 = sim.s3.params || p3;
     sim.H = newHistory(); sim.SP = []; sim.range = null; sim.crangeFresh = true; sim.last = null; sim.msStep = null;
     sim.mass0 = { 2: await optional(sim.s2, 'mass'), 3: await optional(sim.s3, 'mass') };
+    try { await makeRenderers(); } catch (e) { showErr('Could not create the renderers: ' + (e.message || e)); return; }
     sim.ready = true;
     const rel = Math.abs(sim.p2.dt - sim.p3.dt) / sim.p3.dt;
     if (rel > 1e-9) sim.notes.push(`The 2D and 3D time steps differ (${fmtE(sim.p2.dt)} vs ${fmtE(sim.p3.dt)}); the 2D run takes the steps needed to reach the same physical time.`);
@@ -382,8 +392,8 @@
 
   // ------------------------------------------------------------------ plots
   function baseLayout(title, extra) {
-    return Object.assign({ title: { text: title, font: { size: 15 } }, height: 300, margin: { l: 62, r: 16, t: 66, b: 44 },
-      legend: { orientation: 'h', x: 0, y: 1.02, yanchor: 'bottom', font: { size: 11 } }, font: FONT,
+    return Object.assign({ title: { text: title, font: { size: 14 }, x: 0.02, xanchor: 'left' }, height: 340, margin: { l: 62, r: 16, t: 46, b: 96 },
+      legend: { orientation: 'h', x: 0, y: -0.3, yanchor: 'top', font: { size: 11 } }, font: FONT,
       xaxis: { title: { text: 't' } }, datarevision: sim.rev }, extra || {});
   }
   const pos = (a) => a.map((v) => (Number.isFinite(v) && v > 0 ? v : null));      // log axis: drop zeros / NaN
@@ -401,7 +411,7 @@
         tr.push({ x: t, y: pos(H.Ekz[m]), name: `kz = ${m + 1}`, line: { color: cols[m], width: 1.2 } });
       }
     }
-    Plotly.react('plot-spanwise', tr, baseLayout('Spanwise energy, 3D run', {
+    Plotly.react('plot-spanwise', tr, baseLayout('Spanwise energy (3D)', {
       yaxis: { type: 'log', title: { text: 'energy per unit span' }, exponentformat: 'e' } }), PLOT_CFG);
     // (b) horizontal spectra
     const avg = $('in-avg').checked, w = Math.max(0.05, +$('in-avgw').value || 1), L = sim.last;
@@ -416,7 +426,7 @@
     Plotly.react('plot-spectra', [
       Object.assign(kx(L.k2, e2), { name: '2D', line: { color: C2, width: 2 } }),
       Object.assign(kx(L.k3, e3), { name: '3D', line: { color: C3, width: 2 } })],
-    baseLayout(avg ? `Horizontal spectrum E(k), mean of ${n} sample${n > 1 ? 's' : ''}` : 'Horizontal spectrum E(k), now', {
+    baseLayout(avg ? `E(k), mean of ${n} sample${n > 1 ? 's' : ''}` : 'Horizontal spectrum E(k)', {
       xaxis: { type: 'log', title: { text: 'wavenumber k (units of 2π / box side)' } },
       yaxis: { type: 'log', title: { text: 'E(k)' }, exponentformat: 'e' } }), PLOT_CFG);
     // (c) history with a selector
@@ -426,9 +436,9 @@
     Plotly.react('plot-history', [
       { x: t.slice(k0), y: H[a].slice(k0), name: '2D', line: { color: C2, width: 2 } },
       { x: t.slice(k0), y: H[b].slice(k0), name: '3D', line: { color: C3, width: 2 } }],
-    baseLayout(`History: ${lab}`, {
-      yaxis: { title: { text: lab }, exponentformat: 'e' },
-      updatemenus: [{ type: 'buttons', direction: 'right', x: 1, xanchor: 'right', y: 1.22, yanchor: 'bottom', showactive: true,
+    baseLayout(`History`, {
+      yaxis: { title: { text: lab }, exponentformat: 'e' }, margin: { l: 62, r: 16, t: 46, b: 96 },
+      updatemenus: [{ type: 'buttons', direction: 'right', x: 1, xanchor: 'right', y: 1.0, yanchor: 'bottom', showactive: true,
         active: ['torque', 'E', 'Z'].indexOf(sim.histSel), pad: { r: 0, t: 0 }, font: { size: 11 },
         buttons: ['torque', 'E', 'Z'].map((l) => ({ label: l, method: 'skip' })) }] }), PLOT_CFG);
     if (!sim.histBound) {
@@ -501,23 +511,6 @@
     $('val-gpu').addEventListener('click', () => runValidation({ cpu: false, gpu: true, cross: false }));
     $('val-cross').addEventListener('click', () => runValidation({ cpu: false, gpu: false, cross: true }));
     window.addEventListener('resize', sizeCanvases);
-    // drag to rotate (volume / isosurface views), wheel to zoom
-    for (const w of [2, 3]) {
-      const cv = $(`canvas${w}d`);
-      let drag = null;
-      cv.addEventListener('pointerdown', (e) => { drag = [e.clientX, e.clientY]; cv.setPointerCapture(e.pointerId); });
-      cv.addEventListener('pointerup', () => { drag = null; });
-      cv.addEventListener('pointermove', (e) => {
-        if (!drag) return;
-        const c = sim.cam[w];
-        c.yaw += 0.01 * (e.clientX - drag[0]); c.pitch = Math.max(-1.5, Math.min(1.5, c.pitch + 0.01 * (e.clientY - drag[1])));
-        drag = [e.clientX, e.clientY]; sim.dirty = true;
-      });
-      cv.addEventListener('wheel', (e) => {
-        if (!/volume|isosurface/.test($(`mode${w}d`).value)) return;
-        e.preventDefault(); sim.cam[w].zoom = Math.max(0.4, Math.min(4, sim.cam[w].zoom * Math.exp(-0.001 * e.deltaY))); sim.dirty = true;
-      }, { passive: false });
-    }
   }
   function renderPendingPlots() {
     document.querySelectorAll('[data-wt-plot]:not([data-rendered])').forEach((el) => {
@@ -530,7 +523,7 @@
 
   // ------------------------------------------------------------------ Save PNG (both panels in one image)
   async function panelImage(w) {
-    if (sim.backend === 'gpu' && sim.renderers[w] && sim.renderers[w].snapshot) return sim.renderers[w].snapshot();
+    if (sim.backend === 'gpu') { const im = await sim.renderers[w].readPixels(); return new ImageData(im.data, im.width, im.height); }
     return sim.canvases[w];
   }
   async function savePng() {
@@ -656,12 +649,10 @@
     if (!sim.forcedCpu) {
       try {
         if (!navigator.gpu) throw new Error('navigator.gpu is undefined');
-        if (!CC3.lbm.createGpuSolver || !CC3.fv.createGpuSolver || !CC3.render || !CC3.render.createRenderer) throw new Error('GPU modules are missing');
-        const adapter = await navigator.gpu.requestAdapter();
-        if (!adapter) throw new Error('no adapter');
-        const lim = adapter.limits, req = {};
-        for (const k of ['maxStorageBufferBindingSize', 'maxBufferSize']) if (lim[k]) req[k] = lim[k];
-        const device = await adapter.requestDevice({ requiredLimits: req });
+        if (!CC3.lbm.createGpuSolver || !CC3.fv.createGpuSolver || !CC3.render || !CC3.render.create) throw new Error('GPU modules are missing');
+        // ONE device for the whole page, created with the adapter's maximum buffer limits (shared by both methods)
+        const device = await CC3.lbm.requestGpuDevice();
+        const adapter = device._adapter || null;
         device.lost.then((info) => { sim.ready = false; showErr('The GPU device was lost (' + info.message + '). Reload the page.'); });
         sim.adapter = adapter; sim.device = device; sim.backend = 'gpu';
       } catch (e) { sim.whyNoGpu = String(e.message || e); }
@@ -695,7 +686,7 @@
     const mode = URLQ.get('mode');
     if (MODES.includes(mode) && !(sim.backend === 'cpu' && /volume|isosurface/.test(mode))) { $('mode2d').value = mode; $('mode3d').value = mode; }
     showValues();
-    await setupRenderers();
+    sim.canvases = { 2: $('canvas2d'), 3: $('canvas3d') };
     sizeCanvases();
     globalThis.CC3APP = { sim, rebuild, diagnose, drawPanels, runValidation, savePng, readInputs };
     sim.pendingRebuild = true;
