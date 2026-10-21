@@ -14,7 +14,7 @@ sys.path.insert(0, HERE)
 import fv3d                       # noqa: E402
 from ref2d import ns2d            # noqa: E402
 
-SPIN_ORBIT = dict(Re=200.0, Us=1.0, Uo=0.5, ro=0.2)      # the case used for the 2D comparison
+SPIN_ORBIT = dict(Re=200.0, Us=1.0, Uo=0.5, ro=0.2, seed=0.0)      # the case used for the 2D comparison
 
 
 def no_body(p):
@@ -27,7 +27,7 @@ def no_body(p):
 def test_nz1_periodic_matches_ns2d():
     """Nz = 1, periodic: u, v, q, torque equal ns2d after 50 steps (tolerance 1e-13,
     observed exactly 0 because every z-term is exactly zero); w stays exactly 0."""
-    p2 = ns2d.make_params(N=32, **SPIN_ORBIT)
+    p2 = ns2d.make_params(N=32, **{k: v for k, v in SPIN_ORBIT.items() if k != 'seed'})
     p3 = fv3d.make_params(N=32, Nz=1, **SPIN_ORBIT)
     assert p2["dt"] == p3["dt"]
     s2, s3 = ns2d.init_state(p2), fv3d.init_state(p3)
@@ -51,34 +51,68 @@ def plane_difference(vcycles, nz=4, steps=50):
     for _ in range(steps):
         fv3d.step(s1, p1)
         fv3d.step(sn, pn)
-    du = max(np.abs(sn["u"][k] - s1["u"][0]).max() for k in range(nz))
-    dv = max(np.abs(sn["v"][k] - s1["v"][0]).max() for k in range(nz))
-    return max(du, dv), np.abs(sn["w"]).max(), fv3d.torque(s1, p1), fv3d.torque(sn, pn)
+    dz = max(max(np.abs(sn[c][k] - sn[c][0]).max() for k in range(nz)) for c in "uv")   # between planes
+    d1 = max(max(np.abs(sn[c][k] - s1[c][0]).max() for k in range(nz)) for c in "uv")   # to the Nz = 1 run
+    return dz, d1, np.abs(sn["w"]).max(), fv3d.torque(s1, p1), fv3d.torque(sn, pn)
+
+
+def test_uniform_span_stays_uniform_default_settings():
+    """seed = 0, Nz = 4 periodic, default 2 V-cycles, 50 steps: all z-planes are identical and
+    w is zero (tolerance 1e-12 relative to the speed; observed exactly 0).  This needs the
+    Gauss-Seidel colour to be (i+j) in every layer: with (i+j+k) the solver gave plane
+    differences of 1.5e-5 and |w| ~ 9e-7 out of nothing."""
+    dz, d1, wmax, t1, tn = plane_difference(vcycles=2)
+    assert dz < 1e-12 and wmax < 1e-12
+    # Nz = 4 uses a different (3D, z-coarsened) V-cycle than Nz = 1, so with 2 cycles the two
+    # runs differ by the Poisson-solver error only: observed 4.8e-5, tolerance 1e-3
+    assert d1 < 1e-3
+    assert abs(tn - t1) < 1e-3 * abs(t1)
 
 
 def test_uniform_span_matches_2d_to_roundoff():
-    """Nz = 4 periodic, spanwise-uniform start: each z-plane equals the Nz = 1 run.
-    The two V-cycles differ (z is coarsened, and the red-black colour i+j+k differs
-    from plane to plane), so the planes agree only to the Poisson-solver tolerance;
-    with 16 V-cycles per step that tolerance is round-off: plane difference and
-    |w| < 1e-12 (observed ~3e-16), torque to 1e-10 relative."""
-    d, wmax, t1, tn = plane_difference(vcycles=16)
-    assert d < 1e-12 and wmax < 1e-12
+    """Same, with 16 V-cycles per step so that both Poisson solves are converged: each
+    plane equals the Nz = 1 run (tolerance 1e-12, observed ~3e-16), torque to 1e-10 relative."""
+    dz, d1, wmax, t1, tn = plane_difference(vcycles=16)
+    assert dz < 1e-12 and d1 < 1e-12 and wmax < 1e-12
     assert abs(tn - t1) < 1e-10 * abs(t1)
 
 
-def test_uniform_span_default_vcycles():
-    """Same with the default 2 V-cycles: the planes differ by the solver error only.
-    Observed 1.5e-5 (u, v) and |w| = 9e-7 (compare U ~ 1); tolerances 1e-4 and 1e-5."""
-    d, wmax, t1, tn = plane_difference(vcycles=2)
-    assert d < 1e-4 and wmax < 1e-5
-    assert abs(tn - t1) < 1e-4 * abs(t1)
+@pytest.mark.parametrize("span,Nz", [("periodic", 8), ("walls", 8)])
+def test_seed_content(span, Nz):
+    """seed > 0: at t = 0 (after the initial projection) the flow contains only spanwise Fourier
+    modes kz = 1..M, M = min(4, Nz//2), with w ~ seed Uref sin(pi x) sin(pi y) sum cos(...).
+    Periodic: energy in modes kz = 0 and > M is below 1e-12 of the total (observed round-off).
+    Walls: w = 0 on both end walls. max |w| lies between 0.02 and 1 times seed Uref M.
+    Divergence below 1e-6 seed/h in both cases; seed = 0 and Nz = 1 give an exactly zero flow."""
+    seed = 1e-3
+    p = fv3d.make_params(N=16, Nz=Nz, span=span, seed=seed, Us=2.0, Uo=0.0, ro=0.0)   # Uref = 2
+    s = fv3d.init_state(p)
+    M = min(4, Nz // 2)
+    h = p["h"]
+    assert np.abs(fv3d.divergence(s["u"], s["v"], s["w"], h)).max() < 1e-6 * seed / h
+    wmax = np.abs(s["w"]).max()
+    amp = seed * p["Uref"] * M          # upper bound of |sum of M cosines|
+    print(span, "max|w|", wmax, "bound", amp)
+    assert 0.02 * amp < wmax < amp     # the projection removes most of w (w is nearly a gradient): ~0.06 amp observed
+    assert np.abs(s["u"]).max() > 0.1 * wmax   # the projection puts the rest into horizontal velocity
+    if span == "periodic":
+        U = fv3d.cell_velocity(s, p)
+        E = (np.abs(np.fft.rfft(U, axis=1)) ** 2).sum(axis=(0, 2, 3))     # energy per kz
+        outside = E[0] + E[M + 1:].sum()
+        print("Ekz", E)
+        assert outside < 1e-12 * E.sum() and E[1:M + 1].min() > 0
+    else:
+        assert np.abs(s["w"][0]).max() == 0 and np.abs(s["w"][-1]).max() == 0
+    for kw in (dict(seed=0.0, Nz=Nz), dict(seed=seed, Nz=1, span="periodic")):
+        kw = dict(dict(N=16, span=span), **kw)
+        s0 = fv3d.init_state(fv3d.make_params(**kw))
+        assert all(np.all(s0[k] == 0) for k in "uvw")
 
 
 def test_small_perturbation_stays_bounded():
     """Seeded random perturbation (amplitude 1e-6 of the spin speed) on a 3D periodic run:
     nothing blows up in 60 steps, and the spanwise energy stays far below the in-plane energy."""
-    p = fv3d.make_params(N=32, Nz=8, **SPIN_ORBIT)
+    p = fv3d.make_params(N=32, Nz=8, **SPIN_ORBIT)           # seed = 0: only the explicit perturbation below
     s = fv3d.init_state(p)
     rng = np.random.default_rng(1234)
     for key in ("u", "v"):
@@ -115,7 +149,7 @@ def test_poisson_vcycle_reduction(N, Nz, span):
     Nz = 1: x,y coarsening only; Nz = 16: z coarsened together with x,y all the way;
     Nz = 4: z runs out of layers after two levels, then x,y only (semi-coarsening);
     N = 16, Nz = 64: z much longer than x,y (coarsest grid keeps many layers).
-    Observed factors 0.04 - 0.09; tolerance: every factor of the first 6 cycles < 0.15."""
+    Observed factors 0.02 - 0.15; tolerance: every factor of the first 6 cycles < 0.2."""
     p = fv3d.make_params(N=N, Nz=Nz, span=span)
     h = p["h"]
     b = np.random.default_rng(5).standard_normal((Nz, N, N))
@@ -126,13 +160,13 @@ def test_poisson_vcycle_reduction(N, Nz, span):
         fv3d.vcycle(x, b, h, p)
         res.append(np.linalg.norm(b - fv3d.laplacian(x, h, span)))
     factors = [res[i + 1] / res[i] for i in range(6)]
-    assert max(factors) < 0.15, factors
+    assert max(factors) < 0.2, factors
 
 
 def test_divergence_after_projection_vs_vcycles():
     """max |div u| after the projection (N = 32, Nz = 8, spin+orbit, 30 steps).
-    Observed 6.8e-3, 3.5e-4, 1.8e-6 for 1, 2, 4 V-cycles; checked: strictly decreasing,
-    with tolerances 1e-2, 1e-3 and 1e-5."""
+    Observed 1.08e-2, 1.14e-3, 1.9e-5 for 1, 2, 4 V-cycles; checked: strictly decreasing,
+    with tolerances 2e-2, 3e-3 and 1e-4."""
     maxdiv = {}
     for vc in (1, 2, 4):
         p = fv3d.make_params(N=32, Nz=8, vcycles=vc, **SPIN_ORBIT)
@@ -141,7 +175,7 @@ def test_divergence_after_projection_vs_vcycles():
             fv3d.step(s, p)
         maxdiv[vc] = fv3d.stats(s, p)["maxdiv"]
     assert maxdiv[1] > maxdiv[2] > maxdiv[4]
-    assert maxdiv[1] < 1e-2 and maxdiv[2] < 1e-3 and maxdiv[4] < 1e-5
+    assert maxdiv[1] < 2e-2 and maxdiv[2] < 3e-3 and maxdiv[4] < 1e-4
 
 
 # ------------------------------------------------------------ exact solution
@@ -152,7 +186,7 @@ def exact_w_error(N, Re=10.0, T=0.5):
     w dw/dz = 0 because w does not depend on z), div u = dw/dz = 0 so the pressure is
     zero, and what remains is dw/dt = nu (w_xx + w_yy), whose solution this is, with
     w = 0 on the x and y walls.  Returns the max error at the final time."""
-    p = no_body(fv3d.make_params(N=N, Nz=2, Re=Re))
+    p = no_body(fv3d.make_params(N=N, Nz=2, Re=Re, seed=0.0))
     nsteps = int(np.ceil(T / p["dt"]))
     s = fv3d.init_state(p)
     x = (np.arange(N) + 0.5) * p["h"]
@@ -183,11 +217,12 @@ def test_swap_y_z_symmetry_walls():
     """Body off, walls in x, y AND z, Nz = N = 16 (a cube).  Exchanging the roles of y and z
     (u -> u with axes 0,1 transposed, v <-> w with axes 0,1 transposed) must commute with the
     solver.  Run A from a random field; run B from its swapped copy; after 20 steps swapping
-    B back must equal A to 1e-9 relative (observed ~1e-13: only the floating-point summation
-    order differs).  This exercises advection, diffusion, padding, projection and the
+    B back must equal A to 1e-9 relative (observed 4e-16: only the floating-point summation
+    order differs).  16 V-cycles per step: the (i+j) colouring is not symmetric under y <-> z, so
+    with 2 cycles the runs would differ by the Poisson-solver error (observed 1e-4 relative).  This exercises advection, diffusion, padding, projection and the
     multigrid in all three directions."""
     N = 16
-    p = no_body(fv3d.make_params(N=N, Nz=N, Re=100.0, span="walls"))
+    p = no_body(fv3d.make_params(N=N, Nz=N, Re=100.0, span="walls", seed=0.0, vcycles=16))
     rng = np.random.default_rng(7)
     A, B = fv3d.init_state(p), fv3d.init_state(p)
     A["u"] = 0.3 * rng.standard_normal((N, N, N + 1))
@@ -215,22 +250,21 @@ def test_walls_centred_spin_ekman_pumping():
     """span = walls, centred spinning cylinder (ro = 0), N = 32, Nz = 16, Re = 100.
     80 steps with the default 2 V-cycles: w is generated (Ekman pumping at the end walls,
     max |w| ~ 0.09 U), is zero on the end walls, and is antisymmetric about mid-span
-    (w[k] = -w[Nz-k]) while u is symmetric.  The exact symmetry is broken only by the
-    Poisson-solver error (red-black colour i+j+k flips under z -> Lz - z): observed 5e-6
-    relative, tolerance 1e-4.  Divergence free: max |div| < 5e-3 (observed in the print).
+    (w[k] = -w[Nz-k]) while u is symmetric.  The symmetry holds to round-off at the default
+    settings because the Gauss-Seidel colour is (i+j) in every layer: observed 3e-15, tolerance 1e-12.  Divergence free: max |div| < 5e-3 (observed in the print).
     With 16 V-cycles (30 steps) the symmetry holds to round-off: tolerance 1e-12 (observed 8e-15)."""
-    p = fv3d.make_params(N=32, Nz=16, Re=100.0, Us=1.0, Uo=0.0, ro=0.0, span="walls")
+    p = fv3d.make_params(N=32, Nz=16, Re=100.0, Us=1.0, Uo=0.0, ro=0.0, span="walls", seed=0.0)
     s, _ = fv3d.run(p, 80)
     w, u = s["w"], s["u"]
     assert np.abs(w[0]).max() == 0 and np.abs(w[-1]).max() == 0
     wmax = np.abs(w).max()
     assert wmax > 1e-2                                   # the end walls drive a real spanwise flow
-    assert np.abs(w + w[::-1]).max() < 1e-4 * wmax       # w(z) = -w(Lz - z)
-    assert np.abs(u - u[::-1]).max() < 1e-4 * np.abs(u).max()    # u symmetric about mid-span
+    assert np.abs(w + w[::-1]).max() < 1e-12 * wmax      # w(z) = -w(Lz - z)
+    assert np.abs(u - u[::-1]).max() < 1e-12 * np.abs(u).max()    # u symmetric about mid-span
     md = fv3d.stats(s, p)["maxdiv"]
     print("ekman wmax", wmax, "maxdiv", md)
     assert md < 5e-3
-    p16 = fv3d.make_params(N=32, Nz=16, Re=100.0, Us=1.0, Uo=0.0, ro=0.0, span="walls", vcycles=16)
+    p16 = fv3d.make_params(N=32, Nz=16, Re=100.0, Us=1.0, Uo=0.0, ro=0.0, span="walls", seed=0.0, vcycles=16)
     s16, _ = fv3d.run(p16, 30)
     w = s16["w"]
     assert np.abs(w + w[::-1]).max() < 1e-12 * np.abs(w).max()

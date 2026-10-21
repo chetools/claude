@@ -25,7 +25,7 @@ import numpy as np
 
 
 # ----------------------------------------------------------------- parameters
-def make_params(N=64, Nz=1, Re=200.0, R=0.1, ro=0.2, Us=1.0, Uo=0.0, span="periodic",
+def make_params(N=64, Nz=1, Re=200.0, R=0.1, ro=0.2, Us=1.0, Uo=0.0, span="periodic", seed=1e-3,
                 cfl=0.3, fdiff=0.05, width=1.0, vcycles=2, nu1=2, nu2=2, ncoarse=40):
     """Inputs -> dict of everything a time step needs.
 
@@ -51,11 +51,33 @@ def make_params(N=64, Nz=1, Re=200.0, R=0.1, ro=0.2, Us=1.0, Uo=0.0, span="perio
     # it also makes dt independent of Nz (needed for the Nz = 1 <-> Nz > 1 comparison).
     dt = 1.0 / (Umax / (cfl * h) + nu / (fdiff * h * h))      # both limits, combined
     return dict(N=N, Nz=Nz, h=h, Lz=Nz * h, span=span, Re=Re, R=R, ro=ro, Us=Us, Uo=Uo,
-                nu=nu, Omega=Omega, omega_o=omega_o, dt=dt, eps=width * h, vcycles=vcycles,
+                nu=nu, Uref=Uref, seed=seed, Omega=Omega, omega_o=omega_o, dt=dt, eps=width * h, vcycles=vcycles,
                 nu1=nu1, nu2=nu2, ncoarse=ncoarse)
 
 
 def init_state(p):
+    """Fluid at rest plus the deliberate 3D seed (none for Nz = 1 or seed = 0):
+    w0 = seed Uref sin(pi x) sin(pi y) sum_{m=1}^{M} cos(2 pi m z/Lz + m),  M = min(4, Nz//2),
+    on the w faces, then one projection so that the state is divergence free."""
+    s = _rest_state(p)
+    Nz, N, h = p["Nz"], p["N"], p["h"]
+    if Nz > 1 and p["seed"] != 0:
+        x = (np.arange(N) + 0.5) * h
+        z = np.arange(Nz + 1) * h
+        prof = sum(np.cos(2 * np.pi * m * z / p["Lz"] + m) for m in range(1, min(4, Nz // 2) + 1))
+        s["w"] = p["seed"] * p["Uref"] * prof[:, None, None] * np.outer(np.sin(np.pi * x), np.sin(np.pi * x))[None]
+        if p["span"] == "walls":
+            s["w"][[0, -1]] = 0.0
+        else:
+            s["w"][-1] = s["w"][0]
+        rhs = divergence(s["u"], s["v"], s["w"], h)
+        solve_pressure(s["q"], rhs, dict(p, vcycles=16))
+        s["u"], s["v"], s["w"] = project(s["u"], s["v"], s["w"], s["q"], h, p["span"])
+        s["q"][:] = 0.0                            # q = dt * pressure of the first step starts from 0
+    return s
+
+
+def _rest_state(p):
     N, Nz = p["N"], p["Nz"]
     return dict(u=np.zeros((Nz, N, N + 1)), v=np.zeros((Nz, N + 1, N)), w=np.zeros((Nz + 1, N, N)),
                 ru=np.zeros((Nz, N, N + 1)), rv=np.zeros((Nz, N + 1, N)), rw=np.zeros((Nz + 1, N, N)),
@@ -287,11 +309,14 @@ def laplacian(x, h, span="periodic"):
 
 def smooth(x, b, h, sweeps, span="periodic"):
     """Red-black Gauss-Seidel: x_c = (sum of neighbours - h^2 b) / count.
-    Colour = parity of i+j+k (for one layer this is ns2d's i+j)."""
+    Colour = parity of i+j in EVERY layer (ns2d's colouring).  A colour that depends on k
+    (i+j+k) would treat neighbouring layers differently, so even z-uniform data would come
+    out of the solver with small z-differences and the solver itself would seed 3D motion.
+    The price: the z-coupling is relaxed Jacobi-like (a cell and its z-neighbours share a colour)."""
     nz, n = x.shape[0], x.shape[1]
     cnt = neighbour_count(x.shape, span)
     kk, jj, ii = np.meshgrid(np.arange(nz), np.arange(n), np.arange(n), indexing="ij")
-    red = (ii + jj + kk) % 2 == 0
+    red = (ii + jj) % 2 == 0
     for _ in range(sweeps):
         for colour in (red, ~red):
             x[colour] = ((neighbour_sum(x, span) - h * h * b) / cnt)[colour]

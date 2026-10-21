@@ -83,7 +83,7 @@ def lattice_params(N, Nz, nu_lb, collision=DEFAULT_COLLISION, span="periodic",
 
 
 def make_params(N=64, Nz=1, Re=200.0, R=0.1, ro=0.2, Us=1.0, Uo=0.0, span="periodic",
-                u_lb=0.05, collision=DEFAULT_COLLISION):
+                u_lb=0.05, collision=DEFAULT_COLLISION, seed=1e-3):
     """Inputs -> dict of everything a time step needs (see SPEC.md).
 
     u_lb is the lattice speed of the fastest body point; it fixes dt:
@@ -101,14 +101,23 @@ def make_params(N=64, Nz=1, Re=200.0, R=0.1, ro=0.2, Us=1.0, Uo=0.0, span="perio
     dt = u_lb * h / (Umax or Uref)
     p = lattice_params(N, Nz, nu * dt / (h * h), collision, span)
     p.update(h=h, Lz=Nz * h, Re=Re, R=R, ro=ro, Us=Us, Uo=Uo, nu=nu, Omega=Omega,
-             omega_o=omega_o, dt=dt, u_lb=u_lb)
+             omega_o=omega_o, dt=dt, u_lb=u_lb, seed=seed, Uref=Uref)
     return p
 
 
 def init_state(p):
-    """Fluid at rest (rho = 1); the cylinder at its starting position (phi = 0)."""
+    """Fluid at rest (rho = 1) plus the deliberate 3D seed (SPEC.md; none for Nz = 1 or seed = 0)
+        w0 = seed Uref sin(pi x) sin(pi y) sum_{m=1}^{M} cos(2 pi m z/Lz + m),  M = min(4, Nz//2),
+    as the equilibrium at that velocity.  The cylinder starts at phi = 0."""
     N, Nz = p["N"], p["Nz"]
-    f = equilibrium(np.ones((Nz, N, N)), np.zeros((3, Nz, N, N)))
+    u = np.zeros((3, Nz, N, N))
+    if Nz > 1 and p["seed"] != 0:
+        x = (np.arange(N) + 0.5) / N
+        z = (np.arange(Nz) + 0.5) / Nz                      # z / Lz
+        prof = sum(np.cos(2 * np.pi * m * z + m) for m in range(1, min(4, Nz // 2) + 1))
+        sxy = np.outer(np.sin(np.pi * x), np.sin(np.pi * x))
+        u[2] = p["seed"] * p["Uref"] * prof[:, None, None] * sxy[None] * p["dt"] / p["h"]
+    f = equilibrium(np.ones((Nz, N, N)), u)
     s = dict(f=f, t=0.0, phi=0.0, nstep=0, solid=np.zeros((N, N), bool), exchange=np.zeros(3))
     if p.get("R", 0) > 0:
         body = make_body(0.0, p)
