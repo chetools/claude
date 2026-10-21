@@ -26,6 +26,14 @@ LBM: u_lb (lattice speed of the fastest body point, default 0.05 → Ma ≈ 0.08
 (regularised) | "mrt" — choose default by measured stability), refill scheme as documented in the code.
 The 2D baseline is ALWAYS `Nz=1, span="periodic"`, same other inputs.
 
+### Deliberate 3D seed (both methods, identical formula in numpy / JS / WGSL)
+Input `seed` (default 1e-3, in units of U_ref; 0 disables). init_state adds to the fluid at rest
+  w0(x,y,z) = seed · sin(πx) sin(πy) · Σ_{m=1}^{M} cos(2π m z/Lz + m),   M = min(4, Nz//2)
+(nothing for Nz = 1). FV: applied to the w faces, then one projection; LBM: equilibrium at that velocity.
+REQUIREMENT: with seed = 0 and a spanwise-uniform start, each solver must keep the flow spanwise-uniform to
+round-off (≤ 1e-12 relative) at DEFAULT settings, so that any 3D growth on the page comes from the known seed
+(or physics) and never from solver artefacts (e.g. z-dependent Gauss–Seidel colouring). Test it.
+
 ## Array layout (numpy and flat GPU buffers alike): index order [k (z), j (y), i (x)]
 FV (MAC, staggered; extends ns2d exactly):
   u (Nz, N, N+1) at x = i h, y = (j+½)h, z = (k+½)h
