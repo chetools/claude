@@ -146,7 +146,8 @@
       if (!this.np || this.points < 2) return;
       const cv = ctx.canvas, g = this.g, mode = view.mode, L = CC3.render.planeLayout(cv.width, cv.height, mode, g.Lz);
       const slab = 2 * g.h, f = view.slice === undefined ? 0.5 : view.slice, spos = mode === "slice-xy" ? f * g.Lz : f;
-      const per = g.span !== "walls", T = this.trail, km1 = KPTS - 1, D = this.draw;
+      const per = g.span !== "walls", T = this.trail, km1 = KPTS - 1, D = this.draw, phi = view.phi || 0;
+      const cx = 0.5 + g.ro * Math.cos(phi), cy = 0.5 + g.ro * Math.sin(phi);
       const px = (o) => {
         const u = mode === "slice-yz" ? T[o + 1] : T[o], v = mode === "slice-xy" ? T[o + 1] : T[o + 2];
         return [L.ox + u * L.sc, L.oy - v * L.sc];
@@ -161,7 +162,8 @@
           let d = mode === "slice-xy" ? T[on + 2] - spos : mode === "slice-xz" ? T[on + 1] - spos : T[on] - spos;
           if (mode === "slice-xy" && per) d -= g.Lz * Math.round(d / g.Lz);
           if (Math.abs(d) > slab) continue;
-          const alpha = (1 - a / km1) * (1 - 0.5 * Math.abs(d) / slab);
+          if (Math.hypot(T[on] - cx, T[on + 1] - cy) < g.R || Math.hypot(T[oo] - cx, T[oo + 1] - cy) < g.R) continue;   // under the cylinder now
+          const alpha = 1 - a / km1;
           const c = Math.min(NC - 1, Math.floor(Math.min(T[on + 3] / this.smax, 1) * NC));
           buckets[c * NA + Math.min(NA - 1, Math.floor(alpha * NA))].push([px(oo), px(on)]);
         }
@@ -265,7 +267,7 @@
       this.head = (this.head + S.n) % this.kcap; this.points += S.n; this.frame++;
       this.lastSub = S.sub; this.lastPoints = S.n;
     }
-    // called by render.js inside its render pass. o = {fmt, mode (1..5), vp, L (planeLayout), W, H, slice}
+    // called by render.js inside its render pass. o = {fmt, mode (1..5), vp, L (planeLayout), W, H, slice, phi}
     encodeDraw(rp, o) {
       if (!this.np || this.points < 2) return;
       const g = this.g, d = new ArrayBuffer(144), F = new Float32Array(d), Ui = new Uint32Array(d);
@@ -274,7 +276,7 @@
       F[20] = o.W; F[21] = o.H; F[22] = o.mode === 1 ? o.slice * g.Lz : o.slice; F[23] = 2 * g.h;
       Ui[24] = this.np; Ui[25] = this.kcap; Ui[26] = KPTS; Ui[27] = this.head;
       F[28] = this.smax; F[29] = g.Lz; Ui[30] = g.span !== "walls" ? 1 : 0; F[31] = this.draw.keep;
-      F[32] = this.draw.alpha;
+      F[32] = this.draw.alpha; F[33] = 0.5 + g.ro * Math.cos(o.phi || 0); F[34] = 0.5 + g.ro * Math.sin(o.phi || 0); F[35] = g.R;
       this.device.queue.writeBuffer(this.td, 0, d);
       rp.setPipeline(this.pipe(o.fmt)); rp.setBindGroup(0, this.bgD);
       rp.draw(2 * this.np * (KPTS - 1));

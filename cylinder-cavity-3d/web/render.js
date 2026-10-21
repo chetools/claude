@@ -525,7 +525,7 @@
       }
       if (r.tracers && view.trails !== false) {                // flow particles (web/tracers.js, trails.wgsl)
         r.tracers.encodeDraw(rp, { fmt: useOff ? "rgba8unorm" : format, mode: MODES[mode], vp: cam.vp, L, W, H,
-          slice: view.slice === undefined ? 0.5 : view.slice });
+          slice: view.slice === undefined ? 0.5 : view.slice, phi });
       }
       const nv = Math.min(lines.v.length / 8, lineCap);
       device.queue.writeBuffer(lineBuf, 0, new Float32Array(lines.v.slice(0, nv * 8)));

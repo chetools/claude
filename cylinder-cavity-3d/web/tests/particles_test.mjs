@@ -43,7 +43,7 @@ async function trailsVisible(page, w, label, min = 300) {     // pause, compare 
   const st = await page.evaluate(() => ({ n: +document.getElementById('in-part').value, T: CC3APP.sim.tracers[3].trailTime, keep2: CC3APP.sim.tracers[2].draw.keep, keep3: CC3APP.sim.tracers[3].draw.keep, f: CC3APP.sim.tracers[3].frame, sref: CC3APP.sim.sref }));
   console.log('cpu', JSON.stringify(st));
   ok(st.n === 8000 && Math.abs(st.T - 0.05 * Math.sqrt(20)) < 1e-12, 'cpu: default 8000 particles, trail time 0.05*sqrt(20)');
-  ok(Math.abs(st.keep2 - 0.5) < 1e-12 && st.keep3 === 1, `cpu xy slices, N = 32, Nz = 16 (slab = half the span): the 2D panel draws 1/2 (${st.keep2}), the 3D panel all (${st.keep3})`);
+  ok(Math.abs(st.keep2 - 0.25) < 1e-12 && st.keep3 === 1, `cpu xy slices, N = 32, Nz = 16 (slab of 4 cells = 1/4 of the span): the 2D panel draws 1/4 (${st.keep2}), the 3D panel all (${st.keep3})`);
   ok(await page.evaluate(() => [...document.querySelectorAll('#canvas2d')].length === 1 && !document.getElementById('trail-bar').hidden), 'cpu: speed colour bar shown');
   await page.click('#b-play');
   for (const m of ['slice-xy', 'slice-xz', 'slice-yz']) {

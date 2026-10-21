@@ -93,7 +93,7 @@ struct TD {
   W: f32, H: f32, spos: f32, slab: f32,          // spos: slice coordinate; slab: half-thickness shown on a slice
   np: u32, kcap: u32, K: u32, head: u32,
   smax: f32, lz: f32, periodic: u32, keep: f32,  // smax: speed at the dark end of the colour ramp; keep: fraction drawn
-  alpha: f32, p0: f32, p1: f32, p2: f32,
+  alpha: f32, cx: f32, cy: f32, R: f32,          // cx, cy, R: the cylinder now (segments under it are hidden)
 };
 @group(0) @binding(4) var<uniform> D: TD;
 @group(0) @binding(5) var<storage, read> TRR: array<vec4<f32>>;
@@ -130,7 +130,6 @@ fn vs_trail(@builtin(vertex_index) vi: u32) -> TOut {
   let so = (D.head + 2u * D.kcap - a - 1u) % D.kcap;
   let qn = TRR[p * D.kcap + sn]; let qo = TRR[p * D.kcap + so];
   if (qn.w < 0.0 || qo.w < -1.5) { return o; }
-  var fs = 1.0;
   if (D.mode < 4u) {                                  // slices: only particles near the plane
     var d = 0.0;
     if (D.mode == 1u) {
@@ -138,13 +137,14 @@ fn vs_trail(@builtin(vertex_index) vi: u32) -> TOut {
       if (D.periodic != 0u) { d = d - D.lz * round(d / D.lz); }
     } else if (D.mode == 2u) { d = qn.y - D.spos; } else { d = qn.x - D.spos; }
     if (abs(d) > D.slab) { return o; }
-    fs = 1.0 - 0.5 * abs(d) / D.slab;
   }
+  let cc = vec2<f32>(D.cx, D.cy);
+  if (length(qn.xy - cc) < D.R || length(qo.xy - cc) < D.R) { return o; }
   let fade = 1.0 - f32(a) / f32(km1);
   var q = qo.xyz;
   if ((vi & 1u) == 1u) { q = qn.xyz; }
   o.pos = place(q);
-  o.col = vec4<f32>(ramp(qn.w / D.smax), D.alpha * fade * fs);
+  o.col = vec4<f32>(ramp(qn.w / D.smax), D.alpha * fade);
   return o;
 }
 @fragment

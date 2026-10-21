@@ -231,7 +231,8 @@ The trails are massless tracers moved by each panel's computed velocity. The rea
    covers (a fast GPU covers more time per frame than a slow one).
 5. **Drawing** (`vs_trail`): the last 23 segments of each particle, coloured by the speed $\lvert\mathbf u\rvert$ at the newer end (light blue slow, near
    black fast; the top of the scale is twice the rms speed of the more energetic run) and fading with age. While particles are on, the field is not
-   coloured, so only the trails, the box and the cylinder are drawn. A slice keeps only the particles within $2h$ of the plane.
+   coloured, so only the trails, the box and the cylinder are drawn. A slice keeps only the particles within $2h$ of the plane. Segments under the cylinder's present position are not drawn
+   (the orbiting cylinder moves over places where the fluid was).
    - **Same density in both panels:** the 2D run has one cell of span, so every one of its particles is near an $xy$ plane, against only a slab of
      $4h$ out of $L_z$ in 3D. The page (`trailDraw` in `app.js`) draws the subset `keepHash(p) < keep` that gives both panels the same number of
      particles per unit area.

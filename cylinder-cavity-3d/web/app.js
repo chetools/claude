@@ -219,7 +219,7 @@
     const per = {};
     for (const w of [2, 3]) {
       const p = w === 2 ? sim.p2 : sim.p3, mode = sim.backend === 'cpu' && /volume|isosurface/.test($(`mode${w}d`).value) ? 'slice-xy' : $(`mode${w}d`).value;
-      const th = mode === 'slice-xy' ? Math.min(8 * p.h, p.Lz) : Math.min(8 * p.h, 1);      // slab of +-2 cells
+      const th = mode === 'slice-xy' ? Math.min(4 * p.h, p.Lz) : Math.min(4 * p.h, 1);      // slab of +-2 cells
       per[w] = { mode, rho: mode.startsWith('slice') ? np / p.Lz * th : np };            // 3D: per unit of box footprint
     }
     const T = CC3.tracers.trailTime(+$('in-trail').value), urms = 0.5 * (sim.sref || 1);
