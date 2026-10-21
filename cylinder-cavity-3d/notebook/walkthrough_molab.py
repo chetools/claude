@@ -324,11 +324,14 @@ def _():
 
 
     def make_params(N=64, Nz=1, Re=200.0, R=0.1, ro=0.2, Us=1.0, Uo=0.0, span="periodic",
-                    u_lb=0.05, collision=DEFAULT_COLLISION, seed=1e-3):
+                    u_lb=None, collision=DEFAULT_COLLISION, seed=1e-3):
         """Inputs -> dict of everything a time step needs (see SPEC.md).
 
         u_lb is the lattice speed of the fastest body point; it fixes dt:
         dt = u_lb h / U_body_max, then nu_lb = nu dt / h^2 and tau = 3 nu_lb + 1/2.
+        Default u_lb = min(0.05, U_body_max / (6 nu N)): Mach about 0.087 at most, and nu_lb <= 1/6
+        (tau <= 1) because the halfway bounce-back wall position drifts at large tau.
+        An explicit u_lb overrides the rule.
         """
         assert N >= 8 and N & (N - 1) == 0 and Nz >= 1 and Nz & (Nz - 1) == 0
         h = 1.0 / N
@@ -339,31 +342,60 @@ def _():
         Omega = Us / R
         omega_o = Uo / ro if ro > 0 else 0.0
         Umax = abs(Us) + abs(omega_o) * (ro + R)        # fastest point of the body
-        dt = u_lb * h / (Umax or Uref)
+        Ub = Umax or Uref
+        if u_lb is None:
+            u_lb = min(0.05, Ub / (6.0 * nu * N))
+        dt = u_lb * h / Ub
         p = lattice_params(N, Nz, nu * dt / (h * h), collision, span)
         p.update(h=h, Lz=Nz * h, Re=Re, R=R, ro=ro, Us=Us, Uo=Uo, nu=nu, Omega=Omega,
                  omega_o=omega_o, dt=dt, u_lb=u_lb, seed=seed, Uref=Uref)
         return p
 
 
-    def init_state(p):
-        """Fluid at rest (rho = 1) plus the deliberate 3D seed (SPEC.md; none for Nz = 1 or seed = 0)
-            w0 = seed Uref sin(pi x) sin(pi y) sum_{m=1}^{M} cos(2 pi m z/Lz + m),  M = min(4, Nz//2),
-        as the equilibrium at that velocity.  The cylinder starts at phi = 0."""
+    def seed_velocity(p):
+        """Deliberate 3D seed (SPEC.md), divergence-free, physical units, shape (3, Nz, N, N) at the nodes.
+        Stream function psi = seed Uref F(x,y) W(z) S(z) along y, velocity = curl(psi e_y):
+          F = sin^2(pi x) sin(pi y),  S = sum_{m=1}^{M} sin(k_m z + m)/k_m,  k_m = 2 pi m/Lz,
+          M = min(4, Nz//4),  W = 1 (periodic) or sin^2(pi z/Lz) (walls)
+          u = -seed Uref F (W' S + W S'),   v = 0,   w = seed Uref (dF/dx) W S."""
         N, Nz = p["N"], p["Nz"]
-        u = np.zeros((3, Nz, N, N))
-        if Nz > 1 and p["seed"] != 0:
-            x = (np.arange(N) + 0.5) / N
-            z = (np.arange(Nz) + 0.5) / Nz                      # z / Lz
-            prof = sum(np.cos(2 * np.pi * m * z + m) for m in range(1, min(4, Nz // 2) + 1))
-            sxy = np.outer(np.sin(np.pi * x), np.sin(np.pi * x))
-            u[2] = p["seed"] * p["Uref"] * prof[:, None, None] * sxy[None] * p["dt"] / p["h"]
+        U = np.zeros((3, Nz, N, N))
+        M = min(4, Nz // 4)
+        if M == 0 or p["seed"] == 0:
+            return U
+        Lz = Nz / N
+        x = (np.arange(N) + 0.5) / N
+        z = ((np.arange(Nz) + 0.5) / N)[:, None, None]
+        X, Y = x[None, None, :], x[None, :, None]
+        F = np.sin(np.pi * X) ** 2 * np.sin(np.pi * Y)
+        dFdx = np.pi * np.sin(2 * np.pi * X) * np.sin(np.pi * Y)
+        ks = [2 * np.pi * m / Lz for m in range(1, M + 1)]
+        S = sum(np.sin(k * z + m) / k for m, k in zip(range(1, M + 1), ks))
+        Sp = sum(np.cos(k * z + m) for m, k in zip(range(1, M + 1), ks))
+        if p["span"] == "walls":
+            Wz = np.sin(np.pi * z / Lz) ** 2
+            Wp = (np.pi / Lz) * np.sin(2 * np.pi * z / Lz)
+        else:
+            Wz, Wp = 1.0, 0.0
+        a = p["seed"] * p["Uref"]
+        U[0] = -a * F * (Wp * S + Wz * Sp)
+        U[2] = a * dFdx * Wz * S
+        return U
+
+
+    def init_state(p):
+        """Fluid at rest (rho = 1) plus the deliberate 3D seed (seed_velocity; none for Nz < 4 or
+        seed = 0) as the equilibrium at that velocity.  The cylinder starts at phi = 0."""
+        N, Nz = p["N"], p["Nz"]
+        u = seed_velocity(p) * (p["dt"] / p["h"]) if "seed" in p else np.zeros((3, Nz, N, N))
         f = equilibrium(np.ones((Nz, N, N)), u)
-        s = dict(f=f, t=0.0, phi=0.0, nstep=0, solid=np.zeros((N, N), bool), exchange=np.zeros(3))
+        s = dict(f=f, t=0.0, phi=0.0, nstep=0, solid=np.zeros((N, N), bool), exchange=np.zeros(3),
+                 torque=0.0, mass=float(f.sum()))
         if p.get("R", 0) > 0:
             body = make_body(0.0, p)
             s["solid"] = solid_mask(body, N)
             _reset_solid(s["f"], s["solid"], body)
+            s["mass"] = mass(s)
         return s
 
 
@@ -610,10 +642,7 @@ def _():
         ub, vb = body["velocity"](ii + 0.5, jj + 0.5)
         u = np.zeros((3,) + rho.shape)
         u[0], u[1] = ub[None, :], vb[None, :]
-        neq = acc_neq / c if p.get("refill", "mean") == "mean" else 0.0
-        if p.get("refill_rho1", False):
-            rho = np.ones_like(rho)
-        f[:, :, jj, ii] = equilibrium(rho, u) + neq
+        f[:, :, jj, ii] = equilibrium(rho, u) + acc_neq / c
 
 
     # ------------------------------------------------------------------ one time step
@@ -637,6 +666,8 @@ def _():
         s["f"], s["solid"] = f, solid
         s["t"] += p["dt"]
         s["nstep"] += 1
+        s["torque"] = torque(s, p)                      # last step, so histories / diagnostics.summary carry it
+        s["mass"] = mass(s)
         return s
 
 
@@ -1354,7 +1385,7 @@ def _(lbm3d, make_fig, np):
             dict(type="scatter3d", mode="markers+text", x=lbm3d.C[:, 0], y=lbm3d.C[:, 1], z=lbm3d.C[:, 2],
                  text=[str(q) for q in range(19)], textposition="top center",
                  marker=dict(size=6 + 80 * lbm3d.W ** 1.0, color=lbm3d.W, colorscale="Viridis", showscale=True,
-                             colorbar=dict(title="w_q")), name="nodes")],
+                             colorbar=dict(title=dict(text="w_q"))), name="nodes")],
            title="The 19 lattice velocities (marker size and colour = weight)", showlegend=False,
            scene=dict(aspectmode="cube", xaxis=dict(title="cx"), yaxis=dict(title="cy"), zaxis=dict(title="cz")))
     _fig1
@@ -1526,7 +1557,7 @@ def _(lbm3d, make_fig, np):
     _fig1 = make_fig([dict(type="scatter", mode="lines+markers", x=_ax, y=_ay, line=dict(color="#4a7"), marker=dict(size=7)),
             dict(type="scatter", mode="markers", x=[2], y=[2], marker=dict(size=14, color="#c33"))],
            title="Streaming in the x-y plane: the 8 in-plane populations leave node (2, 2)", showlegend=False,
-           xaxis=dict(title="i (x)", dtick=1, range=[0.5, 3.5]), yaxis=dict(title="j (y)", dtick=1, range=[0.5, 3.5], scaleanchor="x"))
+           xaxis=dict(constrain="domain", title="i (x)", dtick=1, range=[0.5, 3.5]), yaxis=dict(title="j (y)", dtick=1, range=[0.5, 3.5], scaleanchor="x"))
     _fig1
     return (f_moved, f_pulse,)
 
@@ -1635,7 +1666,7 @@ def _(lbm3d, make_fig, np, pl):
             dict(type="scatter", mode="lines", x=_lo_x, y=_lo_y, line=dict(color="#2a7fbb", width=2), name="cut links, s < 1/2"),
             dict(type="scatter", mode="lines", x=_hi_x, y=_hi_y, line=dict(color="#d8541f", width=2), name="cut links, s >= 1/2")],
            title="Cut links of the cylinder (nodes at cell centres; units: cells)",
-           xaxis=dict(title="x / h", range=[body0["cx"] - body0["R"] - 3, body0["cx"] + body0["R"] + 3]),
+           xaxis=dict(constrain="domain", title="x / h", range=[body0["cx"] - body0["R"] - 3, body0["cx"] + body0["R"] + 3]),
            yaxis=dict(title="y / h", range=[body0["cy"] - body0["R"] - 3, body0["cy"] + body0["R"] + 3], scaleanchor="x"))
     _fig1
     return (Nl, body0, links0, solid0,)
@@ -1833,7 +1864,7 @@ def _(Nl, lbm3d, make_fig, np, pl, s_lbm10):
                  line=dict(color="black"), name="cylinder after"),
             dict(type="scatter", mode="markers", x=_ii + 0.5, y=_jj + 0.5, marker=dict(size=9, color="#d8541f"), name="refilled nodes")],
            title="Nodes uncovered when the cylinder moves (units: cells)",
-           xaxis=dict(title="x / h", range=[_b0["cx"] - _b0["R"] - 3, _b0["cx"] + _b0["R"] + 3]),
+           xaxis=dict(constrain="domain", title="x / h", range=[_b0["cx"] - _b0["R"] - 3, _b0["cx"] + _b0["R"] + 3]),
            yaxis=dict(title="y / h", range=[_b0["cy"] - _b0["R"] - 3, _b0["cy"] + _b0["R"] + 3], scaleanchor="x"))
     _fig1
     return (body_r, f_ref, solid_old, solid_r,)
@@ -2223,8 +2254,8 @@ def _(fv3d, make_fig, np, p_fv, s_fv3):
     print(f"innermost u face: chi = {_chu[_jm, _im]:.4f},  |u* - u_body| = {abs(s_fv3['us'][0, _jm, _im] - _ubu[_jm, _im]):.3e}  ->  "
           f"|u - u_body| = {abs(pen_u[0, _jm, _im] - _ubu[_jm, _im]):.3e}")
 
-    _fig1 = make_fig([dict(type="heatmap", z=chi_c, x=_xw[0], y=_yw[:, 0], colorscale="Greys", zmin=0, zmax=1, colorbar=dict(title="chi"))],
-           title="Penalisation mask chi at the cell centres (phi = 0)", xaxis=dict(title="x"), yaxis=dict(title="y", scaleanchor="x"))
+    _fig1 = make_fig([dict(type="heatmap", z=chi_c, x=_xw[0], y=_yw[:, 0], colorscale="Greys", zmin=0, zmax=1, colorbar=dict(title=dict(text="chi")))],
+           title="Penalisation mask chi at the cell centres (phi = 0)", xaxis=dict(constrain="domain", range=[0, 1], title="x"), yaxis=dict(title="y", scaleanchor="x"))
     _fig1
     return (chi_c, pen_u, pen_v, pen_w,)
 
@@ -2530,10 +2561,10 @@ def _(U_end, diagnostics, fluid_end, inp, make_fig, mo, np, p_run):
     print(f"largest layer-to-layer variation of omega_z in the 3D run: {np.abs(_all - _all.mean(0, keepdims=True))[:, ~in_body].max():.2e} "
           f"(compare max |omega_z| = {np.abs(_all[:, ~in_body]).max():.2f})")
 
-    _fig1 = make_fig([dict(type="heatmap", z=_blank(wz2d), x=_x, y=_x, colorscale="RdBu", zmin=-_zmax, zmax=_zmax, reversescale=True, colorbar=dict(title="omega_z"))],
-           title="2D baseline (Nz = 1): omega_z", xaxis=dict(title="x"), yaxis=dict(title="y", scaleanchor="x"))
-    _fig2 = make_fig([dict(type="heatmap", z=_blank(wz3d), x=_x, y=_x, colorscale="RdBu", zmin=-_zmax, zmax=_zmax, reversescale=True, colorbar=dict(title="omega_z"))],
-           title="3D run, mid-span plane: omega_z", xaxis=dict(title="x"), yaxis=dict(title="y", scaleanchor="x"))
+    _fig1 = make_fig([dict(type="heatmap", z=_blank(wz2d), x=_x, y=_x, colorscale="RdBu", zmin=-_zmax, zmax=_zmax, reversescale=True, colorbar=dict(title=dict(text="omega_z")))],
+           title="2D baseline (Nz = 1): omega_z", xaxis=dict(constrain="domain", range=[0, 1], title="x"), yaxis=dict(title="y", scaleanchor="x"))
+    _fig2 = make_fig([dict(type="heatmap", z=_blank(wz3d), x=_x, y=_x, colorscale="RdBu", zmin=-_zmax, zmax=_zmax, reversescale=True, colorbar=dict(title=dict(text="omega_z")))],
+           title="3D run, mid-span plane: omega_z", xaxis=dict(constrain="domain", range=[0, 1], title="x"), yaxis=dict(title="y", scaleanchor="x"))
     mo.vstack([_fig1, _fig2])
     return (in_body, wz2d, wz3d,)
 

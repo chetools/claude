@@ -269,7 +269,7 @@ for _q in range(1, 19):
 figure([dict(type="scatter", mode="lines+markers", x=_ax, y=_ay, line=dict(color="#4a7"), marker=dict(size=7)),
         dict(type="scatter", mode="markers", x=[2], y=[2], marker=dict(size=14, color="#c33"))],
        title="Streaming in the x-y plane: the 8 in-plane populations leave node (2, 2)", showlegend=False,
-       xaxis=dict(title="i (x)", dtick=1, range=[0.5, 3.5]), yaxis=dict(title="j (y)", dtick=1, range=[0.5, 3.5], scaleanchor="x"))
+       xaxis=dict(constrain="domain", title="i (x)", dtick=1, range=[0.5, 3.5]), yaxis=dict(title="j (y)", dtick=1, range=[0.5, 3.5], scaleanchor="x"))
 '''),
 
 # =====================================================================================================
@@ -359,7 +359,7 @@ figure([dict(type="scatter", mode="lines", x=body0["cx"] + body0["R"] * np.cos(_
         dict(type="scatter", mode="lines", x=_lo_x, y=_lo_y, line=dict(color="#2a7fbb", width=2), name="cut links, s < 1/2"),
         dict(type="scatter", mode="lines", x=_hi_x, y=_hi_y, line=dict(color="#d8541f", width=2), name="cut links, s >= 1/2")],
        title="Cut links of the cylinder (nodes at cell centres; units: cells)",
-       xaxis=dict(title="x / h", range=[body0["cx"] - body0["R"] - 3, body0["cx"] + body0["R"] + 3]),
+       xaxis=dict(constrain="domain", title="x / h", range=[body0["cx"] - body0["R"] - 3, body0["cx"] + body0["R"] + 3]),
        yaxis=dict(title="y / h", range=[body0["cy"] - body0["R"] - 3, body0["cy"] + body0["R"] + 3], scaleanchor="x"))
 '''),
 
@@ -528,7 +528,7 @@ figure([dict(type="scatter", mode="lines", x=_b0["cx"] + _b0["R"] * np.cos(_th),
              line=dict(color="black"), name="cylinder after"),
         dict(type="scatter", mode="markers", x=_ii + 0.5, y=_jj + 0.5, marker=dict(size=9, color="#d8541f"), name="refilled nodes")],
        title="Nodes uncovered when the cylinder moves (units: cells)",
-       xaxis=dict(title="x / h", range=[_b0["cx"] - _b0["R"] - 3, _b0["cx"] + _b0["R"] + 3]),
+       xaxis=dict(constrain="domain", title="x / h", range=[_b0["cx"] - _b0["R"] - 3, _b0["cx"] + _b0["R"] + 3]),
        yaxis=dict(title="y / h", range=[_b0["cy"] - _b0["R"] - 3, _b0["cy"] + _b0["R"] + 3], scaleanchor="x"))
 '''),
 
@@ -843,7 +843,7 @@ print(f"innermost u face: chi = {_chu[_jm, _im]:.4f},  |u* - u_body| = {abs(s_fv
       f"|u - u_body| = {abs(pen_u[0, _jm, _im] - _ubu[_jm, _im]):.3e}")
 
 figure([dict(type="heatmap", z=chi_c, x=_xw[0], y=_yw[:, 0], colorscale="Greys", zmin=0, zmax=1, colorbar=dict(title=dict(text="chi")))],
-       title="Penalisation mask chi at the cell centres (phi = 0)", xaxis=dict(title="x"), yaxis=dict(title="y", scaleanchor="x"))
+       title="Penalisation mask chi at the cell centres (phi = 0)", xaxis=dict(constrain="domain", range=[0, 1], title="x"), yaxis=dict(title="y", scaleanchor="x"))
 '''),
 
 # =====================================================================================================
@@ -1093,9 +1093,9 @@ print(f"largest layer-to-layer variation of omega_z in the 3D run: {np.abs(_all 
       f"(compare max |omega_z| = {np.abs(_all[:, ~in_body]).max():.2f})")
 
 figure([dict(type="heatmap", z=_blank(wz2d), x=_x, y=_x, colorscale="RdBu", zmin=-_zmax, zmax=_zmax, reversescale=True, colorbar=dict(title=dict(text="omega_z")))],
-       title="2D baseline (Nz = 1): omega_z", xaxis=dict(title="x"), yaxis=dict(title="y", scaleanchor="x"))
+       title="2D baseline (Nz = 1): omega_z", xaxis=dict(constrain="domain", range=[0, 1], title="x"), yaxis=dict(title="y", scaleanchor="x"))
 figure([dict(type="heatmap", z=_blank(wz3d), x=_x, y=_x, colorscale="RdBu", zmin=-_zmax, zmax=_zmax, reversescale=True, colorbar=dict(title=dict(text="omega_z")))],
-       title="3D run, mid-span plane: omega_z", xaxis=dict(title="x"), yaxis=dict(title="y", scaleanchor="x"))
+       title="3D run, mid-span plane: omega_z", xaxis=dict(constrain="domain", range=[0, 1], title="x"), yaxis=dict(title="y", scaleanchor="x"))
 '''),
 
 # =====================================================================================================
