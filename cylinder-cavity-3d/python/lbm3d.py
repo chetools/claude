@@ -111,35 +111,38 @@ def make_params(N=64, Nz=1, Re=200.0, R=0.1, ro=0.2, Us=1.0, Uo=0.0, span="perio
     return p
 
 
-def seed_velocity(p):
-    """Deliberate 3D seed (SPEC.md), divergence-free, physical units, shape (3, Nz, N, N) at the nodes.
-    Stream function psi = seed Uref F(x,y) W(z) S(z) along y, velocity = curl(psi e_y):
-      F = sin^2(pi x) sin(pi y),  S = sum_{m=1}^{M} sin(k_m z + m)/k_m,  k_m = 2 pi m/Lz,
-      M = min(4, Nz//4),  W = 1 (periodic) or sin^2(pi z/Lz) (walls)
+def seed_field(x, y, z, p):
+    """Deliberate 3D seed (SPEC.md) at physical points (arrays broadcast together): the velocity
+    (u, v, w) of the divergence-free field curl(psi e_y),
+      psi = seed Uref F(x,y) W(z) S(z),   F = sin^2(pi x) sin(pi y),
+      S = sum_{m=1}^{M} sin(k_m z + m)/k_m,  k_m = 2 pi m/Lz,  M = min(4, Nz//4),
+      W = 1 (periodic) or sin^2(pi z/Lz) (walls),
       u = -seed Uref F (W' S + W S'),   v = 0,   w = seed Uref (dF/dx) W S."""
-    N, Nz = p["N"], p["Nz"]
-    U = np.zeros((3, Nz, N, N))
-    M = min(4, Nz // 4)
-    if M == 0 or p["seed"] == 0:
-        return U
-    Lz = Nz / N
-    x = (np.arange(N) + 0.5) / N
-    z = ((np.arange(Nz) + 0.5) / N)[:, None, None]
-    X, Y = x[None, None, :], x[None, :, None]
-    F = np.sin(np.pi * X) ** 2 * np.sin(np.pi * Y)
-    dFdx = np.pi * np.sin(2 * np.pi * X) * np.sin(np.pi * Y)
-    ks = [2 * np.pi * m / Lz for m in range(1, M + 1)]
-    S = sum(np.sin(k * z + m) / k for m, k in zip(range(1, M + 1), ks))
-    Sp = sum(np.cos(k * z + m) for m, k in zip(range(1, M + 1), ks))
+    Lz = p["Nz"] / p["N"]
+    M = min(4, p["Nz"] // 4)
+    a = p["seed"] * p["Uref"] if M > 0 else 0.0
+    F = np.sin(np.pi * x) ** 2 * np.sin(np.pi * y)
+    dFdx = np.pi * np.sin(2 * np.pi * x) * np.sin(np.pi * y)
+    S = Sp = 0.0
+    for m in range(1, M + 1):
+        k = 2 * np.pi * m / Lz
+        S = S + np.sin(k * z + m) / k
+        Sp = Sp + np.cos(k * z + m)
     if p["span"] == "walls":
-        Wz = np.sin(np.pi * z / Lz) ** 2
-        Wp = (np.pi / Lz) * np.sin(2 * np.pi * z / Lz)
+        Wz, Wp = np.sin(np.pi * z / Lz) ** 2, (np.pi / Lz) * np.sin(2 * np.pi * z / Lz)
     else:
         Wz, Wp = 1.0, 0.0
-    a = p["seed"] * p["Uref"]
-    U[0] = -a * F * (Wp * S + Wz * Sp)
-    U[2] = a * dFdx * Wz * S
-    return U
+    u = -a * F * (Wp * S + Wz * Sp)
+    return u, 0.0 * u, a * dFdx * Wz * S
+
+
+def seed_velocity(p):
+    """The seed at the node centres, physical units, shape (3, Nz, N, N)."""
+    N, Nz = p["N"], p["Nz"]
+    x = ((np.arange(N) + 0.5) / N)[None, None, :]
+    y = ((np.arange(N) + 0.5) / N)[None, :, None]
+    z = ((np.arange(Nz) + 0.5) / N)[:, None, None]
+    return np.array(np.broadcast_arrays(*seed_field(x, y, z, p)))
 
 
 def init_state(p):
