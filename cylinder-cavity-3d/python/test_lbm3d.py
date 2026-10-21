@@ -246,6 +246,8 @@ def test_uniform_co_moving_flow_is_preserved_and_force_free(span):
     f = np.full_like(feq, np.nan)
     links = L.find_links(body, ~solid, N)
     F = L.bounce_back_body(f, feq, links, ~solid, body, p)
+    sall = np.concatenate([l[2] for l in links if l is not None])
+    assert (sall > 0.5).sum() > 20 and (sall < 0.5).sum() > 20 and (sall > 0.75).sum() > 5   # both branches, many q
     got = np.isfinite(f)
     assert got.sum() > 0
     assert np.abs(f[got] - feq[got]).max() < 1e-14
@@ -264,11 +266,11 @@ def test_stationary_cylinder_at_rest_has_no_force():
 
 
 # ---------------------------------------------------------------- annular circular Couette
-def annulus_torque(N, nsteps, navg, collision="bgk", R2=0.4, Re=10.0):
+def annulus_torque(N, nsteps, navg, collision="bgk", R2=0.4, Re=10.0, R=0.1):
     """Inner cylinder (radius R=0.1) spinning at Omega = Us/R inside a fixed circle of radius R2,
     both handled by the same Bouzidi code.  Starts from the exact azimuthal profile; returns
     (mean torque on the inner cylinder over the last navg steps, exact value)."""
-    p = L.make_params(N=N, Nz=1, Re=Re, ro=0.0, Us=1.0, Uo=0.0, collision=collision)
+    p = L.make_params(N=N, Nz=1, Re=Re, R=R, ro=0.0, Us=1.0, Uo=0.0, collision=collision, seed=0)
     inner = L.make_body(0.0, p)
     outer = dict(cx=N / 2, cy=N / 2, R=R2 * N, solid_inside=False, velocity=lambda x, y: (0 * x, 0 * y))
     s_in, s_out = L.solid_mask(inner, N), L.solid_mask(outer, N)
@@ -412,3 +414,13 @@ def test_seed_zero_stays_spanwise_uniform(collision):
     p2 = L.make_params(N=32, Nz=4, Re=1000, collision=collision)
     s2 = L.init_state(p2)
     assert np.abs(L.cell_velocity(s2, p2)[2]).max() > 1e-4 * p2["Uref"]
+
+
+@pytest.mark.parametrize("R", (0.083, 0.0917, 0.1083))
+def test_annular_couette_moving_wall_term_various_cuts(R):
+    """The moving-wall term is g for s < 1/2 and g/(2s) for s >= 1/2 (Lallemand & Luo 2003).  A
+    wrong factor on the s >= 1/2 branch (wall velocity 2s u_b) would change the torque by tens of
+    percent; a different inner radius R changes the mix of cut fractions.  Tolerance 3 % at N=64 (measured 0.3-1.1 %; at N=32 up to 7 %, resolution only)."""
+    T, exact = annulus_torque(64, 2000, 400, "reg", R=R)
+    print(f"annulus R={R}: torque {T:.6f} exact {exact:.6f} err {abs(T / exact - 1):.3%}")
+    assert abs(T / exact - 1) < 0.03
