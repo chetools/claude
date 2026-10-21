@@ -75,7 +75,7 @@
   /** Inputs -> everything a step needs; same keys and numbers as python lbm3d.make_params (+ lattice_params). */
   function makeParams(inp) {
     inp = inp || {};
-    var d = { N: 64, Nz: 1, Re: 200.0, R: 0.1, ro: 0.2, Us: 1.0, Uo: 0.0, span: "periodic", u_lb: 0.05,
+    var d = { N: 64, Nz: 1, Re: 200.0, R: 0.1, ro: 0.2, Us: 1.0, Uo: 0.0, span: "periodic", u_lb: null,
               collision: DEFAULT_COLLISION, seed: 1e-3 };
     var a = {};
     for (var k in d) a[k] = inp[k] !== undefined ? inp[k] : d[k];
@@ -91,13 +91,16 @@
     var Omega = a.Us / a.R;
     var omega_o = ro > 0 ? Uo / ro : 0.0;
     var Umax = Math.abs(a.Us) + Math.abs(omega_o) * (ro + a.R);
-    var dt = a.u_lb * h / (Umax || Uref);
+    var Ub = Umax || Uref;
+    var u_lb = a.u_lb;
+    if (u_lb === null || u_lb === undefined) u_lb = Math.min(0.05, Ub / (6.0 * nu * N));   // nu_lb <= 1/6 (tau <= 1)
+    var dt = u_lb * h / Ub;
     var nu_lb = nu * dt / (h * h);
     var tau = 3.0 * nu_lb + 0.5;
     var p = { N: N, Nz: Nz, nu_lb: nu_lb, tau: tau, omega: 1.0 / tau, collision: a.collision, span: a.span,
               wall_x: true, wall_y: true, mrt_A: mrtMatrix(1.0 / tau),
               h: h, Lz: Nz * h, Re: a.Re, R: a.R, ro: ro, Us: a.Us, Uo: Uo, nu: nu, Omega: Omega,
-              omega_o: omega_o, dt: dt, u_lb: a.u_lb, seed: a.seed, Uref: Uref };
+              omega_o: omega_o, dt: dt, u_lb: u_lb, seed: a.seed, Uref: Uref };
     if (inp.mass_fix !== undefined) p.mass_fix = inp.mass_fix;   // test switch (python: p["mass_fix"])
     return p;
   }
@@ -134,24 +137,42 @@
     }
   }
 
-  /** Fluid at rest (rho = 1) plus the deliberate 3D seed (SPEC.md), as lbm3d.init_state.
+  /** Deliberate 3D seed (SPEC.md, lbm3d.seed_field) at physical point (x, y, z): [u, v, w], divergence-free
+   *  velocity of curl(psi e_y), psi = a F(x,y) W(z) S(z). None for Nz < 4 or seed = 0. */
+  function seedField(x, y, z, p) {
+    var Lz = p.Nz / p.N, M = Math.min(4, Math.floor(p.Nz / 4));
+    var a = M > 0 ? p.seed * p.Uref : 0.0;
+    var sx = Math.sin(Math.PI * x);
+    var F = sx * sx * Math.sin(Math.PI * y);
+    var dFdx = Math.PI * Math.sin(2 * Math.PI * x) * Math.sin(Math.PI * y);
+    var S = 0.0, Sp = 0.0;
+    for (var m = 1; m <= M; m++) {
+      var k = 2 * Math.PI * m / Lz;
+      S = S + Math.sin(k * z + m) / k;
+      Sp = Sp + Math.cos(k * z + m);
+    }
+    var Wz = 1.0, Wp = 0.0;
+    if (p.span === "walls") {
+      var sz = Math.sin(Math.PI * z / Lz);
+      Wz = sz * sz; Wp = (Math.PI / Lz) * Math.sin(2 * Math.PI * z / Lz);
+    }
+    var u = -a * F * (Wp * S + Wz * Sp);
+    return [u, 0.0 * u, a * dFdx * Wz * S];
+  }
+  lbm.seedField = seedField;
+
+  /** Fluid at rest (rho = 1) plus the seed as the equilibrium at that velocity (lbm3d.init_state).
    *  Returns {f: Float64Array(19*Nz*N*N), solid: Uint8Array(N*N), phi: 0}. */
   function initState(p) {
     var N = p.N, Nz = p.Nz, vol = Nz * N * N;
     var f = new Float64Array(19 * vol);
-    var seeded = Nz > 1 && p.seed !== 0;
-    var M = Math.min(4, Math.floor(Nz / 2));
-    var sx = new Float64Array(N);
-    for (var i = 0; i < N; i++) sx[i] = Math.sin(Math.PI * ((i + 0.5) / N));
-    for (var k = 0; k < Nz; k++) {
-      var prof = 0.0;
-      if (seeded) { var z = (k + 0.5) / Nz; for (var m = 1; m <= M; m++) prof += Math.cos(2 * Math.PI * m * z + m); }
+    var sc = p.dt / p.h;
+    for (var k = 0; k < Nz; k++)
       for (var j = 0; j < N; j++)
         for (var i2 = 0; i2 < N; i2++) {
-          var w = seeded ? p.seed * p.Uref * prof * (sx[j] * sx[i2]) * p.dt / p.h : 0.0;
-          equilibriumAt(f, vol, (k * N + j) * N + i2, 1.0, 0.0, 0.0, w);
+          var uv = seedField((i2 + 0.5) / N, (j + 0.5) / N, (k + 0.5) / N, p);
+          equilibriumAt(f, vol, (k * N + j) * N + i2, 1.0, uv[0] * sc, uv[1] * sc, uv[2] * sc);
         }
-    }
     var solid = new Uint8Array(N * N);
     if (p.R > 0) {
       var b = makeBody(0.0, p);

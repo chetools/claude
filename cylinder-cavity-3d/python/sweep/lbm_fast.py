@@ -471,6 +471,8 @@ def step_fast(s, p):
     N, Nz = p["N"], p["Nz"]
     assert p.get("wall_x", True) and p.get("wall_y", True), "periodic x / y boxes are not supported"
     wall_z = p["span"] == "walls"
+    if p.get("node_exchange", "none") != "none":
+        raise NotImplementedError("lbm_fast supports node_exchange='none' only")
     s["phi"] += p["omega_o"] * p["dt"]
     geo = s.get("_geo")
     if geo is None or geo["phi"] != s["phi"]:
@@ -500,6 +502,7 @@ def step_fast(s, p):
     s["exchange"] = np.array([Fx, Fy, Tz])
     # 5. post-step corrections (port new ones of lbm3d.step here, in the same order)
     _mass_correction(g, solid, p, mass_fluid + dM)
+    s["mass"] = float((~solid).sum() * Nz) if p.get("mass_fix", True) else float(mass_fluid + dM)
     # 6. solid nodes
     sj, si = np.nonzero(solid)
     ub, vb = body["velocity"](si + 0.5, sj + 0.5)
@@ -508,6 +511,7 @@ def step_fast(s, p):
     s["solid"] = solid
     s["t"] += p["dt"]
     s["nstep"] += 1
+    s["torque"] = lbm3d.torque(s, p)                # as lbm3d.step: last step's torque / fluid mass
     return s
 
 
@@ -524,7 +528,7 @@ def diag_row(s, p, U=None):
     return dict(t=float(s["t"]), E=diagnostics.energy(U, h, Lz),
                 Z=diagnostics.enstrophy(U, h, Lz, span), Ew=sp["Ew"], E3d=sp["E3d"],
                 Ekz=ekz5, torque=float(lbm3d.torque(s, p)), maxu_lb=speed * p["dt"] / h,
-                mass=float(lbm3d.mass(s)))
+                mass=float(s.get("mass", lbm3d.mass(s))))
 
 
 def snapshot(U, p):

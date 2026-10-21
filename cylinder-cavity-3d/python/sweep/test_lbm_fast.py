@@ -19,7 +19,7 @@ import lbm_fast       # noqa: E402
 
 NSTEPS = 12      # the numpy reference costs ~0.1 s/step: 12 cases x 12 steps + one 100-step case
 NLONG = 100
-lbm_fast.set_num_threads(2)
+lbm_fast.set_num_threads(int(os.environ.get("TEST_THREADS", 2)))
 
 
 def _run_both(p, nsteps=NSTEPS):
@@ -83,3 +83,13 @@ def test_geometry_matches_numpy():
             assert np.array_equal(g["solid"], ref[0])
             for x, y in zip((g["lq"], g["lj"], g["li"], g["ls"]), ref[1:]):
                 assert np.array_equal(x, y)
+
+
+def test_stored_torque_mass_and_node_exchange():
+    p = lbm3d.make_params(N=32, Nz=8, Re=200.0, Uo=0.5)
+    a, b, ta, tb = _run_both(p, 10)
+    assert abs(a["torque"] - b["torque"]) <= 1e-10 * abs(a["torque"])
+    assert abs(a["mass"] - b["mass"]) <= 1e-9 * a["mass"]
+    p["node_exchange"] = "other"
+    with pytest.raises(NotImplementedError):
+        lbm_fast.step_fast(lbm3d.init_state(p), p)
