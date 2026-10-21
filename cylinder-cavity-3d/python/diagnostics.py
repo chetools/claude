@@ -66,19 +66,41 @@ def q_criterion(U, h, span="periodic"):
     return 0.5 * (O2 - S2)
 
 
+# ----------------------------------------------------------------- fluid-only mask
+def fluid_mask(p, phi):
+    """Bool (Nz, N, N): True for cells whose centre is outside the cylinder (r > R).
+
+    The cylinder centre is (0.5 + ro cos(phi), 0.5 + ro sin(phi)); it spans the whole box in z,
+    so the mask is the same in every z-plane.  Uses p["N"], p["Nz"], p["R"], p["ro"]
+    (both fv3d.make_params and lbm3d.make_params provide them)."""
+    N, Nz = p["N"], p["Nz"]
+    x = (np.arange(N) + 0.5) / N
+    cx, cy = 0.5 + p["ro"] * np.cos(phi), 0.5 + p["ro"] * np.sin(phi)
+    outside = (x[None, :] - cx) ** 2 + (x[:, None] - cy) ** 2 > p["R"] ** 2       # (y, x)
+    return np.broadcast_to(outside, (Nz, N, N)).copy()
+
+
+def _fluid_only(U, fluid):
+    """U with the body cells set to zero (U itself if fluid is None)."""
+    return U if fluid is None else U * fluid
+
+
 # ----------------------------------------------------------------- integral measures
-def energy(U, h, Lz):
-    """(1/Lz) * integral of 1/2 |u|^2 dV, dV = h^3: kinetic energy per unit span.
+# All integrals take an optional `fluid` mask (see fluid_mask); None means the whole box.
+def energy(U, h, Lz, fluid=None):
+    """(1/Lz) * integral of 1/2 |u|^2 dV over the fluid cells, dV = h^3: kinetic energy per unit span.
     For a z-uniform flow this equals the 2D energy, whatever Nz is."""
-    return float(0.5 * np.sum(U ** 2) * h ** 3 / Lz)
+    return float(0.5 * np.sum(_fluid_only(U, fluid) ** 2) * h ** 3 / Lz)
 
 
-def enstrophy(U, h, Lz, span="periodic"):
-    """(1/Lz) * integral of 1/2 |omega|^2 dV."""
-    return float(0.5 * np.sum(vorticity(U, h, span) ** 2) * h ** 3 / Lz)
+def enstrophy(U, h, Lz, span="periodic", fluid=None):
+    """(1/Lz) * integral of 1/2 |omega|^2 dV over the fluid cells.
+    omega is computed from the full U (so cells next to the body use the body-cell velocities as
+    the solver stores them), then only fluid cells are summed."""
+    return float(0.5 * np.sum(_fluid_only(vorticity(U, h, span), fluid) ** 2) * h ** 3 / Lz)
 
 
-def spanwise_energy(U, h, Lz, span="periodic"):
+def spanwise_energy(U, h, Lz, span="periodic", fluid=None):
     """How three-dimensional is the flow?  Returns dict(Ew, E3d, Ekz).
 
     Ew  = (1/Lz) int 1/2 w^2 dV            energy of the spanwise velocity
@@ -86,10 +108,15 @@ def spanwise_energy(U, h, Lz, span="periodic"):
     Ekz = energy in each spanwise Fourier mode kz = 0 .. Nz/2 (wavelength Lz/kz), periodic only;
           None for span = "walls" (not periodic in z).
 
+    With a `fluid` mask all three are computed from the masked velocity (zero inside the body).
+    The body is z-invariant, so the mask is the same in every plane and the z-FFT commutes with it:
+    sum(Ekz) = energy(U, h, Lz, fluid) still holds exactly.
+
     Normalisation of Ekz: c_m = rFFT_z(U)/Nz, energy of mode m = h^2 sum_xy 1/2 sum_comp |c_m|^2,
     doubled for 0 < m < Nz/2 (the rFFT keeps only half of the +/- pairs).  Then sum(Ekz) = energy(U)
     exactly (Parseval); Ekz[0] is the z-average flow, Ekz[1:] is the 3D part.
     """
+    U = _fluid_only(U, fluid)
     Nz = U.shape[1]
     dV = h ** 3
     Ew = 0.5 * np.sum(U[2] ** 2) * dV / Lz
@@ -106,10 +133,12 @@ def spanwise_energy(U, h, Lz, span="periodic"):
     return dict(Ew=float(Ew), E3d=float(E3d), Ekz=Ekz)
 
 
-def spectrum_h(U, h):
+def spectrum_h(U, h, fluid=None):
     """Horizontal energy spectrum.  Returns (k, E_k), k = 0, 1, 2, ... in units of 2 pi / L, L = 1.
 
-    For each z-plane: multiply every component by the Hann window W(x) W(y), W = sin^2(pi x),
+    With a `fluid` mask the body cells are set to zero before windowing (so the body interior,
+    which moves rigidly, does not enter the spectrum; the hole itself still leaks energy to
+    other shells).  For each z-plane: multiply every component by the Hann window W(x) W(y), W = sin^2(pi x),
     take the 2D FFT, and add 1/2 |u_hat|^2 into the shell round(|k|) (kx, ky integer wavenumbers).
     The box walls are not periodic, the window removes the jump at the edges.  Windowing removes
     energy, so the result is divided by mean(W^2) (the average of the window squared), which
@@ -119,6 +148,7 @@ def spectrum_h(U, h):
     centre more than the edges.  Shells go up to the corner of the FFT square, so nothing is
     lost.  Planes are averaged.  Shell width is 1, so sum(E_k) * dk = sum(E_k).
     """
+    U = _fluid_only(U, fluid)
     _, Nz, N, _ = U.shape
     x = (np.arange(N) + 0.5) / N
     W = np.sin(np.pi * x) ** 2
@@ -138,9 +168,17 @@ def summary(U, s, p):
     torque and maxdiv are known only to the solver (momentum exchange on the body, divergence
     of its own velocity field).  They are copied from the state dict if the solver stored them
     there as s["torque"], s["maxdiv"], else NaN.
+
+    E, Z, Ew, E3d are fluid-only integrals: the mask comes from fluid_mask(p, phi) with
+    phi = s["phi"] if present, else p["omega_o"] * s["t"].  If p has no "R" (a bare dict
+    without body data) the whole box is used.  maxspeed is over the whole box.
     """
     h, Lz, span = p["h"], p["Lz"], p["span"]
-    sp = spanwise_energy(U, h, Lz, span)
-    return dict(E=energy(U, h, Lz), Z=enstrophy(U, h, Lz, span), Ew=sp["Ew"], E3d=sp["E3d"],
+    fluid = None
+    if "R" in p:
+        phi = s["phi"] if "phi" in s else p["omega_o"] * s["t"]
+        fluid = fluid_mask(p, phi)
+    sp = spanwise_energy(U, h, Lz, span, fluid)
+    return dict(E=energy(U, h, Lz, fluid), Z=enstrophy(U, h, Lz, span, fluid), Ew=sp["Ew"], E3d=sp["E3d"],
                 torque=float(s.get("torque", np.nan)), maxdiv=float(s.get("maxdiv", np.nan)),
                 maxspeed=float(np.sqrt((U ** 2).sum(axis=0)).max()))
