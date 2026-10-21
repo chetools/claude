@@ -87,3 +87,47 @@ MOLAB_URL = https://molab.marimo.io/github/chetools/claude/blob/gh-pages/cylinde
 `web/theory_physics.md`, `web/theory_lbm.md` (Markdown + $…$/$$…$$ LaTeX, CommonMark + tables). Derive only
 what the page computes. Every equation block is followed by a plain-language, physical/geometric reading.
 Numbers that must come from simulations are written `TODO(measured: what)`; the coordinator fills them.
+
+## Web runtime (Phase C) — files, globals, interfaces
+Plain browser scripts concatenated by build.py in this order into one <script>, all attaching to one global
+namespace object `window.CC3 = window.CC3 || {}` (and loadable in node for tests via
+`if (typeof module !== "undefined") module.exports = ...`):
+  web/lbm_cpu.js   CC3.lbm.makeParams(inp), CC3.lbm.CpuSolver        (LBM agent)
+  web/fv_cpu.js    CC3.fv.makeParams(inp),  CC3.fv.CpuSolver         (FV agent)
+  web/lbm_gpu.js   CC3.lbm.createGpuSolver(device, params) (async)   (LBM agent; kernels in web/lbm.wgsl)
+  web/fv_gpu.js    CC3.fv.createGpuSolver(device, params)  (async)   (FV agent; kernels in web/fv.wgsl)
+  web/render.js    CC3.render.*  (render agent; web/render.wgsl slices + ray-march, web/iso.wgsl marching cubes)
+  web/diagnostics.js CC3.diag.*  (JS f64 port of diagnostics.py, same names; app agent)
+  web/app.js       page logic (app agent); web/presets.json (app agent, coordinator fills values)
+WGSL text is read from <script type="text/wgsl" id="wgsl-lbm|wgsl-fv|wgsl-render|wgsl-iso">.textContent.
+makeParams(inp) must give exactly the numbers of python make_params (same keys, camel-free: use the python
+key names, e.g. p.N, p.Nz, p.dt, p.nu, p.tau, p.u_lb ...).
+
+Solver interface (identical for {lbm, fv} × {cpu, gpu}):
+  s.params                         the make_params dict
+  s.t, s.nstep                     physical time, step count
+  s.step(n)                        advance n steps (GPU: encode all n in one or few submissions; return promise
+                                   or undefined; app awaits `await s.step(n)` either way)
+  await s.readVelocity()           -> Float64Array (cpu) / Float32Array (gpu), length 3*Nz*N*N, physical
+                                      cell-centred velocity, layout [c][k][j][i] (c = 0,1,2 for u,v,w)
+  s.velocityBuffer (gpu only)      GPUBuffer (storage, f32, same layout), refreshed by `s.updateVelocity()`
+                                   (encodes a kernel; call before rendering). CPU solvers expose `s.velocity()`
+                                   returning the Float64Array without copying.
+  s.torque()                       last torque per unit span (number; GPU: from the last readback/diagnostic,
+                                   may be async: `await s.readTorque()` is also provided on both)
+  s.maxdiv() (fv) / s.mass() (lbm) optional, numbers or promises
+  s.destroy()
+Diagnostics (E, Z, Ew, E3d, Ekz, spectrum, vorticity, Q) are computed by CC3.diag from readVelocity() on the
+host at a modest cadence; renderers compute |ω| and Q on the GPU from velocityBuffer themselves (render.wgsl),
+or on the CPU from the velocity array for the CPU fallback (2D canvas slices only).
+Self-test: python/selftest_lbm.py and python/selftest_fv.py each define `reference()` -> JSON-able dict
+{cases:[{inp, steps, outputs:{torque, E, samples:[[c,k,j,i,value],...], checksum}}]} at small grids
+(N=16, Nz=4 and Nz=1; spin+orbit, periodic and walls, seed>0). build.py embeds them as window.REF =
+{lbm:…, fv:…}. Each method file also defines `CC3.<method>.selftest(solverFactory, ref)` -> list of rows
+{name, expected, got, absdiff, reldiff, tol, pass} so the app's Validation tab can show them.
+Tolerances: JS cpu f64 vs numpy ≤ 1e-12 relative; GPU f32 vs numpy: state measured, typical 1e-4…1e-3.
+Headless GPU testing: /opt/pw-browsers/chromium with --enable-unsafe-webgpu --use-webgpu-adapter=swiftshader
+on an http://localhost page (python -m http.server); compute works, canvas present does not — render
+tests go through an offscreen texture (the app's ?blit option). f32 exp/tanh overflow → clamp arguments.
+Request adapter limits (maxStorageBufferBindingSize, maxBufferSize) and refuse grids that exceed them with a
+clear message.
