@@ -42,7 +42,8 @@
     autoN: 4, msStep: null, diagMs: 20, lastDiagAt: 0, lastPlotAt: 0, rev: 0, histSel: 'torque', histBound: false,
     H: null, SP: [], range: null, crangeFresh: true, mass0: { 2: null, 3: null }, last: null,
     reExact: null,                 // Re set by a preset or the URL, kept exactly (the slider is logarithmic)
-        renderers: {}, detach: {}, canvases: {}, notes: [],
+    renderers: {}, detach: {}, canvases: {}, notes: [],
+    tracers: { 2: null, 3: null },  // flow particles per panel (web/tracers.js)
   };
   function newHistory() {
     return { t: [], E2: [], E3: [], Z2: [], Z3: [], T2: [], T3: [], Ew: [], E3d: [], Ekz: [[], [], [], []] };
@@ -76,6 +77,8 @@
       <div class="side-cap">Changing any input above restarts both runs from rest.</div>
       <div class="side-h">Display</div>
       ${select('in-field', 'Field', Object.keys(FIELDS).map((k) => [k, FIELDS[k].label]))}
+      <div class="row2">${select('in-part', 'Flow particles', [[0, 'off'], [3000, '3 000'], [8000, '8 000'], [20000, '20 000'], [50000, '50 000']])}
+        <div class="field"><label for="in-trail">Trail length</label><input type="range" id="in-trail" min="0" max="1" step="0.05" value="0.5"></div></div>
       ${slider('in-slice', 'Slice position', 0, 1, 0.01, 0.5)}
       ${select('in-spf', 'Steps per frame', [[0, 'auto'], [1, '1'], [2, '2'], [5, '5'], [10, '10'], [20, '20'], [50, '50'], [100, '100']])}
       <div class="field check"><input type="checkbox" id="in-raw"><label for="in-raw">show raw torque samples</label></div>
@@ -83,6 +86,7 @@
       <div class="field"><input type="number" id="in-avgw" value="1" min="0.05" step="0.25"><div class="side-cap">time units</div></div>
       <div class="btns"><button class="btn primary" id="b-play">Pause</button><button class="btn" id="b-reset">Reset</button>
         <button class="btn" id="b-png">Save PNG</button></div>`;
+    $('in-part').value = '8000';
     const cards = [['t', 'time t'], ['re', 'Reynolds number'], ['e', 'E per unit span (3D)'], ['tq', 'torque, mean (3D)'],
       ['r3', 'E3d / E (3D)'], ['dv', 'max |div u| (3D)']];
     $('metrics').innerHTML = cards.map(([k, l]) => `<div class="metric"><div class="m-label" id="m-${k}-l">${l}</div>` +
@@ -167,6 +171,31 @@
       sim.detach[w] = r.attachControls(sim.canvases[w], () => { sim.dirty = true; });
     }
   }
+  // flow particles: one set per panel, carried by that panel's velocity; GPU: drawn by the renderer in every view
+  async function makeTracers() {
+    for (const w of [2, 3]) { if (sim.tracers[w]) { try { sim.tracers[w].destroy(); } catch (e) { /* ignore */ } sim.tracers[w] = null; } }
+    const count = +$('in-part').value;
+    for (const w of [2, 3]) {
+      const S = w === 2 ? sim.s2 : sim.s3, p = w === 2 ? sim.p2 : sim.p3;
+      let T = null;
+      if (count > 0) {
+        if (sim.backend === 'gpu') { T = new CC3.tracers.GpuTracers(sim.device, geomOf(p), count); await T.ready; }
+        else T = new CC3.tracers.CpuTracers(geomOf(p), count);
+        T.tLast = S.t; T.sref = sim.sref || 1;
+        T.setLength(CC3.tracers.trailLength(+$('in-trail').value));
+      }
+      sim.tracers[w] = T;
+      if (sim.renderers[w]) sim.renderers[w].tracers = T;
+    }
+    sim.dirty = true;
+  }
+  function advectTracers(w, S, p, phi, U) {
+    const T = sim.tracers[w];
+    if (!T) return;
+    const tau = S.t - T.tLast;
+    T.tLast = S.t;
+    if (tau > 0) T.advect(U, tau, phi, p);
+  }
   function sizeCanvases() {
     for (const w of [2, 3]) {
       const cv = sim.canvases[w];
@@ -188,11 +217,15 @@
       if (sim.backend === 'gpu') {
         const r = sim.renderers[w];
         if (S.updateVelocity) S.updateVelocity();
+        advectTracers(w, S, p, view.phi, S.velocityBuffer);
         r.setField(view.field);
         await r.draw(S.velocityBuffer, view);
       } else {
         if (view.mode === 'volume' || view.mode === 'isosurface') view.mode = 'slice-xy';
-        CC3.render.drawSliceCPU(sim.canvases[w].getContext('2d'), S.velocity(), geomOf(p), view);
+        const ctx = sim.canvases[w].getContext('2d');
+        advectTracers(w, S, p, view.phi, S.velocity());
+        CC3.render.drawSliceCPU(ctx, S.velocity(), geomOf(p), view);
+        if (sim.tracers[w]) sim.tracers[w].drawSlice(ctx, Object.assign({ ink: CC3.tracers.inkFor(true, FIELDS[$('in-field').value].sym) }, view));
       }
     }
     sim.dirty = false;
@@ -201,7 +234,12 @@
     const f = FIELDS[$('in-field').value], r = sim.range;
     const rt = r ? (f.sym ? `±${fmtG(r[1], 3)}` : `${fmtG(r[0], 3)} … ${fmtG(r[1], 3)}`) : '–';
     $('cap-scale').textContent = `Colour scale (the same in both panels): ${f.short} ${rt}. It follows the flow's own ` +
-      `statistics (3 × rms of the field, or the maximum speed), not the inputs.`;
+      `statistics (3 × rms of the field, or the maximum speed), not the inputs.` + (+$('in-part').value ? ` Flow particles: ` +
+      `${(+$('in-part').value).toLocaleString()} massless tracers per panel, carried by that panel's computed velocity (trilinear ` +
+      `interpolation, RK2). Each draws its last moves as a trail that fades with age, and is more opaque where the fluid moves faster ` +
+      `(relative to 2 × the rms speed of the more energetic run, the same in both panels). Trails are pathlines, where fluid has been. ` +
+      `Slices show only the particles within 2 cells of the slice plane. Particles that age (2–4 time units), leave the box or ` +
+      `enter the cylinder are re-seeded at random.` : '');
     const sub = (S, p, w) => !p ? '' : `${p.N}×${p.N}×${p.Nz} cells · ${sim.backend === 'gpu' ? 'WebGPU' : 'CPU fallback'} · ` +
       `${$(`mode${w}d`).value}${sim.backend === 'cpu' ? ' (CPU: slices only)' : ''}`;
     $('cap2d').textContent = sub(sim.s2, sim.p2, 2); $('cap3d').textContent = sub(sim.s3, sim.p3, 3);
@@ -270,7 +308,7 @@
     sim.mass0 = { 2: await optional(sim.s2, 'mass'), 3: await optional(sim.s3, 'mass') };
     sim.raw = { t: [], T2: [], T3: [] };
     await sampleTorque();
-    try { await makeRenderers(); } catch (e) { showErr('Could not create the renderers: ' + (e.message || e)); return; }
+    try { await makeRenderers(); await makeTracers(); } catch (e) { showErr('Could not create the renderers: ' + (e.message || e)); return; }
     sim.ready = true;
     const rel = Math.abs(sim.p2.dt - sim.p3.dt) / sim.p3.dt;
     if (rel > 1e-9) sim.notes.push(`The 2D and 3D time steps differ (${fmtE(sim.p2.dt)} vs ${fmtE(sim.p3.dt)}); the 2D run takes the steps needed to reach the same physical time.`);
@@ -365,6 +403,10 @@
       if (sim.SP.length > 400) sim.SP.shift();
       if (H.t.length > 3000) { for (const key of Object.keys(H)) H[key] = key === 'Ekz' ? H[key].map((a) => a.filter((_, i) => i % 2 === 0)) : H[key].filter((_, i) => i % 2 === 0); }
     }
+    // trail ink is relative to the flow's own rms speed (box area 1: u_rms ~ sqrt(2E)), one reference for both panels
+    const Emax = Math.max(r2.E, r3.E);
+    sim.sref = Emax > 0 ? 2 * Math.sqrt(2 * Emax) : 0.5 * (Math.max(Math.abs(sim.inp.Us), Math.abs(sim.inp.Uo)) || 1);
+    for (const w of [2, 3]) if (sim.tracers[w]) sim.tracers[w].sref = sim.sref;
     autoRange();
     updateMetrics();
     if (!Number.isFinite(r3.E) || !Number.isFinite(r2.E)) {
@@ -545,6 +587,15 @@
     $('in-slice').addEventListener('input', () => { sim.dirty = true; });
     $('in-field').addEventListener('change', () => { sim.crangeFresh = true; sim.diagNow = true; sim.dirty = true; });
     for (const id of ['mode2d', 'mode3d']) $(id).addEventListener('change', () => { sim.dirty = true; setCaptions(); });
+    $('in-part').addEventListener('change', async () => {
+      while (sim.busy) await sleep(10);
+      sim.busy = true;
+      try { if (sim.ready) await makeTracers(); setCaptions(); } finally { sim.busy = false; }
+    });
+    $('in-trail').addEventListener('input', () => {
+      for (const w of [2, 3]) if (sim.tracers[w]) sim.tracers[w].setLength(CC3.tracers.trailLength(+$('in-trail').value));
+      sim.dirty = true;
+    });
     for (const id of ['in-avg', 'in-avgw', 'in-raw']) $(id).addEventListener('change', () => { if (sim.last) drawPlots(); });
     $('b-play').addEventListener('click', () => { sim.playing = !sim.playing; $('b-play').textContent = sim.playing ? 'Pause' : 'Run'; });
     $('b-reset').addEventListener('click', () => { requestRebuild(); });
@@ -613,8 +664,11 @@
     const body = rows.map((r) => `<tr><td>${r.method.toUpperCase()} ${r.backend}</td><td>${esc(r.name)}</td><td>${fmtG(r.expected, 8)}</td>` +
       `<td>${fmtG(r.got, 8)}</td><td>${fmtE(r.reldiff, 1)}</td><td>${fmtE(r.tol, 0)}</td>` +
       `<td class="${r.pass ? 'pass' : 'fail'}">${r.pass ? 'pass' : 'FAIL'}</td></tr>`).join('');
-    return `<div style="overflow-x:auto"><table class="data"><tr><th>solver</th><th>check</th><th>expected (numpy)</th><th>got</th><th>rel. diff</th><th>tolerance</th><th></th></tr>${body}</table></div>
-      <p class="caption">Tolerances are the defaults of each method module (<code>selftest</code> in lbm_cpu.js and fv_cpu.js), not set by this page.</p>`;
+    return `<div style="overflow-x:auto"><table class="data"><tr><th>solver</th><th>check</th><th>expected</th><th>got</th><th>rel. diff</th><th>tolerance</th><th></th></tr>${body}</table></div>
+      <p class="caption">Solver rows expect the numpy value. Flow-particle rows expect the exact value (CPU: a linear field, the
+      no-slip walls, the order of RK2 against the exact circle) or zero difference from the JavaScript float64 tracer (GPU, the same
+      float32 velocity field). Tolerances are the defaults of each module (<code>selftest</code> in lbm_cpu.js, fv_cpu.js and
+      tracers.js), not set by this page.</p>`;
   }
   // ---- exact solution: impulsively started centred spinning cylinder (python/selftest_exact.py), N=64, Nz=1
   const parityTolCache = {};
@@ -710,6 +764,12 @@
         result.rows.push(...await runBackendTest(m, b));
         $('val-table').innerHTML = rowsTable(result.rows);
       }
+      for (const b of [what.cpu && 'cpu', what.gpu && sim.backend === 'gpu' && 'gpu'].filter(Boolean)) {   // flow particles
+        status.textContent = `self-test flow particles ${b}…`; await sleep(20);
+        const rows = await CC3.tracers.selftest(b === 'gpu' ? { device: sim.device } : {});
+        result.rows.push(...rows.map((r) => Object.assign({ method: 'particles', backend: b }, r)));
+        $('val-table').innerHTML = rowsTable(result.rows);
+      }
       if (what.exact) {
         result.exact = [];
         for (const b of (sim.backend === 'gpu' ? ['cpu', 'gpu'] : ['cpu'])) for (const m of ['lbm', 'fv']) {
@@ -780,6 +840,7 @@
     for (const k of ['Re', 'Us', 'Uo', 'ro', 'R', 'N', 'Nz', 'seed']) if (URLQ.has(k) && Number.isFinite(+URLQ.get(k))) ov[k] = +URLQ.get(k);
     if (Object.keys(ov).length) { setInputs(ov); if (!URLQ.has('preset')) $('in-preset').value = 'custom'; }
     if (FIELDS[URLQ.get('field')]) $('in-field').value = URLQ.get('field');
+    if ([...$('in-part').options].some((o) => o.value === URLQ.get('particles'))) $('in-part').value = URLQ.get('particles');
     const mode = URLQ.get('mode');
     if (MODES.includes(mode) && !(sim.backend === 'cpu' && /volume|isosurface/.test(mode))) { $('mode2d').value = mode; $('mode3d').value = mode; }
     showValues();

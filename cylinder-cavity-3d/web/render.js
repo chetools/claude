@@ -23,6 +23,7 @@
 //                               (resolved when a blit copy is done; otherwise immediately).
 //   r.lastRange = {lo, hi, max, auto, signed}   range used by the colour bar (auto: read back asynchronously, so it
 //                               follows the data by one frame); r.lastColorRange likewise; r.lastIso = {triangles, capped, cap}
+//   r.tracers = GpuTracers | null   flow particles drawn in every view (web/tracers.js); view.trails === false hides them
 //   r.attachControls(canvas, onChange) -> detach()   drag = orbit, wheel / pinch = zoom (edits r.camera)
 //   r.readPixels() -> Promise<{width, height, data: Uint8ClampedArray RGBA}>  re-renders the last view offscreen
 //   r.readField() / r.readMesh() / r._setFieldData(f32) : test helpers
@@ -518,6 +519,11 @@
           rp.setPipeline(pp.mesh); rp.setBindGroup(0, isoBG); rp.drawIndirect(iso.args, 0);
         }
         lines = boxOverlay(cam, W, H);
+      }
+      if (r.tracers && view.trails !== false) {                // flow particles (web/tracers.js, trails.wgsl)
+        const ink = CC3.tracers.inkFor(mode.startsWith("slice"), SIGNED[kind]);
+        r.tracers.encodeDraw(rp, { fmt: useOff ? "rgba8unorm" : format, mode: MODES[mode], vp: cam.vp, L, W, H,
+          slice: view.slice === undefined ? 0.5 : view.slice, ink });
       }
       const nv = Math.min(lines.v.length / 8, lineCap);
       device.queue.writeBuffer(lineBuf, 0, new Float32Array(lines.v.slice(0, nv * 8)));

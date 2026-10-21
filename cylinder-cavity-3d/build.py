@@ -42,14 +42,14 @@ PH_RE = re.compile(r"@@([A-Z0-9_]+)@@")
 # page JavaScript, concatenated in this order (SPEC.md, "Web runtime")
 CPU_JS = ("lbm_cpu.js", "fv_cpu.js")
 GPU_JS = ("lbm_gpu.js", "fv_gpu.js")
-APP_JS_FILES = ("render.js", "diagnostics.js", "app.js")
+APP_JS_FILES = ("tracers.js", "render.js", "diagnostics.js", "app.js")
 
 # every file the page is built from (relative to the project root); a missing one stops the build
 INPUTS = [
     "web/template.html", "web/base.css", "web/presets.json",
     "web/theory_physics.md", "web/theory_lbm.md", "web/code_guide.md",
-    "web/lbm.wgsl", "web/fv.wgsl", "web/render.wgsl", "web/iso.wgsl",
-    *[f"web/{f}" for f in ("lbm_cpu.js", "fv_cpu.js", "lbm_gpu.js", "fv_gpu.js", "render.js",
+    "web/lbm.wgsl", "web/fv.wgsl", "web/render.wgsl", "web/iso.wgsl", "web/trails.wgsl",
+    *[f"web/{f}" for f in ("lbm_cpu.js", "fv_cpu.js", "lbm_gpu.js", "fv_gpu.js", "tracers.js", "render.js",
                             "diagnostics.js", "app.js")],
     "python/selftest_lbm.py", "python/selftest_fv.py", "python/selftest_exact.py", "notes/verify/annulus.py",
     "python/walkthrough.py", "python/runner.py",
@@ -319,7 +319,9 @@ def main():
         "WGSL_FV": raw_script(read("web", "fv.wgsl"), "web/fv.wgsl"),
         "WGSL_RENDER": raw_script(read("web", "render.wgsl"), "web/render.wgsl"),
         "WGSL_ISO": raw_script(read("web", "iso.wgsl"), "web/iso.wgsl"),
+        "WGSL_TRAILS": raw_script(read("web", "trails.wgsl"), "web/trails.wgsl"),
         "CPUJS_SRC": code_html("\n".join(read("web", f) for f in CPU_JS), JavascriptLexer()),
+        "TRACERJS_SRC": code_html(read("web", "tracers.js"), JavascriptLexer()),
         "GPUJS_SRC": code_html("\n".join(read("web", f) for f in GPU_JS), JavascriptLexer()),
         "APP_JS": raw_script("\n".join(read("web", f) for f in CPU_JS + GPU_JS + APP_JS_FILES),
                              "the page JavaScript"),

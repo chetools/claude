@@ -213,6 +213,27 @@ the cells at the wrap-around are drawn twice so the surface fills the box.
 **On the CPU.** With no WebGPU, `render.js` draws only 2D slices, computing the field from the velocity array with `cpuField` and `fieldCell`.
 The volume and isosurface views need the GPU.
 
+### Flow particles (`tracers.js`, `trails.wgsl`)
+
+The trails are massless tracers moved by each panel's computed velocity. The readable version is `tracers.js` (64-bit JavaScript);
+`trails.wgsl` does the same on the GPU, one thread per particle.
+
+1. **Velocity at a point** (`velAt`, WGSL `vel`): trilinear interpolation between the cell centres. Between the last centre and a wall
+   the no-slip ghost value $-(\text{edge value})$ is used (the same `vg` rule as above), so the velocity is exactly zero on the walls.
+   Periodic $z$ wraps around.
+2. **Moving** (`advectOne`, WGSL `cs_advect`): each frame the particles are moved over the simulated time $\tau$ that the frame covered, with the
+   velocity frozen at its current value. They use the midpoint rule (RK2) $\mathbf x \leftarrow \mathbf x + \Delta t\,\mathbf u(\mathbf x + \tfrac12\Delta t\,\mathbf u(\mathbf x))$,
+   in `substeps` steps, enough that one step moves at most $h/2$ at the body's top speed (at most 32 steps).
+3. **Re-seeding:** a particle that has lived its lifetime (2 to 4 time units), left the box or entered the cylinder starts again at a random point.
+   The new path is not joined to the old one.
+4. **Trails:** every particle keeps its last $K$ positions in a ring buffer (`K` from the *Trail length* slider, 4 to 64 points). The vertex shader
+   `vs_trail` draws the last $K-1$ moves as lines, fading with age and stronger where the move was faster. On a slice it keeps only the particles within
+   $2h$ of the plane. Storing positions, rather than painting into an image, keeps the trails correct when the 3D view is rotated.
+
+The Validation tab checks `velAt` on a linear field (trilinear interpolation reproduces it exactly) and on the walls (exactly zero). It checks RK2
+against the exact circle of a solid-body rotation (the error falls by 4 when the steps are halved). It compares `trails.wgsl` value by value with
+`tracers.js` on the same 32-bit velocity field.
+
 ### What was not checked here
 
 The function map above was built from the names in the files and every name was looked up with a text search. The statements about
