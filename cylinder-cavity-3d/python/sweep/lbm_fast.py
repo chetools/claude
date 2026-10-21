@@ -521,12 +521,15 @@ def diag_row(s, p, U=None):
     if U is None:
         U = lbm3d.cell_velocity(s, p)
     h, Lz, span = p["h"], p["Lz"], p["span"]
-    sp = diagnostics.spanwise_energy(U, h, Lz, span)
+    fluid = diagnostics.fluid_mask(p, s["phi"])     # fluid-only integrals, as on the page
+    sp = diagnostics.spanwise_energy(U, h, Lz, span, fluid=fluid)
     ekz = sp["Ekz"]
     ekz5 = [float(ekz[m]) if ekz is not None and m < len(ekz) else None for m in range(5)]
     speed = float(np.sqrt((U ** 2).sum(axis=0)).max())
-    return dict(t=float(s["t"]), E=diagnostics.energy(U, h, Lz),
-                Z=diagnostics.enstrophy(U, h, Lz, span), Ew=sp["Ew"], E3d=sp["E3d"],
+    return dict(t=float(s["t"]), E=diagnostics.energy(U, h, Lz, fluid=fluid),
+                Z=diagnostics.enstrophy(U, h, Lz, span, fluid=fluid),
+                E_box=diagnostics.energy(U, h, Lz), Z_box=diagnostics.enstrophy(U, h, Lz, span),
+                Ew=sp["Ew"], E3d=sp["E3d"],
                 Ekz=ekz5, torque=float(lbm3d.torque(s, p)), maxu_lb=speed * p["dt"] / h,
                 mass=float(s.get("mass", lbm3d.mass(s))))
 
