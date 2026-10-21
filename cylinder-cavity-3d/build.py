@@ -39,12 +39,19 @@ PAGE_NAME = "cylinder-cavity-3d-standalone.html"
 NOTEBOOK_NAME = "walkthrough_molab.py"
 PH_RE = re.compile(r"@@([A-Z0-9_]+)@@")
 
+# page JavaScript, concatenated in this order (SPEC.md, "Web runtime")
+CPU_JS = ("lbm_cpu.js", "fv_cpu.js")
+GPU_JS = ("lbm_gpu.js", "fv_gpu.js")
+APP_JS_FILES = ("render.js", "diagnostics.js", "app.js")
+
 # every file the page is built from (relative to the project root); a missing one stops the build
 INPUTS = [
     "web/template.html", "web/base.css", "web/presets.json",
     "web/theory_physics.md", "web/theory_lbm.md", "web/code_guide.md",
     "web/lbm.wgsl", "web/fv.wgsl", "web/render.wgsl", "web/iso.wgsl",
-    "web/cpu.js", "web/gpu.js", "web/app.js",
+    *[f"web/{f}" for f in ("lbm_cpu.js", "fv_cpu.js", "lbm_gpu.js", "fv_gpu.js", "render.js",
+                            "diagnostics.js", "app.js")],
+    "python/selftest_lbm.py", "python/selftest_fv.py",
     "python/walkthrough.py", "python/runner.py",
     "python/lbm3d.py", "python/fv3d.py", "python/diagnostics.py",
 ]
@@ -210,12 +217,14 @@ def make_notebook(release, pages):
 
 
 def selftest_reference():
-    """numpy reference for the page's self-test case.
-
-    TODO: the coordinator fills this in (run lbm3d / fv3d from python/ for the self-test case and
-    return the values as JSON-friendly data, with the inputs used). Until then the page gets {}.
-    """
-    return {}
+    """numpy reference values for the page's self-test (python/selftest_lbm.py, selftest_fv.py)."""
+    import selftest_fv
+    import selftest_lbm
+    ref = {"lbm": selftest_lbm.reference(), "fv": selftest_fv.reference()}
+    for k, v in ref.items():
+        if not v.get("cases"):
+            fail(f"selftest_{k}.reference() returned no cases")
+    return ref
 
 
 def raw_script(text, name):
@@ -267,9 +276,10 @@ def main():
         "WGSL_FV": raw_script(read("web", "fv.wgsl"), "web/fv.wgsl"),
         "WGSL_RENDER": raw_script(read("web", "render.wgsl"), "web/render.wgsl"),
         "WGSL_ISO": raw_script(read("web", "iso.wgsl"), "web/iso.wgsl"),
-        "CPUJS_SRC": code_html(read("web", "cpu.js"), JavascriptLexer()),
-        "GPUJS_SRC": code_html(read("web", "gpu.js"), JavascriptLexer()),
-        "APP_JS": raw_script("\n".join(read("web", f) for f in ("cpu.js", "gpu.js", "app.js")), "the page JavaScript"),
+        "CPUJS_SRC": code_html("\n".join(read("web", f) for f in CPU_JS), JavascriptLexer()),
+        "GPUJS_SRC": code_html("\n".join(read("web", f) for f in GPU_JS), JavascriptLexer()),
+        "APP_JS": raw_script("\n".join(read("web", f) for f in CPU_JS + GPU_JS + APP_JS_FILES),
+                             "the page JavaScript"),
         "REF": js_json(ref),
         "PRESETS": js_json(json.loads(read("web", "presets.json"))),
         "MOLAB_URL": MOLAB_URL,
