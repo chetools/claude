@@ -48,6 +48,11 @@ These complement the rules above. They apply to every project.
   the largest and smallest sizes. Bugs hide exactly there: NaNs appeared only at large grids, and instability only
   where two time-step limits crossed.
 - **Test the UI at two viewport widths** with a headless browser, and read the screenshots before reporting done.
+- **Look at screenshots of the realistic case, not only the test case.** Small grids at early times hid that trails
+  saturated to white on a real GPU at N = 64, N_z = 32; reproduce the user's settings before judging a visual.
+- **Rule out the test before the code.** False failures came from a test that read a canvas without redrawing it, a
+  stub page embedding a stale copy of an edited shader, a stopped local server, and positions compared without
+  periodic wrap-around (z = 0 and z = L_z are one point). Regenerate derived test fixtures in every run.
 
 ### Numerics
 - **Combine competing explicit time-step limits harmonically,** `dt = 1/(1/dt_a + 1/dt_b)`, not with `min()`.
@@ -73,6 +78,17 @@ These complement the rules above. They apply to every project.
   the data's own statistics. Make clear what a control holds fixed when another changes.
 - **`Plotly.react` with arrays mutated in place** needs a changing `datarevision`, or the chart does not redraw.
 - **Metric cards:** keep sub-labels short, with `white-space: nowrap`.
+- **Tracers and trails** (learned on cylinder-cavity-3d):
+  - Define anything animated in **simulated time, not frames.** A fast GPU covers more time per frame, so a
+    frame-counted trail was several times longer there. Split each move exactly at the sample times.
+  - Store trails as point histories, not a fading ink image, so they stay correct when a 3D camera turns.
+  - Don't draw trails over a coloured field: switch the field colouring off and colour the trails by one quantity
+    (speed), with its own colour bar.
+  - When panels are compared side by side, show the **same density** in each (the 2D panel had all particles near
+    every slice, the 3D one only a slab), and lower opacity where trails would overlap.
+  - Hide what a moving body now covers, and put a turning pattern (alternating sectors) on a spinning body.
+- **Round shown values and control steps to nice numbers** (slider steps 0.05, 0.1, 0.2, …; scale tops rounded up
+  to 1, 1.5, 2, 2.5, 3, 5 × 10^k), and let a preset carry display settings so the first view is the good one.
 
 ### Publishing
 - **Check that the deployed artefact is the new one.** Compare the served bytes with the build (`cmp`), not just
@@ -80,7 +96,8 @@ These complement the rules above. They apply to every project.
 
 ### Shell
 - Run long waits as background commands.
-- Never `pkill -f` a pattern that also matches the current command.
+- Never `pkill -f` a pattern that also matches the current command. Likewise `until ! pgrep -f X` waits forever
+  when the waiting command itself contains X.
 - In `sed` replacements `&` means "the matched text", so escape it, or edit with Python instead.
 
 ## Interactive teaching pages (published on `gh-pages`)
@@ -187,6 +204,11 @@ These complement the rules above. They apply to every project.
   - at 390 px wide there is no horizontal scroll (let the tabs wrap).
 - Take screenshots and look at them.
 - Confirm the gh-pages URL serves the new content before handing over the link.
+
+## Working alongside other sessions
+- Another session may edit the same project directory (for example the Theory text). Never revert or overwrite its
+  work: `git pull --rebase origin master` before rebuilding, then rebuild, because the built page includes every
+  source file. If its change breaks a test harness (a new template placeholder), fix the harness.
 
 ## One directory per project, no branches
 
