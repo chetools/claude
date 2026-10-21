@@ -157,6 +157,22 @@ def md_to_html(text, mods):
     return re.sub(r"MATHX(\d+)X", restore, out)
 
 
+def split_refs(text, name):
+    """(body, reference list) of a theory file, which must end with a '## References' section."""
+    body, sep, refs = text.partition("\n## References\n")
+    if not sep:
+        fail(f"{name} has no '## References' section")
+    return body.rstrip(), refs.strip()
+
+
+def join_theory(physics, lbm):
+    """One continuous document: the physics sections (1-8), then the LBM sections (9-17), then one References."""
+    p_body, p_refs = split_refs(physics, "web/theory_physics.md")
+    l_body, l_refs = split_refs(lbm, "web/theory_lbm.md")
+    return (f"{p_body}\n\n{l_body}\n\n## References\n\n### Sections 1–8: physics and finite volumes\n\n{p_refs}\n\n"
+            f"### Sections 9–17: lattice Boltzmann\n\n{l_refs}\n")
+
+
 def add_toc(body):
     """Give every <h2>/<h3> of the rendered theory an id; return (body with ids, table-of-contents HTML)."""
     used, items = set(), []
@@ -285,7 +301,7 @@ def main():
     ref = selftest_reference()
 
     print("rendering markdown + KaTeX")
-    theory = md_to_html(read("web", "theory_physics.md") + "\n\n" + read("web", "theory_lbm.md"), mods)
+    theory = md_to_html(join_theory(read("web", "theory_physics.md"), read("web", "theory_lbm.md")), mods)
     theory, theory_toc = add_toc(theory)
     code_guide = md_to_html(read("web", "code_guide.md"), mods)
     parts = {

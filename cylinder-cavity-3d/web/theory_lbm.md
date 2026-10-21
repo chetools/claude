@@ -1,13 +1,13 @@
-## 1. Why a particle picture can give Navier–Stokes
+## 9. Why a particle picture can give Navier–Stokes
 
 The Navier–Stokes (NS) equations treat the fluid as a continuum: fields $\rho(\mathbf x,t)$, $\mathbf u(\mathbf x,t)$,
 $p(\mathbf x,t)$ that obey balance laws. The lattice Boltzmann method (LBM) starts one level below. It does not follow
 individual molecules, and it does not store $\mathbf u$ and $p$ directly. It stores **populations**: how much fluid
 mass at each point is moving with each of a few chosen velocities. The NS fields are then *sums over these
-populations*. This section explains why that is a sensible thing to do. Sections 2–5 show that the sums obey the NS
+populations*. This section explains why that is a sensible thing to do. Sections 10–13 show that the sums obey the NS
 equations, with every step written out.
 
-### 1.1 Index notation: the only tensor mathematics needed
+### 9.1 Index notation: the only tensor mathematics needed
 
 Vectors and tensors appear below as lists of numbers with subscripts. The rules are short.
 
@@ -30,7 +30,7 @@ $$\partial_t(\rho u_i) + \partial_j(\rho u_iu_j) = -\partial_i p + \partial_j\!\
 For constant $\mu$ and $\partial_ju_j=0$, the viscous term is $\mu\,\partial_j\partial_ju_i + \mu\,\partial_i(\partial_ju_j) = \mu\nabla^2u_i$.
 So this is the familiar $\rho\,D\mathbf u/Dt = -\nabla p + \mu\nabla^2\mathbf u$ of BSL, written one component at a time.
 
-### 1.2 From molecules to a distribution function
+### 9.2 From molecules to a distribution function
 
 Consider a small volume of gas or liquid. It holds an enormous number of molecules, each with its own velocity
 $\mathbf c$. Sort them by velocity. Let $f(\mathbf x,\mathbf c,t)\,d^3x\,d^3c$ be the mass of molecules that are
@@ -53,7 +53,7 @@ $\mathbf c$ is carried at velocity $\mathbf c$. The right side, the **collision 
 at which collisions create species $\mathbf c$. It moves mass between velocity classes at the same place. It
 creates or destroys neither mass nor momentum, so its zeroth and first velocity moments vanish (shown below).
 
-### 1.3 Moments: density, momentum, momentum flux
+### 9.3 Moments: density, momentum, momentum flux
 
 The macroscopic fields are **moments** of $f$, that is, integrals over all velocities:
 
@@ -91,7 +91,7 @@ $\rho u_iu_j + p\delta_{ij} - \mu(\partial_iu_j+\partial_ju_i)$, these *are* the
 yet, because $\Pi_{ij}$ is a moment of $f$, and $f$ obeys its own equation. Collisions drive $f$ quickly towards a
 local equilibrium. Close to equilibrium, $\Pi_{ij}$ can be computed in terms of $\rho$ and $\mathbf u$. The slight
 departure from equilibrium is proportional to the velocity gradients. That is where viscosity comes from.
-The Chapman–Enskog expansion (§5; Chapman & Cowling 1970) carries this out. The lattice Boltzmann method is a
+The Chapman–Enskog expansion (§13; Chapman & Cowling 1970) carries this out. The lattice Boltzmann method is a
 numerical scheme that follows $f$ directly, with so few velocities that the whole calculation is affordable.
 
 One more physical fact: the page's LBM is **isothermal**. Temperature is fixed, and the only thermodynamic
@@ -99,9 +99,9 @@ constant is the **lattice sound speed** $c_s$, with $c_s^2 = k_BT/m$ for an idea
 $p = \rho c_s^2$, an ideal-gas equation of state. Pressure is no longer a Lagrange multiplier as in the
 finite-volume code. It is a property of the local density.
 
-## 2. The D3Q19 lattice
+## 10. The D3Q19 lattice
 
-### 2.1 Velocities and weights
+### 10.1 Velocities and weights
 
 Instead of a continuum of velocities $\mathbf c$, the LBM keeps $19$ ("Q19") in three dimensions ("D3"). Place
 nodes on a cubic grid with spacing $h$. Choose a time step $\Delta t$ and write $c = h/\Delta t$ for the lattice
@@ -131,25 +131,25 @@ memory by dropping them.) The numbering used by the page's code is:
 
 For odd $q$ the opposite direction is $q+1$, and for even $q>0$ it is $q-1$. We write $\bar q$ for the opposite of
 $q$, so that $\mathbf c_{\bar q} = -\mathbf c_q$. The page works in **lattice units** from here on: $h=\Delta t=1$ and
-$\mathbf c_q = \mathbf e_q$. Physical units come back in §7.
+$\mathbf c_q = \mathbf e_q$. Physical units come back in §15.
 
 The $w_q$ are **weights**. They depend only on the length of $\mathbf c_q$ (the rest vector, face vectors, edge
-vectors), and they sum to one. In the equilibrium (§4) they give the share of the fluid mass that sits on each
+vectors), and they sum to one. In the equilibrium (§12) they give the share of the fluid mass that sits on each
 link when the fluid is at rest: $1/3$ stays at the node, $1/18$ on each of the six face links, $1/36$ on each of the
 twelve edge links.
 
 For this set of 19 velocities the weights and the sound speed are not chosen freely. They are fixed by the requirement that the lattice has
-**no preferred direction up to fourth-order moments**. This is the subject of §2.2 and §2.3.
+**no preferred direction up to fourth-order moments**. This is the subject of §10.2 and §10.3.
 
-### 2.2 Why isotropy matters
+### 10.2 Why isotropy matters
 
-Section 1 showed that the macroscopic fields are velocity moments of $f$. In the continuum, moments of an
+Section 9 showed that the macroscopic fields are velocity moments of $f$. In the continuum, moments of an
 equilibrium (Gaussian) distribution are *isotropic*. For instance, the pressure is the same in all directions.
 The lattice replaces integrals over velocity by sums over 19 vectors:
 
 $$\int g(\boldsymbol\xi)\,P(\boldsymbol\xi)\,d^3\xi \;\longrightarrow\; \sum_q w_q\,P(\mathbf c_q).$$
 
-Here $P$ is a polynomial in the velocity and $g$ is the Gaussian weight function of §4. If the sums are to
+Here $P$ is a polynomial in the velocity and $g$ is the Gaussian weight function of §12. If the sums are to
 reproduce the continuum results, they must have the continuum's rotational symmetry for all moments that appear in the derivation, which go up to fourth order. The
 required identities are
 
@@ -174,7 +174,7 @@ all directions ($x$, $y$, $z$) and uncorrelated between them; (4) the fourth-ord
 depend on direction. If any of these failed, the lattice would produce a stress tensor with built-in
 preferred directions (an anisotropic viscosity or pressure), and the result would not be NS.
 
-### 2.3 Proving the identities for D3Q19 by counting
+### 10.3 Proving the identities for D3Q19 by counting
 
 *Odd moments.* The velocity set is symmetric under $\mathbf c\to-\mathbf c$ (every vector has its opposite, and the weight
 is the same for both). A term $w\,c_ic_jc_k$ then cancels against the term of the opposite vector, and the same holds
@@ -224,23 +224,23 @@ equations: $\sum w\,c_x^2c_z^2$ counts the four vectors $(\pm1,0,\pm1)$, so it i
 consequence of the geometry: only with this value can the 19 vectors (rest, face, edge) mimic a Gaussian to fourth
 order. It is smaller than the lattice speed $c$ by a factor $\sqrt3$. A sound wave is the fastest *hydrodynamic* signal in the
 model, and it travels through the lattice at $c_s$, less than one lattice spacing per time step. This is the origin of
-the Mach-number limits in §5.9 and §7.
+the Mach-number limits in §13.9 and §15.
 
 One limitation is worth recording. The sixth-order sum $\sum w\,c_x^2c_y^2c_z^2$ is $0$ because D3Q19 has no vector
 with three non-zero components, whereas a Gaussian gives $c_s^6 = 1/27$. So D3Q19 is isotropic only up to fourth
-order. The derivation in §4 and §5 needs nothing beyond that. The same limit also means that the cubic ($u^3$) term of the
+order. The derivation in §12 and §13 needs nothing beyond that. The same limit also means that the cubic ($u^3$) term of the
 Maxwellian's third moment cannot be represented: its $xxx$ component needs the sum
-$\sum_q w_q c_x^3\,(c_x^3 - 3c_s^2c_x)$, which is $0$ on the lattice and $6c_s^6 = 2/9$ for the Gaussian (§5.9).
+$\sum_q w_q c_x^3\,(c_x^3 - 3c_s^2c_x)$, which is $0$ on the lattice and $6c_s^6 = 2/9$ for the Gaussian (§13.9).
 
 *Checked by computer* (script `/tmp/claude-0/theory_lbm_check/c1.py`, numpy on the code's own `C` and `W` arrays): the identities
 (a) to (d), all components of the second-, third- and fourth-order sums, and the two sixth-order numbers above hold to $10^{-16}$.
 
-## 3. The lattice Boltzmann equation
+## 11. The lattice Boltzmann equation
 
-### 3.1 Stream and collide
+### 11.1 Stream and collide
 
 Let $f_q(\mathbf x,t)$ be the population of velocity $\mathbf c_q$ at node $\mathbf x$ and time $t$. The macroscopic
-fields are the lattice versions of the moments of §1.3:
+fields are the lattice versions of the moments of §9.3:
 
 $$\rho = \sum_q f_q, \qquad \rho u_i = \sum_q c_{qi}\,f_q .$$
 
@@ -267,7 +267,7 @@ Geometrically, the update is a two-phase dance on the grid. First every node let
 "collide" (no neighbour is needed). Then each population is passed to its neighbour. No pressure Poisson equation
 and no global communication appear anywhere.
 
-### 3.2 BGK as first-order kinetics
+### 11.2 BGK as first-order kinetics
 
 Rewrite the collision step as $f_q^\star = (1-\tfrac1\tau)f_q + \tfrac1\tau f_q^{eq}$. Define the
 **non-equilibrium part** $f_q^{neq} = f_q - f_q^{eq}$. Then
@@ -284,22 +284,22 @@ The mapping between $\tau$ and the behaviour:
 | $>1$ | $0 < \cdot < 1$ | under-relaxation: part of the departure survives |
 | $\tfrac12<\tau<1$ | $-1<\cdot<0$ | over-relaxation: the departure flips sign and shrinks |
 | $\tfrac12$ | $-1$ | $f^\star = 2f^{eq}-f$: the departure is mirrored, not damped |
-| $<\tfrac12$ | $<-1$ | the departure grows at every collision: unstable (and the viscosity of §5 would be negative) |
+| $<\tfrac12$ | $<-1$ | the departure grows at every collision: unstable (and the viscosity of §13 would be negative) |
 
 The mass and momentum are the "elements" of the analogy. Each collision must conserve them,
 $\sum_q f^\star_q = \sum_q f_q$ and $\sum_q c_{qi}f_q^\star = \sum_q c_{qi}f_q$. That is true if and only if
 $\sum_q f_q^{neq}=0$ and $\sum_q c_{qi}f_q^{neq}=0$. This holds whenever the equilibrium has the same $\rho$ and
-$\rho\mathbf u$ as $f$ itself (checked in §4). The equilibrium composition is determined by the conserved
+$\rho\mathbf u$ as $f$ itself (checked in §12). The equilibrium composition is determined by the conserved
 quantities, just as a chemical equilibrium is determined by the elemental balances (and temperature).
 
-The "relaxation time" $\tau$ will turn out to set the viscosity (§5.7). In chemical-engineering language:
+The "relaxation time" $\tau$ will turn out to set the viscosity (§13.7). In chemical-engineering language:
 **the viscosity is proportional to the relaxation time, that is, to the inverse of the rate constant $1/\tau$ of the approach to local
-equilibrium** (less a half step, §5.8). A fluid that equilibrates slowly keeps
+equilibrium** (less a half step, §13.8). A fluid that equilibrates slowly keeps
 its momentum distribution anisotropic for longer, and it transports momentum between layers more effectively.
 
-## 4. The equilibrium distribution
+## 12. The equilibrium distribution
 
-### 4.1 Maxwell–Boltzmann and its moments
+### 12.1 Maxwell–Boltzmann and its moments
 
 In a gas in local equilibrium that moves at velocity $\mathbf u$, with ideal-gas variance $c_s^2$ per velocity
 component, the velocity distribution is Gaussian (Maxwell–Boltzmann):
@@ -319,12 +319,12 @@ $$
 \end{aligned}
 $$
 
-since the cross terms $u_i\!\int\zeta_jg$ vanish. The last line is the momentum flux of §1.3. It contains the
+since the cross terms $u_i\!\int\zeta_jg$ vanish. The last line is the momentum flux of §9.3. It contains the
 convective part $\rho u_iu_j$ and an isotropic part $\rho c_s^2\delta_{ij}$, which is a pressure
 $p=\rho c_s^2$ and has no shear stress. This is the Euler (inviscid) closure. An equilibrium gas has no viscosity;
 viscosity belongs to the *departure* from equilibrium.
 
-### 4.2 Expansion to second order in $u$
+### 12.2 Expansion to second order in $u$
 
 Write the exponent: $-\tfrac{(\xi_k-u_k)(\xi_k-u_k)}{2c_s^2} = -\tfrac{\xi_k\xi_k}{2c_s^2} + \tfrac{\xi_ku_k}{c_s^2} - \tfrac{u_ku_k}{2c_s^2}$. So
 
@@ -340,9 +340,9 @@ expansion of the Maxwellian to second order. Hermite polynomials are the orthogo
 the bracket equals $1 + \xi_ku_k/c_s^2 + (\xi_i\xi_j - c_s^2\delta_{ij})u_iu_j/(2c_s^4)$, i.e. Hermite polynomials of order 0, 1 and 2 multiplied by $1$, $u_k/c_s^2$ and $u_iu_j/(2c_s^4)$.
 
 Now replace the continuous velocity by the lattice. The Gaussian weight $g(\boldsymbol\xi)$ is replaced by the
-lattice weights $w_q$ and $\boldsymbol\xi$ by $\mathbf c_q$. Section 2.2 showed that
+lattice weights $w_q$ and $\boldsymbol\xi$ by $\mathbf c_q$. Section 10.2 showed that
 $\sum_q w_qP(\mathbf c_q) = \int gP\,d^3\xi$ for all polynomials $P$ up to degree 5 (even degrees by the identities of
-§2.2, odd degrees because both sides vanish). So
+§10.2, odd degrees because both sides vanish). So
 
 $$\boxed{\,f_q^{eq} = w_q\,\rho\left[1 + \frac{c_{qk}u_k}{c_s^2} + \frac{(c_{qk}u_k)^2}{2c_s^4} - \frac{u_ku_k}{2c_s^2}\right]\,},
 \qquad c_s^2=\tfrac13 .$$
@@ -354,12 +354,12 @@ weights. A velocity $\mathbf u$ *tilts* the share. The linear term adds mass to 
 ($\mathbf c_q\cdot\mathbf u>0$) and removes it from the opposite links. This tilt is what carries momentum.
 The quadratic terms are corrections of order $u^2$ that give the right momentum flux, as the next section shows.
 Because the expansion is only valid for small $u/c_s$, **the lattice velocity must be small compared with $c_s$**. This is
-the origin of the low-Mach-number restriction (§5.9).
+the origin of the low-Mach-number restriction (§13.9).
 
-### 4.3 Checking the moments by explicit summation
+### 12.3 Checking the moments by explicit summation
 
 The equilibrium must reproduce $\rho$, $\rho\mathbf u$ and the Euler momentum flux. We verify it using only the
-identities of §2.2. Write $a_q = c_{qk}u_k$ for brevity, and use $\sum_q w_q a_q = 0$, $\sum_q w_qa_q^2 =
+identities of §10.2. Write $a_q = c_{qk}u_k$ for brevity, and use $\sum_q w_q a_q = 0$, $\sum_q w_qa_q^2 =
 u_ku_lc_s^2\delta_{kl} = c_s^2u_ku_k$.
 
 *Zeroth moment (density).*
@@ -387,31 +387,31 @@ $$
 In the third line, $\delta_{ij}\delta_{kl}u_ku_l = \delta_{ij}u_ku_k$ and $\delta_{ik}\delta_{jl}u_ku_l=u_iu_j$ (and the same for the
 third pairing), by the substitution rule $a_i\delta_{ij}=a_j$.
 
-All three match the Maxwellian's moments of §4.1. The ones that matter later are these:
+All three match the Maxwellian's moments of §12.1. The ones that matter later are these:
 
 $$\Pi^{(0)}_{ij} \equiv \sum_qc_{qi}c_{qj}f^{eq}_q = \rho u_iu_j + \rho c_s^2\delta_{ij}, \qquad
 \sum_q f_q^{eq}=\rho, \quad \sum_qc_{qi}f_q^{eq}=\rho u_i .$$
 
-**Third moment (needed in §5).** In $\sum_q c_{qi}c_{qj}c_{qk}f_q^{eq}$, only the linear term survives, because the
+**Third moment (needed in §13).** In $\sum_q c_{qi}c_{qj}c_{qk}f_q^{eq}$, only the linear term survives, because the
 constant and quadratic terms give odd sums (3 or 5 powers of $\mathbf c$):
 
 $$Q^{(0)}_{ijk} \equiv \sum_qc_{qi}c_{qj}c_{qk}f_q^{eq} = \frac{\rho}{c_s^2}\sum_qw_qc_{qi}c_{qj}c_{qk}c_{ql}u_l
 = \rho c_s^2\left(\delta_{ij}u_k + \delta_{ik}u_j + \delta_{jk}u_i\right).$$
 
 **Reading.** With $\rho=\sum f$ and $\rho\mathbf u=\sum\mathbf cf$ the collision conserves mass and momentum
-(§3.2). The second moment is the Euler momentum flux with pressure $p=\rho c_s^2$. The third moment lacks a term
+(§11.2). The second moment is the Euler momentum flux with pressure $p=\rho c_s^2$. The third moment lacks a term
 $\rho u_iu_ju_k$ that the true Maxwellian has (it is cubic in $u$; the lattice and the truncated expansion cannot
-represent it). That missing term is the source of the $O(Ma^3)$ error found in §5.9.
+represent it). That missing term is the source of the $O(Ma^3)$ error found in §13.9.
 
-## 5. Chapman–Enskog: from the lattice equation to Navier–Stokes
+## 13. Chapman–Enskog: from the lattice equation to Navier–Stokes
 
-Section 4 gave the equilibrium. Now we show what macroscopic equations the LBE (LBE) implies for $\rho$ and $\mathbf u$.
+Section 12 gave the equilibrium. Now we show what macroscopic equations the LBE (LBE) implies for $\rho$ and $\mathbf u$.
 The technique is the Chapman–Enskog expansion (Chapman & Cowling 1970), following the standard route (a textbook treatment is Krüger et al. 2017; the chapter was not checked, and every step below is derived on this page).
 The idea has two parts: (i) the lattice step is small compared with the scales of the flow, so the lattice
 equation can be expanded in a Taylor series; (ii) the flow variables change on two time scales (a fast
 convective/acoustic one and a slow diffusive one), which we treat as independent.
 
-### 5.1 Taylor expansion of the lattice equation
+### 13.1 Taylor expansion of the lattice equation
 
 Write the streaming operator as $D_q = \partial_t + c_{qi}\partial_i$ (the derivative along the characteristic of
 velocity $\mathbf c_q$). For a smooth $f$, a Taylor expansion in $\Delta t$ gives
@@ -422,15 +422,15 @@ because moving by $\Delta t$ along the characteristic changes $f$ by $\Delta t\,
 $x$-derivative terms come out of $(\partial_t + c_{qi}\partial_i)^2$ with the second derivatives and cross terms
 included automatically. Substituting in (LBE) and dividing by $\Delta t$:
 
-$$D_qf_q + \frac{\Delta t}{2}D_q^2f_q + O(\Delta t^2) = -\frac1{\tau\Delta t}\left(f_q - f^{eq}_q\right). \tag{5.1}$$
+$$D_qf_q + \frac{\Delta t}{2}D_q^2f_q + O(\Delta t^2) = -\frac1{\tau\Delta t}\left(f_q - f^{eq}_q\right). \tag{13.1}$$
 
 Keeping the second-order term $\tfrac{\Delta t}{2}D_q^2f_q$ is essential. It is what produces the "$-\tfrac12$" in
-the viscosity formula of §5.8.
+the viscosity formula of §13.8.
 
 In this section the velocities are $\mathbf c_q = (h/\Delta t)\,\mathbf e_q$, and $\Delta t$ is kept explicit so that you can
-follow where it enters. The identities of §2 hold with $c_s^2 = (h/\Delta t)^2/3$.
+follow where it enters. The identities of §10 hold with $c_s^2 = (h/\Delta t)^2/3$.
 
-### 5.2 Multiscale expansion
+### 13.2 Multiscale expansion
 
 Now introduce a small bookkeeping parameter $\varepsilon$. It stands for the ratio of the lattice step to the length
 scale of the flow; derivative terms carry powers of it. Expand the populations around the equilibrium,
@@ -447,9 +447,9 @@ is a single space scale, $x_1$. This is how a hyperbolic (wave-like) first-order
 second-order process can coexist in a single equation. At the end, $\varepsilon$ is set to $1$ and the contributions are added.
 
 Also required: $\rho = \sum_qf_q$ and $\rho\mathbf u = \sum_qc_{qi}f_q$ are *defined* to be exactly the moments of the
-total $f$. The equilibrium $f^{eq}$ already has these moments (§4.3). So the corrections must carry none:
+total $f$. The equilibrium $f^{eq}$ already has these moments (§12.3). So the corrections must carry none:
 
-$$\sum_qf_q^{(n)} = 0, \qquad \sum_qc_{qi}f_q^{(n)} = 0 \qquad (n\ge1). \tag{5.2}$$
+$$\sum_qf_q^{(n)} = 0, \qquad \sum_qc_{qi}f_q^{(n)} = 0 \qquad (n\ge1). \tag{13.2}$$
 
 These are the **solvability conditions**. They say that the non-equilibrium parts redistribute mass and momentum among the
 velocity classes without changing the totals, consistent with collisions that conserve both.
@@ -457,9 +457,9 @@ velocity classes without changing the totals, consistent with collisions that co
 The operator $D_q$ becomes $D_q = \varepsilon D_{1q} + \varepsilon^2\partial_{t_2}$ with $D_{1q} \equiv \partial_{t_1} + c_{qi}\partial_{1i}$.
 To the order needed, $D_q^2 = \varepsilon^2D_{1q}^2 + O(\varepsilon^3)$.
 
-### 5.3 The equations order by order
+### 13.3 The equations order by order
 
-Insert the expansions into (5.1). The left side is
+Insert the expansions into (13.1). The left side is
 
 $$D_qf_q = \varepsilon D_{1q}f^{(0)} + \varepsilon^2\left(D_{1q}f^{(1)} + \partial_{t_2}f^{(0)}\right) + O(\varepsilon^3), \qquad
 \tfrac{\Delta t}2D_q^2f_q = \tfrac{\Delta t}2\varepsilon^2D_{1q}^2f^{(0)} + O(\varepsilon^3),$$
@@ -484,13 +484,13 @@ $\tfrac{\Delta t}2D_1^2f^{(0)} = -\tfrac1{2\tau}D_1f^{(1)}$. Then
 
 $$\left(1-\frac1{2\tau}\right)D_1f^{(1)} + \partial_{t_2}f^{(0)} = -\frac1{\tau\Delta t}\,f^{(2)}. \tag{B'}$$
 
-The factor $1-\tfrac1{2\tau}$ is the origin of the "$-\tfrac12$" in the viscosity, as shown in §5.8. It came from the Taylor
+The factor $1-\tfrac1{2\tau}$ is the origin of the "$-\tfrac12$" in the viscosity, as shown in §13.8. It came from the Taylor
 term $\tfrac{\Delta t}{2}D^2f$, that is, from the fact that streaming moves populations by a full step while the collision is
 evaluated only at the beginning of it.
 
-### 5.4 Euler level: moments of (A)
+### 13.4 Euler level: moments of (A)
 
-Take the sums $\sum_q$ and $\sum_q c_{qi}$ of (A). Use (5.2) for $f^{(1)}$, and $D_1=\partial_{t_1}+c_{qk}\partial_{1k}$:
+Take the sums $\sum_q$ and $\sum_q c_{qi}$ of (A). Use (13.2) for $f^{(1)}$, and $D_1=\partial_{t_1}+c_{qk}\partial_{1k}$:
 
 $$
 \begin{aligned}
@@ -500,7 +500,7 @@ $$
 $$
 
 where we used $\sum_qf^{(0)}=\rho$, $\sum_qc_{qk}f^{(0)}=\rho u_k$, $\sum_qc_{qi}c_{qk}f^{(0)}=\Pi^{(0)}_{ik}$ and the right
-sides vanish because $\sum_q f^{(1)} = \sum_qc_{qi}f^{(1)}=0$. With the second moment from §4.3, the second equation is
+sides vanish because $\sum_q f^{(1)} = \sum_qc_{qi}f^{(1)}=0$. With the second moment from §12.3, the second equation is
 
 $$\partial_{t_1}(\rho u_i) + \partial_{1k}(\rho u_iu_k) = -\partial_{1i}\,p, \qquad p = \rho c_s^2 . \tag{Euler}$$
 
@@ -508,9 +508,9 @@ $$\partial_{t_1}(\rho u_i) + \partial_{1k}(\rho u_iu_k) = -\partial_{1i}\,p, \qq
 and inviscid momentum balance). The pressure is $p=\rho c_s^2$, the ideal-gas law at fixed temperature. There is no
 viscosity yet, since viscosity arises at the next order. The Euler equations contain sound waves: linearise about
 $\rho_0,\ \mathbf u=0$ to get $\partial_{t}^2\delta\rho = c_s^2\nabla^2\delta\rho$, a wave equation with speed $c_s$.
-So the lattice fluid is a **weakly compressible** fluid, and the size of the compressibility is set by the Mach number (§5.9).
+So the lattice fluid is a **weakly compressible** fluid, and the size of the compressibility is set by the Mach number (§13.9).
 
-### 5.5 The non-equilibrium stress
+### 13.5 The non-equilibrium stress
 
 The next order needs the momentum flux of the first correction,
 
@@ -528,7 +528,7 @@ $$\partial_{t_1}(\rho u_iu_j) = u_j\,\partial_{t_1}(\rho u_i) + u_i\,\partial_{t
 
 (Check: the right side equals $u_j(u_i\partial\rho + \rho\,\partial u_i) + u_i(u_j\partial\rho+\rho\,\partial u_j) - u_iu_j\partial\rho
 = u_iu_j\partial\rho + \rho u_j\partial u_i + \rho u_i\partial u_j$, which is the product rule for $\rho u_iu_j$.) Now insert the
-Euler equations (§5.4) for the three $t_1$-derivatives:
+Euler equations (§13.4) for the three $t_1$-derivatives:
 
 $$\partial_{t_1}\rho = -\partial_k(\rho u_k), \qquad \partial_{t_1}(\rho u_i) = -\partial_k(\rho u_iu_k) - c_s^2\partial_i\rho.$$
 
@@ -545,7 +545,7 @@ This is $-\partial_k(\rho u_iu_ju_k)$ by the product rule for $\rho u_iu_ju_k$, 
 
 $$\partial_{t_1}\Pi^{(0)}_{ij} = -\partial_k(\rho u_iu_ju_k) - c_s^2(u_j\partial_i\rho + u_i\partial_j\rho) - c_s^2\delta_{ij}\partial_k(\rho u_k),$$
 
-where the last term is $c_s^2\delta_{ij}\partial_{t_1}\rho$. The second term is, from §4.3,
+where the last term is $c_s^2\delta_{ij}\partial_{t_1}\rho$. The second term is, from §12.3,
 
 $$\partial_kQ^{(0)}_{ijk} = c_s^2\left[\delta_{ij}\partial_k(\rho u_k) + \partial_i(\rho u_j) + \partial_j(\rho u_i)\right].$$
 
@@ -554,36 +554,36 @@ $\partial_j(\rho u_i) - u_i\partial_j\rho = \rho\,\partial_ju_i$. Therefore
 
 $$\partial_{t_1}\Pi^{(0)}_{ij} + \partial_kQ^{(0)}_{ijk} = c_s^2\rho\,(\partial_iu_j+\partial_ju_i) - \partial_k(\rho u_iu_ju_k),$$
 
-$$\boxed{\;\Pi^{(1)}_{ij} = -\tau\Delta t\left[c_s^2\rho\,(\partial_iu_j + \partial_ju_i) - \partial_k(\rho u_iu_ju_k)\right]\;} \tag{5.5}$$
+$$\boxed{\;\Pi^{(1)}_{ij} = -\tau\Delta t\left[c_s^2\rho\,(\partial_iu_j + \partial_ju_i) - \partial_k(\rho u_iu_ju_k)\right]\;} \tag{13.5}$$
 
 **Reading.** The momentum flux of the first correction is proportional to the **rate-of-strain tensor**
 $S_{ij}=\tfrac12(\partial_iu_j+\partial_ju_i)$, with a coefficient $-2\tau\Delta t\,c_s^2\rho$. This is exactly the structure
 of a Newtonian stress, $\tau_{ij} = -\mu(\partial_iu_j+\partial_ju_i)$ in the BSL convention. It was not put in by hand: it
 appeared because the non-equilibrium population is driven by the gradient of the equilibrium (A), and the
 lattice isotropy (the third-moment formula) converts it into a symmetric tensor. The last term is cubic in the velocity. It
-is the price of the truncated equilibrium (§4.3: the lattice third moment lacks $\rho u_iu_ju_k$), and it will be discussed in §5.9.
+is the price of the truncated equilibrium (§12.3: the lattice third moment lacks $\rho u_iu_ju_k$), and it will be discussed in §13.9.
 
-### 5.6 Navier–Stokes level: moments of (B$'$)
+### 13.6 Navier–Stokes level: moments of (B$'$)
 
-Take $\sum_q$ and $\sum_qc_{qi}$ of (B$'$). By (5.2), $\sum_qf^{(2)}=\sum_qc_{qi}f^{(2)}=0$, so the right sides vanish.
+Take $\sum_q$ and $\sum_qc_{qi}$ of (B$'$). By (13.2), $\sum_qf^{(2)}=\sum_qc_{qi}f^{(2)}=0$, so the right sides vanish.
 The moments of $D_1f^{(1)}$ are
 
 $$\sum_qD_1f^{(1)} = \partial_{t_1}\sum_qf^{(1)} + \partial_k\sum_qc_{qk}f^{(1)} = 0, \qquad
 \sum_qc_{qi}D_1f^{(1)} = \partial_{t_1}\sum_qc_{qi}f^{(1)} + \partial_k\sum_qc_{qi}c_{qk}f^{(1)} = \partial_k\Pi^{(1)}_{ik},$$
 
-again by (5.2). Therefore
+again by (13.2). Therefore
 
 $$\partial_{t_2}\rho = 0, \qquad \partial_{t_2}(\rho u_i) = -\left(1-\frac1{2\tau}\right)\partial_k\Pi^{(1)}_{ik}.$$
 
-Insert (5.5), dropping the cubic term for the moment:
+Insert (13.5), dropping the cubic term for the moment:
 
 $$\partial_{t_2}(\rho u_i) = \left(1-\frac1{2\tau}\right)\tau\Delta t\,c_s^2\;\partial_k\!\left[\rho\,(\partial_iu_k+\partial_ku_i)\right]
 = c_s^2\left(\tau-\tfrac12\right)\Delta t\;\partial_k\!\left[\rho\,(\partial_iu_k+\partial_ku_i)\right].$$
 
-### 5.7 Assembling the equations and reading off the viscosity
+### 13.7 Assembling the equations and reading off the viscosity
 
 Recombine the two scales, $\partial_t=\varepsilon\partial_{t_1}+\varepsilon^2\partial_{t_2}$, and set $\varepsilon=1$. Add the $t_1$
-equations (Euler, §5.4) and the $t_2$ equations (§5.6):
+equations (Euler, §13.4) and the $t_2$ equations (§13.6):
 
 $$
 \begin{aligned}
@@ -594,14 +594,14 @@ $$
 \boxed{\;p=\rho c_s^2,\qquad \nu = c_s^2\left(\tau-\tfrac12\right)\Delta t\;}
 $$
 
-**Reading.** This is the compressible Navier–Stokes momentum equation of §1.1 with kinematic viscosity
+**Reading.** This is the compressible Navier–Stokes momentum equation of §9.1 with kinematic viscosity
 $\nu = c_s^2(\tau-\tfrac12)\Delta t$. In lattice units ($c_s^2 = 1/3$, $\Delta t=1$)
 
 $$\nu_{lb} = \frac{\tau-\tfrac12}{3}, \qquad \tau = 3\nu_{lb}+\tfrac12 .$$
 
 Each of these statements is worth reading physically.
 
-- $\nu>0$ requires $\tau>\tfrac12$, consistent with the table of §3.2: a relaxation that is not strong enough to
+- $\nu>0$ requires $\tau>\tfrac12$, consistent with the table of §11.2: a relaxation that is not strong enough to
   damp the departure from equilibrium would give negative viscosity and unstable growth.
 - $\nu = c_s^2\times(\text{effective relaxation time})$ with the effective time $(\tau-\tfrac12)\Delta t$: the units
   work out as (velocity)$^2\times$(time) $=$ length$^2$/time. This is the dimensional reading only; the page does not derive a mean free path.
@@ -609,13 +609,13 @@ Each of these statements is worth reading physically.
   $\boldsymbol\tau = -\mu[\nabla\mathbf v+(\nabla\mathbf v)^\dagger] + (\tfrac23\mu-\kappa)(\nabla\cdot\mathbf v)\boldsymbol\delta$).
   The trace of BSL's $\boldsymbol\tau$ is $-2\mu\nabla\cdot\mathbf v + 3(\tfrac23\mu-\kappa)\nabla\cdot\mathbf v = -3\kappa\,\nabla\cdot\mathbf v$, and the trace of
   our viscous momentum flux, $-\rho\nu(\partial_iu_j+\partial_ju_i)$, is $-2\rho\nu\,\partial_ju_j$. Matching them gives a bulk viscosity $\kappa = \tfrac23\rho\nu$ for BGK. This is fixed by the single
-  relaxation time. It does not matter for nearly incompressible flow, because $\nabla\cdot\mathbf u\approx0$. It is relevant to MRT (§6.3), where it can be set separately.
+  relaxation time. It does not matter for nearly incompressible flow, because $\nabla\cdot\mathbf u\approx0$. It is relevant to MRT (§14.3), where it can be set separately.
 - For constant density, $\partial_k[\nu(\partial_iu_k+\partial_ku_i)] = \nu\nabla^2u_i + \nu\partial_i(\nabla\cdot\mathbf u)$, and with
   $\nabla\cdot\mathbf u\approx0$ this is the usual $\nu\nabla^2\mathbf u$.
 
-### 5.8 Where the "$-\tfrac12$" comes from
+### 13.8 Where the "$-\tfrac12$" comes from
 
-Had we kept only the first-order Taylor term in (5.1) (as if the collision acted continuously with relaxation time $\lambda=\tau\Delta t$ in a
+Had we kept only the first-order Taylor term in (13.1) (as if the collision acted continuously with relaxation time $\lambda=\tau\Delta t$ in a
 continuous kinetic equation), the same algebra, without the factor $1-\tfrac1{2\tau}$ in (B$'$), would give
 $\nu = c_s^2\,\tau\Delta t$, i.e. $\nu = c_s^2\lambda$. The lattice scheme gives
 $c_s^2(\tau-\tfrac12)\Delta t$. The difference is the term $\tfrac{\Delta t}{2}D^2f$: *a property of the lattice
@@ -623,7 +623,7 @@ and of explicit time stepping, not of physics*. There is a clear way to see it.
 
 The momentum flux that streaming transports is carried by the populations *after* the collision, $f^\star$. They contain
 the fraction $1-\tfrac1\tau$ of the non-equilibrium part. The populations *before* the collision contain all of it
-(fraction $1$). A heuristic way to see the factor (it is an illustration, not a second derivation; the derivation is §5.3) is that the stress the fluid effectively feels is the **time average** over the step, the mean of the two:
+(fraction $1$). A heuristic way to see the factor (it is an illustration, not a second derivation; the derivation is §13.3) is that the stress the fluid effectively feels is the **time average** over the step, the mean of the two:
 
 $$\tfrac12\left[1 + \left(1-\tfrac1\tau\right)\right] = 1-\frac1{2\tau}.$$
 
@@ -653,26 +653,26 @@ $$-\frac{u'}{6} - \frac{(\tau-1)u'}{3} = -\frac{\tau-\tfrac12}{3}\,u' = -\nu_{lb
 
 exactly Newton's law of viscosity with $\nu_{lb}=(\tau-\tfrac12)/3$. This is a second, independent derivation of the same
 result, and it makes the "$-\tfrac12$" visible as the $\tfrac16$ from the equilibrium part. It is also the solution we
-use in §8 to check the wall boundary conditions.
+use in §16 to check the wall boundary conditions.
 
 *Numerical confirmation of $\nu$ and of the bulk viscosity.* Both checks use the page's own `collide`/`stream` functions on a periodic
 $64\times64$ box ($N_z=1$, no body; script `c2.py`). (i) A shear wave $u_x=10^{-3}\sin(ky)$, $k=2\pi/64$: the fitted decay rate divided
 by $k^2$ gives $0.03336$ (BGK), $0.03335$ (regularised), $0.03336$ (MRT) at $\tau=0.6$ against the formula $(\tau-\tfrac12)/3 = 0.03333$, and
 $0.13337$, $0.13334$, $0.13348$ at $\tau=0.9$ against $0.13333$. (ii) A density wave $\delta\rho=10^{-4}\cos(kx)$ at $\tau=0.8$: the fitted
 oscillation speed is $0.57728$ against $c_s = 0.57735$, and the fitted amplitude damping rate is
-$9.641\times10^{-4}$ (BGK and regularised) and $10.073\times10^{-4}$ (MRT with the rates of §6.3). The linear sound-wave damping rate is
-$\tfrac{k^2}{2}\left(\tfrac43\nu+\zeta/\rho\right)$, which with $\zeta=\tfrac23\rho\nu$ (BGK, §5.7) gives $9.638\times10^{-4}$ and with
-the MRT bulk viscosity of §6.3 gives $10.070\times10^{-4}$. The damping-rate formula was used here only as the independent check; it is not derived on the page.
+$9.641\times10^{-4}$ (BGK and regularised) and $10.073\times10^{-4}$ (MRT with the rates of §14.3). The linear sound-wave damping rate is
+$\tfrac{k^2}{2}\left(\tfrac43\nu+\zeta/\rho\right)$, which with $\zeta=\tfrac23\rho\nu$ (BGK, §13.7) gives $9.638\times10^{-4}$ and with
+the MRT bulk viscosity of §14.3 gives $10.070\times10^{-4}$. The damping-rate formula was used here only as the independent check; it is not derived on the page.
 
-### 5.9 Error terms, Mach number, and the incompressible limit
+### 13.9 Error terms, Mach number, and the incompressible limit
 
 The derivation produced two kinds of errors that matter in practice.
 
-**(a) The cubic term.** The term $\partial_k(\rho u_iu_ju_k)$ in (5.5) was dropped. Compare its size with the retained viscous term:
+**(a) The cubic term.** The term $\partial_k(\rho u_iu_ju_k)$ in (13.5) was dropped. Compare its size with the retained viscous term:
 $c_s^2\rho\,\partial u\sim c_s^2\rho\,U/L$ against $\rho U^3/L$. The ratio is $U^2/c_s^2 = Ma^2$, where
 $Ma = U/c_s$ is the **lattice Mach number**. So the stress has a relative error of order $Ma^2$. The origin is exact and known: the true
 Maxwellian has a third moment $\rho c_s^2(\delta u+\dots) + \rho u_iu_ju_k$, whose last piece would
-cancel the term exactly (its divergence $+\partial_k(\rho u_iu_ju_k)$ cancels the one above). The lattice equilibrium of §4 does
+cancel the term exactly (its divergence $+\partial_k(\rho u_iu_ju_k)$ cancels the one above). The lattice equilibrium of §12 does
 not have this piece. In terms of the
 page's input, the Mach number of the fastest point of the cylinder is $Ma = u_{lb}/c_s = \sqrt3\,u_{lb}$ (for the default
 $u_{lb}=0.05$, $\sqrt3\times0.05 = 0.0866$).
@@ -688,41 +688,41 @@ out) and the kinematic viscosity $\nu$ above. The remaining velocity-divergence 
 shrinks as $Ma^2$ but does not vanish.
 
 **What this means for the choice of $u_{lb}$.** The page fixes the lattice velocity of the fastest body point, $u_{lb}$ (and thereby
-$\Delta t\propto h$, called *acoustic scaling*, §7). Refining the grid at fixed $u_{lb}$ keeps $Ma$ fixed, so the $O(Ma^2)$
+$\Delta t\propto h$, called *acoustic scaling*, §15). Refining the grid at fixed $u_{lb}$ keeps $Ma$ fixed, so the $O(Ma^2)$
 errors above are *not* reduced by refinement. Only a smaller $u_{lb}$ reduces them, at the price of more time steps
 ($\Delta t\propto u_{lb}$). Measured on this page's code (`notes/verify/verify_compressibility.py`, `out/compressibility.txt`; spinning cylinder, $Re=100$, spin only, $N=64$, $N_z=1$, $t=5$): the largest density deviation over the fluid nodes is $\max|\rho-1|=2.56\times10^{-3}$ at $u_{lb}=0.05$ ($Ma=0.0866$) and $6.36\times10^{-4}$ at $u_{lb}=0.025$ ($Ma=0.0433$). The ratio is $4.0$, the $Ma^2$ scaling of the estimate above. Away from the body the values are $9.3\times10^{-4}$ and $2.4\times10^{-4}$. A divergence $\max|\nabla\cdot\mathbf u|$ from central differences of the cell velocity was also computed in that test; it did not scale with $Ma$ ($0.29$ and $0.24$), so it is dominated by the finite-difference error of that estimate and no divergence value is quoted here.
 
-**(c) Lattice errors.** The truncation in (5.1) after the second-order term gives, formally, errors of higher order in $\varepsilon\sim h/L$
+**(c) Lattice errors.** The truncation in (13.1) after the second-order term gives, formally, errors of higher order in $\varepsilon\sim h/L$
 (this is the expectation from the expansion, not a measured rate). These decrease with
 refinement. They are the discretisation errors in the usual sense. Measured on this page's code, for the impulsively started spinning cylinder at
 $Re=100$, $t=5$, centred, $N_z=1$ (independent review, `notes/verify/REPORT.md`, check 2): the torque differs from the exact solution by $+6.0\,\%$, $+0.7\,\%$,
 $+0.5\,\%$ at $N=32,64,128$. These three numbers do not establish an order of convergence (the error does not fall by a constant factor), and the review's Richardson
 extrapolation of them is not a clean order estimate either.
 
-## 6. The collision operators used
+## 14. The collision operators used
 
 All three operators conserve $\rho$ and $\rho\mathbf u$ and share the same equilibrium. They differ in how the 19
 populations are relaxed. The page's default is the **regularised** collision (`DEFAULT_COLLISION = "reg"`). It was chosen by a stability comparison (project notes, LBM agent's table): over six test cases up to $Re=3000$ the regularised operator stayed finite in all six, while BGK failed in one and MRT in one. The cases and the failing ones are not reproduced on this page.
 
-### 6.1 BGK
+### 14.1 BGK
 
-The BGK operator of §3.2 relaxes all 19 populations towards equilibrium at the same rate $1/\tau$:
+The BGK operator of §11.2 relaxes all 19 populations towards equilibrium at the same rate $1/\tau$:
 
 $$f_q^\star = f_q - \frac1\tau\,f_q^{neq}.$$
 
-It is the simplest and cheapest operator, and the one for which §5 was derived. Its drawback is that **everything** is
+It is the simplest and cheapest operator, and the one for which §13 was derived. Its drawback is that **everything** is
 relaxed at one rate. The 6 independent components of the stress, which set the viscosity, must have rate $1/\tau$. The remaining 9 combinations
-of the populations (see §6.3) get the same rate. In the derivation of §5 only the moments of order 0, 1 and 2 of $f^{(1)}$ entered, so these 9 do not affect the Navier–Stokes equations at the viscous
+of the populations (see §14.3) get the same rate. In the derivation of §13 only the moments of order 0, 1 and 2 of $f^{(1)}$ entered, so these 9 do not affect the Navier–Stokes equations at the viscous
 order, but they are tied to the same $\tau$. When $\tau$ is close to $\tfrac12$ their relaxation factor $1-1/\tau$ is close to $-1$ (for the page's default preset
-$\tau=0.5192$, §7.1, the factor is $-0.926$), so they are hardly damped.
+$\tau=0.5192$, §15.1, the factor is $-0.926$), so they are hardly damped.
 
-### 6.2 Regularised collision (the default)
+### 14.2 Regularised collision (the default)
 
 Latt & Chopard (2006) regularise the pre-collision populations using the local density, velocity and momentum flux (their abstract; the equation below is
-written out here from the code and derived in this section, because the paper's text was not available to the author of this page). We saw in §5.5 that the part of
+written out here from the code and derived in this section, because the paper's text was not available to the author of this page). We saw in §13.5 that the part of
 $f^{neq}$ that matters for Navier–Stokes is its second moment, the stress
 $\Pi^{neq}_{ij}=\sum_qc_{qi}c_{qj}f^{neq}_q$ (it has 6 independent components). The other $19 - 4 - 6 = 9$ components of $f^{neq}$
-are *kinetic ("ghost") modes*: they carry no mass, momentum or stress, and the derivation of §5 never used them.
+are *kinetic ("ghost") modes*: they carry no mass, momentum or stress, and the derivation of §13 never used them.
 
 The code (`collide`, kind `"reg"`) replaces $f^{neq}_q$ by a population that has **exactly the same stress but no ghost content**:
 
@@ -730,7 +730,7 @@ $$f^{neq}_q \;\longrightarrow\; \hat f_q = \frac{w_q}{2c_s^4}\,\left(c_{qi}c_{qj
 \qquad f^\star_q = f^{eq}_q + \left(1-\frac1\tau\right)\hat f_q .$$
 
 Here $f^{neq}=f-f^{eq}$ and $\Pi^{neq}$ are computed at every node from the incoming populations (with that node's own $\rho,\mathbf u$), and $(c_{qi}c_{qj}-c_s^2\delta_{ij})$ is the second-order Hermite
-polynomial. The identities of §2.2 show that $\hat f$ has the stress $\Pi^{neq}$
+polynomial. The identities of §10.2 show that $\hat f$ has the stress $\Pi^{neq}$
 and nothing else:
 
 $$
@@ -745,18 +745,18 @@ $$
 The last step uses the symmetry of $\Pi^{neq}$. The projection keeps the trace of $\Pi^{neq}$ as well as its traceless part. *Checked by computer* (`c1.py`): for a random $f^{neq}$ with zero mass and momentum the three moments above hold to $10^{-16}$, and the 10 vectors
 $\{w_q,\ w_qc_{qi},\ w_qH_{ij}(\mathbf c_q)\}$ that span the space of $f^{eq}$ and $\hat f$ are linearly independent (rank 10). Since $f^{eq}$ lies in this 10-dimensional space, $f^\star$ has zero ghost content.
 
-**Same viscosity as BGK.** Write the projection as a linear operator $P$, $\hat f = Pf^{neq}$. It leaves the moments of order 0, 1 and 2 unchanged (just shown). Repeat the Taylor expansion of §5.1 with the regularised collision. The right side of (5.1) becomes $\tfrac1{\Delta t}\left[-f^{neq}+(1-\tfrac1\tau)Pf^{neq}\right]=-\tfrac1{\Delta t}Kf^{neq}$ with $K=I-(1-\tfrac1\tau)P$. Order by order:
+**Same viscosity as BGK.** Write the projection as a linear operator $P$, $\hat f = Pf^{neq}$. It leaves the moments of order 0, 1 and 2 unchanged (just shown). Repeat the Taylor expansion of §13.1 with the regularised collision. The right side of (13.1) becomes $\tfrac1{\Delta t}\left[-f^{neq}+(1-\tfrac1\tau)Pf^{neq}\right]=-\tfrac1{\Delta t}Kf^{neq}$ with $K=I-(1-\tfrac1\tau)P$. Order by order:
 
-- $O(\varepsilon)$: $D_1f^{(0)}=-\tfrac1{\Delta t}Kf^{(1)}$. Take $\sum_qc_{qi}c_{qj}$: because $P$ preserves the second moment, $\sum_qc_{qi}c_{qj}Kf^{(1)} = \Pi^{(1)}_{ij}-(1-\tfrac1\tau)\Pi^{(1)}_{ij}=\Pi^{(1)}_{ij}/\tau$. Hence $\Pi^{(1)}_{ij} = -\tau\Delta t\sum_qc_{qi}c_{qj}D_1f^{(0)}$, **the same as for BGK**, so (5.5) holds unchanged.
-- $O(\varepsilon^2)$, momentum moment: $\sum_qc_{qi}\left[D_1f^{(1)}+\partial_{t_2}f^{(0)}+\tfrac{\Delta t}2D_1^2f^{(0)}\right]=0$. With $D_1f^{(0)}=-\tfrac1{\Delta t}Kf^{(1)}$ the last term is $-\tfrac12\sum_qc_{qi}D_1Kf^{(1)} = -\tfrac12\partial_k\Pi^{(1)}_{ik}/\tau$ (the time-derivative part vanishes since $K$ preserves the momentum moment of $f^{(1)}$, which is zero). So $\partial_{t_2}(\rho u_i)=-(1-\tfrac1{2\tau})\partial_k\Pi^{(1)}_{ik}$, the same as in §5.6.
+- $O(\varepsilon)$: $D_1f^{(0)}=-\tfrac1{\Delta t}Kf^{(1)}$. Take $\sum_qc_{qi}c_{qj}$: because $P$ preserves the second moment, $\sum_qc_{qi}c_{qj}Kf^{(1)} = \Pi^{(1)}_{ij}-(1-\tfrac1\tau)\Pi^{(1)}_{ij}=\Pi^{(1)}_{ij}/\tau$. Hence $\Pi^{(1)}_{ij} = -\tau\Delta t\sum_qc_{qi}c_{qj}D_1f^{(0)}$, **the same as for BGK**, so (13.5) holds unchanged.
+- $O(\varepsilon^2)$, momentum moment: $\sum_qc_{qi}\left[D_1f^{(1)}+\partial_{t_2}f^{(0)}+\tfrac{\Delta t}2D_1^2f^{(0)}\right]=0$. With $D_1f^{(0)}=-\tfrac1{\Delta t}Kf^{(1)}$ the last term is $-\tfrac12\sum_qc_{qi}D_1Kf^{(1)} = -\tfrac12\partial_k\Pi^{(1)}_{ik}/\tau$ (the time-derivative part vanishes since $K$ preserves the momentum moment of $f^{(1)}$, which is zero). So $\partial_{t_2}(\rho u_i)=-(1-\tfrac1{2\tau})\partial_k\Pi^{(1)}_{ik}$, the same as in §13.6.
 
-Therefore the regularised collision gives **the same Navier–Stokes equations and the same $\nu = c_s^2(\tau-\tfrac12)\Delta t$** as BGK (and the numerical test of §5.8 confirms the value). It differs from BGK only in the 9 ghost components, which are set to zero after every collision (relaxation factor $0$ instead of $1-1/\tau$).
+Therefore the regularised collision gives **the same Navier–Stokes equations and the same $\nu = c_s^2(\tau-\tfrac12)\Delta t$** as BGK (and the numerical test of §13.8 confirms the value). It differs from BGK only in the 9 ghost components, which are set to zero after every collision (relaxation factor $0$ instead of $1-1/\tau$).
 
 **Reading.** BGK and regularised collisions model the same fluid. Regularisation deletes the part of the
 distribution that is invisible to the macroscopic equations and that BGK would damp only with factor $1-1/\tau$, close to $-1$ near $\tau=\tfrac12$. It costs a little more
 arithmetic per node (computing $\Pi^{neq}$ and the projection). The page uses it because of the stability comparison in the introduction to this section.
 
-### 6.3 Multiple relaxation times (MRT)
+### 14.3 Multiple relaxation times (MRT)
 
 MRT (d'Humières et al. 2002) changes the *basis* in which the relaxation is done. The 19 populations
 $\mathbf f=(f_0,\dots,f_{18})$ are transformed by a fixed $19\times19$ matrix $M$ into 19 **moments**
@@ -787,7 +787,7 @@ BGK is the special case $s_k=1/\tau$ for every non-conserved moment, because the
 
 The 9 rows $\epsilon,q,\pi,m$ are the ghost modes. The numerical values $1.19,\,1.4,\,1.2,\,1.4,\,1.98$ match the set printed for the D3Q19 model in secondary sources that follow d'Humières et al. (2002) (for example arXiv:2512.23116, Appendix B). The original table was not opened, and one 2024 paper (arXiv:2402.08037) uses $1.6$ instead of $1.4$ for $\epsilon$ and $\pi$, so these are implemented values, not a verified quotation of the 2002 paper. *Checked by computer:* $M$ has rank 19.
 
-*Which rate sets which viscosity.* Repeat the derivation of §5.3–5.6 with a general diagonal $S$. In place of (A),
+*Which rate sets which viscosity.* Repeat the derivation of §13.3–13.6 with a general diagonal $S$. In place of (A),
 $D_1f^{(0)} = -\tfrac1{\Delta t}M^{-1}SM f^{(1)}$, so for any non-conserved moment of the correction we get $m_k^{(1)}=-\Delta t\,s_k^{-1}(MD_1f^{(0)})_k$:
 each moment is divided by its own rate instead of $1/\tau$. In place of (B$'$), the factor
 $1-\tfrac1{2\tau}$ becomes $1-\tfrac{s_k}{2}$, since $\tfrac{\Delta t}{2}D_1^2f^{(0)}=-\tfrac12D_1(M^{-1}SMf^{(1)})$. Hence each stress moment $k$ is transported with
@@ -802,21 +802,21 @@ $$\nu = c_s^2\left(\frac1{\omega}-\frac12\right)\Delta t = c_s^2(\tau-\tfrac12)\
 \zeta = \frac23\,\rho\,c_s^2\left(\frac1{s_e}-\frac12\right)\Delta t,$$
 
 where $\nu$ is the shear (kinematic) viscosity and $\zeta$ is the bulk viscosity (the coefficient of $\partial_ku_k\,\delta_{ij}$, in the convention of a
-stress $2\mu S^{dev} + \zeta(\nabla\cdot\mathbf u)\boldsymbol\delta$; it is the $\kappa$ of BSL and of §5.7). Setting $s_e=\omega=1/\tau$ recovers BGK: $\zeta=\tfrac23\rho\nu$,
-as found in §5.7. With the implemented $s_e=1.19$, in lattice units $\zeta/\rho=\tfrac29\left(\tfrac1{1.19}-\tfrac12\right)=0.0756$ whatever $\tau$ is. The ghost rates do not appear in $\nu$ or $\zeta$. The sound-damping test of §5.8 confirms the bulk-viscosity formula for MRT numerically.
+stress $2\mu S^{dev} + \zeta(\nabla\cdot\mathbf u)\boldsymbol\delta$; it is the $\kappa$ of BSL and of §13.7). Setting $s_e=\omega=1/\tau$ recovers BGK: $\zeta=\tfrac23\rho\nu$,
+as found in §13.7. With the implemented $s_e=1.19$, in lattice units $\zeta/\rho=\tfrac29\left(\tfrac1{1.19}-\tfrac12\right)=0.0756$ whatever $\tau$ is. The ghost rates do not appear in $\nu$ or $\zeta$. The sound-damping test of §13.8 confirms the bulk-viscosity formula for MRT numerically.
 
 **Reading.** MRT lets the shear viscosity be set independently of the other 10 non-conserved moments. The shear
 viscosity is set by $\omega$ and the bulk viscosity by $s_e$. The ghost rates do not enter the Navier–Stokes equations at all; they are tuned for
 stability. For nearly incompressible flow the bulk viscosity multiplies $\nabla\cdot\mathbf u\approx0$, so it
 matters little for the flow itself.
 
-## 7. Units: physical to lattice
+## 15. Units: physical to lattice
 
 The lattice code works with numbers of order one: $h=\Delta t=1$, $\rho\approx1$, $|\mathbf u|\ll1$. The page
 works in the nondimensional physical units of the finite-volume code (box side $L=1$, velocity unit $U_{ref}$, and density $1$). Two numbers are fixed
 by hand, and the others follow.
 
-### 7.1 Conversion
+### 15.1 Conversion
 
 | quantity | physical | lattice |
 |---|---|---|
@@ -864,11 +864,11 @@ For a spin-only case ($U_o=0$) $U_{ref}=U_b$ and step 5 reduces to $\nu_{lb}=D_{
 | Re 200, spin, end walls | 200 | 0 | $1/64$ | $7.8125\times10^{-4}$ | 1280 | $0.0032$ | $0.5096$ |
 | Re 800, spin + orbit | 800 | 1 | $1/64$ | $3.125\times10^{-4}$ | 3200 | $0.00032$ | $0.50096$ |
 
-### 7.2 Trade-offs
+### 15.2 Trade-offs
 
 - **$\tau\to\tfrac12$.** From step 6, $\tau-\tfrac12\propto D_{lb}\,u_{lb}/Re$. A higher Reynolds number at a fixed resolution and $u_{lb}$
-  pushes $\tau$ towards $\tfrac12$, where the viscosity vanishes and, by §3.2, BGK no longer damps the non-equilibrium parts
-  (factor $1-1/\tau\to-1$). The regularised and MRT collisions of §6 are meant to cope with this. The page does not measure a stability limit in $\tau-\tfrac12$. All that was tested is the case-level comparison of §6 ($N=64$, $N_z=16$, $u_{lb}=0.05$, two time units, "failed" meaning a non-finite value, $|u_{lb}|>0.5$ or $\rho<0.3$):
+  pushes $\tau$ towards $\tfrac12$, where the viscosity vanishes and, by §11.2, BGK no longer damps the non-equilibrium parts
+  (factor $1-1/\tau\to-1$). The regularised and MRT collisions of §14 are meant to cope with this. The page does not measure a stability limit in $\tau-\tfrac12$. All that was tested is the case-level comparison of §14 ($N=64$, $N_z=16$, $u_{lb}=0.05$, two time units, "failed" meaning a non-finite value, $|u_{lb}|>0.5$ or $\rho<0.3$):
 
 | $Re$ | motion | $\tau-\tfrac12$ | BGK | regularised | MRT |
 |---|---|---|---|---|---|
@@ -880,15 +880,15 @@ For a spin-only case ($U_o=0$) $U_{ref}=U_b$ and step 5 reduces to $\nu_{lb}=D_{
 | 3000 | spin + orbit | $2.6\times10^{-4}$ | finite | finite | failed at $t=0.88$ |
 
 So the regularised operator stayed finite down to $\tau-\tfrac12 = 2.6\times10^{-4}$ in these runs, and it was the only one whose largest lattice speed stayed at the body speed ($\approx 0.05$) in all six. "Finite" is not "accurate": at these $\tau$ the grid does not resolve the flow, and no accuracy is claimed for those runs.
-- **Small $u_{lb}$.** Lowering $u_{lb}$ lowers $Ma$ and the $O(Ma^2)$ errors of §5.9, and it lowers $\tau-\tfrac12$ too (step 6). It also lowers $\Delta t$ in proportion, so the number of
+- **Small $u_{lb}$.** Lowering $u_{lb}$ lowers $Ma$ and the $O(Ma^2)$ errors of §13.9, and it lowers $\tau-\tfrac12$ too (step 6). It also lowers $\Delta t$ in proportion, so the number of
   steps for a given physical time rises as $1/u_{lb}$.
 - **Refinement.** While $u_{lb}=0.05$ (the cap is active), $\Delta t\propto h$ (acoustic scaling). Doubling $N$ doubles the number of steps
   per unit time and multiplies the nodes by 8 (for $N_z\propto N$) or 4 (for $N_z=1$), so the work for a fixed physical time grows as
   $N^4$ (full 3D) or $N^3$ (2D baseline), by counting. Then $\nu_{lb}\propto N$ at fixed $Re$, so refinement moves $\tau$ away from $\tfrac12$ until the second argument of the rule takes over: there $\nu_{lb}=\tfrac16$ is fixed and $\Delta t=u_{lb}h/U_b=1/(6\nu N^2)$ (diffusive scaling), so the steps per unit time grow as $N^2$ and the work as $N^5$ (3D) or $N^4$ (2D), again by counting. For example, at $Re=1$, $N=64$ the rule gives $u_{lb}=0.0130$ and $\tau=1$.
 
-### 7.3 Initial condition and the deliberate 3D seed
+### 15.3 Initial condition and the deliberate 3D seed
 
-`init_state` starts the fluid at rest with $\rho=1$ everywhere, plus a small prescribed velocity field, the **seed**, set as the equilibrium of §4.2 at that velocity (and $\rho=1$). The cylinder starts at orbit angle $\varphi=0$ and moves at full speed from the first step. The seed exists only to break the spanwise symmetry deliberately, so that any three-dimensional growth on the page comes from a known, tiny perturbation (or from physics) and not from solver round-off. With seed amplitude $0$, or $N_z<4$, no seed is added. The seed is built from a stream function so that it is divergence-free by construction. Write
+`init_state` starts the fluid at rest with $\rho=1$ everywhere, plus a small prescribed velocity field, the **seed**, set as the equilibrium of §12.2 at that velocity (and $\rho=1$). The cylinder starts at orbit angle $\varphi=0$ and moves at full speed from the first step. The seed exists only to break the spanwise symmetry deliberately, so that any three-dimensional growth on the page comes from a known, tiny perturbation (or from physics) and not from solver round-off. With seed amplitude $0$, or $N_z<4$, no seed is added. The seed is built from a stream function so that it is divergence-free by construction. Write
 $\mathbf u=\nabla\times(\psi\,\hat{\mathbf y})$, i.e.
 
 $$u=-\frac{\partial\psi}{\partial z},\qquad v=0,\qquad w=\frac{\partial\psi}{\partial x}.$$
@@ -903,9 +903,9 @@ $$u=-aF\,(W'S+WS'),\qquad w=a\,\frac{\partial F}{\partial x}\,WS,\qquad \frac{\p
 
 *Why these factors.* $F$ vanishes on all four side walls ($x=0,1$ through $\sin^2\pi x$; $y=0,1$ through $\sin\pi y$) and so does $\partial F/\partial x$ (through $\sin2\pi x$ and $\sin\pi y$): the seed is zero on the side walls, compatible with no-slip. With end walls, $W$ and $W'$ vanish at $z=0$ and $L_z$, so $u=w=0$ there as well. $S$ is a sum of the first $M$ spanwise Fourier modes $k_m$, periodic in $z$ (the phase $m$ only decorrelates the modes); dividing by $k_m$ in $S$ makes $S'$, hence $u$, of equal size for every mode. $M\le N_z/4$ keeps every mode well below the grid's shortest wavelength (the Nyquist mode is $m=N_z/2$). In the periodic case the velocity is the sum of $x$–$y$ patterns times $\cos(k_mz+m)$ (for $u$) and $\sin(k_mz+m)/k_m$ (for $w$), so each plane carries a different, small, in-plane pattern. In lattice units the velocity is multiplied by $\Delta t/h$ before it is used in the equilibrium.
 
-## 8. Boundaries
+## 16. Boundaries
 
-**One time step as implemented** (`step`): (0) the body moves to its new position and the nodes it has just uncovered are refilled (§8.4); (1) collision, at every node (§6); (2) streaming, which wraps around the box periodically; (3) the box walls replace the populations that wrapped around (§8.1); (4) the populations that would arrive from inside the cylinder are rebuilt on the cut links (§8.3), and the same links give force and torque (§8.6); (5) the global mass correction (§8.5); (6) the nodes inside the cylinder are reset to the equilibrium at the body velocity, which only keeps them finite (the fluid never reads them).
+**One time step as implemented** (`step`): (0) the body moves to its new position and the nodes it has just uncovered are refilled (§16.4); (1) collision, at every node (§14); (2) streaming, which wraps around the box periodically; (3) the box walls replace the populations that wrapped around (§16.1); (4) the populations that would arrive from inside the cylinder are rebuilt on the cut links (§16.3), and the same links give force and torque (§16.6); (5) the global mass correction (§16.5); (6) the nodes inside the cylinder are reset to the equilibrium at the body velocity, which only keeps them finite (the fluid never reads them).
 
 A wall or a body removes some of the populations that streaming would have supplied to a fluid node: the
 ones that would come from inside the solid. The boundary condition must construct these missing populations so that the macroscopic
@@ -918,7 +918,7 @@ inside the solid. The boundary condition supplies $f_{\bar q}(\mathbf x_f,t+\Del
 $\mathbf x_w=\mathbf x_f+q\,\mathbf c_q$, where the **cut fraction** $q\in(0,1]$ is the fraction of the link length that lies in the fluid.
 (This $q$ is a number, not the velocity index $q$ that labels $\mathbf c_q$, $w_q$ and $f_q$. In formulas the index appears as a subscript, the fraction does not. The code calls the fraction `s`.)
 
-### 8.1 Halfway bounce-back on a stationary wall
+### 16.1 Halfway bounce-back on a stationary wall
 
 For a flat wall that coincides with a coordinate plane, say $y=0$, with the first fluid nodes at $y=h/2$, every link
 pointing to the wall has a $y$-component $-1$ and crosses the plane exactly in its middle. The wall is half a link away
@@ -935,8 +935,8 @@ So the page's box walls at $x,y=0,1$ and (for end walls) $z=0,L_z$ lie *exactly*
 the ghost node outside. This is how the lattice agrees with the finite-volume grid on the position of the walls (the grid nodes
 are at cell centres $(i+\tfrac12)h$).
 
-**Why the wall is at the half-link and the slip is zero.** Take the exact linear shear solution of §5.8, $u(y)=u'(y-y_{w})$, with a wall at an unknown
-position $y_w$ below the first node, which is at $y_0=\tfrac12$ (lattice units, with $\rho=1$). From §5.8, the populations of the first node are
+**Why the wall is at the half-link and the slip is zero.** Take the exact linear shear solution of §13.8, $u(y)=u'(y-y_{w})$, with a wall at an unknown
+position $y_w$ below the first node, which is at $y_0=\tfrac12$ (lattice units, with $\rho=1$). From §13.8, the populations of the first node are
 $f_q=f^{eq}_q+g_q$ with $g_q=-\tau w_qc_{qx}c_{qy}u'/c_s^2$ and $f_q^{eq}=w_q(1+c_{qx}u_0/c_s^2)$, where $u_0=u(y_0)$. The unknown populations are those arriving with
 $c_y=+1$ (for example $q=7$, $(1,1,0)$). Their reflected partner $\bar q$ has $c_y=-1$ and $c_{\bar q,x}=-c_{qx}$. We require the exact solution to satisfy
 
@@ -958,16 +958,16 @@ zero velocity there, for every $\tau$.**
 **Reading.** The "no-slip" condition holds at the plane half a link from the first node, not at the node: the wall lies
 between the last fluid node and the first ghost node, which is also where the finite-volume code puts it.
 For flows whose velocity profile is curved (such as the pressure-driven Poiseuille flow), the profile is no longer linear and the exact shear solution above does not apply.
-What happens then was computed, not derived: the apparent wall position of the halfway rule depends on $\tau$, it is within $0.017$ cell of the halfway plane for $\tau\le1$ and moves outward for $\tau>1$ (numbers in §7.1). This is why the page keeps $\tau\le1$.
+What happens then was computed, not derived: the apparent wall position of the halfway rule depends on $\tau$, it is within $0.017$ cell of the halfway plane for $\tau\le1$ and moves outward for $\tau>1$ (numbers in §15.1). This is why the page keeps $\tau\le1$.
 
-### 8.2 A moving wall
+### 16.2 A moving wall
 
 If the wall moves with velocity $\mathbf u_w$, the reflected population must also carry the wall's momentum. Ladd (1994, Eq. 3.3) adds
 a term proportional to the wall velocity to the bounce-back, and verifies it on Couette flow. We derive it here by changing frames.
 
 Go into the frame that moves with the wall. There the wall is at rest and the halfway rule applies as it stands: the reflected population equals the
 incident one. Now go back to the laboratory frame. To first order in $\mathbf u_w$, a velocity shift $\mathbf u_w$ changes the population in direction $\mathbf c_q$
-by the linear term of the equilibrium (§4.2), $\delta f_q = w_q\rho\,\mathbf c_q\!\cdot\!\mathbf u_w/c_s^2$, and the population in the opposite direction by $-\delta f_q$ (it is odd in $\mathbf c$).
+by the linear term of the equilibrium (§12.2), $\delta f_q = w_q\rho\,\mathbf c_q\!\cdot\!\mathbf u_w/c_s^2$, and the population in the opposite direction by $-\delta f_q$ (it is odd in $\mathbf c$).
 Let $f_q^{\star w}$ and $f_{\bar q}^{w}$ be the incident and reflected populations in the wall frame, with $f^w_{\bar q}=f_q^{\star w}$. In the lab frame:
 
 $$
@@ -981,7 +981,7 @@ that is,
 
 $$\boxed{\,f_{\bar q}(\mathbf x_f,t+\Delta t) = f^\star_q(\mathbf x_f,t) - \frac{2\,w_q\,\rho\,\mathbf c_q\!\cdot\!\mathbf u_w}{c_s^2}\,}$$
 
-This is the halfway rule for a moving wall. (The code takes $\rho=1$ in the term, the density that §8.5 holds the mean at; the local density differs from 1 by $O(Ma^2)$, §5.9.) (The quadratic part of the equilibrium is even in $\mathbf c$ and cancels between the two directions.)
+This is the halfway rule for a moving wall. (The code takes $\rho=1$ in the term, the density that §16.5 holds the mean at; the local density differs from 1 by $O(Ma^2)$, §13.9.) (The quadratic part of the equilibrium is even in $\mathbf c$ and cancels between the two directions.)
 
 **Reading.** Bounce-back alone returns the same momentum that arrives, so the wall appears at rest. The term shifts the balance
 between the incident and returning populations so that the net flux along the link equals that of a fluid moving with the wall,
@@ -1003,7 +1003,7 @@ $$\frac{2w_qc_{qx}}{c_s^2}\left(u_w-u_N-\tfrac12u'\right)=0 \quad\Longrightarrow
 and $u_N+\tfrac12u'$ is the linear profile extrapolated to the wall position. The moving wall term has exactly the size needed
 to make the velocity at the wall equal to $u_w$.
 
-### 8.3 A curved, moving body: interpolated bounce-back
+### 16.3 A curved, moving body: interpolated bounce-back
 
 The cylinder surface is generally *not* halfway between nodes. The cut fraction $q$ varies from link to link. If we
 applied the halfway rule everywhere (**staircase bounce-back**), the wall would effectively sit at distance $\tfrac12$ link from each fluid node rather than $q$.
@@ -1039,20 +1039,20 @@ $$f_{\bar q}(\mathbf x_f,t+\Delta t) = \frac1{2q}\,f_q^\star(\mathbf x_f) + \fra
 
 Both formulas give the halfway rule at $q=\tfrac12$, and both use only fluid nodes. For $q\to1$ the second becomes the average of the incident and returning populations at the node. If the second fluid node $\mathbf x_f-\mathbf c_q$ is not available for $q<\tfrac12$ (outside the box or inside the body), the code uses $f^\star_q(\mathbf x_f)$ in its place (first-order fallback).
 
-**Moving body: where the factor $1/(2q)$ comes from.** In the frame of the wall (velocity $\mathbf u_w$ at the cut point, taken uniform near the link) the wall is at rest, so the interpolation rules above apply to the wall-frame populations. A frame change shifts the population of direction $\mathbf c_q$ by $\delta=w_q\rho\,\mathbf c_q\!\cdot\!\mathbf u_w/c_s^2$ and that of $\mathbf c_{\bar q}$ by $-\delta$ (§8.2): lab $=$ wall frame $+\ \delta$ for $q$ and $-\delta$ for $\bar q$. So $f^{\star w}_q=f^\star_q-\delta$ and $f^{\star w}_{\bar q}=f^\star_{\bar q}+\delta$. Apply the rule in the wall frame, then shift the result (direction $\bar q$) back by $-\delta$:
+**Moving body: where the factor $1/(2q)$ comes from.** In the frame of the wall (velocity $\mathbf u_w$ at the cut point, taken uniform near the link) the wall is at rest, so the interpolation rules above apply to the wall-frame populations. A frame change shifts the population of direction $\mathbf c_q$ by $\delta=w_q\rho\,\mathbf c_q\!\cdot\!\mathbf u_w/c_s^2$ and that of $\mathbf c_{\bar q}$ by $-\delta$ (§16.2): lab $=$ wall frame $+\ \delta$ for $q$ and $-\delta$ for $\bar q$. So $f^{\star w}_q=f^\star_q-\delta$ and $f^{\star w}_{\bar q}=f^\star_{\bar q}+\delta$. Apply the rule in the wall frame, then shift the result (direction $\bar q$) back by $-\delta$:
 
 - $q<\tfrac12$: $\;2q(f^\star_q(\mathbf x_f)-\delta)+(1-2q)(f^\star_q(\mathbf x_f-\mathbf c_q) -\delta)-\delta = [\text{lab interpolation}]-2\delta$, since the two weights sum to $1$.
 - $q\ge\tfrac12$: $\;\tfrac1{2q}(f^\star_q-\delta)+\tfrac{2q-1}{2q}(f^\star_{\bar q}+\delta)-\delta = [\text{lab interpolation}]-\delta\left(\tfrac{1}{2q}-\tfrac{2q-1}{2q}+1\right) = [\text{lab interpolation}]-\tfrac{\delta}{q}$.
 
-With $g\equiv-2\delta=-2w_q\rho\,\mathbf c_q\!\cdot\!\mathbf u_w/c_s^2$ (the wall term of §8.2) the correction is therefore
+With $g\equiv-2\delta=-2w_q\rho\,\mathbf c_q\!\cdot\!\mathbf u_w/c_s^2$ (the wall term of §16.2) the correction is therefore
 
 $$\text{wall term}=\begin{cases}g & q<\tfrac12\\[2pt] \dfrac{g}{2q} & q\ge\tfrac12\end{cases}$$
 
-This is what `bounce_back_body` implements (with $\rho=1$, so $g=-6w_q\,\mathbf c_q\!\cdot\!\mathbf u_w$ in lattice units). Equivalently, $g$ is added to every *incident* post-collision population that enters the interpolation, and the interpolation then weights it: the single incident population of the case $q\ge\tfrac12$ has weight $1/(2q)$, and the two incident populations of the case $q<\tfrac12$ have weights that sum to $1$. The two cases agree at $q=\tfrac12$, where they reduce to the halfway rule of §8.2. The algebra was checked symbolically (`c1.py`), and the exact-solution check follows.
+This is what `bounce_back_body` implements (with $\rho=1$, so $g=-6w_q\,\mathbf c_q\!\cdot\!\mathbf u_w$ in lattice units). Equivalently, $g$ is added to every *incident* post-collision population that enters the interpolation, and the interpolation then weights it: the single incident population of the case $q\ge\tfrac12$ has weight $1/(2q)$, and the two incident populations of the case $q<\tfrac12$ have weights that sum to $1$. The two cases agree at $q=\tfrac12$, where they reduce to the halfway rule of §16.2. The algebra was checked symbolically (`c1.py`), and the exact-solution check follows.
 
 **Check on the exact shear solution (any $q$, any $\tau$).** Put the wall at $y=0$ and the first node at $y_0=q$, with the link pointing down to the wall
 ($c_{qy}=-1$), and let the profile be $u=u'(y-y_w)$. For these two directions $g_q=g_{\bar q}=+\tau w_qc_{qx}u'/c_s^2\equiv g_{ne}$, and
-$f^{eq}_q=w_q(1+c_{qx}u/c_s^2)$, $f^{eq}_{\bar q}=w_q(1-c_{qx}u/c_s^2)$. Because $f^{eq}$ is linear in $u$, interpolating it in space just interpolates the velocity. (Here $g_{ne}$ is the non-equilibrium part of §5.8; it is not the wall term $g$.)
+$f^{eq}_q=w_q(1+c_{qx}u/c_s^2)$, $f^{eq}_{\bar q}=w_q(1-c_{qx}u/c_s^2)$. Because $f^{eq}$ is linear in $u$, interpolating it in space just interpolates the velocity. (Here $g_{ne}$ is the non-equilibrium part of §13.8; it is not the wall term $g$.)
 
 *Case $q<\tfrac12$.* The upstream node is at $y_0+1$, where the velocity is $u_0+u'$. The interpolated incident population is
 $w_q\left[1+\tfrac{c_{qx}}{c_s^2}\left(u_0+(1-2q)u'\right)\right]+(1-\tfrac1\tau)g_{ne}$, and the required value is
@@ -1072,15 +1072,15 @@ i.e. a wall position wrong by $(\tfrac12-q)$ link lengths.
 
 **Why the order differs.** The staircase rule places the wall at the wrong position by $|q-\tfrac12|$ link lengths, which is of first order in $h$. The velocity at the true wall is then
 off by $|u'|\,|q-\tfrac12|\,h$ for a linear profile, again first order in $h$ for a fixed physical gradient $u'$. In addition the stair-stepped surface has the wrong shape, at order $h$.
-The Bouzidi rule places the wall exactly where it is for any linear profile, as the check above shows. What remains is the error from the curvature of the profile, of order $h^2u''$, and from the discrete circle. Bouzidi et al. (2001) report second-order accuracy for their scheme on time-dependent circular Couette flow and flow past a periodic array of cylinders (from the paper's abstract). The page does not compute a convergence order. The only measured data on this code are the torque errors of §5.9(c) ($+6.0$, $+0.7$, $+0.5\,\%$ at $N=32,64,128$), which do not show a clean order.
+The Bouzidi rule places the wall exactly where it is for any linear profile, as the check above shows. What remains is the error from the curvature of the profile, of order $h^2u''$, and from the discrete circle. Bouzidi et al. (2001) report second-order accuracy for their scheme on time-dependent circular Couette flow and flow past a periodic array of cylinders (from the paper's abstract). The page does not compute a convergence order. The only measured data on this code are the torque errors of §13.9(c) ($+6.0$, $+0.7$, $+0.5\,\%$ at $N=32,64,128$), which do not show a clean order.
 
-### 8.4 Nodes uncovered by the moving cylinder: refilling
+### 16.4 Nodes uncovered by the moving cylinder: refilling
 
 A node is a *solid* node if its centre lies inside the cylinder ($r<R$); solid nodes hold no meaningful populations (they are reset every step to the equilibrium at the body velocity, only to keep them finite). When the
 cylinder orbits, the set of solid nodes changes from step to step. At the **leading** edge, a fluid node becomes covered; its populations are simply overwritten by the reset. At the **trailing** edge, a solid node becomes fluid ("uncovered") and needs a full set of 19 populations at once, because the code
 never evolved them as a fluid state. (Per step the body moves by at most $u_{lb}$ of a cell, so only a thin sliver of nodes changes in each step.)
 
-Stale or arbitrary values would insert mass and momentum that do not belong to the flow: a local density or momentum error, which in a weakly compressible fluid travels as sound at $c_s$ (§5.4).
+Stale or arbitrary values would insert mass and momentum that do not belong to the flow: a local density or momentum error, which in a weakly compressible fluid travels as sound at $c_s$ (§13.4).
 The refill (`refill`) sets the populations of an uncovered node $\mathbf x$ to
 
 $$f_q(\mathbf x) = f_q^{eq}\big(\bar\rho,\ \mathbf u_b(\mathbf x)\big) + \overline{f^{neq}}_q .$$
@@ -1092,17 +1092,17 @@ $$f_q(\mathbf x) = f_q^{eq}\big(\bar\rho,\ \mathbf u_b(\mathbf x)\big) + \overli
 
 This is the idea of an equilibrium-plus-non-equilibrium refill, of the kind analysed by Caiazzo (2008), whose abstract describes a study of how to set starting values at nodes that appear when a moving boundary changes the fluid domain. The specific choices above (which neighbours, plain averaging) are this page's own; the author did not have the paper's text, so the page does not claim that they are Caiazzo's.
 
-### 8.5 The global mass correction
+### 16.5 The global mass correction
 
 **The problem.** In a closed box with exact walls the total mass can only change through the body. The body step does not conserve it exactly:
 
 - *Interpolated bounce-back.* For a stationary wall and halfway bounce-back $f_{\bar q}=f^\star_q$, so no mass crosses the link. With Bouzidi's rule for $q<\tfrac12$ the mass leaving through the link is $f^\star_q(\mathbf x_f)-f_{\bar q}=(1-2q)\left[f^\star_q(\mathbf x_f)-f^\star_q(\mathbf x_f-\mathbf c_q)\right]$, which is not zero where $f^\star_q$ varies along the link, and need not sum to zero over the links of a curved surface.
 - *Moving wall term.* It adds $g=-2w_q\rho\,\mathbf c_q\!\cdot\!\mathbf u_w/c_s^2$ to the mass of each link. For a rigid body the continuum flux $\oint\mathbf u_w\!\cdot\!\mathbf n\,dA$ is zero, but the sum of $g$ over the discrete links is not exactly zero.
-- *Covering and uncovering.* Covered nodes lose their mass and refilled nodes create it (§8.4).
+- *Covering and uncovering.* Covered nodes lose their mass and refilled nodes create it (§16.4).
 
-Measured on this page's code (project notes), a spinning body without any correction loses or gains mass **linearly in time, about $2$–$3\times10^{-6}$ per step** (mostly from the interpolated bounce-back, per the notes). Over the $\approx1.3\times10^{3}$ steps per time unit of §7.1 and a run to $t=20$ this would add up to roughly $0.05$–$0.08$ in the mean density if left alone (the product $2.5\times10^{-6}\times1280\times20$ of the quoted numbers, not a separate measurement; the notes do not say whether the per-step figure is relative to the total mass).
+Measured on this page's code (project notes), a spinning body without any correction loses or gains mass **linearly in time, about $2$–$3\times10^{-6}$ per step** (mostly from the interpolated bounce-back, per the notes). Over the $\approx1.3\times10^{3}$ steps per time unit of §15.1 and a run to $t=20$ this would add up to roughly $0.05$–$0.08$ in the mean density if left alone (the product $2.5\times10^{-6}\times1280\times20$ of the quoted numbers, not a separate measurement; the notes do not say whether the per-step figure is relative to the total mass).
 
-**Why hold the mean density.** In the nearly incompressible limit only pressure *gradients* act (§5.9), so a uniform density level is physically arbitrary. In the lattice it is not: (i) the page converts lattice forces to physical ones with the density scale $\rho_0=1$ (§8.6), so a mean density that drifts away from $1$ rescales every force and torque by that factor; (ii) the Mach-number estimates and the moving-wall term use $\rho=1$. The correction therefore holds the **mean density over the fluid nodes** at exactly $1$. Holding the *total mass* constant would not be equivalent: the number of fluid nodes $n$ itself changes as nodes are covered and uncovered. We counted it for the orbiting body at $N=64$ ($R=0.1$, $r_o=0.2$, one revolution in 400 positions): $n$ ranges from $3964$ to $3973$ per plane (mean $3966.9$), against the exact area $L^2-\pi R^2$ of $3967.3$ cells, a spread of $0.2\,\%$ that a fixed total mass would turn into a density error of the same size.
+**Why hold the mean density.** In the nearly incompressible limit only pressure *gradients* act (§13.9), so a uniform density level is physically arbitrary. In the lattice it is not: (i) the page converts lattice forces to physical ones with the density scale $\rho_0=1$ (§16.6), so a mean density that drifts away from $1$ rescales every force and torque by that factor; (ii) the Mach-number estimates and the moving-wall term use $\rho=1$. The correction therefore holds the **mean density over the fluid nodes** at exactly $1$. Holding the *total mass* constant would not be equivalent: the number of fluid nodes $n$ itself changes as nodes are covered and uncovered. We counted it for the orbiting body at $N=64$ ($R=0.1$, $r_o=0.2$, one revolution in 400 positions): $n$ ranges from $3964$ to $3973$ per plane (mean $3966.9$), against the exact area $L^2-\pi R^2$ of $3967.3$ cells, a spread of $0.2\,\%$ that a fixed total mass would turn into a density error of the same size.
 
 **The correction** (`mass_correction`, applied after the body step at every time step):
 
@@ -1112,7 +1112,7 @@ with $n$ the number of fluid nodes (all planes). After it $\sum_{\text{fluid}}\s
 
 **This is our own design choice.** The correction is a uniform shift of the reference density. No literature source for this particular correction was found by the author, and the page does not cite one. Its effect on accuracy was not measured against a run without it (the independent review had no pre-correction comparison).
 
-### 8.6 Force and torque by momentum exchange
+### 16.6 Force and torque by momentum exchange
 
 The force of the fluid on the body is obtained from the **momentum balance on the boundary links** (the approach of Ladd 1994, who computes the forces and torques on the solid from the momentum exchanged on the links; Bouzidi et al. 2001 analyse the torque obtained this way). On a link with fluid node $\mathbf x_f$,
 direction $\mathbf c_q$ pointing to the body, and cut point $\mathbf x_w$, during one step:
@@ -1143,7 +1143,7 @@ at rest, the torque of the fluid on it is clockwise, i.e. negative: it resists t
 
 For a span-uniform flow every plane contributes equally, so the torque per unit span is the same for any $N_z$, and for $N_z=1$ it is the 2D torque (measured: $N_z=1$ and $N_z=4$ agree to $5\times10^{-13}$ in the review).
 
-**Check (shear flow, stationary halfway wall).** Take the lower wall of the Couette channel of §5.8, first node at $y_0=\tfrac12$, $u=u'y$. The links pointing down with $c_x\ne0$ are $(\pm1,-1,0)$, and for them $f_{\bar q}=f^\star_q$ so $\Delta P_x=2c_xf^\star_q$. With $f^\star_q=w_q(1+c_xu_0/c_s^2)+(1-\tfrac1\tau)\tau w_qc_xu'/c_s^2$ (§5.8, $c_y=-1$), summing over the two links ($c_x^2=1$, $w_q=\tfrac1{36}$):
+**Check (shear flow, stationary halfway wall).** Take the lower wall of the Couette channel of §13.8, first node at $y_0=\tfrac12$, $u=u'y$. The links pointing down with $c_x\ne0$ are $(\pm1,-1,0)$, and for them $f_{\bar q}=f^\star_q$ so $\Delta P_x=2c_xf^\star_q$. With $f^\star_q=w_q(1+c_xu_0/c_s^2)+(1-\tfrac1\tau)\tau w_qc_xu'/c_s^2$ (§13.8, $c_y=-1$), summing over the two links ($c_x^2=1$, $w_q=\tfrac1{36}$):
 
 $$\sum\Delta P_x = 2\cdot2\cdot\tfrac1{36}\cdot3\left[u_0+(\tau-1)u'\right]=\tfrac13\left[\tfrac12+\tau-1\right]u'=\nu_{lb}\,u'$$
 
@@ -1153,19 +1153,19 @@ per wall node and time step. The force on the wall is $+\nu_{lb}u'$ in $+x$: the
 
 When the body orbits, the torque of a single step is noisy. Measured on this page's code (independent review, `notes/verify/REPORT.md` item 4 and the project notes): the scatter of the single-step torque about a smooth trend is $216\,\%$ ($N=32$) and $63\,\%$ ($N=64$) of the mean for the LBM, against $32\,\%$ and $24\,\%$ for the finite-volume solver. The spin-only torque is smooth after $t=0.25$; the review attributes the noise to the moving boundary (links appearing and disappearing, and the refill), and did not separate the two. Bookkeeping of the momentum carried by covered and uncovered nodes was tried and did **not** reduce the noise, so it is off: the page does not credit that momentum to the body. The page therefore shows a **running mean over the last $0.25$ time units** of the torque samples, and shows nothing before $t=0.25$. With that mean, the scatter of block means of the LBM torque is $7\,\%$ ($N=32$) and $3\,\%$ ($N=64$). The mean removes noise; it does not remove a bias, and it smooths real changes of the torque on time scales shorter than $0.25$ (the page's samples are taken after every frame, a frame covering at most $0.05$ time units).
 
-### 8.7 Periodic span versus end walls
+### 16.7 Periodic span versus end walls
 
-Our box is periodic or walled in $z$ (the page's `span` input). The cylinder fills the whole span. Every link with an in-plane part is cut by it (with the cut fraction of its in-plane projection, §8.3); only the links $(0,0,\pm1)$ are never cut.
+Our box is periodic or walled in $z$ (the page's `span` input). The cylinder fills the whole span. Every link with an in-plane part is cut by it (with the cut fraction of its in-plane projection, §16.3); only the links $(0,0,\pm1)$ are never cut.
 
 - **Periodic span.** Streaming wraps in $z$: a population leaving node $k=N_z-1$ with $c_z=+1$ arrives at node $k=0$, and vice versa.
   No boundary condition is applied. A flow that is uniform in $z$ stays uniform, except for instabilities that break the symmetry.
 - **End walls (no-slip).** The first and last layers, $k=0$ and $k=N_z-1$, are fluid nodes; the walls sit at $z=0$ and $z=L_z$, half a cell outside the
-  node layers, as in §8.1. The populations that would stream in from outside are replaced by halfway bounce-back. At $k=0$ these
+  node layers, as in §16.1. The populations that would stream in from outside are replaced by halfway bounce-back. At $k=0$ these
   are the five with $c_z=+1$ ($q=5,11,14,15,18$), each set equal to the post-collision population of its opposite ($6,12,13,16,17$)
   at the same node, and symmetrically at $k=N_z-1$. The end walls are stationary, so there is no moving-wall term. The Ekman layers that
   form at the end walls are a flow phenomenon, treated in the physics part of the page.
 
-### 8.8 One layer, periodic in $z$: D3Q19 is exactly D2Q9
+### 16.8 One layer, periodic in $z$: D3Q19 is exactly D2Q9
 
 With $N_z=1$ and a periodic span, streaming in $z$ takes a population from a node to itself. Define the **summed populations**
 $F_{(a,b)}=\sum_{c_z}f_{(a,b,c_z)}$: for each in-plane direction $(a,b)$, add the populations of all vectors with that in-plane part.
@@ -1181,7 +1181,7 @@ $F_{(a,b)}=\sum_{c_z}f_{(a,b,c_z)}$: for each in-plane direction $(a,b)$, add th
 D3Q19 has no vector with $c_x$, $c_y$ and $c_z$ all non-zero, so the diagonal in-plane directions have only the one $c_z=0$ member.
 These are exactly the D2Q9 weights, and $c_s^2=\tfrac13$ is the same.
 
-*Equilibrium.* With $u_z=0$ (which the symmetry $z\to-z$ of the problem preserves, starting from rest), the equilibrium of §4.2 does not depend on $c_z$:
+*Equilibrium.* With $u_z=0$ (which the symmetry $z\to-z$ of the problem preserves, starting from rest), the equilibrium of §12.2 does not depend on $c_z$:
 $c_{qk}u_k=c_xu_x+c_yu_y$. So $\sum_{c_z}f^{eq}_{(a,b,c_z)} = \left(\sum_{c_z}w\right)\rho\,[\dots]$ is the D2Q9 equilibrium.
 
 *Collision and streaming.* The BGK collision is linear in the populations, so summing over $c_z$ commutes with it:
@@ -1190,9 +1190,9 @@ $F^\star_{(a,b)}=F_{(a,b)}-\tfrac1\tau(F_{(a,b)}-F^{eq}_{(a,b)})$. Streaming of 
 *Boundaries.* Bounce-back and Bouzidi interpolation are linear, use only in-plane geometry (the cut fraction of a link $(a,b,c_z)$ with the cylinder is the same for all $c_z$ because the cylinder does not depend on $z$), and use the same weights summed. So they agree with the D2Q9 versions.
 
 Hence, for BGK, $N_z=1$ periodic D3Q19 *is* D2Q9. The project's test `test_nz1_equals_d2q9_bgk` compares the summed D3Q19 populations with an independent D2Q9 BGK code over 60 steps on a periodic $16\times16$ box, and asserts agreement to $10^{-13}$. That test has no body and no walls. The weights table above was also summed by computer (`c1.py`).
-The statement is for BGK only: the regularised and MRT operators of §6 act on all 19 populations and are not a priori the same as their D2Q9 versions.
+The statement is for BGK only: the regularised and MRT operators of §14 act on all 19 populations and are not a priori the same as their D2Q9 versions.
 
-## 9. What the two methods do differently on this problem
+## 17. What the two methods do differently on this problem
 
 The rows below describe the two codes as written (`fv3d.py`, `lbm3d.py`).
 
@@ -1200,10 +1200,10 @@ The rows below describe the two codes as written (`fv3d.py`, `lbm3d.py`).
 |---|---|---|
 | time step | explicit Adams–Bashforth momentum update, then a **pressure Poisson equation** solved by multigrid at every step | explicit, **local** collision, then neighbour shift; no linear system |
 | pressure | Lagrange multiplier enforcing $\nabla\cdot\mathbf u=0$ | equation of state, $p=\rho c_s^2$ |
-| divergence of $\mathbf u$ | zero up to the Poisson solver's residual | nonzero, of order $Ma^2U/L$ (§5.9): the fluid is weakly compressible |
+| divergence of $\mathbf u$ | zero up to the Poisson solver's residual | nonzero, of order $Ma^2U/L$ (§13.9): the fluid is weakly compressible |
 | signals | pressure acts instantaneously across the domain | pressure waves travel at $c_s$ |
-| body boundary | a mask $\chi$ (inner ramp, one cell wide) that pulls the velocity of the cells towards $\mathbf u_b$ (penalisation) | sharp surface, interpolated bounce-back at the cut points (§8.3) |
-| walls | ghost values (odd mirrors) | halfway bounce-back (§8.1) |
+| body boundary | a mask $\chi$ (inner ramp, one cell wide) that pulls the velocity of the cells towards $\mathbf u_b$ (penalisation) | sharp surface, interpolated bounce-back at the cut points (§16.3) |
+| walls | ghost values (odd mirrors) | halfway bounce-back (§16.1) |
 | advection | MUSCL reconstruction with the min-mod limiter | exact shift along the lattice vectors, no interpolation |
 | state per cell | $u,v,w$ and the pressure $q$ | 19 populations |
 | time step size | from the CFL and diffusion limits ($\propto h$ where advection dominates) | $\Delta t=u_{lb}h/U_b$, $\propto h$ |
