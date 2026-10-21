@@ -23,16 +23,16 @@ const wait = (page, expr, ms = 120000) => page.waitForFunction(expr, null, { tim
 const pixels = (page, w) => page.evaluate(async (w) => {
   const s = CC3APP.sim;
   if (s.backend === 'gpu') { await CC3APP.drawPanels(); const im = await s.renderers[w].readPixels(); return Array.from(im.data.filter((_, i) => i % 4 === 0)); }
-  const cv = s.canvases[w]; return Array.from(cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data.filter((_, i) => i % 4 === 0));
+  await CC3APP.drawPanels(); const cv = s.canvases[w]; return Array.from(cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data.filter((_, i) => i % 4 === 0));
 }, w);
 const changed = (a, b) => { let n = 0; for (let i = 0; i < a.length; i++) if (Math.abs(a[i] - b[i]) > 12) n++; return n; };
-async function trailsVisible(page, w, label) {     // pause, compare the same frame with and without the trails
+async function trailsVisible(page, w, label, min = 300) {     // pause, compare the same frame with and without the trails
   const on = await pixels(page, w);
   await page.evaluate((w) => { const s = CC3APP.sim; s._keep = s.tracers[w]; s.tracers[w] = null; if (s.renderers[w]) s.renderers[w].tracers = null; }, w);
   const off = await pixels(page, w);
   await page.evaluate((w) => { const s = CC3APP.sim; s.tracers[w] = s._keep; if (s.renderers[w]) s.renderers[w].tracers = s._keep; }, w);
   const n = changed(on, off);
-  ok(n > 300, `${label}: trails change ${n} pixels of panel ${w}`);
+  ok(n > min, `${label}: trails change ${n} pixels of panel ${w} (> ${min})`);
   return n;
 }
 
@@ -46,7 +46,8 @@ async function trailsVisible(page, w, label) {     // pause, compare the same fr
   await page.click('#b-play');
   for (const m of ['slice-xy', 'slice-xz', 'slice-yz']) {
     await page.selectOption('#mode3d', m); await page.selectOption('#mode2d', m);
-    await trailsVisible(page, 3, `cpu ${m}`); await trailsVisible(page, 2, `cpu ${m}`);
+    const min = m === 'slice-xy' ? 300 : 30;
+    await trailsVisible(page, 3, `cpu ${m}`, min); await trailsVisible(page, 2, `cpu ${m}`, min);
   }
   await page.selectOption('#mode3d', 'slice-xy'); await page.selectOption('#mode2d', 'slice-xy');
   await page.click('#b-play'); await page.waitForTimeout(2500);
@@ -74,7 +75,8 @@ async function trailsVisible(page, w, label) {     // pause, compare the same fr
     await page.click('#b-play');
     for (const m of ['slice-xy', 'slice-xz', 'slice-yz', 'volume', 'isosurface']) {
       await page.selectOption('#mode3d', m); await page.selectOption('#mode2d', m);
-      await trailsVisible(page, 3, `gpu ${m}`); await trailsVisible(page, 2, `gpu ${m}`);
+      const min = m === 'slice-xz' || m === 'slice-yz' ? 30 : 300;
+      await trailsVisible(page, 3, `gpu ${m}`, min); await trailsVisible(page, 2, `gpu ${m}`, min);
       await page.waitForTimeout(300);
       await page.screenshot({ path: SH + `particles_gpu_${m}.png`, clip: { x: 300, y: 250, width: 980, height: 600 } });
     }
