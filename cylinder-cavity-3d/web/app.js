@@ -99,9 +99,10 @@
       <div class="controls">
         <button class="btn primary" id="val-cpu">Self-test: JavaScript CPU solvers</button>
         <button class="btn primary" id="val-gpu">Self-test: WebGPU solvers</button>
+        <button class="btn primary" id="val-exact">Exact solution (spin-up)</button>
         <button class="btn" id="val-cross">Compare LBM and FV (2D case)</button>
         <span class="status" id="val-status"></span></div>
-      <div id="val-table"></div><div id="val-cross-table"></div>`;
+      <div id="val-table"></div><div id="val-exact-table"></div><div id="val-cross-table"></div>`;
   }
 
   function fillGridOptions() {
@@ -542,9 +543,10 @@
     $('b-play').addEventListener('click', () => { sim.playing = !sim.playing; $('b-play').textContent = sim.playing ? 'Pause' : 'Run'; });
     $('b-reset').addEventListener('click', () => { requestRebuild(); });
     $('b-png').addEventListener('click', savePng);
-    $('val-cpu').addEventListener('click', () => runValidation({ cpu: true, gpu: false, cross: false }));
-    $('val-gpu').addEventListener('click', () => runValidation({ cpu: false, gpu: true, cross: false }));
-    $('val-cross').addEventListener('click', () => runValidation({ cpu: false, gpu: false, cross: true }));
+    $('val-cpu').addEventListener('click', () => runValidation({ cpu: true }));
+    $('val-gpu').addEventListener('click', () => runValidation({ gpu: true }));
+    $('val-exact').addEventListener('click', () => runValidation({ exact: true }));
+    $('val-cross').addEventListener('click', () => runValidation({ cross: true }));
     window.addEventListener('resize', sizeCanvases);
   }
   function renderPendingPlots() {
@@ -588,7 +590,7 @@
   }
 
   // ------------------------------------------------------------------ validation
-  async function runBackendTest(method, backend) {
+  async function runBackendTest(method, backend, refOverride) {
     const made = [];
     const factory = async (arg) => {
       const p = arg && arg.dt !== undefined ? arg : CC3[method].makeParams(arg);
@@ -596,7 +598,7 @@
       made.push(s); return s;
     };
     try {
-      const rows = await CC3[method].selftest(factory, globalThis.REF[method]);
+      const rows = await CC3[method].selftest(factory, refOverride || globalThis.REF[method]);
       return rows.map((r) => Object.assign({ method, backend }, r));
     } finally { for (const s of made) { try { s.destroy(); } catch (e) { /* ignore */ } } }
   }
@@ -605,8 +607,53 @@
     const body = rows.map((r) => `<tr><td>${r.method.toUpperCase()} ${r.backend}</td><td>${esc(r.name)}</td><td>${fmtG(r.expected, 8)}</td>` +
       `<td>${fmtG(r.got, 8)}</td><td>${fmtE(r.reldiff, 1)}</td><td>${fmtE(r.tol, 0)}</td>` +
       `<td class="${r.pass ? 'pass' : 'fail'}">${r.pass ? 'pass' : 'FAIL'}</td></tr>`).join('');
-    return `<table class="data"><tr><th>solver</th><th>check</th><th>expected (numpy)</th><th>got</th><th>rel. diff</th><th>tolerance</th><th></th></tr>${body}</table>
+    return `<div style="overflow-x:auto"><table class="data"><tr><th>solver</th><th>check</th><th>expected (numpy)</th><th>got</th><th>rel. diff</th><th>tolerance</th><th></th></tr>${body}</table></div>
       <p class="caption">Tolerances are the defaults of each method module (<code>selftest</code> in lbm_cpu.js and fv_cpu.js), not set by this page.</p>`;
+  }
+  // ---- exact solution: impulsively started centred spinning cylinder (python/selftest_exact.py), N=64, Nz=1
+  const parityTolCache = {};
+  async function parityTol(method, backend) {       // the module's own default tolerance, read from one small self-test row
+    const key = method + backend;
+    if (parityTolCache[key] === undefined) {
+      const rows = await runBackendTest(method, backend, { cases: [globalThis.REF[method].cases[0]] });
+      parityTolCache[key] = rows[0].tol;
+    }
+    return parityTolCache[key];
+  }
+  async function exactCase(method, backend) {
+    const X = globalThis.REF.exact, np = X[method], p = CC3[method].makeParams(X.case);
+    const S = await makeSolver(method, p, backend);
+    try {
+      let left = np.nstep;                             // the numpy run's number of steps (t >= t_end)
+      while (left > 0) { const n = Math.min(left, 100); await S.step(n); left -= n; await sleep(0); }
+      if (backend === 'gpu') await sim.device.queue.onSubmittedWorkDone();
+      const U = await S.readVelocity(), N = p.N, h = p.h;
+      const far = new Uint8Array(N * N);                // cells more than gap*h from the surface (ro = 0: centre of the box)
+      for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) far[j * N + i] = Math.hypot((i + 0.5) * h - 0.5, (j + 0.5) * h - 0.5) > p.R + X.gap_cells * h ? 1 : 0;
+      const got = { torque: await getTorque(S), E_far: CC3.diag.energy(U, p.Nz, N, h, p.Lz, far) };
+      const tol = await parityTol(method, backend);
+      const rel = (a, b) => Math.abs(a - b) / Math.abs(b);
+      const rows = ['torque', 'E_far'].map((q) => ({ q, got: got[q], numpy: np[q], exact: X.exact[q], parity: rel(got[q], np[q]),
+        errExact: rel(got[q], X.exact[q]), numpyErrExact: rel(np[q], X.exact[q]), pass: rel(got[q], np[q]) <= tol }));
+      return { method, backend, t: S.t, steps: S.nstep, tEnd: X.t_end, tol, rows, parityPass: rows.every((r) => r.pass) };
+    } finally { S.destroy(); }
+  }
+  function exactTable(list) {
+    const X = globalThis.REF.exact;
+    const body = list.map((e) => e.rows.map((r, i) => `<tr><td>${i ? '' : e.method.toUpperCase() + ' ' + e.backend}</td>` +
+      `<td>${r.q === 'torque' ? 'torque on the cylinder' : 'kinetic energy, far cells'}</td><td>${fmtG(r.got, 6)}</td><td>${fmtG(r.numpy, 6)}</td>` +
+      `<td>${fmtG(r.exact, 6)}</td><td>${fmtE(r.parity, 1)}</td><td>${fmtE(e.tol, 0)}</td><td class="${r.pass ? 'pass' : 'fail'}">${r.pass ? 'pass' : 'FAIL'}</td>` +
+      `<td>${fmtG(100 * r.errExact, 3)} %</td><td>${fmtG(100 * r.numpyErrExact, 3)} %</td></tr>`).join('')).join('');
+    return `<h3>Exact solution: impulsively started spinning cylinder</h3>
+      <div style="overflow-x:auto"><table class="data"><tr><th>solver</th><th>quantity</th><th>solver</th><th>numpy</th><th>exact</th><th>solver vs numpy</th><th>tolerance</th><th></th>
+      <th>solver vs exact</th><th>numpy vs exact</th></tr>${body}</table></div>
+      <p class="caption">Centred cylinder (r<sub>o</sub> = 0), N = ${X.case.N}, N<sub>z</sub> = ${X.case.Nz}, Re = ${X.case.Re}, U<sub>s</sub> = ${X.case.Us},
+      started from rest and run for the same number of steps as the numpy reference (t = ${fmtG(list[0].t, 6)}, t<sub>end</sub> = ${X.t_end}).
+      The exact value is the azimuthal solution of the full Navier–Stokes equations, computed independently of both solvers (notes/verify/annulus.py;
+      the diffusion length at t = ${X.t_end} is far from the box walls). The kinetic energy is summed over cells whose centre is more than
+      ${X.gap_cells} h from the cylinder surface. <b>Solver vs numpy</b> is the parity check (pass/fail at the module's tolerance).
+      <b>Solver vs exact</b> is the measured discretisation error, shown without a pass/fail; the numpy column next to it is the error the
+      reference code itself has, i.e. the level to expect.</p>`;
   }
   async function crossCase() {
     const N = sim.backend === 'gpu' ? 64 : 32, T = 2;
@@ -629,16 +676,16 @@
     const row = (name, x, y, d) => `<tr><td>${name}</td><td>${fmtG(x, d)}</td><td>${fmtG(y, d)}</td><td>${fmtE(Math.abs(x - y), 1)}</td>` +
       `<td>${fmtE(Math.abs(x - y) / Math.max(0.5 * Math.abs(x + y), 1e-300), 1)}</td></tr>`;
     return `<h3>LBM and FV, same 2D case (measured values)</h3>
-      <table class="data"><tr><th>quantity</th><th>LBM</th><th>FV</th><th>|LBM − FV|</th><th>|LBM − FV| / mean of the two</th></tr>
+      <div style="overflow-x:auto"><table class="data"><tr><th>quantity</th><th>LBM</th><th>FV</th><th>|LBM − FV|</th><th>|LBM − FV| / mean of the two</th></tr>
       ${row('time reached t', a.t, b.t, 5)}${row('kinetic energy E (fluid only)', a.E, b.E, 6)}${row('torque on cylinder', a.torque, b.torque, 6)}
-      <tr><td>time step Δt</td><td>${fmtE(a.dt, 2)}</td><td>${fmtE(b.dt, 2)}</td><td></td><td></td></tr></table>
+      <tr><td>time step Δt</td><td>${fmtE(a.dt, 2)}</td><td>${fmtE(b.dt, 2)}</td><td></td><td></td></tr></table></div>
       <p class="caption">N = ${c.inp.N}, N<sub>z</sub> = 1, Re ${c.inp.Re}, U<sub>s</sub> = ${c.inp.Us}, U<sub>o</sub> = ${c.inp.Uo},
       r<sub>o</sub> = ${c.inp.ro}, R = ${c.inp.R}, from rest to t ≈ ${c.T} (each solver stops at its first step at or after t = ${c.T}, so the
       reached times differ by less than one Δt). These are the measured values of the two solvers at this one case and grid; the page makes no statement about which
       is closer to the true solution and no pass/fail is claimed.</p>`;
   }
   async function runValidation(what) {
-    const status = $('val-status'), btns = ['val-cpu', 'val-gpu', 'val-cross'].map($);
+    const status = $('val-status'), btns = ['val-cpu', 'val-gpu', 'val-exact', 'val-cross'].map($);
     btns.forEach((b) => { b.disabled = true; });
     const wasBusy = sim.busy;
     while (sim.busy) await sleep(20);                      // let the frame loop finish its step
@@ -657,13 +704,21 @@
         result.rows.push(...await runBackendTest(m, b));
         $('val-table').innerHTML = rowsTable(result.rows);
       }
+      if (what.exact) {
+        result.exact = [];
+        for (const b of (sim.backend === 'gpu' ? ['cpu', 'gpu'] : ['cpu'])) for (const m of ['lbm', 'fv']) {
+          status.textContent = `exact solution ${m.toUpperCase()} ${b}…`; await sleep(20);
+          result.exact.push(await exactCase(m, b));
+          $('val-exact-table').innerHTML = exactTable(result.exact);
+        }
+      }
       if (what.cross) {
         status.textContent = 'LBM vs FV…'; await sleep(20);
         result.cross = await crossCase();
         $('val-cross-table').innerHTML = crossTable(result.cross);
       }
-      result.ok = result.rows.every((r) => r.pass);
-      status.textContent = result.rows.length ? (result.ok ? `done: ${result.rows.length} checks, all passed` : 'done: a check FAILED') : 'done';
+      result.ok = result.rows.every((r) => r.pass) && (!result.exact || result.exact.every((e) => e.parityPass));
+      status.textContent = (result.rows.length || result.exact) ? (result.ok ? `done: ${result.rows.length + (result.exact ? 2 * result.exact.length : 0)} checks, all passed` : 'done: a check FAILED') : 'done';
     } catch (e) {
       result.ok = false; result.error = String(e && e.stack || e);
       status.textContent = 'error: ' + (e.message || e);
@@ -675,7 +730,7 @@
     return result;
   }
   async function runAllSelfTests() {
-    const r1 = await runValidation({ cpu: true, gpu: sim.backend === 'gpu', cross: true });
+    const r1 = await runValidation({ cpu: true, gpu: sim.backend === 'gpu', exact: true, cross: true });
     window.SELFTEST_RESULT = r1;
   }
 

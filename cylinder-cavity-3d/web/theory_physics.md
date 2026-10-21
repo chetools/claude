@@ -32,9 +32,9 @@ time by $L/U_{\mathrm{ref}}$. As on the 2D page the **cylinder Reynolds number**
 
 $$Re = \frac{U_{\mathrm{ref}}\, 2R}{\nu},$$
 
-and the code computes $\nu = U_{\mathrm{ref}}\,2R/Re$ from it. The 2D page writes the momentum equation with
-$1/Re_L$ in front of the viscous term, where $Re_L = U_{\mathrm{ref}}L/\nu = Re/(2R)$ is the Reynolds number built on the box
-side. With $L = 1$ and $U_{\mathrm{ref}} = 1$ that coefficient is simply $\nu$, and this page writes $\nu$.
+and the code computes $\nu = U_{\mathrm{ref}}\,2R/Re$ from it. With $L = 1$ and $U_{\mathrm{ref}} = 1$ the coefficient
+of the viscous term in the dimensionless momentum equation is simply $\nu$, and this page writes $\nu$. (The Reynolds number built on the box
+side would be $U_{\mathrm{ref}}L/\nu = Re/(2R)$; the page's controls and every number below use the cylinder Reynolds number $Re$.)
 
 *Why the ratio $U\cdot 2R/\nu$ matters.* A fluid element moving at speed $U$ past a body of size $2R$ has
 inertial acceleration of order $U^2/(2R)$. The viscous force per unit mass on the same element is of order
@@ -180,7 +180,7 @@ $$\omega_x = \partial_y w - \partial_z v,\qquad
 Here $\varepsilon_{ijk}$ is $+1$ for $(ijk) = (123), (231), (312)$, $-1$ for the reverse orders and $0$ if two
 indices are equal. In 2D only $\omega_z = \partial_x v - \partial_y u$ exists, the quantity plotted on the 2D page.
 It is a vector because "spin" has an axis: $\omega_z$ is spin about the $z$-axis, $\omega_x$ about the $x$-axis.
-The page's `vorticity` function evaluates these nine derivatives with central differences.
+The page's `vorticity` function evaluates six of the nine velocity derivatives $\partial_ju_i$ with central differences (the Q-criterion of section 4 uses all nine).
 
 ### 3.2 Geometric meaning: twice the local angular velocity
 
@@ -203,8 +203,8 @@ how much the fluid goes round a small loop whose normal is $\mathbf n$.
 *Vorticity is not the same as swirling.* In a simple shear $u = \gamma y$, $v = w = 0$ the streamlines are straight
 lines, yet $\omega_z = -\gamma \neq 0$: the paddle wheel is turned because its upper blade sees faster fluid than its
 lower one. Conversely, in the irrotational vortex $v_\theta = \Gamma/(2\pi r)$ the fluid goes round and round yet
-$\omega_z = 0$ for $r > 0$: a wheel carried round such a vortex keeps its orientation fixed relative to the
-stars, because the faster inner side compensates the longer outer path. Section 4 builds a criterion that
+$\omega_z = 0$ for $r > 0$: a wheel carried round such a vortex does not turn. The rotation it gets from going round the centre, $v_\theta/r$, is
+cancelled by the shear, $dv_\theta/dr = -v_\theta/r$, so the mean rotation rate $\tfrac12(v_\theta/r + dv_\theta/dr)$ is zero. Section 4 builds a criterion that
 separates real swirling from shear.
 
 ### 3.3 The vorticity equation, step by step
@@ -322,7 +322,7 @@ by which turbulence makes small, intense vortex filaments.
 
 Define, for a box $V$ with no-slip walls (or periodic directions), the total kinetic energy and enstrophy
 $$E_V = \int_V \tfrac12|\mathbf u|^2\,dV,\qquad Z_V = \int_V \tfrac12|\boldsymbol\omega|^2\,dV .$$
-The page plots these per unit span ($E = E_V/L_z$, $Z = Z_V/L_z$, section 8.3).
+The page plots them per unit span and over the **fluid only**, the cells outside the cylinder ($E = E_V/L_z$, $Z = Z_V/L_z$ with the body excluded, section 8.3).
 Enstrophy is the energy-like integral of the squared spin. In wavenumber space it weights the scales by $k^2$: for a
 divergence-free field the Fourier components satisfy $\hat{\boldsymbol\omega} = i\mathbf k\times\hat{\mathbf u}$ and
 $|\mathbf k\times\hat{\mathbf u}| = k|\hat{\mathbf u}|$, so in a periodic box
@@ -341,8 +341,7 @@ The surface term is zero because $\mathbf u = 0$ on a no-slip wall. Therefore
 $$\frac{dE_V}{dt} = -\nu\int_V|\boldsymbol\omega|^2\,dV = -2\nu Z_V .$$
 
 In words: in a closed box with stationary no-slip walls and nothing driving it, **kinetic energy decays at the rate
-$2\nu$ times the enstrophy**. Dissipation is large where spin is large. With the moving cylinder as a driver a source is added
-(section 8.3). In the limit $\nu\to0$ at fixed enstrophy the dissipation vanishes, which is why the
+$2\nu$ times the enstrophy**. Dissipation is large where spin is large. With the moving cylinder as a driver the budget changes (section 8.3), and the identity just derived no longer holds in this form. In the limit $\nu\to0$ at fixed enstrophy the dissipation vanishes, which is why the
 behaviour of enstrophy decides whether energy can be dissipated at all.
 
 **Enstrophy budget.** Take the dot product of the vorticity equation with $\omega_i$:
@@ -377,8 +376,8 @@ conserved**. Two consequences follow directly.
    tends to zero as $\nu\to0$: 2D flows cannot dissipate energy efficiently at high $Re$. In 3D the stretching
    term allows $Z_V$ to grow as the flow develops fine filaments, which is how a turbulent flow can dissipate at a
    rate that does not vanish as $\nu\to0$ (Kolmogorov's 1941 picture).
-2. In a box with no-slip walls the wall-flux term is a third source: walls inject enstrophy even in 2D
-   (Clercx & van Heijst 2017), so 2D flow in a bounded box is not literally enstrophy-conserving. The
+2. In a box with no-slip walls the wall-flux term is a third source: walls generate vorticity even in 2D
+   and enhance the dissipation of confined 2D flows (Clercx & van Heijst 2017), so 2D flow in a bounded box is not literally enstrophy-conserving. The
    dual-cascade argument below is exact only for periodic or free-slip domains, and we use it as the guide for the
    interior.
 
@@ -422,7 +421,7 @@ and the dissipation scale. At the $Re$ values and grid sizes of this page there 
 by homogeneous forcing. They are the theoretical background to the comparison of 2D and 3D, not something the page has
 measured. Where the span is much shorter than the horizontal scales of the flow, a 3D layer can behave 2D-like and
 transfer energy inversely, with a crossover as the layer thickens (Smith, Chasnov & Waleffe 1996), which is one more reason to treat $L_z$ as a parameter.
-What the simulations show: TODO(measured: 2D and 3D spectral slopes and whether any inertial range exists at the preset $Re$ and $N$).
+What the simulations show: TODO(measured: horizontal $E(k)$ of the 2D and 3D runs at the same $Re$, late-time average over the last 1 time unit, N = 64, N_z = 32 (not in results_final.md): the fitted slope and the $k$ range of the fit, or the statement that no power-law range exists).
 
 ## 4. Strain, rotation, and the Q-criterion
 
@@ -437,8 +436,7 @@ S_{ij} = \tfrac12\left(\partial_j u_i + \partial_i u_j\right),\qquad
 \Omega_{ij} = \tfrac12\left(\partial_j u_i - \partial_i u_j\right).$$
 
 *Rotation.* The antisymmetric part is a rigid rotation of the neighbourhood: $\Omega_{ij}\,\delta x_j = \tfrac12(\boldsymbol\omega\times\delta\mathbf x)_i$.
-(Proof: $(\boldsymbol\omega\times\delta\mathbf x)_i = \varepsilon_{ikl}\,\omega_k\,\delta x_l = \varepsilon_{ikl}\varepsilon_{kmn}\,\partial_m u_n\,\delta x_l
-= \delta x_l(\partial_l u_i - \partial_i u_l) = 2\,\Omega_{il}\,\delta x_l$.) It turns the neighbourhood
+(Proof: $(\boldsymbol\omega\times\delta\mathbf x)_i = \varepsilon_{ikl}\,\omega_k\,\delta x_l = \varepsilon_{ikl}\varepsilon_{kmn}\,\partial_m u_n\,\delta x_l = \delta x_l(\partial_l u_i - \partial_i u_l) = 2\,\Omega_{il}\,\delta x_l$.) It turns the neighbourhood
 with angular velocity $\tfrac12\boldsymbol\omega$ and changes no lengths.
 
 *Strain.* The symmetric part changes lengths and angles. It has three real eigenvalues $\lambda_1\ge\lambda_2\ge\lambda_3$
@@ -485,9 +483,9 @@ part of it that strain accounts for.
   negative, for ideal shear. Q is negative in the cylinder boundary layer below because the flow is also curved.)
 - *Swirl with $v_\theta(r)$ only* (the case of the spinning cylinder): with $\omega_z = v_\theta' + v_\theta/r$ and
   $S_{r\theta} = \tfrac12(v_\theta' - v_\theta/r)$, $Q = \tfrac14\omega_z^2 - S_{r\theta}^2 = \dfrac{v_\theta}{r}\,\dfrac{dv_\theta}{dr}$.
-  Where the swirl speed *increases* outwards ($v_\theta' > 0$, e.g. $v_\theta=\Omega r$ inside the cylinder), $Q>0$. Where
-  it *decays* outwards ($v_\theta'<0$), as in the boundary layer on the surface of a spinning cylinder and in the
-  irrotational vortex, $Q<0$.
+  Since $Q = \tfrac{1}{2r}\,d(v_\theta^2)/dr$, $Q>0$ where the swirl *speed* $|v_\theta|$ increases outwards (e.g. $v_\theta=\Omega r$ inside the cylinder), and $Q<0$ where
+  it *decays* outwards, as in the boundary layer on the surface of a spinning cylinder and in the
+  irrotational vortex ($Q = -(\Gamma/2\pi r^2)^2$).
 
 **Relation to pressure.** Taking the divergence of the momentum equation gave, in section 2.2,
 $\nabla^2p = -\partial_iu_j\,\partial_ju_i = -\mathrm{tr}(\mathsf A^2)$. Because $\mathrm{tr}(\mathsf S\mathsf\Omega) = 0$ (symmetric times antisymmetric),
@@ -504,7 +502,7 @@ vortex core, and proposed the $\lambda_2$ criterion instead. $Q$ remains the mor
 simpler, indicator.
 
 *Frame.* $Q$ is unchanged by a uniform translation but not by a rotating frame (which adds to the vorticity).
-The page evaluates it in the lab frame, in which the walls are at rest.
+The page evaluates it in the lab frame, in which the walls are at rest. (The identities of this section, including $\nabla^2p=2Q$, were checked symbolically for a general velocity field.)
 
 ### 4.3 Why Q is better than $|\boldsymbol\omega|$ alone, and its relevance to this flow
 
@@ -513,15 +511,14 @@ The page evaluates it in the lab frame, in which the walls are at rest.
   A plot of $|\boldsymbol\omega|$ is dominated by this layer and the walls' boundary layers, which hides the vortices.
 - **Shed and corner vortices** have $Q>0$ cores, which the Q map picks out as compact blobs separated from the
   shear layers that feed them.
-- **The penalised cylinder body** rotates rigidly, so its interior has $Q = \Omega^2>0$ and shows up as a large
+- **The penalised cylinder body**, when it spins, rotates rigidly, so its interior has $Q = \Omega^2>0$ and shows up as a large
   $Q>0$ disc. It is not a flow vortex; ignore it when reading the map.
 - **3D structure.** A vortex tube can point in any direction. For instance, rolls aligned with the $x$ or $y$ axis carry
   $\omega_x$ or $\omega_y$, which a 2D-style plot of $\omega_z$ does not display. $Q$ uses all nine gradients,
   so the tube is identified whatever its orientation. An isosurface of $Q$ in a periodic box with a 3D instability reveals tubes
   whose position varies along $z$, the visible signature of a spanwise instability. In the 2D baseline the isosurface
   is a set of straight columns parallel to $z$.
-- **Threshold.** $Q$ has dimension 1/time$^2$; its useful iso-level is a fraction of the data's own maximum or
-  statistics, not a fixed number.
+- **Scale.** $Q$ has dimension 1/time$^2$; there is no universal threshold. The page scales the colour range of $Q$ to three times the root-mean-square of $Q$ in the data, so the picture adapts to the flow.
 
 **Discretisation.** The page computes gradients with second-order central differences at cell centres; at a wall
 the missing neighbour is the odd mirror of the first cell, which is exact for a linear near-wall velocity
@@ -535,7 +532,7 @@ values of $Q$ within one or two cells of a wall or of the cylinder surface shoul
 Imagine a ball at the bottom of a bowl and another balanced on top of an upturned bowl. Both are at rest, both are solutions of the
 equations of motion; the difference is the response to a nudge. The 2D flow of section 2.3 is a "rest state" in
 the same sense: a perfectly spanwise-uniform flow stays so forever. Real simulations carry a small
-disturbance, from round-off or a deliberately added seed (TODO(measured: how the seed is introduced and its amplitude)). The question is whether it dies out or grows.
+disturbance, from round-off or a deliberately added seed (the page adds one, constructed in section 5.4, of amplitude $10^{-3}U_{\mathrm{ref}}$ by default). The question is whether it dies out or grows.
 
 Write the flow as the 2D base flow $\mathbf U(x,y,t)$ plus a small perturbation $\epsilon\,\mathbf u'$, insert in the
 3D equations, subtract the equations satisfied by $\mathbf U$ and **drop terms of order $\epsilon^2$**:
@@ -562,7 +559,7 @@ boundary layers grow; with an orbit it is time-periodic at best, and at high $Re
 *finite-time* quantity read off from the simulation, not an eigenvalue. Once the perturbation is no longer small the
 neglected $\epsilon^2$ terms couple the modes, and growth **saturates** (section 8.1).
 The span $L_z$ allows only $k_z = 2\pi m/L_z$, so the onset found in the periodic simulation is the first
-unstable one among the *allowed* wavelengths, which cannot be below the true threshold of the infinite cylinder. The
+unstable one among the *allowed* wavelengths, which cannot be below the threshold of an infinitely long span with the same cross-section (that span contains every allowed mode and more). The
 2D baseline ($N_z=1$) contains only $m = 0$ and cannot show the instability at all.
 
 ### 5.2 The centrifugal (Rayleigh) criterion
@@ -591,8 +588,8 @@ $$F_r = -\frac{\Gamma_2^2}{r_2^3} + \frac{\Gamma_1^2}{r_2^3} = -\frac{\Gamma_2^2
   $\xi\propto e^{\sigma t}$ with $\sigma = \sqrt{-N^2}$: the displaced ring is flung farther out, and a ring pushed inwards likewise
   is driven inwards.
 
-This is **Rayleigh's criterion** (Rayleigh 1917): an inviscid swirling flow is unstable to axisymmetric disturbances
-if and only if $d\Gamma^2/dr<0$ somewhere. It is the rotating analogue of a heavy fluid on top of a light one, with angular momentum
+This is **Rayleigh's criterion** (Rayleigh 1917; proof for general axisymmetric disturbances in Drazin & Reid 2004; the ring argument above is the mechanism, not the proof): an inviscid swirling flow is stable to axisymmetric disturbances
+if $\Gamma^2$ increases outwards everywhere, and unstable if $d\Gamma^2/dr<0$ somewhere. It is the rotating analogue of a heavy fluid on top of a light one, with angular momentum
 playing the role of density and $\Gamma^2/r^3$ that of gravity. Since $\omega_z = r^{-1}d\Gamma/dr$ for
 this flow, the condition $\Gamma\,d\Gamma/dr<0$ is the same as
 
@@ -608,30 +605,78 @@ rate $\sigma\sim\sqrt{-N^2}$ must beat the viscous decay $\nu k_z^2$ at the unst
 group $\Omega d^2/\nu$ (with $d$ the width of the unstable region) must exceed a constant. The constant is a property
 of the geometry. Here it is found by simulation, not by this argument.
 
-### 5.3 Application to the flow in the box
+### 5.3 Application to the flow in the box, and what the page measured
+
+**Theory: which mechanisms can act.**
 
 - **Spinning cylinder.** The cylinder drags fluid round and the stationary box wall brakes it, so the circulation $\Gamma=rv_\theta$
-  falls from $\Omega R^2$ at the cylinder surface towards zero at the box walls. The vorticity outside the body is thus of the sign opposite
-  to the circulation, satisfying Rayleigh's condition: this is the geometry of Taylor–Couette flow with the inner
+  falls from $\Omega R^2$ at the cylinder surface towards zero at the box walls. $d\Gamma/dr<0$ with $\Gamma>0$ means $\omega_z<0$: the vorticity outside the body has the sign opposite
+  to the circulation, which satisfies Rayleigh's condition. This is the geometry of Taylor–Couette flow with the inner
   cylinder rotating and the outer one at rest, the textbook centrifugally unstable case (Taylor 1923). The box is square and the cylinder
-  off-centre in the orbit cases, so the criterion is an *indication*, not a threshold: the actual one is non-axisymmetric.
-  Bayly (1988) extended the idea to inviscid 2D flows with closed non-circular streamlines.
-- **Curved streamlines near walls and corners.** A fluid layer that follows a concave wall or a corner
-  eddy is also centrifugally unstable: the boundary-layer version is the Görtler instability (Görtler 1940; Saric 1994). The
-  lid-driven cavity is the closest classical analogue of a closed box with a moving boundary, and its steady 3D instability
-  with spanwise-periodic vortices attached to the recirculating flow is well documented (Albensoeder, Kuhlmann & Rath 2001).
-- **Shed vortices.** An isolated vortex with the vorticity of one sign throughout is centrifugally stable ($\Gamma\omega_z>0$). A vortex
-  surrounded by a sheath of opposite-signed vorticity, which is how a boundary-layer vortex is shed, can satisfy the condition. Separately, vortices in a straining flow are subject to
-  the **elliptic instability**, a resonance of the vortex with its strain field (Waleffe 1990; reviewed by Kerswell 2002).
-- **Wakes for comparison.** For a *fixed* cylinder in a uniform stream the wake first becomes 3D at
-  $Re \approx 190$ (based on the diameter, as here) by a mode with spanwise wavelength of about four diameters
-  (Barkley & Henderson 1996; Williamson 1996). That flow is different from this one, with no confinement and no spin, and the numbers
-  do not transfer; they are quoted only to show that onset values are specific results, not general constants.
+  is off-centre in the orbit cases, so the criterion is an *indication*, not a threshold: the actual instability is not axisymmetric.
+  Bayly (1988) extended the centrifugal idea to inviscid 2D flows with closed non-circular streamlines.
+- **Curved streamlines in a closed cavity.** The lid-driven cavity is the classical closed box with a moving boundary. Albensoeder, Kuhlmann & Rath (2001) analyse its
+  three-dimensional *centrifugal* instabilities; in their analysis the modes sit on the strong eddy created by the moving lid. It is an analogy for the mechanism, not a result for this geometry.
+- **Other mechanisms** (not derived and not tested on this page): vortices in a straining flow can be unstable by the **elliptic instability** (Waleffe 1990), and a boundary layer along a concave wall by the Görtler instability (Görtler 1940; Saric 1994).
 
-**What the page determines.** The theory above says which mechanisms can be present and what controls their
-strength. It does not give an onset $Re$ for this geometry; the page determines that numerically:
-TODO(measured: onset Re for the periodic span, spin-only case; onset Re for the orbit case; the spanwise mode number $m$ and
-wavelength that first grows; growth rate $\sigma$ as a function of $Re$; dependence of the onset on $L_z$).
+**What the page measured.** The theory above does not give an onset $Re$ for this geometry. The page determines it numerically. The runs below
+are all lattice-Boltzmann (regularised collision), $N=64$, $N_z=32$ (so $L_z=0.5$ unless stated), periodic span, $R=0.1$ (cylinder diameter $0.2$), $r_o=0.2$,
+seed amplitude $10^{-3}$; $U_s=1$, so $U_{\mathrm{ref}}=1$ and times are in units of $L/U_{\mathrm{ref}}$. The growth rate $\sigma$ is the slope of $\ln E_{3d}$ divided by 2, fitted while $10^{-7}<E_{3d}/E<10^{-3}$ for $t\ge1$
+(source: `notes/results_final.md`). "Late" quantities are means over the second half of each run ($t=10$ to $20$; $t=30$ to $60$ for the runs to $t=60$).
+
+| case | $Re$ | $\sigma$ | late $E_{3d}/E$ | dominant $k_z$ (wavelength) |
+|---|---|---|---|---|
+| spin only | 40 | $-0.30$ (fit over $t\ge20$ of a run to $t=60$): seed decays | $7\times10^{-17}$ (late mean) | 1 (0.5) |
+| spin only | 50 | $+0.014$ (run to $t=60$): very slow growth, still tiny at $t=60$ | $1.9\times10^{-7}$ (late mean) | 1 (0.5) |
+| spin only | 60 | $+0.225$ | 0.057 | 1 (0.5) |
+| spin only | 75 | $+0.426$ | 0.046 | 1 (0.5) |
+| spin only | 100 | $+0.610$ | 0.135 | 1 (0.5) |
+| spin only | 150 | $+0.869$ | 0.095 | 2 (0.25) |
+| spin + orbit ($U_o=1$) | 25 | $-0.74$: seed decays | $1.2\times10^{-16}$ | 1 (0.5) |
+| spin + orbit ($U_o=1$) | 800 | $+1.70$ | 0.27 | 1 (0.5) |
+| spin only, $L_z=1$ ($N_z=64$) | 100 | $+0.543$ | 0.14 | 2 (0.5) |
+
+What these numbers say, and what they do not.
+
+- **Spin only: the onset lies between $Re=40$ and $Re=50$ on this grid and span.** The seed decays at $Re=40$ and grows at $Re\ge50$. At $Re=50$ the growth is so slow ($\sigma=0.014$, still $E_{3d}/E\approx2\times10^{-7}$ at the end of a run to $t=60$) that the sign rests on a long run; the bracket 40 to 50 is
+  not refined further, and it was not tested against grid refinement or span.
+- **Spin + orbit:** the seed decays at $Re=25$ and the flow is strongly three-dimensional at $Re=800$. Only these two Reynolds numbers were run in final form, so **no onset bracket exists** for the orbit case.
+- **Spanwise wavelength.** At $Re=100$ with $L_z=0.5$ the dominant late mode is $k_z=1$ (wavelength 0.5, 2.5 cylinder diameters). With the span doubled ($L_z=1$, $k_z=2$) the dominant wavelength is again 0.5, with a similar growth rate
+  (0.54 against 0.61) and the same saturated $E_{3d}/E$ (0.14). At this $Re$ the default span therefore does not force the wavelength. At $Re=150$ the dominant mode at $L_z=0.5$ is $k_z=2$ (wavelength 0.25); the span-doubling check was made only at $Re=100$.
+- **Growth rate rises with $Re$** in the table, from $0.23$ at $Re=60$ to $0.87$ at $Re=150$ (spin only). The saturated $E_{3d}/E$ does not: it is 0.135 at $Re=100$ and 0.095 at $Re=150$.
+- **A second method.** The same spin-only case at $Re=100$ with the finite-volume solver (inner-ramp mask, $N=64$, $N_z=32$) gives $\sigma=0.48$ (lattice-Boltzmann $0.61$) and late $E_{3d}/E=0.104$ ($0.135$). The two methods agree on the existence and rough size of the growth, not on its value to better than about 25 %.
+
+Not measured, and so not stated: the onset $Re$ for the orbit case; the dependence of the spin-only onset on $L_z$ and on $N$ (TODO(measured: growth rate at Re 40, 50 and 60 for $L_z=1$ and for N = 32 or 128, to see whether the 40 to 50 bracket moves)).
+
+### 5.4 The deliberate seed
+
+Round-off alone would start a perturbation near $10^{-16}$ and the run would be too short to see it grow. The page therefore adds a small known disturbance at $t=0$. It must (i) be divergence-free, because otherwise the first projection step
+would remove an unpredictable part of it, (ii) vanish on the walls, so that it respects no-slip, and (iii) have a few spanwise wavelengths, never the shortest one the grid can hold.
+
+**Construction.** Use a stream function. For any scalar $\psi$ the field $\mathbf u=\nabla\times(\psi\,\hat{\mathbf y})$ has components
+
+$$u=-\partial_z\psi,\qquad v=0,\qquad w=\partial_x\psi .$$
+
+*It is divergence-free:* $\nabla\cdot\mathbf u=\partial_xu+\partial_yv+\partial_zw=-\partial_x\partial_z\psi+0+\partial_z\partial_x\psi=0$, because mixed derivatives commute. (Geometrically, $\psi$ labels streamlines in each $(x,z)$ plane, and flow that follows
+streamlines of a plane neither creates nor destroys volume.) The page takes
+
+$$\psi=a\,F(x,y)\,W(z)\,S(z),\qquad F=\sin^2(\pi x)\sin(\pi y),\qquad S(z)=\sum_{m=1}^{M}\frac{\sin(k_mz+m)}{k_m},\quad k_m=\frac{2\pi m}{L_z},$$
+
+with $a=\text{seed}\times U_{\mathrm{ref}}$ ($10^{-3}U_{\mathrm{ref}}$ by default), $M=\min(4,\,N_z\,//\,4)$ (no seed if $N_z<4$), and $W=1$ for the periodic span or $W=\sin^2(\pi z/L_z)$ with end walls. Then
+
+$$u=-a\,F\,(W'S+W S'),\qquad w=a\,\partial_xF\;W S,\qquad \partial_xF=\pi\sin(2\pi x)\sin(\pi y),\quad S'=\sum_m\cos(k_mz+m).$$
+
+*It vanishes on every wall.* At $x=0,1$: $F=0$ (from $\sin^2\pi x$) and $\partial_xF=0$ (from $\sin2\pi x$), so $u=w=0$. At $y=0,1$: $\sin\pi y=0$ kills both $F$ and $\partial_xF$. With end walls,
+$W=\sin^2(\pi z/L_z)$ and $W'$ both vanish at $z=0,L_z$, so $u=w=0$ there too. (These statements, the divergence and the periodicity were verified symbolically for $M=3$.)
+
+*Periodic span:* $k_mL_z=2\pi m$, so $S$ and $S'$ repeat after $L_z$, and the seed is periodic. Since $\int_0^{L_z}\cos(k_mz+m)\,dz=\int_0^{L_z}\sin(k_mz+m)\,dz=0$, the seed has **no $z$-average**: it contains only $m\ge1$ modes
+and adds nothing to the 2D part of the flow.
+
+*Why these choices.* The factor $1/k_m$ makes the $u$ part of every mode the same size ($S'$ is $O(1)$ for each $m$), while the $w$ part of mode $m$ is proportional to $1/k_m$. The phase $+m$ keeps the modes from being all in step, which would put a single spike at one $z$. $M\le N_z/4<N_z/2$ excludes the shortest wave
+($m=N_z/2$, two cells per wavelength). Since $|F|\le1$ and $|S'|\le M$, $|u|\le Ma\le4a$.
+
+*On the grid.* The finite-volume solver evaluates the formula on its $u$- and $w$-faces and then projects once (16 V-cycles) so that the discrete divergence is also close to zero; the lattice-Boltzmann solver evaluates it at its nodes (see its page). With seed $=0$ and a $z$-uniform start, both solvers kept the flow $z$-uniform to a difference of exactly 0 in the independent review (spin + orbit, $N=32$, $N_z=4$, 500 steps), so any growth seen
+comes from the seed or from physics, not from the solver.
 
 ## 6. Ekman layers: the end walls (span = "walls")
 
@@ -719,12 +764,12 @@ vertical velocity leaving the layer:
 
 $$w_E = -\frac1r\frac{d}{dr}\left(r\,Q_E\right) = -\frac1r\frac{d}{dr}\left(-\frac{\Omega_c\delta}{2}r^2\right) = \Omega_c\,\delta = \sqrt{\nu\,\Omega_c} .$$
 
-In words: the inward transport piles fluid up at smaller radii, and since the radial flux grows towards the axis, the fluid has
-to leave the layer upwards, away from the wall and into the core, at the uniform speed $w_E=\sqrt{\nu\Omega_c}$ (the **Ekman pumping**). Fluid
-from the core is sucked towards the other wall's layer by the same mechanism at the opposite end. The closed circulation in a box is: inflow
-along the end walls, axial flow in the core away from the end walls, and a return flow somewhere else, outward in the mid-span or in side layers.
-Where the inflow along the end walls meets the cylinder surface, it can only leave along the axis, away from the end walls (the expected pattern, to be
-compared with the page's $w$-slices: TODO(measured: structure of the secondary circulation in the meridional plane)).
+In words: the inward transport converges at smaller radii, and since the radial flux per unit circumference, $rQ_E$, grows with $r$, the fluid has
+to leave the layer upwards, away from the wall and into the core, at the uniform speed $w_E=\sqrt{\nu\Omega_c}$ (the **Ekman pumping**). The layer on the opposite end wall does the same in the other direction, so both layers feed fluid into the core. The core cannot
+absorb it all, so it returns outwards through the core, near mid-span. The closed circulation in the box is therefore: inflow along the end walls, rise (or fall) along the cylinder, and outflow near mid-span.
+An independent review measured exactly this direction in both solvers (spin only, $Re=100$, $t=1$, $N=32$ and $64$, $L_z=0.5$; an earlier version of the finite-volume mask, so the magnitudes are not final): radial velocity directed inwards in the first cell above the end wall at all rings $0.10<r<0.40$,
+$w>0$ in the lower half near the cylinder, $u_r>0$ near $z=0.27\,L_z$ to $0.28\,L_z$, and $w$ antisymmetric about mid-span to round-off. The magnitudes were not converged: peak $|w|$ was $0.137$ (finite volumes) against $0.075$ (lattice Boltzmann) at $N=32$ and $0.100$ against $0.063$ at $N=64$,
+while the Ekman scale from the formula below is $w_E/U_s=\sqrt{2/Re}=0.14$ at $Re=100$. TODO(measured: peak $|w|$ and its location in the meridional plane of the final walls run, $Re=200$, and its change with $N$).
 
 **Spin-up.** Because the pumping speed is only $\sqrt{\nu\Omega_c}$ the Ekman circulation adjusts the whole column of fluid on the time
 scale $L_z/\sqrt{\nu\Omega_c}$, much shorter than the diffusion time $L_z^2/\nu$ by a factor $E^{1/2}$ (Greenspan & Howard 1963;
@@ -734,10 +779,11 @@ Greenspan 1968). That is a scale estimate, not a prediction of the page; it tell
 
 **No threshold.** The no-slip end walls require $u=v=0$ at $z=0$, so the horizontal velocity necessarily varies with
 $z$, and then incompressibility requires $w\neq0$ ($\partial_zw=-\partial_xu-\partial_yv$ is generally nonzero). At any finite viscosity
-there is a boundary layer of thickness $\delta$ and a pumping velocity $w_E\sim\sqrt{\nu\Omega_c}$. The motion can be weak at high $Re$, but it is not zero: it decreases
-smoothly as $Re$ grows and does not appear abruptly at a critical value. Taking $\Omega_c\approx\Omega$ (an upper estimate), $w_E/U_s\approx\delta/R=\sqrt{2/Re}$ for spin only, so the
-energy of $w$ relative to the total scales like $E_w/E\sim w_E^2/U_s^2\sim 2/Re$ up to an unknown factor of order one. This is an
-expectation to test: TODO(measured: $E_w/E$ against $Re$ for the walls case, and the exponent of the dependence).
+there is a boundary layer of thickness $\delta$ and a pumping velocity $w_E\sim\sqrt{\nu\Omega_c}$. The motion decreases
+smoothly as $Re$ grows and does not appear abruptly at a critical value. Taking $\Omega_c\approx\Omega$ (an upper estimate), the pumping velocity relative to the spin speed is $w_E/U_s\approx\delta/R=\sqrt{2/Re}$ for spin only (arithmetic from the formulas above).
+
+*What the final run shows.* Spin only, end walls, $Re=200$ (lattice Boltzmann, $N=64$, $N_z=32$, $L_z=0.5$), late means ($t=10$ to $20$): $E_w/E=0.034$ and $E_{3d}/E=0.24$ (here $E_{3d}$ includes the end-wall boundary layers, where $u$ and $v$ vary with $z$). Against the 2D baseline of the same inputs,
+$E$ is $0.0110$ against $0.0212$ (ratio $0.52$). One Reynolds number does not give a dependence on $Re$: TODO(measured: $E_w/E$ for the walls case at two or more further Reynolds numbers, to get the exponent and compare it with the $\sqrt{2/Re}$ scaling of $w_E/U_s$).
 
 **Thickness in terms of $Re$.** For spin only, $\nu=2RU_s/Re$ and $\Omega=U_s/R$, so with $\Omega_c=\Omega$,
 
@@ -745,31 +791,29 @@ $$\delta = \sqrt{\frac{\nu}{\Omega}} = R\sqrt{\frac{2}{Re}},\qquad \frac{\delta}
 
 If $\Omega_c$ is the actual core rotation rate, the generalisation is $\delta/R=\sqrt{2/Re}\,\sqrt{\Omega/\Omega_c}$. The
 layer needs several cells to be resolved, i.e. $N\gtrsim c\,\sqrt{Re/2}\,/R$ for $c$ cells across $\delta$. The Ekman number $E=\nu/(\Omega_cL_z^2)=(\delta/L_z)^2$ says whether
-the end-wall layers are thin compared with the span (small $E$) or fill it. The numbers for the presets:
-TODO(measured: $\Omega_c$ near the end walls, $\delta/R$ and $\delta/h$ at each preset).
+the end-wall layers are thin compared with the span (small $E$) or fill it. *Arithmetic for the final walls run* ($Re=200$, $R=0.1$, $N=64$, $\Omega_c=\Omega$): $\delta/R=0.10$, $\delta=0.010$, $\delta/h=0.64$: **less than one cell**, so the end-wall layer is not resolved on this grid, and its measured structure should be read with that in mind
+(for $Re=100$ the same arithmetic gives $\delta=0.014$, 0.9 cell at $N=64$ and 0.45 cell at $N=32$). TODO(measured: $\Omega_c$, the angular velocity $v_\theta/r$ of the flow just outside the end-wall layer at a distance $2R$ from the cylinder axis, in the $Re=200$ walls run; the true $\delta/R$ and $\delta/h$ follow from it).
 
 **What is an approximation.** The solution above is the *linear Ekman layer*. It is a correct picture of the mechanism and a
 reasonable guide to the *scalings* $\delta\propto\sqrt{\nu/\Omega}$ and $w_E\propto\sqrt{\nu\Omega}$. Its quantitative
 profile and coefficients do not carry over to this flow, for the following reasons.
 
 1. **The rotating frame is not the lab frame.** Linear Ekman theory assumes a Rossby number $\mathrm{Ro}=$ (velocity relative to the core)/($\Omega_c\times$ length) $\ll1$. Here the
-   background is *not* rotating: the swirl itself is the rotation, and the wall moves at $-\Omega_cr$ relative to the core, which means $\mathrm{Ro}=O(1)$. The correct
-   model for a solid-body-rotating flow over a fixed wall is the nonlinear **Bödewadt layer** (Bödewadt 1940; Greenspan 1968; Schlichting & Gersten 2017).
-   Its thickness still scales as $\sqrt{\nu/\Omega}$ but its profile and coefficients are different, and I have not computed them here.
+   background is *not* rotating: the swirl itself is the rotation, and the wall moves at $-\Omega_cr$ relative to the core, which means $\mathrm{Ro}=O(1)$. The model for a solid-body-rotating flow over a fixed wall is the nonlinear **Bödewadt layer** (Bödewadt 1940; see Greenspan 1968 for rotating-fluid boundary layers).
+   Its thickness is expected to keep the scaling $\sqrt{\nu/\Omega}$ by dimensional analysis (the only length formed from $\nu$ and $\Omega$), but its profile and coefficients differ from the linear ones, and they are not computed here.
 2. **The core is not a rigid rotation.** Around a spinning cylinder the swirl decays with the distance from the axis, so the "core rotation rate" varies with
    position, $\Omega_c=\Omega_c(r)$, and $\delta$, $w_E$ do too. The formulae are local, with the local $\Omega_c$.
 3. **Curvature and the cylinder.** The derivation neglected curvature and assumed an infinite plane wall. The layer meets the
    cylinder surface (and, at the corners, the side walls) at a junction where it cannot be a plane layer.
 4. **Unsteadiness.** The orbiting body makes the core flow time-dependent, and the formulae assume steady flow.
 5. **The layer itself can become unstable.** Ekman and Bödewadt layers are unstable to spiral or roll waves above a
-   critical *layer* Reynolds number $Re_\delta=V\delta/\nu=r\sqrt{\Omega_c/\nu}$ (Lingwood 1997, for a review of the
-   critical values). Above it the end-wall layers become 3D-unsteady themselves, on top of the forced circulation:
-   TODO(measured: whether and at which $Re$ the end-wall layers become unsteady; $Re_\delta$ at that point).
+   critical *layer* Reynolds number $Re_\delta=V\delta/\nu=r\sqrt{\Omega_c/\nu}$ (Lingwood 1997 analyses the absolute instability of Ekman, Bödewadt and related layers; critical values are not quoted here). Above it the end-wall layers become 3D-unsteady themselves, on top of the forced circulation.
+   The page has not tested this: TODO(measured: late-time histories of $E_w(t)$ and $E_{3d}(t)$ of the walls run at $Re=200$ and at least two other $Re$, to see whether they settle to constants or fluctuate, and $Re_\delta=r\sqrt{\Omega_c/\nu}$ with $r=2R$ at that position for each).
 
 **The cylinder meets the end walls.** The cylinder surface moves at the velocity $\mathbf u_b$ right up to the end wall where $\mathbf u=0$. At that line the model has a velocity
 jump. The shear stress there is formally infinite and is regularised only by the grid or the mask thickness $\epsilon=h$. The flow
 nearby (and the torque, section 8.3) therefore depends on the grid in a way that no physical argument above removes:
-TODO(measured: sensitivity of torque and of $E_w$ to $N$ in the walls case).
+TODO(measured: torque and $E_w/E$ of the walls run at $Re=200$ for $N=32$, $64$ and $128$ with $L_z$ fixed, to quantify that dependence).
 
 ## 7. The finite-volume method in 3D
 
@@ -818,7 +862,7 @@ upwind at extrema, no new extrema, and numerical diffusion where the solution is
 
 ### 7.4 Time stepping and the 3D diffusion limit
 
-Time stepping is the same variable-step Adams–Bashforth 2 as in 2D. Its stability for the viscous term can be derived in three steps.
+Time stepping is the same variable-step Adams–Bashforth 2 as in 2D (the first step is forward Euler). The stability limit for the viscous term below is derived for a constant step and periodic data; the step actually used varies only slowly. The derivation has three steps.
 
 **Step 1: the eigenvalues of the discrete Laplacian.** Test the 7-point operator on a plane wave
 $e^{i(k_xx+k_yy+k_zz)}$ on the grid. Each direction contributes
@@ -841,7 +885,7 @@ deviation, the sign flips and grows.
 **Step 3: Adams–Bashforth 2 (the scheme actually used).** With $z=\lambda\Delta t$ the amplification factors $\xi$ satisfy
 $\xi^2-(1+\tfrac32z)\,\xi+\tfrac12z=0$. At the real value $z=-1$ this is $\xi^2+\tfrac12\xi-\tfrac12=0$, with roots
 $\xi=\tfrac12$ and $\xi=-1$. The second root has $|\xi|=1$, which is the stability boundary; for more negative $z$ it passes beyond $-1$
-(Durran 2010). Hence AB2 is stable on the real axis only for $\lambda\Delta t>-1$, i.e. for
+(Durran 2010; the roots and the real-axis limit $-1$ were also checked numerically). Hence AB2 is stable on the real axis only for $\lambda\Delta t\ge-1$, i.e. for
 
 $$\frac{\nu\,\Delta t}{h^2}\le\frac1{12}\approx0.083\quad(\text{3D}),\qquad\frac{\nu\,\Delta t}{h^2}\le\frac18=0.125\quad(\text{2D, as on the 2D page}).$$
 
@@ -849,19 +893,29 @@ So the bound is *half* the forward-Euler value, $h^2/(12\nu)$ in 3D. The code us
 whose diffusive part is $\nu\Delta t/h^2\le0.05$. That is 60 % of the 3D limit, against 40 % of the 2D limit, so the safety margin
 reserved for the interplay with advection is smaller in 3D. The reciprocal sum, which the 2D page found necessary when the two
 limits are equal, is kept. The two limits cross where $U_{\max}h/\nu=0.3/0.05=6$. If $N_z=1$ the $z$-neighbours are the cell itself, the $k_z\neq0$ modes do not exist, and the 2D limit is recovered.
-Whether the advective constant 0.3 is sufficient in 3D, where the three directions add, is not
-derived here: TODO(measured: largest stable $\Delta t$ factor in 3D, and that the sweep over $Re$ and $N$ shows no instability).
+*Measured:* AB2 applied to a checkerboard mode with the 7-point operator is stable just below and unstable just above $\nu\Delta t/h^2=1/12$ in 3D (checked here at $\pm2\,\%$ of the limit, and the same for $1/8$ in 2D and $1/4$ in 1D), and the finite-volume solver's own test found the threshold $\approx0.0833$. This is the diffusive limit only. Whether the advective constant $0.3$ is sufficient in 3D, where the three directions add, is not
+derived here: TODO(measured: for the finite-volume solver at N = 64, N_z = 32, the largest stable value of the CFL factor (default 0.3) and of the diffusion factor (default 0.05) at one low and one high Re, showing that the defaults sit inside the stable region).
 
 ### 7.5 The cylinder: Brinkman penalisation
 
-Exactly as in 2D. The mask $\chi(x,y,t)=\tfrac12\left[1-\tanh\frac{|\mathbf x_h-\mathbf c|-R}{\epsilon}\right]$ ($\epsilon=h$)
-depends only on $(x,y)$, so the cylinder fills the span, and after the momentum step all three components are relaxed towards the body velocity:
+The cylinder is not meshed. It is a region of the grid in which the fluid is forced to move rigidly. A mask $\chi(x,y,t)\in[0,1]$ is 1 inside the body and 0 outside; it depends only on $(x,y)$, so the cylinder fills the span. After each momentum step the velocity is relaxed towards the body velocity:
 
-$$\mathbf u\leftarrow\mathbf u^*+\chi\left(\mathbf u_b-\mathbf u^*\right),\qquad\mathbf u_b=(u_b,v_b,0).$$
+$$\mathbf u\leftarrow\mathbf u^*+\chi\left(\mathbf u_b-\mathbf u^*\right),\qquad\mathbf u_b=(u_b,v_b,0),$$
 
-The $w$ component is driven to 0 inside the body. The force on the fluid is $\mathbf f=\chi(\mathbf u_b-\mathbf u^*)/\Delta t$ per unit volume. Angot, Bruneau & Fabrie (1999)
-justify the method as $\eta\to0$. The properties of the 2D page (a surface smeared over about two cells, an error in the interior velocity after projection) carry over.
-In the `"walls"` case the mask touches the end walls, producing the contact described in section 6.5.
+so that $\chi=1$ sets the velocity to the body's and $0<\chi<1$ moves it that fraction of the way. The $w$ component is driven to 0 inside the body. This is explicit Brinkman penalisation with penalty time equal to the step: the force per unit volume on the fluid is $\mathbf f=\chi(\mathbf u_b-\mathbf u^*)/\Delta t$ (Angot, Bruneau & Fabrie 1999 analyse penalisation of this kind as the penalty parameter tends to zero).
+
+**The mask used here is an inner ramp.**
+
+$$\chi=\operatorname{clamp}\!\left(\frac{R-r}{h},\,0,\,1\right),\qquad r=|\mathbf x_h-\mathbf c|,$$
+
+which is 0 for $r\ge R$, rises linearly, and is 1 for $r\le R-h$. The body lies entirely inside the circle $r=R$.
+
+**Why not the smooth $\tanh$ mask of the 2D page.** That mask, $\chi=\tfrac12[1-\tanh((r-R)/h)]$, is centred on $r=R$ and has tails outside the circle ($\chi=0.02$ at $r=R+1.95h$, $0.01$ at $R+2.30h$, computed from the formula). A small $\chi$ looks harmless but is applied **every step**. In a cell where $\chi$ is small, each step removes the fraction $\chi$ of the difference between the fluid and the body velocity, while viscous diffusion can bring in at most a fraction of order $\nu\Delta t/h^2\le0.05$ per step (section 7.4) of the difference from its neighbours. Whenever $\chi$ is not small compared with that,
+the forcing wins and the cell is locked to the body: it behaves as part of the rigid body although $\chi<1$. (Scale argument.) The effective cylinder is then bigger than $R$. A one-dimensional check run for this page (impulsively started wall, explicit diffusion with $\nu\Delta t/h^2=0.05$, $\sqrt{\nu t}=4h$, same update): the point where the velocity has fallen to half its wall value was $1.3h$ **outside** its exact position for the $\tanh$ mask and $0.5h$ **inside** it for the inner ramp (whose centre lies half a cell inside the circle).
+
+*Measured in 2D with the real solver* (centred spinning cylinder, $Re=100$, torque at $t=5$ against the exact azimuthal solution of the impulsively started cylinder): the $\tanh$ mask gave torque errors $+299\,\%$ ($N=32$) and $+92\,\%$ ($N=64$), corresponding to a hydrodynamic radius $R+2.0h$ to $R+2.7h$ (two estimates, from the torque and from the velocity profile); the peak speed exceeded the body speed (up to 1.27 at $N=32$). With the inner ramp the errors are $+7.5\,\%$, $-0.7\,\%$ and $-2.9\,\%$ at $N=32$, $64$ and $128$ (not monotone in $N$).
+
+The properties of the 2D page (a surface smeared over about one to two cells, an error in the interior velocity after projection) carry over. In the `"walls"` case the mask touches the end walls, producing the contact described in section 6.5. The 2D baseline of this page uses the same inner-ramp mask as the 3D run, so 2D and 3D differ only in $N_z$ and in what the third dimension allows.
 
 ### 7.6 The projection: deriving the pressure equation
 
@@ -881,7 +935,7 @@ the discrete divergence of the discrete gradient is exactly the 7-point Laplacia
 $$(Lq)_{ijk}=\frac{1}{h^2}\left[\sum_{\text{6 neighbours}}q-n_{ijk}\,q_{ijk}\right],$$
 
 where $n_{ijk}$ counts the *existing* neighbours (a missing neighbour across a wall is dropped, because the face velocity there is not corrected). Solving $Lq=\nabla\cdot\mathbf u^{**}$ exactly would
-give $\nabla\cdot\mathbf u^{n+1}=0$ to round-off. Two V-cycles per step leave a small residual divergence, shown by $\max|\nabla\cdot\mathbf u|$ in the summary.
+give $\nabla\cdot\mathbf u^{n+1}=0$ to round-off. Two V-cycles per step (warm-started from the previous step's $q$) leave a small residual divergence, shown by $\max|\nabla\cdot\mathbf u|$ on the page for the finite-volume solver.
 
 ### 7.7 Multigrid with semi-coarsening
 
@@ -896,9 +950,11 @@ is not.
 *Why.* The span may be a single cell ($N_z=1$) or much shorter than $N$, and a power-of-two grid cannot be halved below one cell.
 
 *Why it is still a correct coarse problem.* Average the 3D Poisson equation over $z$ (full span). With periodic or Neumann conditions in $z$,
-$\int\partial_z^2q\,dz=\partial_zq|_0^{L_z}=0$, so the $z$-average obeys the 2D Poisson equation with the $z$-average of the source. Once $n_z=1$, the problem
-is the 2D one, which is the same thing as the 2D reference ($n_z=1$ reproduces the 2D V-cycle exactly). While $n_z\ge2$ the cell stays cubic ($H=2h$ in all three directions), so
-the problem is isotropic, which pointwise Gauss–Seidel smoothing requires. The levels with $n_z<N$ and $n_z=1$ are exactly 2D.
+$\int\partial_z^2q\,dz=\partial_zq|_0^{L_z}=0$, so the $z$-average of $q$ obeys the 2D Poisson equation with the $z$-average of the source. Once $n_z=1$ the coarse problem is therefore this 2D one: it corrects the $z$-uniform part of the error, and the $z$-varying part is handled by smoothing on the finer levels. While $n_z\ge2$ the coarse cell stays cubic ($H=2h$ in all three directions), so
+the problem is isotropic, which pointwise Gauss–Seidel smoothing needs. With $N_z=1$ the V-cycle is the 2D one exactly.
+
+**The smoother is coloured in $(x,y)$ only.** Red–black Gauss–Seidel updates all cells of one colour at once (they are not neighbours of each other, so the update is well defined and parallel), then the other colour. The colour here is the parity of $i+j$, **the same in every $z$-plane**. The natural 3D choice, the parity of $i+j+k$, was tried first and rejected. The reason is that the solver runs only two V-cycles per step, so the pressure is not converged, and the leftover error depends on the colouring. For a $z$-uniform problem, a $z$-independent colouring performs identical operations in every plane, so the result stays exactly $z$-uniform; a colouring that alternates with $k$ treats neighbouring planes differently, so the left-over error differs from plane to plane, giving a small $\partial_zq$ and hence a spurious $w$: the solver would seed the very motion the page looks for.
+*Measured:* a full finite-volume run with the $(i+j+k)$ colouring produced spanwise differences of $1.5\times10^{-5}$ by itself. *Checked here in isolation:* two V-cycles on a random $z$-uniform source ($N=32$, $N_z=8$) left a $z$-variation of $q$ of $2\times10^{-5}$ of $\max|q|$ with the $(i+j+k)$ colouring and $2\times10^{-16}$ with the $(i+j)$ colouring. The price of the $z$-independent colouring is that a cell and its two $z$-neighbours have the same colour, so the coupling in $z$ is relaxed Jacobi-like rather than Gauss–Seidel-like.
 
 ### 7.8 Boundary conditions in $z$, and the 2D baseline
 
@@ -910,18 +966,19 @@ the problem is isotropic, which pointwise Gauss–Seidel smoothing requires. The
 | $q$ | periodic | $\partial_zq=0$ |
 
 The **2D baseline is the same code with $N_z=1$ and periodic span**: every $z$-neighbour of a cell is the cell itself, so all $z$-differences are exactly
-zero, $w$ stays zero, and the update is identically the 2D one. A pytest checks that `fv3d` with $N_z=1$ matches `ns2d` to round-off. Note that `"walls"` with
-$N_z=1$ is *not* the baseline: it would be a layer one cell thick between two walls.
+zero, $w$ stays zero, and the update is identically the 2D one. A pytest checks that `fv3d` with $N_z=1$ and the old $\tanh$ mask matches the 2D page's solver `ns2d` to round-off (the default mask is now the inner ramp, which `ns2d` does not have, so the page's 2D baseline is `fv3d` with $N_z=1$ and the ramp). The code does not allow `"walls"` with
+$N_z=1$, which would be a layer one cell thick between two walls rather than the baseline.
 
 ## 8. The diagnostics
 
 Notation: $\langle\cdot\rangle_z$ is the average over the span, per $(x,y)$ and component. All integrals are over the
-whole box (including the penalised body); "per unit span" means dividing by $L_z$, so that a $z$-uniform flow
-gives the same number as the 2D simulation, whatever $N_z$ is. Energies are in units of $U_{\mathrm{ref}}^2L^2$ (per unit span).
+**fluid only**: cells whose centre lies outside the cylinder (the body moves, so the set of cells is recomputed at each time). The rigid body interior is left out because it would add a
+constant $2\pi\Omega^2R^2$ to $Z$ for a spinning body and hide the flow. "Per unit span" means dividing by $L_z$, so that a $z$-uniform flow
+gives the same number as the 2D simulation, whatever $N_z$ is. Energies are in units of $U_{\mathrm{ref}}^2L^2$ and $Z$ in units of $U_{\mathrm{ref}}^2$ (per unit span).
 
 ### 8.1 Spanwise energy growth: $E_w$, $E_{\mathrm{3d}}$, $E_{k_z}$
 
-**Definitions.**
+**Definitions** (integrals over the fluid cells, $dV=h^3$).
 
 $$\begin{aligned}
 E &= \frac1{L_z}\int\tfrac12|\mathbf u|^2\,dV ,\\
@@ -942,7 +999,8 @@ and by Parseval's theorem, the mean of the squared signal equals the sum of the 
 
 $$E=\sum_{m=0}^{N_z/2}E_{k_z}(m),\qquad E_{k_z}(0)=\text{energy of the span-averaged (2D) flow},\qquad E_{\mathrm{3d}}=\sum_{m\ge1}E_{k_z}(m).$$
 
-The diagnostics code is built so that this sum equals $E$ exactly (up to round-off). $E_{k_z}(m)$ is not defined for the walls case, since the flow is not periodic in $z$; there $E_w$ and $E_{\mathrm{3d}}$ are the diagnostics.
+The sum equals $E$ exactly (to round-off) with the fluid mask too, because the body does not depend on $z$, so masking commutes with the Fourier transform along $z$; this was checked numerically on random data
+($|\sum E_{k_z}-E|\sim10^{-16}$, and $E_{3d}=\sum_{m\ge1}E_{k_z}$). The code defines the amplitude of mode $m$ as the discrete transform along $z$ divided by $N_z$, sums $\tfrac12|\cdot|^2h^2$ over $(x,y)$ and components, and doubles it for $0<m<N_z/2$ (the real transform keeps only one of the $\pm m$ pair); the shortest wave $m=N_z/2$ has no partner and is not doubled. The page plots $m=1$ to $4$ (as many as fit). $E_{k_z}(m)$ is not defined for the walls case, since the flow is not periodic in $z$; there $E_w$ and $E_{\mathrm{3d}}$ are the diagnostics.
 
 **Relevance.** These curves answer the question of the page directly. The 2D baseline has $E_w\equiv0$, $E_{\mathrm{3d}}\equiv0$. In the periodic box, if the 2D flow
 is unstable, they depart from their seed level and grow; the way they grow identifies the mechanism.
@@ -953,31 +1011,38 @@ is unstable, they depart from their seed level and grow; the way they grow ident
 2. *Straight line on a log axis: linear instability.* In the linear regime of section 5.1 every mode is $\propto e^{\sigma t}$, so its
    energy is $\propto e^{2\sigma t}$ and $\ln E_{k_z}(m)$ is linear in time with slope $2\sigma_m$. The slope of the
    straight part gives the growth rate (in units of $U_{\mathrm{ref}}/L$; remember the factor 2: the energy is the *square* of the amplitude). Different modes $m$ have
-   different slopes; the steepest is the fastest-growing, and its wavelength $L_z/m$ is the preferred spanwise wavelength (limited to integers $m$).
+   different slopes; the steepest is the fastest-growing, and its wavelength $L_z/m$ is the preferred spanwise wavelength (limited to integers $m$). Results are in section 5.3.
    The growth rate is a finite-time number measured on a flow that is itself evolving, not an eigenvalue.
 3. *Harmonics.* If mode $m$ grows with amplitude $A\propto e^{\sigma t}$, the quadratic nonlinearity feeds mode $2m$ with an amplitude $\propto A^2$, and its energy $\propto A^4\propto e^{4\sigma t}$: a slope twice that of the fundamental. This is theory for weakly nonlinear growth, a way to tell
-   a nonlinear transfer from independent linear growth (TODO(measured: whether the harmonic slopes follow this)).
+   a nonlinear transfer from independent linear growth. It has not been tested: TODO(measured: for the spin-only $Re=100$ run, N = 64, N_z = 32, the slopes of $\ln E_{k_z}$ for $m=1$ and $m=2$ in the window where both are growing, to see whether the $m=2$ slope is about twice the $m=1$ slope).
 4. *Saturation.* The curve bends over and levels off or oscillates: the perturbation has grown until it modifies the base flow, the neglected $\epsilon^2$ terms matter, and growth is limited by nonlinear
-   interaction and dissipation. The saturation level, relative to $E$, measures how 3D the flow finally becomes.
-   TODO(measured: growth rate $\sigma$ of the leading mode, preferred $m$, and the saturation level of $E_{\mathrm{3d}}/E$).
-5. *The walls case.* $E_w$ and $E_{\mathrm{3d}}$ are non-zero from the beginning, since the Ekman layers (section 6) exist at every $Re$. There is no flat floor and no threshold. In this case a
-   rise of $E_{\mathrm{3d}}$ over time may reflect the Ekman circulation spinning up (a time scale $L_z/\sqrt{\nu\Omega_c}$) rather than an instability; a straight line on a log plot still needs to be checked against that.
+   interaction and dissipation. The saturation level, relative to $E$, measures how 3D the flow finally becomes: late $E_{3d}/E$ was $0.046$, $0.135$, $0.095$ at spin-only $Re=75$, $100$, $150$ and $0.27$ at spin + orbit $Re=800$ (table in section 5.3: lattice Boltzmann, $N=64$, $N_z=32$). Late $E_w/E$ was $0.0094$, $0.026$, $0.013$ and $0.10$ for the same four runs.
+5. *The walls case.* $E_w$ and $E_{\mathrm{3d}}$ are non-zero from the beginning, since the Ekman layers (section 6) exist at every $Re$. There is no flat floor and no threshold, and only $E_w$ and $E_{3d}$ are drawn (no $E_{k_z}$ curves). In this case a
+   rise of $E_{\mathrm{3d}}$ over time may reflect the Ekman circulation spinning up (a time scale $L_z/\sqrt{\nu\Omega_c}$) rather than an instability; a straight line on a log plot still needs to be checked against that. The final walls run ($Re=200$) had late $E_w/E=0.034$ and $E_{3d}/E=0.24$ (section 6.5).
 
 ### 8.2 Horizontal energy spectra
 
 **What the FFT does.** A **Fourier transform** decomposes a field into waves of different sizes: any field in a box is a sum of sines and cosines with wavelengths $1,\tfrac12,\tfrac13,\dots$ of the box side, each with an amplitude; the FFT is the fast algorithm that computes these amplitudes. The horizontal
 wavenumber vector $(k_x,k_y)$ (in units of $2\pi/L$) has magnitude $k$, and the wave has wavelength $L/k$: small $k$ is large structures, large $k$ is fine detail. The **energy spectrum** $E(k)$ is the
-energy contained in all waves whose $|\mathbf k|$ falls in the shell of unit width around $k$:
+energy contained in all waves whose $|\mathbf k|$ falls in the shell of unit width around $k$ (the sketch below is for the unwindowed field; the code's version follows):
 
 $$E_k=\sum_{\mathbf k:\ k-\frac12\le|\mathbf k|<k+\frac12}\ \tfrac12\left|\hat{\mathbf u}(\mathbf k)\right|^2 ,$$
 
-summed over the three components, computed for each $z$-plane in $(x,y)$ and then averaged over planes. With the normalisation of the code the sum $\sum_kE_k$ is the plane's energy, approximately (the window below
-weights the centre of the box more than the edge).
+summed over the three components, computed for each $z$-plane in $(x,y)$ and then averaged over planes. With the normalisation of the code (explained below) the sum $\sum_kE_k$ is exactly the plane's kinetic energy.
 
 **Why a window.** The FFT treats a field as if it were periodic: the left edge is glued to the right edge. The box is not periodic; the velocity is zero at the walls but the
 field is not smooth across the glued seam (in value or in slope), and the FFT spreads that artificial kink over all wavenumbers. The code therefore
-multiplies each field by the **Hann window** $W(x)W(y)$, $W(x)=\sin^2(\pi x)$ (Harris 1978), which goes to zero smoothly at all four edges, and divides by the mean of $W^2$ to restore the energy
-of a uniform field. The cost: the walls' boundary layers are weighted by almost nothing, so the spectrum describes mainly the **core of the box**.
+multiplies each field by the **Hann window** $W(x)W(y)$, $W(x)=\sin^2(\pi x)$ (Harris 1978), which goes to zero smoothly at all four edges. The cost: the walls' boundary layers are weighted by almost nothing, so the windowed spectrum describes mainly the **core of the box**.
+
+**Normalisation: windowed shape, rescaled to the true energy.** Windowing also removes energy: $\sum_k E^{\mathrm{win}}_k=\tfrac12\langle(Wu)^2\rangle$ (Parseval, summed over the three components) is smaller than the true plane energy $\tfrac12\langle u^2\rangle$, and the loss depends on where the energy sits. The code therefore uses the window only to decide **how the plane's energy is shared among the shells**, and fixes the **amount** by one multiplier per plane:
+
+$$E_k=\frac{\mathcal E_{\text{true}}}{\sum_{k'}E^{\mathrm{win}}_{k'}}\;E^{\mathrm{win}}_k,\qquad \mathcal E_{\text{true}}=\tfrac12\sum|\mathbf u|^2h^2\ \text{over the fluid cells of the plane}.$$
+
+By construction $\sum_kE_k=\mathcal E_{\text{true}}$ for each plane, and after averaging planes the sum is exactly the fluid energy $E$ (checked to $10^{-16}$ on random data). In words: the plot is a distribution of the true energy over scales; the window is only a way to avoid the artificial kink in that distribution. It cannot say anything about the part of the energy hidden by the window (the wall layers). Further details of what is plotted:
+
+- The body cells are set to zero before the transform. The hole is a sharp discontinuity and leaks energy into all shells, a broadband contribution that is not physics.
+- Shells have width 1 in $|\mathbf k|$ (shell $k$ holds $k-\tfrac12\le|\mathbf k|<k+\tfrac12$ with $k$ in units of $2\pi/L$) and run out to the corners of the FFT square. The $k=0$ shell is not plotted.
+- The 2D curve is one plane. The 3D curve is the average over **at most 8 evenly spaced $z$-planes** (a cost saving), so for $N_z>8$ the sum under the 3D curve is the mean energy of those planes, not exactly $E$. The "average spectra over the last ... time units" control averages the curves in time.
 
 **How to read the plot.** Use log–log axes.
 
@@ -990,54 +1055,75 @@ of a uniform field. The cost: the walls' boundary layers are weighted by almost 
   the spectrum of a non-homogeneous, bounded flow is only a rough guide (this is an expectation, not something verified).
 
 **2D versus 3D by theory.** In 3D, energy flows forward to small scales and is dissipated there; in 2D the energy goes backward and the enstrophy forward (section 3.7). The two spectra can therefore have different slopes in the fine-scale
-range and different amounts of energy at the largest scales. What the page shows is not claimed here: TODO(measured: horizontal spectra for the 2D baseline and the 3D run at equal $Re$, their slopes and the range over which they hold).
+range and different amounts of energy at the largest scales. What the page shows is not claimed here: TODO(measured: horizontal $E(k)$ of the 2D baseline and the 3D run at equal $Re$ (spin only, $Re=100$ and $150$, N = 64, N_z = 32), averaged over the last 1 time unit: the energy at $k=1$ to $3$ in each, and the slope and $k$ range where a straight line fits on log–log axes, or the statement that none does).
 
 ### 8.3 Torque, kinetic energy and enstrophy histories
 
 **Torque.** $T$ is the $z$-torque exerted by the fluid *on the cylinder* about its centre, per unit span. For a circular cylinder the pressure acts normal to the surface, along the radius, and therefore has no moment about the centre. The torque is entirely the **viscous shear stress** at the surface, integrated over the circumference times the radius.
-It is the load on the motor: a spinning cylinder in a fluid at rest feels a torque opposing its spin ($T<0$ for $\Omega>0$), and the **power needed to spin it** is
+A spinning cylinder in a fluid at rest feels a torque opposing its spin ($T<0$ for $\Omega>0$; negative in every run reported below).
 
-$$P_{\mathrm{spin}}=-T\,\Omega .$$
+*How the code gets it.* The penalisation of section 7.5 exerts the force per unit volume $\mathbf f=\chi(\mathbf u_b-\mathbf u^*)/\Delta t$ on the fluid. By Newton's third law the fluid exerts the opposite force on the body, so
 
-In the code the torque comes from the penalisation force by momentum exchange, $T=-\sum(\mathbf x-\mathbf c)\times\mathbf f\,h^3/L_z$. Read: it is large at the start (the impulsive start from rest creates thin
-boundary layers with steep velocity gradients), then falls as the layer thickens and the fluid swirls along; steady swirl gives a steady torque, and **fluctuations signal unsteady flow at the cylinder surface** (vortex shedding).
-If the cylinder also orbits, the force $\mathbf F$ on it contributes power too, and torque alone is not the full power.
+$$T=-\sum(\mathbf x-\mathbf c)\times\mathbf f\;\frac{h^3}{L_z},$$
 
-**Energy and enstrophy per unit span.** $E$ was defined in 8.1; $Z=\dfrac1{L_z}\displaystyle\int\tfrac12|\boldsymbol\omega|^2dV$.
-$E$ measures how much the fluid moves, $Z$ how much it spins and shears, weighted towards small scales (section 3.6). Both include the body region: the body interior
-has $|\boldsymbol\omega|=2\Omega$ and contributes the constant $2\pi\Omega^2R^2$ to $Z$ (per unit span, plus the smeared rim), the same in 2D and 3D, so differences between 2D and 3D are unaffected.
+the sum running over the interior velocity faces with $z$-component $(x-c_x)f_y-(y-c_y)f_x$, and $h^3/L_z$ turning the sum over cell volumes into a torque per unit span. The sum also contains the force that keeps the fluid inside the body moving rigidly; that part is not separated here. (The lattice-Boltzmann solver obtains the torque by momentum exchange on the links cut by the cylinder surface instead.)
 
-**The energy budget.** Section 3.6 gave $dE_V/dt=-2\nu Z_V$ for a closed box. With a moving body that is supplied with power, the power
-$P_{\mathrm{in}}$ enters:
+*Accuracy against an exact solution* (centred spinning cylinder, 2D, $Re=100$, impulsively started; exact azimuthal flow, torque at $t=5$): finite volumes with the inner ramp $+7.5\,\%$, $-0.7\,\%$, $-2.9\,\%$ at $N=32$, $64$, $128$; lattice Boltzmann $+5.8\,\%$ and $+0.5\,\%$ at $N=32$ and $64$. The exact solution is not available for the orbiting cases.
 
-$$\frac{dE}{dt}=P_{\mathrm{in}}-2\nu Z,\qquad P_{\mathrm{in}}=-\left(T\,\Omega+\mathbf F\cdot\mathbf U_c\right),$$
+Read: the torque is large at the start (the impulsive start from rest creates thin
+boundary layers with steep velocity gradients), then falls as the layer thickens and the fluid swirls along; steady swirl gives a steady torque, and **fluctuations signal unsteady flow at the cylinder surface**.
 
-where $\mathbf F$ is the force of the fluid on the cylinder (per unit span) and $\mathbf U_c$ the velocity of its centre; for pure spin $P_{\mathrm{in}}=-T\Omega$.
-(Derivation: the work per unit time done by the penalisation force on the fluid is $\int\mathbf u\cdot\mathbf f\,dV=\mathbf U_c\cdot\int\mathbf f\,dV+\Omega\,\hat{\mathbf z}\cdot\int(\mathbf x-\mathbf c)\times\mathbf f\,dV$ inside the rigid body, which is
-minus the work done by the fluid on the body. The viscous term is as in section 3.6, with the wall term zero.) In words: **the motor pays for what viscosity burns.** In statistical steady state the average of $P_{\mathrm{in}}$ equals the average of $2\nu Z$:
-the torque, a force on the cylinder, and the enstrophy, a property of the whole flow field, are tied to each other.
+*Why the page shows a running mean.* When the cylinder orbits, the torque computed at a single time level scatters strongly about its smooth trend because the body edge moves across the grid. Measured on a spin + orbit case ($Re=100$), as scatter about a smooth fit divided by the mean: finite volumes $32\,\%$ ($N=32$) and $24\,\%$ ($N=64$); lattice Boltzmann $216\,\%$ and $63\,\%$ (the cause was not isolated for finite volumes; for lattice Boltzmann it is attributed to links changing as the boundary moves).
+The page therefore plots the mean of the torque samples taken during the last 0.25 time units (one sample per displayed frame, each frame at most 0.05 time units long) and shows nothing for $t<0.25$; the raw samples can be switched on. For lattice Boltzmann the scatter of block means was $7\,\%$ at $N=32$ and $3\,\%$ at $N=64$ (so a running mean reduces, but does not remove, the noise).
+The table below uses single-time-level torque samples taken every 0.1 time units, averaged over $t=10$ to $20$ (about 100 samples).
 
-*What is approximate.* The penalised body is part of the integration domain, with a smooth mask and a projection that slightly perturbs the interior, and
-the numerical scheme dissipates energy by itself in under-resolved regions (the limiter). The budget therefore closes only approximately in the code:
-TODO(measured: residual of $dE/dt-P_{\mathrm{in}}+2\nu Z$ in a 2D and a 3D case).
+**Energy and enstrophy per unit span.** $E$ was defined in 8.1; $Z=\dfrac1{L_z}\displaystyle\int\tfrac12|\boldsymbol\omega|^2dV$, both over the fluid cells only.
+$E$ measures how much the fluid moves, $Z$ how much it spins and shears, weighted towards small scales (section 3.6). For a spinning cylinder the body interior would have contributed the constant $2\pi\Omega^2R^2$ to $Z$; it is excluded. The vorticity is computed from the full velocity field (so cells next to the body use the body-cell velocities), then only fluid cells are summed.
+*Accuracy of $E$* (same exact solution, $t=2$, only cells more than $2h$ from the surface, which the penalised body cannot represent): finite volumes $-34\,\%$, $-19\,\%$, $-12\,\%$ at $N=32$, $64$, $128$; lattice Boltzmann $+40\,\%$ and $+7\,\%$ at $N=32$, $64$. The spin-up layer thickness $\sqrt{\nu t}\approx0.063$ is only about 4 cells at $N=64$, which is why the early energy is the hardest to get right.
 
-**Why 2D and 3D histories should diverge after the transition.** Sections 3.4 to 3.6 give the mechanism, which is stated here as an *expectation* from the theory, not something the page has yet shown.
-Before the 3D instability (periodic span) or at low $Re$ the flow is 2D, and the 2D and 3D histories coincide ($N_z=1$ versus $N_z>1$). After the transition, the vortex-stretching term $\int\omega_iS_{ij}\omega_j\,dV$,
-which is exactly zero in the 2D run, can produce enstrophy in the 3D run, so $Z$ in 3D can exceed the 2D value; since the dissipation is $2\nu Z$, the 3D flow then dissipates more, and its energy can differ. The torque, being set by the shear
-at the cylinder surface, may also change when the 3D structures alter the near-surface flow. The point where the histories separate, relative to the onset seen in $E_{\mathrm{3d}}$, tests this picture.
-TODO(measured: time at which $E$, $Z$ and $T$ histories of the 3D and 2D runs separate, and their ratios afterwards; whether $Z_{3D}>Z_{2D}$ as the stretching argument suggests).
-In the walls case the histories differ from the start, since the end-wall layers add their own dissipation, and the instructive comparison is of the *rate* of change after the Ekman circulation has been established.
+**The energy budget: what is and is not computed.** Section 3.6 gave $dE_V/dt=-2\nu Z_V$ for a closed box with fixed walls. The page does **not** draw an energy budget; it plots $E$, $Z$ and $T$ separately. The reason the budget cannot be read off from them is as follows (derivation).
+
+Let the fluid fill $V_f$, bounded by fixed walls and by the body surface $S_b$ moving with $\mathbf u_b$ (normal $\mathbf n$ out of the fluid, i.e. into the body). Multiplying the momentum equation by $\mathbf u$ and integrating, with the convective flux relative to the moving boundary zero on $S_b$ (the fluid does not cross it), gives
+
+$$\frac{dE_V}{dt}=P_{\mathrm{in}}-2\nu\int_{V_f}S_{ij}S_{ij}\,dV,\qquad P_{\mathrm{in}}=\oint_{S_b}\mathbf u_b\cdot\boldsymbol\sigma\cdot\mathbf n\,dS=-\left(T\,\Omega+\mathbf F\cdot\mathbf U_c\right),$$
+
+where $\boldsymbol\sigma=-p\mathsf I+2\nu\mathsf S$ is the stress, $P_{\mathrm{in}}$ the work done on the fluid by the body (minus the power of the fluid's forces on the body, with $\mathbf F$ the force of the fluid on the body and $\mathbf U_c$ the velocity of its centre), and the second term is the viscous dissipation. In words: the motor pays for what viscosity burns plus what raises the kinetic energy.
+The dissipation is expressed with the vorticity as follows. Pointwise, $\partial_ju_i\partial_ju_i=|\boldsymbol\omega|^2+\partial_ju_i\partial_iu_j$ (from $\|\mathsf\Omega\|^2=\tfrac12|\boldsymbol\omega|^2$ in section 4), so $2S_{ij}S_{ij}=|\boldsymbol\omega|^2+2\,\partial_ju_i\partial_iu_j$. With $\partial_ju_j=0$,
+$\partial_ju_i\partial_iu_j=\partial_j(u_i\partial_iu_j)$, a divergence, so its integral is the surface integral $B=\oint n_ju_i\partial_iu_j\,dS$. On fixed walls $\mathbf u=0$ and it vanishes; on the moving body it does not. Hence
+
+$$2\nu\int_{V_f}S_{ij}S_{ij}\,dV=2\nu Z_V^{\mathrm{fluid}}+2\nu B_{\mathrm{body}},\qquad Z_V^{\mathrm{fluid}}=\int_{V_f}\tfrac12|\boldsymbol\omega|^2dV .$$
+
+For a centred spinning cylinder with an axisymmetric flow, at the surface $\mathbf u=\Omega R\,\hat{\boldsymbol\theta}$ and $(\mathbf u\cdot\nabla)\mathbf u=-\Omega^2R\,\hat{\mathbf r}$, so with $\mathbf n=-\hat{\mathbf r}$ the integrand is $\Omega^2R$ and $B=2\pi\Omega^2R^2$ per unit span: exactly the enstrophy $2\pi\Omega^2R^2$ of the rigid interior. So for a centred spin the dissipation equals $2\nu$ times the enstrophy of the *whole box including the body interior*, and **the fluid-only $Z$ that the page plots is not the dissipation**: the difference is the body-surface term. I checked this with the steady annular Couette solution (inner radius $R=0.1$, outer $0.5$): the dissipation $2\nu\int S:S$ equals the power $-T\Omega$ to round-off, $2\nu Z^{\mathrm{fluid}}$ accounts for only the fraction $R^2/r_{\mathrm{out}}^2=4\,\%$ of it, and the remainder equals $2\nu\cdot2\pi\Omega^2R^2$. (In that steady flow the fluid is nearly irrotational and the dissipation is almost all strain.) For the orbiting body $B$ has extra terms that are not derived here.
+
+*What is not closed.* The page never evaluates $P_{\mathrm{in}}$ or the dissipation, so no budget residual is shown. An independent review that compared $dE/dt-P_{\mathrm{in}}+D$ for a spinning cylinder at $N=64$ (earlier code version, before the inner-ramp mask) found residuals of $10$ to $30\,\%$ of $P_{\mathrm{in}}$ at late times with $D=2\nu Z$ over the whole box, and much larger ones ($-64$ to $-77\,\%$) with $D=2\nu Z$ over the fluid only; $D=2\nu\int S:S$ over the fluid closed to $\pm2\,\%$ for finite volumes but left $+25\,\%$ for lattice Boltzmann, for a reason that was not resolved. TODO(measured: with the final code, for a spin-only run at N = 64 over a window of 1 time unit in the developing phase, $\int(dE/dt)\,dt$, $\int P_{\mathrm{in}}\,dt$ and $\int D\,dt$ with $D=2\nu\int_{\mathrm{fluid}}S:S$, for both solvers, and their relative residual).
+
+**3D against 2D histories.** The mechanism of sections 3.4 to 3.6 is an *expectation*: before the 3D instability (periodic span), or at low $Re$, the flow stays 2D and the histories coincide ($N_z>1$ against $N_z=1$). After the transition the vortex-stretching term $\int\omega_iS_{ij}\omega_j\,dV$, which is exactly zero in the 2D run, can produce enstrophy in the 3D run. The page did not compute the stretching term itself, so what follows tests only its consequences.
+
+Measured (lattice Boltzmann, $N=64$, $N_z=32$, $L_z=0.5$, periodic unless noted; $R=0.1$, $r_o=0.2$; late means over $t=10$ to $20$; each 3D run has its own $N_z=1$ baseline with the same inputs; "separates" is the first time $t\ge0.5$ at which the five-sample running mean of $|3D-2D|/|2D|$ exceeds $5\,\%$):
+
+| case | $Re$ | $E_{3D}/E_{2D}$ | $Z_{3D}/Z_{2D}$ | $T_{3D}/T_{2D}$ | $E$, $Z$, $T$ separate at $t$ |
+|---|---|---|---|---|---|
+| spin only | 50 | 1.00 | 1.00 | 1.00 | never (3D equals 2D) |
+| spin only | 75 | 0.947 | 1.50 | 1.05 | 16.2, 12.9, 16.0 |
+| spin only | 100 | 0.785 | 2.57 | 1.17 | 11.1, 8.6, 10.6 |
+| spin only | 150 | 0.744 | 3.36 | 1.32 | 7.3, 5.5, 6.7 |
+| spin + orbit | 25 | 1.00 | 1.00 | 1.00 | never |
+| spin + orbit | 800 | 0.912 | 3.48 | 5.26 | 4.1, 3.2, 2.8 |
+| spin only, **end walls** | 200 | 0.519 | 5.88 | 3.09 | 0.8, 0.5, 0.5 |
+
+What this shows. (i) Where the seed decays (orbit $Re=25$) or grows only extremely slowly (spin only $Re=50$) the 3D and 2D late means are equal to the digits shown; in the spin-only runs where $E_{3d}$ grows, $Z$ separates first and by far the most, $Z_{3D}/Z_{2D}$ rising with $Re$ from 1.5 to 3.4, which agrees in direction with the stretching picture (it does not prove it: other 3D effects also change $Z$). (ii) The 3D flow has *less* kinetic energy than the 2D one in the same runs (ratio 0.74 to 0.95) and a *larger* torque (ratio 1.05 to 1.32; 5.3 for the orbit case at $Re=800$, where the 2D torque is very small, $-6.6\times10^{-5}$ against $-3.5\times10^{-4}$). (iii) With end walls the histories separate at once ($t\le0.8$) because the Ekman layers (section 6) exist from the start.
+A cross-check with the finite-volume solver at spin-only $Re=100$ (inner-ramp mask, same grid) gave $E_{3D}/E_{2D}=0.864$ (lattice Boltzmann 0.785), $Z$ ratio 2.39 (2.57), $T$ ratio 1.10 (1.17): the same signs and about the same size, with differences of 6 to 10 % between the methods in these ratios. The two methods treat the cylinder surface differently, which mostly affects the enstrophy of the cells next to it.
+What is *not* measured: the stretching integral $\int\omega_iS_{ij}\omega_j\,dV$ itself (TODO(measured: the stretching term and the viscous destruction term of the enstrophy budget of section 3.6, as functions of time, for the spin-only $Re=100$ 3D run, to test directly whether stretching accounts for the enstrophy excess)). The reason for the lower energy and higher torque was not investigated.
 
 ## References
 
 - G. K. Batchelor, *An Introduction to Fluid Dynamics* (Cambridge University Press, 1967): vorticity equation, circulation, Kelvin's theorem.
 - G. K. Batchelor, Computation of the energy spectrum in homogeneous two-dimensional turbulence, *Phys. Fluids* 12, II-233 (1969).
 - R. B. Bird, W. E. Stewart, E. N. Lightfoot, *Transport Phenomena* (Wiley, 2nd ed. 2002): Navier–Stokes equations.
-- D. Barkley, R. D. Henderson, Three-dimensional Floquet stability analysis of the wake of a circular cylinder, *J. Fluid Mech.* 322, 215 (1996).
-- P. R. Bayly, Three-dimensional centrifugal-type instabilities in inviscid two-dimensional flows, *Phys. Fluids* 31, 56 (1988).
+- B. J. Bayly, Three-dimensional centrifugal-type instabilities in inviscid two-dimensional flows, *Phys. Fluids* 31, 56 (1988).
 - U. T. Bödewadt, Die Drehströmung über festem Grunde, *Z. Angew. Math. Mech.* 20, 241 (1940).
 - G. Boffetta, R. E. Ecke, Two-dimensional turbulence, *Annu. Rev. Fluid Mech.* 44, 427 (2012).
-- A. Albensoeder, H. C. Kuhlmann, H. J. Rath, Multiplicity of steady two- and three-dimensional flows in the four-sided cavity, *Phys. Fluids* 13, 121 (2001).
+- S. Albensoeder, H. C. Kuhlmann, H. J. Rath, Three-dimensional centrifugal-flow instabilities in the lid-driven-cavity problem, *Phys. Fluids* 13, 121 (2001).
 - P. Angot, C.-H. Bruneau, P. Fabrie, A penalization method to take into account obstacles in incompressible viscous flows, *Numer. Math.* 81, 497 (1999).
 - H. J. H. Clercx, G. J. F. van Heijst, Dissipation of coherent structures in confined two-dimensional turbulence, *Phys. Fluids* 29, 111103 (2017).
 - P. G. Drazin, W. H. Reid, *Hydrodynamic Stability* (Cambridge University Press, 2nd ed. 2004): Rayleigh's criterion, Taylor–Couette flow.
@@ -1051,7 +1137,6 @@ In the walls case the histories differ from the start, since the end-wall layers
 - F. J. Harris, On the use of windows for harmonic analysis with the discrete Fourier transform, *Proc. IEEE* 66, 51 (1978).
 - J. C. R. Hunt, A. A. Wray, P. Moin, Eddies, streams, and convergence zones in turbulent flows, *Center for Turbulence Research Report* CTR-S88, 193 (1988).
 - J. Jeong, F. Hussain, On the identification of a vortex, *J. Fluid Mech.* 285, 69 (1995).
-- R. R. Kerswell, Elliptical instability, *Annu. Rev. Fluid Mech.* 34, 83 (2002).
 - A. N. Kolmogorov, The local structure of turbulence in incompressible viscous fluid for very large Reynolds numbers, *Dokl. Akad. Nauk SSSR* 30, 301 (1941).
 - R. H. Kraichnan, Inertial ranges in two-dimensional turbulence, *Phys. Fluids* 10, 1417 (1967).
 - R. H. Kraichnan, Inertial-range transfer in two- and three-dimensional turbulence, *J. Fluid Mech.* 47, 525 (1971).
@@ -1059,11 +1144,9 @@ In the walls case the histories differ from the start, since the end-wall layers
 - S. B. Pope, *Turbulent Flows* (Cambridge University Press, 2000).
 - Lord Rayleigh, On the dynamics of revolving fluids, *Proc. R. Soc. Lond. A* 93, 148 (1917).
 - W. S. Saric, Görtler vortices, *Annu. Rev. Fluid Mech.* 26, 379 (1994).
-- H. Schlichting, K. Gersten, *Boundary-Layer Theory* (Springer, 9th ed. 2017).
 - L. M. Smith, J. R. Chasnov, F. Waleffe, Crossover from two- to three-dimensional turbulence, *Phys. Rev. Lett.* 77, 2467 (1996).
 - G. I. Taylor, Stability of a viscous liquid contained between two rotating cylinders, *Phil. Trans. R. Soc. Lond. A* 223, 289 (1923).
 - G. I. Taylor, Production and dissipation of vorticity in a turbulent fluid, *Proc. R. Soc. Lond. A* 164, 15 (1938).
 - H. Tennekes, J. L. Lumley, *A First Course in Turbulence* (MIT Press, 1972).
 - F. Waleffe, On the three-dimensional instability of strained vortices, *Phys. Fluids A* 2, 76 (1990).
-- C. H. K. Williamson, Vortex dynamics in the cylinder wake, *Annu. Rev. Fluid Mech.* 28, 477 (1996).
 - Algorithms taken over from the 2D page: F. H. Harlow, J. E. Welch (1965); A. J. Chorin (1968); B. van Leer (1979); P. L. Roe (1986); A. Brandt (1977); W. L. Briggs et al. (2000); see the references of that page.

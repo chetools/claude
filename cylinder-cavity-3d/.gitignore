@@ -11,3 +11,6 @@ python/sweep/results_lowre/progress.log
 python/sweep/results_lowre/sweep.out
 python/sweep/results_final/progress.log
 python/sweep/results_final/sweep.out
+python/sweep/results_spec/progress.log
+python/sweep/results_spec/sweep.out
+python/sweep/results_spec/*_u.npy

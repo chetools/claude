@@ -180,7 +180,8 @@ The tolerances as implemented are:
 | solver | tolerance |
 |---|---|
 | JavaScript CPU (64-bit) against numpy | relative difference at most $10^{-12}$ |
-| WebGPU (32-bit) against numpy | relative difference at most $2\times10^{-3}$ |
+| WebGPU (32-bit), lattice Boltzmann, against numpy | relative difference at most $2\times10^{-3}$ (`lbm_cpu.js`) |
+| WebGPU (32-bit), finite volume, against numpy | relative difference at most $10^{-2}$ (`fv_cpu.js`) |
 
 Each row of the table shows the tolerance next to the measured difference and a pass or FAIL. The button for the lattice Boltzmann against the finite-volume solver (`crossCase` in `app.js`) is different: it runs
 one 2D case with both methods to about $t=2$ and prints the measured differences of $E$ and the torque with **no** pass/fail,

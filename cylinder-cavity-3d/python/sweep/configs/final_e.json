@@ -1,0 +1,7 @@
+{"defaults": {"N": 64, "Nz": 32, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "span": "periodic", "seed": 1e-3, "collision": "reg", "every_t": 0.1, "t_end": 20, "volume": true},
+ "cases": [
+  {"name": "s_Re100_vol", "Re": 100},
+  {"name": "s_Re100_2d_vol", "Re": 100, "Nz": 1},
+  {"name": "s_Re150_vol", "Re": 150},
+  {"name": "s_Re150_2d_vol", "Re": 150, "Nz": 1}
+ ]}
