@@ -11,7 +11,7 @@
 
 struct Params {
   n: i32, nz: i32, periodic: i32, offv: i32,
-  offw: i32, nseed: i32, pad0: i32, pad1: i32,
+  offw: i32, nseed: i32, tanh_mask: i32, pad1: i32,
   h: f32, nu: f32, dt: f32, R: f32,
   ro: f32, Omega: f32, omega_o: f32, eps: f32,
   seed: f32, Lz: f32, Uref: f32, dphi: f32,
@@ -191,8 +191,11 @@ fn centre(phi: f32) -> vec2<f32> { return vec2<f32>(0.5 + P.ro * cos(phi), 0.5 +
 fn body(x: vec2<f32>, phi: f32) -> vec3<f32> {
   let c = centre(phi);
   let d = x - c;
-  // clamp: some f32 tanh implementations return NaN for large arguments (exp overflow)
-  let chi = 0.5 * (1.0 - tanh(clamp((length(d) - P.R) / P.eps, -20.0, 20.0)));
+  let r = length(d);
+  var chi = clamp((P.R - r) / P.eps, 0.0, 1.0);          // linear ramp inside the circle (mask "ramp")
+  if (P.tanh_mask == 1) {                                // legacy mask; clamp: f32 tanh may return NaN for large arguments
+    chi = 0.5 * (1.0 - tanh(clamp((r - P.R) / P.eps, -20.0, 20.0)));
+  }
   let ub = -P.omega_o * (c.y - 0.5) - P.Omega * d.y;
   let vb = P.omega_o * (c.x - 0.5) + P.Omega * d.x;
   return vec3<f32>(chi, ub, vb);
@@ -277,20 +280,49 @@ fn cell_velocity(@builtin(global_invocation_id) g: vec3<u32>) {
 }
 
 // ------------------------------------------------------------ deliberate 3D seed
-// w0 = seed Uref sin(pi x) sin(pi y) sum_{m=1}^{M} cos(2 pi m z/Lz + m) on the w faces
+// curl(psi y-hat): u = -a F (W' S + W S') on the u faces, v = 0, w = a (dF/dx) W S on the w faces,
+// psi = a F W S, F = sin^2(pi x) sin(pi y), a = seed Uref (see seed_velocity in fv3d.py).
+// Returns (S, S', W, W') at height z.
+fn seed_z(z: f32) -> vec4<f32> {
+  let pi = 3.14159265358979;
+  var S = 0.0; var dS = 0.0;
+  for (var m = 1; m <= P.nseed; m++) {
+    let k = 2.0 * pi * f32(m) / P.Lz;
+    S += sin(k * z + f32(m)) / k;
+    dS += cos(k * z + f32(m));
+  }
+  if (P.periodic == 0) {
+    let s1 = sin(pi * z / P.Lz);
+    return vec4<f32>(S, dS, s1 * s1, pi / P.Lz * sin(2.0 * pi * z / P.Lz));
+  }
+  return vec4<f32>(S, dS, 1.0, 0.0);
+}
 @compute @workgroup_size(8, 8, 4)
 fn init_seed(@builtin(global_invocation_id) g: vec3<u32>) {
-  let i = i32(g.x); let j = i32(g.y); var k = i32(g.z); let n = P.n; let nz = P.nz;
-  if (i >= n || j >= n || k > nz) { return; }
-  let m = iw(i, j, k);
-  if (P.periodic == 0 && (k == 0 || k == nz)) { F[m] = 0.0; return; }
-  if (k == nz) { k = 0; }
+  let i = i32(g.x); let j = i32(g.y); let k = i32(g.z); let n = P.n; let nz = P.nz;
   let pi = 3.14159265358979;
-  let z = f32(k) * P.h;
-  var prof = 0.0;
-  for (var mm = 1; mm <= P.nseed; mm++) { prof += cos(2.0 * pi * f32(mm) * z / P.Lz + f32(mm)); }
-  let x = (f32(i) + 0.5) * P.h; let y = (f32(j) + 0.5) * P.h;
-  F[m] = P.seed * P.Uref * prof * (sin(pi * x) * sin(pi * y));
+  let a = P.seed * P.Uref;
+  if (k < nz && j < n && i <= n) {                       // u faces
+    let m = iu(i, j, k);
+    if (i == 0 || i == n) { F[m] = 0.0; }
+    else {
+      let z = seed_z((f32(k) + 0.5) * P.h);
+      let sx = sin(pi * f32(i) * P.h);
+      let Fxy = sx * sx * sin(pi * (f32(j) + 0.5) * P.h);
+      F[m] = (-a * Fxy) * (z.w * z.x + z.z * z.y);
+    }
+  }
+  if (i < n && j < n && k <= nz) {                       // w faces
+    let m = iw(i, j, k);
+    if (P.periodic == 0 && (k == 0 || k == nz)) { F[m] = 0.0; }
+    else {
+      var kk = k;
+      if (k == nz) { kk = 0; }                           // periodic: w[Nz] = w[0]
+      let z = seed_z(f32(kk) * P.h);
+      let dFdx = pi * sin(2.0 * pi * (f32(i) + 0.5) * P.h) * sin(pi * (f32(j) + 0.5) * P.h);
+      F[m] = (a * dFdx) * (z.z * z.x);
+    }
+  }
 }
 
 // ------------------------------------------------------------ diagnostics: torque and max |div|

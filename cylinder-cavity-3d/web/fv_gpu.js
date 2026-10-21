@@ -123,7 +123,7 @@
       this.bufs = B;
       // parameter uniform (80 bytes, see struct Params in fv.wgsl)
       const a = new ArrayBuffer(80), I = new Int32Array(a), Fl = new Float32Array(a);
-      I.set([N, Nz, p.span === "periodic" ? 1 : 0, nU, nU + nV, Math.min(4, Math.floor(Nz / 2)), 0, 0]);
+      I.set([N, Nz, p.span === "periodic" ? 1 : 0, nU, nU + nV, Math.min(4, Math.floor(Nz / 4)), p.mask === "tanh" ? 1 : 0, 0]);
       Fl.set([p.h, p.nu, p.dt, p.R, p.ro, p.Omega, p.omega_o, p.eps, p.seed, p.Lz, p.Uref, p.omega_o * p.dt], 8);
       this.paramBuf = dev.createBuffer({ size: 80, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
       this.owned.push(this.paramBuf);
@@ -195,12 +195,12 @@
     }
 
     // ------------------------------------------------------------- initial state, steps
-    // Fluid at rest plus the deliberate 3D seed on the w faces, one projection (16 V-cycles from q = 0).
+    // Fluid at rest plus the deliberate 3D seed (u and w faces), one projection (16 V-cycles from q = 0).
     initState() {
       const p = this.params, { N, Nz } = p;
       this.t = 0; this.nstep = 0; this.phi = 0;
       this.device.queue.writeBuffer(this.bufs.S, 0, new Uint32Array(8));
-      if (!(Nz > 1 && p.seed !== 0)) return;
+      if (!(Nz >= 4 && p.seed !== 0)) return;
       const enc = this.device.createCommandEncoder(), pass = enc.beginComputePass();
       this.kernel(pass, "init_seed", N, N, Nz + 1);
       this.kernel(pass, "divergence", N, N, Nz);

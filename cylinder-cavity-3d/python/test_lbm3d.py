@@ -378,25 +378,56 @@ def test_refill_with_orbit_stays_bounded_and_runs_diagnostics():
 
 
 # ---------------------------------------------------------------- deliberate 3D seed
-def test_seed_spanwise_content_at_t0():
-    """seed > 0: w0 = seed sin(pi x) sin(pi y) sum_m cos(2 pi m z/Lz + m) exactly, so the spanwise
-    Fourier modes m = 1..M have amplitude seed*sin sin/2 with phase m, and mode 0 and m > M vanish."""
-    p = L.make_params(N=16, Nz=16, seed=2e-3)
-    w = L.cell_velocity(L.init_state(p), p)[2]
-    x = (np.arange(16) + 0.5) / 16
-    sxy = np.outer(np.sin(np.pi * x), np.sin(np.pi * x))
-    spec = np.fft.rfft(w, axis=0) / 16
-    fl = ~L.init_state(p)["solid"]            # inside the cylinder the velocity is the body's (w = 0)
-    spec = spec[:, fl]
-    sxy = sxy[fl]
-    assert np.abs(spec[0]).max() < 1e-14
-    for m in range(1, 9):
-        if m <= 4:   # rfft of cos(2 pi m (k+1/2)/Nz + m): amplitude 1/2, phase m + pi m/Nz
-            expect = 0.5 * 2e-3 * sxy * np.exp(1j * (m + np.pi * m / 16))
-            assert np.abs(spec[m] - expect).max() < 1e-13
-        else:
-            assert np.abs(spec[m]).max() < 1e-14
-    assert np.abs(L.cell_velocity(L.init_state(L.make_params(N=16, Nz=1)), p)[2]).max() == 0
+def _div(U, h, periodic_z):
+    """Central-difference divergence (one-sided at the x, y walls and at z-walls)."""
+    d = np.gradient(U[0], h, axis=2) + np.gradient(U[1], h, axis=1)
+    d = d + (0.5 * (np.roll(U[2], -1, 0) - np.roll(U[2], 1, 0)) / h if periodic_z
+             else np.gradient(U[2], h, axis=0))
+    return d
+
+
+@pytest.mark.parametrize("span", ("periodic", "walls"))
+def test_seed_divergence_free_and_second_order(span):
+    """The stream-function seed is solenoidal: the central-difference divergence is far below the
+    size of the individual derivatives and falls at second order with the grid (Nz/N fixed)."""
+    ratios = []
+    for N in (16, 32, 64):
+        p = L.make_params(N=N, Nz=N // 2, seed=1e-3, span=span)
+        U = L.seed_velocity(p)
+        scale = max(np.abs(np.gradient(U[0], p["h"], axis=2)).max(), np.abs(np.gradient(U[2], p["h"], axis=0)).max())
+        d = _div(U, p["h"], span == "periodic")
+        inner = d[2:-2, 1:-1, 1:-1] if span == "walls" else d[:, 1:-1, 1:-1]       # z-wall one-sided rows excluded
+        ratios.append(np.abs(inner).max() / scale)
+    print(f"seed {span}: max|div|/max|grad| = {ratios}")
+    assert ratios[1] < 0.02 and ratios[2] < 0.005
+    assert ratios[0] / ratios[1] > 3 and ratios[1] / ratios[2] > 3         # second order is a factor 4
+
+
+def test_seed_spanwise_content_and_init():
+    """Periodic seed: u and w contain only spanwise modes 1..M (M = min(4, Nz//4)), no mean and no
+    Nyquist; init_state reproduces the seed velocity exactly on the fluid nodes; Nz < 4 has no seed."""
+    N, Nz = 32, 16
+    p = L.make_params(N=N, Nz=Nz, seed=2e-3)
+    U = L.seed_velocity(p)
+    spec = np.fft.rfft(U[[0, 2]], axis=1)
+    amp = np.abs(spec).max(axis=(0, 2, 3))
+    assert amp[0] < 1e-14 * amp[1:].max()
+    assert amp[1:5].min() > 1e-3 * amp[1:5].max()                  # modes 1..4 all present
+    assert amp[5:].max() < 1e-12 * amp.max()                       # nothing above M = 4 (no Nyquist)
+    assert np.abs(U[1]).max() == 0
+    s = L.init_state(p)
+    fluid = ~s["solid"]
+    Uc = L.cell_velocity(s, p)
+    assert np.abs(Uc[:, :, fluid] - U[:, :, fluid]).max() < 1e-12
+    assert np.abs(L.seed_velocity(L.make_params(N=16, Nz=2)) ).max() == 0
+    assert np.abs(L.seed_velocity(L.make_params(N=16, Nz=8, seed=0))).max() == 0
+    assert np.abs(L.seed_velocity(L.make_params(N=16, Nz=8)))[0].max() > 0      # M = 2
+
+
+def test_seed_walls_vanishes_towards_end_walls():
+    p = L.make_params(N=32, Nz=16, seed=1e-3, span="walls")
+    U = L.seed_velocity(p)
+    assert np.abs(U[:, 0]).max() < 0.02 * np.abs(U).max() and np.abs(U[:, -1]).max() < 0.02 * np.abs(U).max()
 
 
 @pytest.mark.parametrize("collision", COLLISIONS)
@@ -413,8 +444,8 @@ def test_seed_zero_stays_spanwise_uniform(collision):
     assert np.abs(U[2]).max() / scale < 1e-12
     # default seed: z-dependence is present from the start
     p2 = L.make_params(N=32, Nz=4, Re=1000, collision=collision)
-    s2 = L.init_state(p2)
-    assert np.abs(L.cell_velocity(s2, p2)[2]).max() > 1e-4 * p2["Uref"]
+    U2 = L.cell_velocity(L.init_state(p2), p2)
+    assert np.abs(U2 - U2[:, :1]).max() > 1e-4 * p2["Uref"]
 
 
 @pytest.mark.parametrize("R", (0.083, 0.0917, 0.1083))
@@ -444,3 +475,70 @@ def test_mass_conserved_long_run(span, Uo):
         L.step(s2, p2)
     if Uo == 0:                                  # with orbit the drift per step is 10x smaller
         assert abs(L.mean_density(s2, p2) - 1) > 1e-4
+
+
+# ---------------------------------------------------------------- default lattice speed
+def test_default_lattice_speed_rule():
+    """u_lb = min(0.05, U_body_max/(6 nu N)); tau <= 1 whenever the rule bites; explicit u_lb wins."""
+    p = L.make_params(N=64, Re=1.0)                      # nu = 0.2, Umax = 1
+    assert abs(p["u_lb"] - 1.0 / (6 * 0.2 * 64)) < 1e-15 and abs(p["tau"] - 1.0) < 1e-12
+    p = L.make_params(N=64, Re=200.0)
+    assert p["u_lb"] == 0.05 and p["tau"] < 1
+    p = L.make_params(N=64, Re=1.0, u_lb=0.05)
+    assert p["u_lb"] == 0.05 and p["tau"] > 2
+    p = L.make_params(N=32, Re=50.0, Uo=1.0)             # Umax = 1 + 5*0.3
+    assert abs(p["nu_lb"] - p["nu"] * p["dt"] * 32 ** 2) < 1e-15 and p["tau"] <= 1 + 1e-12
+
+
+# ---------------------------------------------------------------- torque through the public API
+def exact_spin_torque(R, nu, Omega, t, router=0.5, n=1500):
+    """Exact torque on an impulsively started rotating cylinder (azimuthal Navier-Stokes solution
+    u_theta(r, t): du/dt = nu (u'' + u'/r - u/r^2), u(R) = Omega R, u(router) = 0), by the method
+    of lines on a stretched radial grid.  Torque = 2 pi R^2 nu r d(u/r)/dr at r = R (rho = 1)."""
+    from scipy.integrate import solve_ivp
+    r = R + (router - R) * (np.linspace(0, 1, n) ** 3)
+    def rhs(_, ui):
+        u = np.concatenate([[Omega * R], ui, [0.0]])
+        dr1, dr2 = r[1:-1] - r[:-2], r[2:] - r[1:-1]
+        up = (u[2:] - u[1:-1]) / dr2 * dr1 / (dr1 + dr2) + (u[1:-1] - u[:-2]) / dr1 * dr2 / (dr1 + dr2)
+        upp = 2 * ((u[2:] - u[1:-1]) / dr2 - (u[1:-1] - u[:-2]) / dr1) / (dr1 + dr2)
+        return nu * (upp + up / r[1:-1] - u[1:-1] / r[1:-1] ** 2)
+    sol = solve_ivp(rhs, (0, t), np.zeros(n - 2), method="BDF", rtol=1e-10, atol=1e-13)
+    u = np.concatenate([[Omega * R], sol.y[:, -1], [0.0]])
+    g = u / r
+    # second-order one-sided derivative on the non-uniform grid
+    h1, h2 = r[1] - r[0], r[2] - r[1]
+    d = -(2 * h1 + h2) / (h1 * (h1 + h2)) * g[0] + (h1 + h2) / (h1 * h2) * g[1] - h1 / (h2 * (h1 + h2)) * g[2]
+    return 2 * np.pi * R ** 2 * nu * R * d
+
+
+def spin_torque_via_step(N, Nz, tend, **kw):
+    p = L.make_params(N=N, Nz=Nz, Re=100.0, ro=0.0, Us=1.0, Uo=0.0, seed=0, **kw)
+    s = L.init_state(p)
+    n = int(round(tend / p["dt"]))
+    for _ in range(n):
+        L.step(s, p)
+    return L.torque(s, p), s, p
+
+
+def test_public_torque_matches_exact_spin_up_and_scales_with_span():
+    """lbm3d.step + lbm3d.torque (sign, units, 1/Nz) against the exact impulsively-started-cylinder
+    solution at Re = 100, t = 1 (N=64, tolerance 3 %; measured about 0.5 %), and Nz = 1 vs Nz = 4
+    give the same torque per unit span to round-off (N=32)."""
+    T, s, p = spin_torque_via_step(64, 1, 1.0)
+    ex = exact_spin_torque(p["R"], p["nu"], p["Omega"], s["t"])
+    print(f"public torque N=64: {T:.6f}, exact {ex:.6f}, error {T / ex - 1:+.2%}")
+    assert ex < 0 and T < 0                                      # counter-clockwise spin: the fluid brakes it
+    assert abs(T / ex - 1) < 0.03
+    assert s["torque"] == T and abs(s["mass"] - (~s["solid"]).sum()) < 1e-9     # step stores torque and mass
+    T1, _, _ = spin_torque_via_step(32, 1, 0.3)
+    T4, _, _ = spin_torque_via_step(32, 4, 0.3)
+    print(f"Nz=1: {T1:.12f}  Nz=4: {T4:.12f}")
+    assert abs(T4 / T1 - 1) < 1e-10
+
+
+def test_run_history_carries_torque():
+    p = L.make_params(N=16, Nz=1, Re=50)
+    s, hist = L.run(p, 40, every=20)
+    assert [np.isfinite(h["torque"]) for h in hist] == [True, True]
+    assert hist[-1]["torque"] == L.torque(s, p)

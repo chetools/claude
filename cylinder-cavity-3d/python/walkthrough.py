@@ -127,7 +127,7 @@ figure([dict(type="scatter3d", mode="lines", x=_x, y=_y, z=_z, line=dict(width=4
         dict(type="scatter3d", mode="markers+text", x=lbm3d.C[:, 0], y=lbm3d.C[:, 1], z=lbm3d.C[:, 2],
              text=[str(q) for q in range(19)], textposition="top center",
              marker=dict(size=6 + 80 * lbm3d.W ** 1.0, color=lbm3d.W, colorscale="Viridis", showscale=True,
-                         colorbar=dict(title="w_q")), name="nodes")],
+                         colorbar=dict(title=dict(text="w_q"))), name="nodes")],
        title="The 19 lattice velocities (marker size and colour = weight)", showlegend=False,
        scene=dict(aspectmode="cube", xaxis=dict(title="cx"), yaxis=dict(title="cy"), zaxis=dict(title="cz")))
 '''),
@@ -842,7 +842,7 @@ _jm, _im = np.unravel_index(_chu.argmax(), _chu.shape)
 print(f"innermost u face: chi = {_chu[_jm, _im]:.4f},  |u* - u_body| = {abs(s_fv3['us'][0, _jm, _im] - _ubu[_jm, _im]):.3e}  ->  "
       f"|u - u_body| = {abs(pen_u[0, _jm, _im] - _ubu[_jm, _im]):.3e}")
 
-figure([dict(type="heatmap", z=chi_c, x=_xw[0], y=_yw[:, 0], colorscale="Greys", zmin=0, zmax=1, colorbar=dict(title="chi"))],
+figure([dict(type="heatmap", z=chi_c, x=_xw[0], y=_yw[:, 0], colorscale="Greys", zmin=0, zmax=1, colorbar=dict(title=dict(text="chi")))],
        title="Penalisation mask chi at the cell centres (phi = 0)", xaxis=dict(title="x"), yaxis=dict(title="y", scaleanchor="x"))
 '''),
 
@@ -1092,9 +1092,9 @@ print(f"rms(omega_z, 3D mid-plane - 2D) / rms(omega_z, 2D) over the fluid = "
 print(f"largest layer-to-layer variation of omega_z in the 3D run: {np.abs(_all - _all.mean(0, keepdims=True))[:, ~in_body].max():.2e} "
       f"(compare max |omega_z| = {np.abs(_all[:, ~in_body]).max():.2f})")
 
-figure([dict(type="heatmap", z=_blank(wz2d), x=_x, y=_x, colorscale="RdBu", zmin=-_zmax, zmax=_zmax, reversescale=True, colorbar=dict(title="omega_z"))],
+figure([dict(type="heatmap", z=_blank(wz2d), x=_x, y=_x, colorscale="RdBu", zmin=-_zmax, zmax=_zmax, reversescale=True, colorbar=dict(title=dict(text="omega_z")))],
        title="2D baseline (Nz = 1): omega_z", xaxis=dict(title="x"), yaxis=dict(title="y", scaleanchor="x"))
-figure([dict(type="heatmap", z=_blank(wz3d), x=_x, y=_x, colorscale="RdBu", zmin=-_zmax, zmax=_zmax, reversescale=True, colorbar=dict(title="omega_z"))],
+figure([dict(type="heatmap", z=_blank(wz3d), x=_x, y=_x, colorscale="RdBu", zmin=-_zmax, zmax=_zmax, reversescale=True, colorbar=dict(title=dict(text="omega_z")))],
        title="3D run, mid-span plane: omega_z", xaxis=dict(title="x"), yaxis=dict(title="y", scaleanchor="x"))
 '''),
 

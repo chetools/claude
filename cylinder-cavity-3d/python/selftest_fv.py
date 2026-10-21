@@ -29,6 +29,8 @@ CASES = [
     ("periodic Nz=4 spin+orbit", dict(BASE, Nz=4, span="periodic"), 40),
     ("walls Nz=4 spin+orbit",    dict(BASE, Nz=4, span="walls"), 40),
     ("periodic Nz=1 spin+orbit", dict(BASE, Nz=1, span="periodic"), 40),
+    ("walls Nz=8 spin+orbit",    dict(BASE, Nz=8, span="walls"), 30),
+    ("tanh mask Nz=4 periodic",  dict(BASE, Nz=4, span="periodic", mask="tanh"), 30),
     ("walls Nz=2 spin only",     dict(BASE, Nz=2, span="walls", Uo=0.0, Us=-1.0, seed=2e-3), 30),
     ("periodic Nz=8 orbit only", dict(BASE, Nz=8, span="periodic", Us=0.0, Uo=0.8, Re=200.0), 30),
 ]

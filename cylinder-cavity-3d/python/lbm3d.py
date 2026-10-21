@@ -83,11 +83,14 @@ def lattice_params(N, Nz, nu_lb, collision=DEFAULT_COLLISION, span="periodic",
 
 
 def make_params(N=64, Nz=1, Re=200.0, R=0.1, ro=0.2, Us=1.0, Uo=0.0, span="periodic",
-                u_lb=0.05, collision=DEFAULT_COLLISION, seed=1e-3):
+                u_lb=None, collision=DEFAULT_COLLISION, seed=1e-3):
     """Inputs -> dict of everything a time step needs (see SPEC.md).
 
     u_lb is the lattice speed of the fastest body point; it fixes dt:
     dt = u_lb h / U_body_max, then nu_lb = nu dt / h^2 and tau = 3 nu_lb + 1/2.
+    Default u_lb = min(0.05, U_body_max / (6 nu N)): Mach about 0.087 at most, and nu_lb <= 1/6
+    (tau <= 1) because the halfway bounce-back wall position drifts at large tau.
+    An explicit u_lb overrides the rule.
     """
     assert N >= 8 and N & (N - 1) == 0 and Nz >= 1 and Nz & (Nz - 1) == 0
     h = 1.0 / N
@@ -98,31 +101,60 @@ def make_params(N=64, Nz=1, Re=200.0, R=0.1, ro=0.2, Us=1.0, Uo=0.0, span="perio
     Omega = Us / R
     omega_o = Uo / ro if ro > 0 else 0.0
     Umax = abs(Us) + abs(omega_o) * (ro + R)        # fastest point of the body
-    dt = u_lb * h / (Umax or Uref)
+    Ub = Umax or Uref
+    if u_lb is None:
+        u_lb = min(0.05, Ub / (6.0 * nu * N))
+    dt = u_lb * h / Ub
     p = lattice_params(N, Nz, nu * dt / (h * h), collision, span)
     p.update(h=h, Lz=Nz * h, Re=Re, R=R, ro=ro, Us=Us, Uo=Uo, nu=nu, Omega=Omega,
              omega_o=omega_o, dt=dt, u_lb=u_lb, seed=seed, Uref=Uref)
     return p
 
 
-def init_state(p):
-    """Fluid at rest (rho = 1) plus the deliberate 3D seed (SPEC.md; none for Nz = 1 or seed = 0)
-        w0 = seed Uref sin(pi x) sin(pi y) sum_{m=1}^{M} cos(2 pi m z/Lz + m),  M = min(4, Nz//2),
-    as the equilibrium at that velocity.  The cylinder starts at phi = 0."""
+def seed_velocity(p):
+    """Deliberate 3D seed (SPEC.md), divergence-free, physical units, shape (3, Nz, N, N) at the nodes.
+    Stream function psi = seed Uref F(x,y) W(z) S(z) along y, velocity = curl(psi e_y):
+      F = sin^2(pi x) sin(pi y),  S = sum_{m=1}^{M} sin(k_m z + m)/k_m,  k_m = 2 pi m/Lz,
+      M = min(4, Nz//4),  W = 1 (periodic) or sin^2(pi z/Lz) (walls)
+      u = -seed Uref F (W' S + W S'),   v = 0,   w = seed Uref (dF/dx) W S."""
     N, Nz = p["N"], p["Nz"]
-    u = np.zeros((3, Nz, N, N))
-    if Nz > 1 and p["seed"] != 0:
-        x = (np.arange(N) + 0.5) / N
-        z = (np.arange(Nz) + 0.5) / Nz                      # z / Lz
-        prof = sum(np.cos(2 * np.pi * m * z + m) for m in range(1, min(4, Nz // 2) + 1))
-        sxy = np.outer(np.sin(np.pi * x), np.sin(np.pi * x))
-        u[2] = p["seed"] * p["Uref"] * prof[:, None, None] * sxy[None] * p["dt"] / p["h"]
+    U = np.zeros((3, Nz, N, N))
+    M = min(4, Nz // 4)
+    if M == 0 or p["seed"] == 0:
+        return U
+    Lz = Nz / N
+    x = (np.arange(N) + 0.5) / N
+    z = ((np.arange(Nz) + 0.5) / N)[:, None, None]
+    X, Y = x[None, None, :], x[None, :, None]
+    F = np.sin(np.pi * X) ** 2 * np.sin(np.pi * Y)
+    dFdx = np.pi * np.sin(2 * np.pi * X) * np.sin(np.pi * Y)
+    ks = [2 * np.pi * m / Lz for m in range(1, M + 1)]
+    S = sum(np.sin(k * z + m) / k for m, k in zip(range(1, M + 1), ks))
+    Sp = sum(np.cos(k * z + m) for m, k in zip(range(1, M + 1), ks))
+    if p["span"] == "walls":
+        Wz = np.sin(np.pi * z / Lz) ** 2
+        Wp = (np.pi / Lz) * np.sin(2 * np.pi * z / Lz)
+    else:
+        Wz, Wp = 1.0, 0.0
+    a = p["seed"] * p["Uref"]
+    U[0] = -a * F * (Wp * S + Wz * Sp)
+    U[2] = a * dFdx * Wz * S
+    return U
+
+
+def init_state(p):
+    """Fluid at rest (rho = 1) plus the deliberate 3D seed (seed_velocity; none for Nz < 4 or
+    seed = 0) as the equilibrium at that velocity.  The cylinder starts at phi = 0."""
+    N, Nz = p["N"], p["Nz"]
+    u = seed_velocity(p) * (p["dt"] / p["h"]) if "seed" in p else np.zeros((3, Nz, N, N))
     f = equilibrium(np.ones((Nz, N, N)), u)
-    s = dict(f=f, t=0.0, phi=0.0, nstep=0, solid=np.zeros((N, N), bool), exchange=np.zeros(3))
+    s = dict(f=f, t=0.0, phi=0.0, nstep=0, solid=np.zeros((N, N), bool), exchange=np.zeros(3),
+             torque=0.0, mass=float(f.sum()))
     if p.get("R", 0) > 0:
         body = make_body(0.0, p)
         s["solid"] = solid_mask(body, N)
         _reset_solid(s["f"], s["solid"], body)
+        s["mass"] = mass(s)
     return s
 
 
@@ -369,10 +401,7 @@ def refill(f, solid_old, solid_new, body, p):
     ub, vb = body["velocity"](ii + 0.5, jj + 0.5)
     u = np.zeros((3,) + rho.shape)
     u[0], u[1] = ub[None, :], vb[None, :]
-    neq = acc_neq / c if p.get("refill", "mean") == "mean" else 0.0
-    if p.get("refill_rho1", False):
-        rho = np.ones_like(rho)
-    f[:, :, jj, ii] = equilibrium(rho, u) + neq
+    f[:, :, jj, ii] = equilibrium(rho, u) + acc_neq / c
 
 
 # ------------------------------------------------------------------ one time step
@@ -396,6 +425,8 @@ def step(s, p):
     s["f"], s["solid"] = f, solid
     s["t"] += p["dt"]
     s["nstep"] += 1
+    s["torque"] = torque(s, p)                      # last step, so histories / diagnostics.summary carry it
+    s["mass"] = mass(s)
     return s
 
 
