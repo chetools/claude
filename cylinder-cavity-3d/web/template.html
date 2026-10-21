@@ -44,6 +44,7 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
 .theory th{background:#fafbfc}
 .theory code{background:#f3f4f6;padding:.05rem .3rem;border-radius:.25rem;font-size:.9em}
 .theory-layout{display:grid;grid-template-columns:15.5rem minmax(0,78ch);gap:2rem;align-items:start}
+.theory-layout.wide{grid-template-columns:15.5rem minmax(0,1fr)}   /* Code tab: plots and code need the width */
 .toc-box{position:sticky;top:.8rem;max-height:calc(100vh - 1.6rem);overflow-y:auto;font-size:.86rem;
   border-right:1px solid var(--card-border);padding-right:.6rem}
 .toc-box summary{cursor:pointer;font-weight:600;font-size:.95rem;margin-bottom:.3rem}
@@ -58,7 +59,7 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
   margin:0;font-size:.84rem;overflow-x:auto;white-space:pre}
 .wt-step{margin:1.6rem 0 2rem}
 .wt-stepnum{font-size:.82rem;font-weight:600;color:var(--st-red);text-transform:uppercase;letter-spacing:.04em}
-.wt-title{font-size:1.2rem;font-weight:600;margin:.1rem 0 .3rem}
+.wt-title{font-size:1.2rem;font-weight:600;margin:.1rem 0 .3rem;padding:0;border:none}
 .wt-prose{max-width:78ch}
 .wt-prose .eq{text-align:center;margin:.8rem 0;overflow-x:auto}
 .wt-code summary{cursor:pointer;color:var(--muted);font-size:.88rem}
@@ -80,7 +81,7 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
   .views,.plots{grid-template-columns:minmax(0,1fr)}
   .tabs{flex-wrap:wrap}
   .chart,.wt-plot,table.data{max-width:100%;overflow-x:auto}
-  .theory-layout{grid-template-columns:minmax(0,1fr)}
+  .theory-layout,.theory-layout.wide{grid-template-columns:minmax(0,1fr)}
   .toc-box{position:static;max-height:50vh;border-right:none;border-bottom:1px solid var(--card-border);
     padding:0 0 .5rem}
   .theory table{display:block;max-width:100%;overflow-x:auto}
@@ -159,6 +160,12 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
 
     <!-- ============================== CODE ============================== -->
     <section id="panel-code" class="tpanel" hidden>
+      <div class="theory-layout wide">
+        <details class="toc-box" id="toc-box-code" open>
+          <summary>Contents</summary>
+          <nav class="toc" id="toc-code" aria-label="Code contents"><!--CODE_TOC--></nav>
+        </details>
+        <div class="code-body"><!--CODE_BODY-->
       <div class="theory">@@CODE_GUIDE@@</div>
       <h2>Step-by-step breakdown</h2>
       <p>The Python reference explained one step at a time. Every output below was produced by actually running the
@@ -177,13 +184,15 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
       <p class="caption">The MoLab notebook is editable; run all cells once after opening</p>
       <details>
         <summary>Browser solver source (JavaScript)</summary>
-        <h3>cpu.js</h3>
+        <h4>cpu.js</h4>
         @@CPUJS_SRC@@
-        <h3>gpu.js</h3>
+        <h4>gpu.js</h4>
         @@GPUJS_SRC@@
-        <h3>tracers.js (flow particles)</h3>
+        <h4>tracers.js (flow particles)</h4>
         @@TRACERJS_SRC@@
       </details>
+      <!--/CODE_BODY--></div>
+      </div>
     </section>
   </div>
 </main>
@@ -201,15 +210,15 @@ window.PY_SRC = @@PY_SRC@@;
 </script>
 <script>@@APP_JS@@</script>
 <script>
-/* Theory table of contents: open on wide screens, closed on phones; highlight the section being read. */
-(function () {
-  var box = document.getElementById('toc-box'), links = [].slice.call(document.querySelectorAll('#toc a'));
+/* Tables of contents (Theory, Code): open on wide screens, closed on phones; highlight the section being read. */
+function tocSpy(boxId, navId, panelId) {
+  var box = document.getElementById(boxId), links = [].slice.call(document.querySelectorAll('#' + navId + ' a'));
   if (!box || !links.length) return;
   box.open = window.matchMedia('(min-width: 901px)').matches;
   var heads = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
   var cur = -1;
   function spy() {
-    if (document.getElementById('panel-theory').hidden) return;
+    if (document.getElementById(panelId).hidden) return;
     var k = 0;
     for (var i = 0; i < heads.length; i++) { if (heads[i].getBoundingClientRect().top <= 80) k = i; else break; }
     if (k === cur) return;
@@ -221,7 +230,9 @@ window.PY_SRC = @@PY_SRC@@;
   window.addEventListener('scroll', spy, { passive: true });
   document.querySelector('.tabs').addEventListener('click', function () { setTimeout(spy, 0); });
   spy();
-})();
+}
+tocSpy('toc-box', 'toc', 'panel-theory');
+tocSpy('toc-box-code', 'toc-code', 'panel-code');
 </script>
 </body>
 </html>

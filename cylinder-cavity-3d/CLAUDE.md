@@ -62,3 +62,7 @@ layouts, names, seed, diagnostics, web runtime) are in `python/SPEC.md` — read
   `app_make_page.py` must fill every template placeholder; regenerate `app_test.html` after any WGSL edit.
   `web/tests/app_ref.json` has no `exact` entry, so the stub page's full `?selftest` fails at the exact-solution
   step; use `app_exact_test.mjs` on the built page for the full self-test.
+
+## Page layout
+- **Contents boxes:** Theory and Code each have one (`add_toc`; the Code tab's is built after the page is
+  assembled, from the `<!--CODE_BODY-->` block, so the template's own headings and the breakdown steps are included).

@@ -173,25 +173,27 @@ def join_theory(physics, lbm):
             f"### Sections 9–17: lattice Boltzmann\n\n{l_refs}\n")
 
 
-def add_toc(body):
-    """Give every <h2>/<h3> of the rendered theory an id; return (body with ids, table-of-contents HTML)."""
+def add_toc(body, prefix="sec-", what="the theory"):
+    """Give every <h2>/<h3> of rendered HTML an id; return (body with ids, table-of-contents HTML).
+    A heading's attributes are kept; data-toc="..." gives a shorter label for the contents."""
     used, items = set(), []
 
     def tag(m):
-        level, inner = m.group(1), m.group(2)
+        level, attrs, inner = m.group(1), m.group(2) or "", m.group(3)
         plain = re.sub(r"<[^>]+>", "", inner)
         num = re.match(r"(\d+(?:\.\d+)*)\.?\s", plain)
-        slug = f"sec-{num.group(1).replace('.', '-')}" if num else \
-            "sec-" + (re.sub(r"[^a-z0-9]+", "-", plain.lower()).strip("-") or "x")
+        slug = f"{prefix}{num.group(1).replace('.', '-')}" if num else \
+            prefix + (re.sub(r"[^a-z0-9]+", "-", plain.lower()).strip("-") or "x")
         while slug in used:
             slug += "-b"
         used.add(slug)
-        items.append((level, slug, inner))
-        return f'<h{level} id="{slug}">{inner}</h{level}>'
+        label = re.search(r'data-toc="([^"]*)"', attrs)
+        items.append((level, slug, label.group(1) if label else inner))
+        return f'<h{level} id="{slug}"{attrs}>{inner}</h{level}>'
 
-    body = re.sub(r"<h([23])>(.*?)</h\1>", tag, body, flags=re.S)
+    body = re.sub(r"<h([23])((?:\s+[a-z-]+=\"[^\"]*\")*)>(.*?)</h\1>", tag, body, flags=re.S)
     if not items:
-        fail("the theory has no <h2>/<h3> headings, so the table of contents would be empty")
+        fail(f"{what} has no <h2>/<h3> headings, so the table of contents would be empty")
     toc = "".join(f'<a class="toc{lv}" href="#{sid}">{inner}</a>' for lv, sid, inner in items)
     return body, toc
 
@@ -217,7 +219,7 @@ def build_walkthrough(mods):
             divs.append(f'<div class="wt-plot" data-wt-plot="{key}"></div>')
         blocks.append(
             f'<div class="wt-step"><div class="wt-stepnum">Step {i + 1}</div>'
-            f'<div class="wt-title">{html.escape(cell["title"])}</div>'
+            f'<h3 class="wt-title" data-toc="{i + 1}. {html.escape(cell["title"])}">{html.escape(cell["title"])}</h3>'
             f'<div class="wt-prose">{md_to_html(cell["md"], mods)}</div>'
             f'<details class="wt-code" open><summary>Code</summary>{code_html(code, PythonLexer())}</details>'
             f'<div class="wt-out">{out}</div>'
@@ -337,6 +339,13 @@ def main():
     if set(parts) - used:
         fail(f"content not placed in the template (would be silently dropped): {sorted(set(parts) - used)}")
     page = PH_RE.sub(lambda m: parts[m.group(1)], tpl)
+    # Code tab: table of contents over everything between the CODE_BODY markers (guide, breakdown steps, notebook)
+    m = re.search(r"<!--CODE_BODY-->(.*?)<!--/CODE_BODY-->", page, re.S)
+    if not m or page.count("<!--CODE_TOC-->") != 1:
+        fail("template.html needs one <!--CODE_TOC--> and one <!--CODE_BODY--> ... <!--/CODE_BODY--> block")
+    code_body, code_toc = add_toc(m.group(1), prefix="code-", what="the Code tab")
+    page = page[:m.start()] + code_body + page[m.end():]
+    page = page.replace("<!--CODE_TOC-->", code_toc)
     left = sorted(set(PH_RE.findall(page)))
     if left:
         fail(f"placeholders left unfilled in the page: {left}")
