@@ -1,22 +1,7 @@
 {
-  "agree": {
-    "label": "Re 40, spin: 3D agrees with 2D",
-    "description": "Spinning cylinder, periodic span, below the onset of 3D flow. Measured (LBM, this grid): the small spanwise seed decays (σ ≈ −0.30 between t = 20 and 60), so the 3D run stays spanwise-uniform and matches the 2D baseline. On this grid the onset lies between Re 40 and Re 50 (σ ≈ +0.014 at Re 50).",
-    "inputs": {"method": "lbm", "span": "periodic", "Re": 40, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}
-  },
-  "transition": {
-    "label": "Re 100, spin: the seed grows",
-    "description": "Spinning cylinder, periodic span. Measured (LBM, this grid): the spanwise perturbation grows (σ ≈ 0.61) and the 3D enstrophy departs from the 2D baseline by more than 5 % at t ≈ 8.6; over t = 10–20 the 3D enstrophy is 2.6 times the 2D value and the torque 1.17 times.",
-    "inputs": {"method": "lbm", "span": "periodic", "Re": 100, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}
-  },
-  "turbulent": {
-    "label": "Re 800, spin + orbit: strongly 3D",
-    "description": "Spinning and orbiting cylinder, periodic span. Measured (LBM, this grid): the perturbation grows fast (σ ≈ 1.7), 27 % of the kinetic energy varies along the span over t = 10–20, shared by the spanwise modes k_z = 1, 2, 3, 4 in falling amounts (0.032, 0.0096, 0.0039, 0.0016), and the 3D enstrophy is 3.5 times the 2D value. The torque, averaged over t = 10–20, is about 5 times the 2D value.",
-    "inputs": {"method": "lbm", "span": "periodic", "Re": 800, "Us": 1.0, "Uo": 1.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}
-  },
-  "ekman": {
-    "label": "Re 200, spin, end walls: Ekman layers",
-    "description": "Spinning cylinder between stationary end walls. Measured (LBM, this grid): the flow is three-dimensional from the start (spanwise velocity appears at once, no growth phase); over t = 10–20 the 3D enstrophy is 5.9 times and the torque 3.1 times the 2D baseline, and the kinetic energy is about half of it.",
-    "inputs": {"method": "lbm", "span": "walls", "Re": 200, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}
-  }
+  "default": {"label": "Re 800, spin + orbit, finite volume, 128×128×64", "description": "Spinning and orbiting cylinder, periodic span, finite volumes on 128 × 128 × 64 cells (WebGPU; without it the CPU fallback uses a smaller grid), shown with 20 000 flow particles per panel.", "inputs": {"method": "fv", "span": "periodic", "Re": 800, "Us": 1.0, "Uo": 1.0, "ro": 0.2, "R": 0.1, "N": 128, "Nz": 64, "seed": 0.001}, "display": {"field": "speed", "particles": 20000, "trail": 0.2, "mode2d": "slice-xy", "mode3d": "volume"}},
+  "agree": {"label": "Re 40, spin: 3D agrees with 2D", "description": "Spinning cylinder, periodic span, below the onset of 3D flow. Measured (LBM, this grid): the small spanwise seed decays (σ ≈ −0.30 between t = 20 and 60), so the 3D run stays spanwise-uniform and matches the 2D baseline. On this grid the onset lies between Re 40 and Re 50 (σ ≈ +0.014 at Re 50).", "inputs": {"method": "lbm", "span": "periodic", "Re": 40, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}},
+  "transition": {"label": "Re 100, spin: the seed grows", "description": "Spinning cylinder, periodic span. Measured (LBM, this grid): the spanwise perturbation grows (σ ≈ 0.61) and the 3D enstrophy departs from the 2D baseline by more than 5 % at t ≈ 8.6; over t = 10–20 the 3D enstrophy is 2.6 times the 2D value and the torque 1.17 times.", "inputs": {"method": "lbm", "span": "periodic", "Re": 100, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}},
+  "turbulent": {"label": "Re 800, spin + orbit: strongly 3D", "description": "Spinning and orbiting cylinder, periodic span. Measured (LBM, this grid): the perturbation grows fast (σ ≈ 1.7), 27 % of the kinetic energy varies along the span over t = 10–20, shared by the spanwise modes k_z = 1, 2, 3, 4 in falling amounts (0.032, 0.0096, 0.0039, 0.0016), and the 3D enstrophy is 3.5 times the 2D value. The torque, averaged over t = 10–20, is about 5 times the 2D value.", "inputs": {"method": "lbm", "span": "periodic", "Re": 800, "Us": 1.0, "Uo": 1.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}},
+  "ekman": {"label": "Re 200, spin, end walls: Ekman layers", "description": "Spinning cylinder between stationary end walls. Measured (LBM, this grid): the flow is three-dimensional from the start (spanwise velocity appears at once, no growth phase); over t = 10–20 the 3D enstrophy is 5.9 times and the torque 3.1 times the 2D baseline, and the kinetic energy is about half of it.", "inputs": {"method": "lbm", "span": "walls", "Re": 200, "Us": 1.0, "Uo": 0.0, "ro": 0.2, "R": 0.1, "N": 64, "Nz": 32, "seed": 0.001}}
 }

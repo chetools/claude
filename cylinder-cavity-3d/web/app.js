@@ -78,7 +78,7 @@
       <div class="side-h">Display</div>
       ${select('in-field', 'Field', Object.keys(FIELDS).map((k) => [k, FIELDS[k].label]))}
       <div class="row2">${select('in-part', 'Flow particles', [[0, 'off'], [3000, '3 000'], [8000, '8 000'], [20000, '20 000'], [50000, '50 000']])}
-        <div class="field"><label for="in-trail">Trail length <span class="val" id="v-trail"></span></label><input type="range" id="in-trail" min="0" max="1" step="0.05" value="0.5"></div></div>
+        <div class="field"><label for="in-trail">Trail length <span class="val" id="v-trail"></span></label><input type="range" id="in-trail" min="0" max="7" step="1" value="3"></div></div>
       ${slider('in-slice', 'Slice position', 0, 1, 0.01, 0.5)}
       ${select('in-spf', 'Steps per frame', [[0, 'auto'], [1, '1'], [2, '2'], [5, '5'], [10, '10'], [20, '20'], [50, '50'], [100, '100']])}
       <div class="field check"><input type="checkbox" id="in-raw"><label for="in-raw">show raw torque samples</label></div>
@@ -143,6 +143,17 @@
     $('v-slice').textContent = (+$('in-slice').value).toFixed(2);
     $('cap-lz').textContent = `L_z = N_z / N = ${fmtG(q.Nz / q.N, 3)}  (${q.Nz} cells of size 1/${q.N})` +
       (Math.min(4, q.Nz >> 2) === 0 ? '. N_z < 4: the seed has no modes (SPEC: M = min(4, N_z // 4) = 0).' : '');
+  }
+  // a preset's optional display settings: {field, particles, trail (time units), mode2d, mode3d}
+  function applyDisplay(d) {
+    if (!d) return;
+    if (d.field && FIELDS[d.field]) { $('in-field').value = d.field; sim.crangeFresh = true; }
+    if (d.particles !== undefined) $('in-part').value = String(d.particles);
+    if (d.trail !== undefined) $('in-trail').value = String(Math.max(0, CC3.tracers.TRAIL_STEPS.indexOf(d.trail)));
+    for (const w of [2, 3]) {
+      const m = d['mode' + w + 'd'];
+      if (m && MODES.includes(m) && !(sim.backend === 'cpu' && /volume|isosurface/.test(m))) $(`mode${w}d`).value = m;
+    }
   }
   function setInputs(q) {
     const set = (id, v) => { if (v !== undefined) $(id).value = String(v); };
@@ -222,7 +233,7 @@
       const th = mode === 'slice-xy' ? Math.min(4 * p.h, p.Lz) : Math.min(4 * p.h, 1);      // slab of +-2 cells
       per[w] = { mode, rho: mode.startsWith('slice') ? np / p.Lz * th : np };            // 3D: per unit of box footprint
     }
-    const T = CC3.tracers.trailTime(+$('in-trail').value), urms = 0.5 * (sim.sref || 1);
+    const T = CC3.tracers.trailTime(+$('in-trail').value), urms = sim.urms || 0.5;
     for (const w of [2, 3]) {
       if (!sim.tracers[w]) continue;
       const target = per[2].mode === per[3].mode ? Math.min(per[2].rho, per[3].rho) : per[w].rho;
@@ -232,11 +243,17 @@
       sim.tracers[w].smax = sim.sref || 1;
     }
   }
+  // 1, 1.5, 2, 2.5, 3, 5 x 10^k: the smallest of these >= x
+  function niceUp(x) {
+    if (!(x > 0)) return 1;
+    const e = 10 ** Math.floor(Math.log10(x)), m = x / e;
+    return e * ([1, 1.5, 2, 2.5, 3, 5, 10].find((v) => v >= m * (1 - 1e-12)) || 10);
+  }
   function viewFor(w, S, p) {
     const r = sim.range || [0, 1];
     const phi = S.phi !== undefined ? S.phi : (p.omega_o || 0) * S.t;
     return { field: RFIELD[$('in-field').value], mode: $(`mode${w}d`).value, slice: +$('in-slice').value,
-      range: { lo: r[0], hi: r[1] }, phi, plain: +$('in-part').value > 0 };
+      range: { lo: r[0], hi: r[1] }, phi, plain: +$('in-part').value > 0, spin: (p.Omega || 0) * S.t };
   }
   async function drawPanels() {
     if (!sim.ready) return;
@@ -439,7 +456,8 @@
     }
     // trail ink is relative to the flow's own rms speed (box area 1: u_rms ~ sqrt(2E)), one reference for both panels
     const Emax = Math.max(r2.E, r3.E);
-    sim.sref = Emax > 0 ? 2 * Math.sqrt(2 * Emax) : 0.5 * (Math.max(Math.abs(sim.inp.Us), Math.abs(sim.inp.Uo)) || 1);
+    sim.urms = Emax > 0 ? Math.sqrt(2 * Emax) : 0.25 * (Math.max(Math.abs(sim.inp.Us), Math.abs(sim.inp.Uo)) || 1);
+    sim.sref = niceUp(2 * sim.urms);                         // top of the trail colour scale, rounded up to a nice number
     for (const w of [2, 3]) if (sim.tracers[w]) sim.tracers[w].smax = sim.sref;
     autoRange();
     updateMetrics();
@@ -610,7 +628,7 @@
       const pr = PRESETS[$('in-preset').value];
       $('preset-desc').textContent = pr ? pr.description || '' : '';
       if (!pr) return;
-      setInputs(pr.inputs); requestRebuild();
+      setInputs(pr.inputs); applyDisplay(pr.display); requestRebuild();
     });
     $('in-re').addEventListener('input', () => { sim.reExact = null; });     // moved by hand: back to slider values
     for (const id of ['in-re', 'in-us', 'in-uo', 'in-ro', 'in-r', 'in-slice']) $(id).addEventListener('input', showValues);
@@ -868,7 +886,7 @@
     // initial inputs: default preset, then URL overrides
     const ids = Object.keys(PRESETS);
     const pid = PRESETS[URLQ.get('preset')] ? URLQ.get('preset') : ids[0];
-    if (pid) { $('in-preset').value = pid; setInputs(PRESETS[pid].inputs); $('preset-desc').textContent = PRESETS[pid].description || ''; }
+    if (pid) { $('in-preset').value = pid; setInputs(PRESETS[pid].inputs); applyDisplay(PRESETS[pid].display); $('preset-desc').textContent = PRESETS[pid].description || ''; }
     const ov = {};
     for (const k of ['method', 'span']) if (URLQ.has(k)) ov[k] = URLQ.get(k);
     for (const k of ['Re', 'Us', 'Uo', 'ro', 'R', 'N', 'Nz', 'seed']) if (URLQ.has(k) && Number.isFinite(+URLQ.get(k))) ov[k] = +URLQ.get(k);

@@ -137,7 +137,7 @@ struct Params {
   h: f32, Lz: f32, R: f32, ro: f32,
   phi: f32, slice: f32, mode: u32, auto_range: u32,
   lo: f32, hi: f32, view_w: f32, view_h: f32,
-  steps: u32, opacity: f32, p0: f32, p1: f32,          // p0: 1 = plain slice (no field colouring)
+  steps: u32, opacity: f32, p0: f32, p1: f32,          // p0: 1 = plain slice (no field colouring); p1: spin angle of the body
   cam_pos: vec4<f32>,      // xyz eye, w = tan(fov/2)
   cam_r: vec4<f32>,        // xyz right, w = aspect
   cam_u: vec4<f32>,        // xyz up
@@ -226,7 +226,7 @@ fn fs_slice(@builtin(position) frag: vec4<f32>) -> @location(0) vec4<f32> {
   if (u < 0.0 || u > 1.0 || v < 0.0 || v > vmax) { return vec4<f32>(BG, 1.0); }
   var col = vec3<f32>(1.0);                         // P.p0 = 1: no field colouring (flow particles on)
   if (P.p0 < 0.5) { col = cmap(samp3(p), used_range()); }
-  if (fr < 0.0) { col = mix(col, GREY, 0.8); }
+  if (fr < 0.0) { col = mix(col, body_grey(p.xy), 0.85); }
   if (abs(fr) < 1.0 * fw) { col = INK; }
   return vec4<f32>(col, 1.0);
 }
@@ -270,9 +270,17 @@ fn cyl_hit(o: vec3<f32>, d: vec3<f32>, t0: f32, t1: f32) -> vec4<f32> {
   }
   return vec4<f32>(ts, 0.0, 0.0, -sign(d.z));          // already inside at the box entry: an end face
 }
-fn cyl_colour(h: vec4<f32>, d: vec3<f32>) -> vec3<f32> {
+// grey of the body at a point: 8 alternating light / dark sectors turning with the spin angle P.p1
+fn body_grey(pw: vec2<f32>) -> vec3<f32> {
+  let r = pw - cyl_centre();
+  let a = atan2(r.y, r.x) - P.p1;
+  let k = i32(floor(a / 0.7853981634));
+  if ((k & 1) == 1) { return GREY * 0.62; }
+  return GREY;
+}
+fn cyl_colour(h: vec4<f32>, d: vec3<f32>, pw: vec3<f32>) -> vec3<f32> {
   let n = vec3<f32>(h.y, h.z, h.w);
-  return GREY * (0.55 + 0.6 * abs(dot(n, -d)));
+  return body_grey(pw.xy) * (0.55 + 0.6 * abs(dot(n, -d)));
 }
 fn depth_of(pw: vec3<f32>) -> f32 {
   let c = P.vp * vec4<f32>(pw, 1.0);
@@ -320,7 +328,7 @@ fn fs_volume(@builtin(position) frag: vec4<f32>) -> VOut {
   var depth = 1.0;
   var bg = BG;
   if (hit) {
-    bg = cyl_colour(ch, d);
+    bg = cyl_colour(ch, d, o + d * ch.x);
     depth = depth_of(o + d * ch.x);
   }
   out.color = vec4<f32>(acc + T * bg, 1.0);
@@ -338,7 +346,7 @@ fn fs_cyl(@builtin(position) frag: vec4<f32>) -> VOut {
   if (tb.x >= tb.y) { discard; }
   let ch = cyl_hit(o, d, tb.x, tb.y);
   if (ch.x < 0.0) { discard; }
-  out.color = vec4<f32>(cyl_colour(ch, d), 1.0);
+  out.color = vec4<f32>(cyl_colour(ch, d, o + d * ch.x), 1.0);
   out.depth = depth_of(o + d * ch.x);
   return out;
 }

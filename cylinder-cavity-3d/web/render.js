@@ -19,7 +19,8 @@
 //                                       isoValue: number (absolute) or isoFrac (fraction of the auto range, default 0.4),
 //                                       opacity (volume, default 1), phi, blit: bool (offscreen only),
 //                                       recompute: false to skip computeFields (camera-only redraw),
-//                                       plain: true = no field colouring: white slices / only box and cylinder in 3D}
+//                                       plain: true = no field colouring: white slices / only box and cylinder in 3D,
+//                                       spin: the body's spin angle (its 8 grey sectors turn with it)}
 //                               draw() recomputes the fields unless view.recompute === false.  Returns a promise
 //                               (resolved when a blit copy is done; otherwise immediately).
 //   r.lastRange = {lo, hi, max, auto, signed}   range used by the colour bar (auto: read back asynchronously, so it
@@ -150,7 +151,10 @@
         c = view.plain ? [1, 1, 1] : signed ? diverging(Math.max(-1, Math.min(1, sample(u, v) / m))) : sequential((sample(u, v) - lo) / Math.max(hi - lo, 1e-30));
         const wx = mode === "slice-yz" ? f : u, wy = mode === "slice-xy" ? v : (mode === "slice-xz" ? f : u);
         const r = Math.hypot(wx - cx, wy - cy) - g.R;
-        if (r < 0) c = mix3(c, [0.55, 0.57, 0.62], 0.8);
+        if (r < 0) {                               // body: 8 alternating sectors turning with the spin angle
+          const k = Math.floor((Math.atan2(wy - cy, wx - cx) - (view.spin || 0)) / (Math.PI / 4));
+          c = mix3(c, (k & 1) ? [0.341, 0.353, 0.384] : [0.55, 0.57, 0.62], 0.85);
+        }
         if (Math.abs(r) < 1.2 * px / (mode === "slice-xy" ? 1 : 3)) c = [0.19, 0.2, 0.25];
       }
       const o = 4 * (py * W + pxx);
@@ -461,7 +465,7 @@
       pF[4] = g.h; pF[5] = g.Lz; pF[6] = g.R; pF[7] = g.ro;
       pF[8] = phi; pF[9] = view.slice === undefined ? 0.5 : view.slice; pU[10] = MODES[mode]; pU[11] = auto ? 1 : 0;
       pF[12] = auto ? 0 : view.range.lo; pF[13] = auto ? 1 : view.range.hi; pF[14] = W; pF[15] = H;
-      pU[16] = steps; pF[17] = view.opacity === undefined ? 1 : view.opacity; pF[18] = plain ? 1 : 0; pF[19] = 0;
+      pU[16] = steps; pF[17] = view.opacity === undefined ? 1 : view.opacity; pF[18] = plain ? 1 : 0; pF[19] = view.spin || 0;
       pF.set([...cam.eye, cam.tf], 20); pF.set([...cam.r, cam.asp], 24); pF.set([...cam.u, 0], 28); pF.set([...cam.f, 0], 32);
       pF.set([L.ox, L.oy, L.sc, 0], 36); pF.set(cam.vp, 40);
       device.queue.writeBuffer(paramsBuf, 0, pData);

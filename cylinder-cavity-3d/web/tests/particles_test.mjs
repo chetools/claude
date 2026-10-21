@@ -42,7 +42,7 @@ async function trailsVisible(page, w, label, min = 300) {     // pause, compare 
   await wait(page, 'CC3APP && CC3APP.sim.ready && CC3APP.sim.last && CC3APP.sim.s3.t > 0.3 && CC3APP.sim.tracers[3] && CC3APP.sim.tracers[3].frame > 8');
   const st = await page.evaluate(() => ({ n: +document.getElementById('in-part').value, T: CC3APP.sim.tracers[3].trailTime, keep2: CC3APP.sim.tracers[2].draw.keep, keep3: CC3APP.sim.tracers[3].draw.keep, f: CC3APP.sim.tracers[3].frame, sref: CC3APP.sim.sref }));
   console.log('cpu', JSON.stringify(st));
-  ok(st.n === 8000 && Math.abs(st.T - 0.05 * Math.sqrt(20)) < 1e-12, 'cpu: default 8000 particles, trail time 0.05*sqrt(20)');
+  ok(st.n === 8000 && st.T === 0.2, 'cpu: 8000 particles (preset without display settings), trail time 0.2');
   ok(Math.abs(st.keep2 - 0.25) < 1e-12 && st.keep3 === 1, `cpu xy slices, N = 32, Nz = 16 (slab of 4 cells = 1/4 of the span): the 2D panel draws 1/4 (${st.keep2}), the 3D panel all (${st.keep3})`);
   ok(await page.evaluate(() => [...document.querySelectorAll('#canvas2d')].length === 1 && !document.getElementById('trail-bar').hidden), 'cpu: speed colour bar shown');
   await page.click('#b-play');
@@ -58,7 +58,7 @@ async function trailsVisible(page, w, label, min = 300) {     // pause, compare 
   ok(await page.evaluate(() => CC3APP.sim.tracers[3] === null), 'cpu: off removes the tracers');
   await page.selectOption('#in-part', '3000'); await page.waitForTimeout(800);
   ok(await page.evaluate(() => CC3APP.sim.tracers[3].np === 3000), 'cpu: 3000 particles');
-  await page.fill('#in-trail', '1'); await page.dispatchEvent('#in-trail', 'input');
+  await page.fill('#in-trail', '7'); await page.dispatchEvent('#in-trail', 'input');
   ok(await page.evaluate(() => CC3APP.sim.tracers[3].trailTime === 1), 'cpu: trail length 1 -> 1 time unit');
   const v = await page.evaluate(async () => { const r = await CC3APP.runValidation({ cpu: true });
     return r.rows.filter((x) => x.method === 'particles').map((x) => [x.name, x.got, x.tol, x.pass]); });
@@ -91,6 +91,24 @@ async function trailsVisible(page, w, label, min = 300) {     // pause, compare 
     ok(await page.evaluate(() => CC3APP.sim.tracers[3].np === 50000 && CC3APP.sim.tracers[3].frame > 1), 'gpu: 50000 particles run');
   }
   ok(errs.length === 0, 'gpu: no console errors ' + errs.join(' / '));
+  await page.context().close();
+}
+// ---- 2b. first load without a preset: the default preset and its display settings, nice colour-bar top
+{
+  const { page, errs } = await open('?blit');
+  await wait(page, 'CC3APP && CC3APP.sim.ready && CC3APP.sim.last && CC3APP.sim.tracers[3]', 300000);
+  const d = await page.evaluate(() => { const q = (id) => document.getElementById(id).value, s = CC3APP.sim;
+    return { preset: q('in-preset'), method: q('in-method'), N: s.p3.N, Nz: s.p3.Nz, Re: s.inp.Re, Uo: s.inp.Uo, field: q('in-field'), part: q('in-part'),
+      T: s.tracers[3].trailTime, m2: q('mode2d'), m3: q('mode3d'), sref: s.sref, v: document.getElementById('v-trail').textContent,
+      hi: document.getElementById('tb-hi').textContent }; });
+  console.log('default', JSON.stringify(d));
+  const nice = (x) => { const e = 10 ** Math.floor(Math.log10(x)); return [1, 1.5, 2, 2.5, 3, 5, 10].some((v) => Math.abs(x / e - v) < 1e-9); };
+  ok(d.preset === 'default' && d.method === 'fv' && d.N === 128 && d.Nz === 64 && d.Re === 800 && d.Uo === 1, 'default preset: FV, 128x128x64, Re 800, spin + orbit');
+  ok(d.field === 'speed' && d.part === '20000' && d.T === 0.2 && d.m2 === 'slice-xy' && d.m3 === 'volume', 'default display: speed, 20 000 particles, trail 0.2, slice xy | volume');
+  ok(nice(d.sref) && d.v === '0.2 t.u.', `colour-bar top ${d.sref} is a nice number; trail label "${d.v}"`);
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: SH + 'particles_default.png', fullPage: false });
+  ok(errs.length === 0, 'default: no console errors ' + errs.join(' / '));
   await page.context().close();
 }
 // ---- 3. phone width

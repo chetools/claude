@@ -10,7 +10,7 @@
 // API
 //   CC3.tracers.velAt(U, g, x, y, z) -> [u, v, w]      trilinear interpolation of the cell-centred velocity
 //       U: velocity [c][k][j][i] (length 3*Nz*N*N), g = {N, Nz, h, Lz, span, R, ro}
-//   CC3.tracers.trailTime(s)                            slider 0..1 -> trail length in time units (0.05 .. 1)
+//   CC3.tracers.trailTime(i)                            slider step 0..7 -> trail length in time units (TRAIL_STEPS)
 //   CC3.tracers.SPEED_RAMP                              trail colour stops, slow -> fast (same as trails.wgsl ramp)
 //   CC3.tracers.keepHash(p)                             in [0, 1): particle p is drawn when keepHash(p) < keep
 //   new CC3.tracers.CpuTracers(g, count)                .advect(U, tau, phi, p), .drawSlice(ctx2d, view) (CPU fallback)
@@ -22,7 +22,8 @@
   "use strict";
   const CC3 = (root.CC3 = root.CC3 || {});
   const KPTS = 24;                                         // points per trail (the ring length)
-  const trailTime = (s) => 0.05 * 20 ** Math.min(Math.max(s, 0), 1);
+  const TRAIL_STEPS = [0.05, 0.1, 0.15, 0.2, 0.3, 0.5, 0.75, 1];   // trail lengths offered (time units)
+  const trailTime = (i) => TRAIL_STEPS[Math.min(Math.max(Math.round(i), 0), TRAIL_STEPS.length - 1)];
   const SPEED_RAMP = [[0.52, 0.63, 0.82], [0.30, 0.45, 0.80], [0.42, 0.18, 0.62], [0.12, 0.04, 0.22]];
   function rampColour(t) {
     const s = Math.min(Math.max(t, 0), 1) * 3, k = Math.min(Math.floor(s), 2), f = s - k, a = SPEED_RAMP[k], b = SPEED_RAMP[k + 1];
@@ -103,7 +104,7 @@
   // Trail ring: point (p, slot) = x y z w, w = |u| there, -1 = a path starts here, -2 = empty.
   class CpuTracers {
     constructor(g, count) {
-      this.g = g; this.np = count; this.kcap = KPTS; this.trailTime = trailTime(0.5);
+      this.g = g; this.np = count; this.kcap = KPTS; this.trailTime = trailTime(3);
       this.pos = new Float64Array(3 * count); this.age = new Float64Array(count);
       this.life = new Float64Array(count);                      // zero lifetimes: all spawn on the first move
       this.brk = new Uint8Array(count).fill(1);
@@ -184,7 +185,7 @@
   // ------------------------------------------------------------------ GPU tracers (web/trails.wgsl)
   class GpuTracers {
     constructor(device, g, count, wgsl) {
-      this.device = device; this.g = g; this.np = count; this.kcap = KPTS; this.trailTime = trailTime(0.5);
+      this.device = device; this.g = g; this.np = count; this.kcap = KPTS; this.trailTime = trailTime(3);
       this.frame = 0; this.head = 0; this.points = 0; this.clock = { t: 0 }; this.smax = 1; this.draw = { keep: 1, alpha: 0.8 };
       const U = GPUBufferUsage;
       this.mod = device.createShaderModule({ code: wgsl || document.getElementById("wgsl-trails").textContent });
@@ -414,6 +415,6 @@
     return cpuRows();
   }
 
-  CC3.tracers = { velAt, rk2, advectOne, schedule, trailTime, KPTS, SPEED_RAMP, rampColour, keepHash, pcg, CpuTracers, GpuTracers, selftest };
+  CC3.tracers = { velAt, rk2, advectOne, schedule, trailTime, TRAIL_STEPS, KPTS, SPEED_RAMP, rampColour, keepHash, pcg, CpuTracers, GpuTracers, selftest };
   if (typeof module !== "undefined") module.exports = CC3.tracers;
 })(typeof window !== "undefined" ? window : globalThis);

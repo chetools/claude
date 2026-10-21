@@ -39,3 +39,26 @@ layouts, names, seed, diagnostics, web runtime) are in `python/SPEC.md` — read
   (its files are on disk) instead of starting over. Commit work-in-progress often.
 - **Facts sheet:** `notes/facts_for_theory.md` is the single source of measured numbers for the theory
   writers; screening numbers are marked and never quoted as final.
+
+## Flow particles (web/tracers.js, web/trails.wgsl)
+- **Reference and port:** `tracers.js` (f64, readable) is the reference; `trails.wgsl` is checked against it in the
+  page self-test (positions ~4e-6 h, speeds ~6e-6). Re-seeding uses different random numbers on CPU and GPU, so
+  the parity test compares only particles neither side re-seeded or wrapped, and counts disagreements (must be 0).
+- **Velocity at a point:** trilinear between cell centres with the odd-mirror wall ghost (exactly 0 on the walls),
+  periodic z wrapped; RK2 midpoint in substeps of at most h/2 at the body's top speed.
+- **Trails:** 24 points spaced T/23 in simulated time (`schedule` splits each move exactly at those times; test:
+  frames of 0.0125 and 0.05 give the identical trail). The substep table goes to the GPU as a storage buffer
+  (lengths + "ends with a point" flags), not a bitmask, so the split can be uneven.
+- **Display:** with particles on, the field is not coloured (render `view.plain`). Slices show a +-2h slab, i.e. a
+  slab 4h thick, not 8h (a bug once). The 2D panel draws the subset `keepHash(p) < keep` so both panels have the
+  same particles per unit area. Opacity = 0.3 / (density x rms speed x T x one pixel), clamped to 0.2..0.85.
+  Segments under the cylinder's current position are hidden.
+- **Scale:** colour-bar top = 2 x rms speed of the more energetic run, rounded up to a nice number (`niceUp`).
+- **Body pattern:** 8 grey sectors turning with the spin angle Omega t (`body_grey` in render.wgsl, the same rule
+  in `drawSliceCPU`).
+- **Presets** may carry `display` settings (field, particles, trail, mode2d, mode3d); the first preset is what a
+  new visitor sees.
+- **Tests:** `web/tests/particles_test.mjs` (CPU + swiftshader GPU, all views, controls, default preset, 390 px).
+  `app_make_page.py` must fill every template placeholder; regenerate `app_test.html` after any WGSL edit.
+  `web/tests/app_ref.json` has no `exact` entry, so the stub page's full `?selftest` fails at the exact-solution
+  step; use `app_exact_test.mjs` on the built page for the full self-test.
