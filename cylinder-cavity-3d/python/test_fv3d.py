@@ -25,10 +25,11 @@ def no_body(p):
 
 # ------------------------------------------------------------ Nz = 1 is the 2D solver
 def test_nz1_periodic_matches_ns2d():
-    """Nz = 1, periodic: u, v, q, torque equal ns2d after 50 steps (tolerance 1e-13,
+    """With the legacy mask (mask="tanh", the one ns2d uses; the default mask is the new
+    linear ramp inside the circle, which ns2d does not have).  Nz = 1, periodic: u, v, q, torque equal ns2d after 50 steps (tolerance 1e-13,
     observed exactly 0 because every z-term is exactly zero); w stays exactly 0."""
     p2 = ns2d.make_params(N=32, **{k: v for k, v in SPIN_ORBIT.items() if k != 'seed'})
-    p3 = fv3d.make_params(N=32, Nz=1, **SPIN_ORBIT)
+    p3 = fv3d.make_params(N=32, Nz=1, mask="tanh", **SPIN_ORBIT)
     assert p2["dt"] == p3["dt"]
     s2, s3 = ns2d.init_state(p2), fv3d.init_state(p3)
     for _ in range(50):
@@ -77,36 +78,87 @@ def test_uniform_span_matches_2d_to_roundoff():
     assert abs(tn - t1) < 1e-10 * abs(t1)
 
 
-@pytest.mark.parametrize("span,Nz", [("periodic", 8), ("walls", 8)])
+@pytest.mark.parametrize("span,Nz", [("periodic", 16), ("walls", 16)])
 def test_seed_content(span, Nz):
-    """seed > 0: at t = 0 (after the initial projection) the flow contains only spanwise Fourier
-    modes kz = 1..M, M = min(4, Nz//2), with w ~ seed Uref sin(pi x) sin(pi y) sum cos(...).
-    Periodic: energy in modes kz = 0 and > M is below 1e-12 of the total (observed round-off).
-    Walls: w = 0 on both end walls. max |w| lies between 0.02 and 1 times seed Uref M.
-    Divergence below 1e-6 seed/h in both cases; seed = 0 and Nz = 1 give an exactly zero flow."""
+    """Stream-function seed (SPEC): M = min(4, Nz//4) = 4 modes.  Checks at t = 0, after the
+    initial projection:
+    * the analytic field is already divergence free on the grid to discretisation error: the
+      projection changes u, w by less than 3 percent of the seed amplitude (observed in print);
+    * after projection max |div| < 1e-9 seed / h;
+    * u = w = 0 on every wall (walls: also on the z walls);
+    * periodic: spanwise energy only in kz = 1..M (energy at kz = 0 and kz > M below 1e-12 of the
+      total; observed round-off), every mode in 1..M present;
+    * seed = 0, Nz = 1 and Nz = 2 (M = 0) give an exactly zero flow."""
     seed = 1e-3
-    p = fv3d.make_params(N=16, Nz=Nz, span=span, seed=seed, Us=2.0, Uo=0.0, ro=0.0)   # Uref = 2
+    p = fv3d.make_params(N=32, Nz=Nz, span=span, seed=seed, Us=2.0, Uo=0.0, ro=0.0)   # Uref = 2
     s = fv3d.init_state(p)
-    M = min(4, Nz // 2)
-    h = p["h"]
-    assert np.abs(fv3d.divergence(s["u"], s["v"], s["w"], h)).max() < 1e-6 * seed / h
-    wmax = np.abs(s["w"]).max()
-    amp = seed * p["Uref"] * M          # upper bound of |sum of M cosines|
-    print(span, "max|w|", wmax, "bound", amp)
-    assert 0.02 * amp < wmax < amp     # the projection removes most of w (w is nearly a gradient): ~0.06 amp observed
-    assert np.abs(s["u"]).max() > 0.1 * wmax   # the projection puts the rest into horizontal velocity
+    u0, v0, w0 = fv3d.seed_velocity(p)
+    a = seed * p["Uref"]
+    dproj = max(np.abs(s["u"] - u0).max(), np.abs(s["w"] - w0).max()) / a
+    print(span, "projection change / amplitude", dproj, "max|u|/a", np.abs(s["u"]).max() / a)
+    assert dproj < 0.03
+    assert np.abs(fv3d.divergence(s["u"], s["v"], s["w"], p["h"])).max() < 1e-9 * seed / p["h"]
+    assert np.abs(s["u"][:, :, [0, -1]]).max() == 0 and np.abs(s["v"][:, [0, -1], :]).max() == 0
     if span == "periodic":
         U = fv3d.cell_velocity(s, p)
         E = (np.abs(np.fft.rfft(U, axis=1)) ** 2).sum(axis=(0, 2, 3))     # energy per kz
-        outside = E[0] + E[M + 1:].sum()
+        M = min(4, Nz // 4)
         print("Ekz", E)
-        assert outside < 1e-12 * E.sum() and E[1:M + 1].min() > 0
+        assert E[0] + E[M + 1:].sum() < 1e-12 * E.sum() and E[1:M + 1].min() > 0
     else:
         assert np.abs(s["w"][0]).max() == 0 and np.abs(s["w"][-1]).max() == 0
-    for kw in (dict(seed=0.0, Nz=Nz), dict(seed=seed, Nz=1, span="periodic")):
+        assert np.abs(s["u"]).max() > 0.1 * a
+    for kw in (dict(seed=0.0, Nz=Nz), dict(seed=seed, Nz=1, span="periodic"), dict(seed=seed, Nz=2, span="periodic")):
         kw = dict(dict(N=16, span=span), **kw)
         s0 = fv3d.init_state(fv3d.make_params(**kw))
         assert all(np.all(s0[k] == 0) for k in "uvw")
+
+
+def test_step_stores_torque_and_maxdiv():
+    """step() stores s["torque"] and s["maxdiv"] (needed by diagnostics.summary); they equal torque() / divergence()."""
+    p = fv3d.make_params(N=16, Nz=4, **SPIN_ORBIT)
+    s = fv3d.init_state(p)
+    fv3d.step(s, p)
+    assert s["torque"] == fv3d.torque(s, p) and s["torque"] != 0.0
+    assert s["maxdiv"] == np.abs(fv3d.divergence(s["u"], s["v"], s["w"], p["h"])).max()
+
+
+# ------------------------------------------------------------ the body: exact torque
+EXACT_SPIN_TORQUE = -0.0028810071477625853
+# Impulsively started centred cylinder, R = 0.1, surface speed 1 (Omega = 10), nu = 0.002 (Re = 100), t = 5:
+# azimuthal flow in a circle of radius 0.5, computed by the independent solver notes/verify/annulus.py
+# (a finite-difference solution of u_t = nu (u_rr + u_r/r - u/r^2), an exact Navier-Stokes solution).
+# A circle of radius 0.5 or 0.7071 gives the same torque to 7 digits at t <= 5, so the square box is the same.
+
+
+def spin_torque_error(N, mask="ramp"):
+    p = fv3d.make_params(N=N, Nz=1, Re=100.0, Us=1.0, Uo=0.0, ro=0.0, mask=mask)
+    s = fv3d.init_state(p)
+    n = int(round(5.0 / p["dt"]))
+    T = []
+    for i in range(n):
+        fv3d.step(s, p)
+        if i >= n - 20:
+            T.append(s["torque"])                    # mean of the last 20 steps (t ~ 5)
+    return np.mean(T) / EXACT_SPIN_TORQUE - 1
+
+
+def test_spin_torque_exact_N32():
+    """Centred spinning cylinder vs the exact solution above.  Observed: +7.5 percent at N = 32;
+    tolerance 15 percent.  (The old tanh mask gave +299 percent: its tails locked the fluid
+    out to R + 2.7 h.)"""
+    err = spin_torque_error(32)
+    print("N=32 torque error", err)
+    assert abs(err) < 0.15
+
+
+@pytest.mark.slow
+def test_spin_torque_exact_N64_N128():
+    """Observed errors: N = 64 -0.7 percent, N = 128 -2.9 percent (N = 32: +7.5 percent).
+    The error does not decrease monotonically (a staircase-free but first-order mask); the
+    bound checked is 5 percent at N = 64 and 6 percent at N = 128 (N = 128 takes ~3 minutes)."""
+    assert abs(spin_torque_error(64)) < 0.05
+    assert abs(spin_torque_error(128)) < 0.06
 
 
 def test_small_perturbation_stays_bounded():
@@ -165,8 +217,8 @@ def test_poisson_vcycle_reduction(N, Nz, span):
 
 def test_divergence_after_projection_vs_vcycles():
     """max |div u| after the projection (N = 32, Nz = 8, spin+orbit, 30 steps).
-    Observed 1.08e-2, 1.14e-3, 1.9e-5 for 1, 2, 4 V-cycles; checked: strictly decreasing,
-    with tolerances 2e-2, 3e-3 and 1e-4."""
+    Observed 3.0e-2, 2.5e-3, 4.1e-5 for 1, 2, 4 V-cycles; checked: strictly decreasing,
+    with tolerances 5e-2, 5e-3 and 1e-4."""
     maxdiv = {}
     for vc in (1, 2, 4):
         p = fv3d.make_params(N=32, Nz=8, vcycles=vc, **SPIN_ORBIT)
@@ -175,7 +227,7 @@ def test_divergence_after_projection_vs_vcycles():
             fv3d.step(s, p)
         maxdiv[vc] = fv3d.stats(s, p)["maxdiv"]
     assert maxdiv[1] > maxdiv[2] > maxdiv[4]
-    assert maxdiv[1] < 2e-2 and maxdiv[2] < 3e-3 and maxdiv[4] < 1e-4
+    assert maxdiv[1] < 5e-2 and maxdiv[2] < 5e-3 and maxdiv[4] < 1e-4
 
 
 # ------------------------------------------------------------ exact solution

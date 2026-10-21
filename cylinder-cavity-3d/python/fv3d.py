@@ -26,7 +26,7 @@ import numpy as np
 
 # ----------------------------------------------------------------- parameters
 def make_params(N=64, Nz=1, Re=200.0, R=0.1, ro=0.2, Us=1.0, Uo=0.0, span="periodic", seed=1e-3,
-                cfl=0.3, fdiff=0.05, width=1.0, vcycles=2, nu1=2, nu2=2, ncoarse=40):
+                cfl=0.3, fdiff=0.05, width=1.0, mask="ramp", vcycles=2, nu1=2, nu2=2, ncoarse=40):
     """Inputs -> dict of everything a time step needs.
 
     Us  spin surface speed  Omega R   (sign = direction, + is counter-clockwise)
@@ -51,25 +51,61 @@ def make_params(N=64, Nz=1, Re=200.0, R=0.1, ro=0.2, Us=1.0, Uo=0.0, span="perio
     # it also makes dt independent of Nz (needed for the Nz = 1 <-> Nz > 1 comparison).
     dt = 1.0 / (Umax / (cfl * h) + nu / (fdiff * h * h))      # both limits, combined
     return dict(N=N, Nz=Nz, h=h, Lz=Nz * h, span=span, Re=Re, R=R, ro=ro, Us=Us, Uo=Uo,
-                nu=nu, Uref=Uref, seed=seed, Omega=Omega, omega_o=omega_o, dt=dt, eps=width * h, vcycles=vcycles,
+                mask=mask, nu=nu, Uref=Uref, seed=seed, Omega=Omega, omega_o=omega_o, dt=dt, eps=width * h, vcycles=vcycles,
                 nu1=nu1, nu2=nu2, ncoarse=ncoarse)
 
 
-def init_state(p):
-    """Fluid at rest plus the deliberate 3D seed (none for Nz = 1 or seed = 0):
-    w0 = seed Uref sin(pi x) sin(pi y) sum_{m=1}^{M} cos(2 pi m z/Lz + m),  M = min(4, Nz//2),
-    on the w faces, then one projection so that the state is divergence free."""
-    s = _rest_state(p)
-    Nz, N, h = p["Nz"], p["N"], p["h"]
-    if Nz > 1 and p["seed"] != 0:
-        x = (np.arange(N) + 0.5) * h
-        z = np.arange(Nz + 1) * h
-        prof = sum(np.cos(2 * np.pi * m * z / p["Lz"] + m) for m in range(1, min(4, Nz // 2) + 1))
-        s["w"] = p["seed"] * p["Uref"] * prof[:, None, None] * np.outer(np.sin(np.pi * x), np.sin(np.pi * x))[None]
+def seed_velocity(p):
+    """The deliberate 3D seed: an analytic divergence-free velocity curl(psi y-hat),
+    u = -dpsi/dz, v = 0, w = dpsi/dx, with the stream function
+        psi = seed Uref F(x,y) W(z) S(z),   F = sin^2(pi x) sin(pi y),
+        S(z) = sum_{m=1}^{M} sin(k_m z + m) / k_m,  k_m = 2 pi m / Lz,  M = min(4, Nz//4),
+        W = 1 (periodic)  or  sin^2(pi z / Lz) (walls),
+    so  u = -a F (W' S + W S'),  w = a (dF/dx) W S,  a = seed Uref,  dF/dx = pi sin(2 pi x) sin(pi y).
+    It is evaluated on the u faces and the w faces.  u = w = 0 on every wall."""
+    N, Nz, h, Lz = p["N"], p["Nz"], p["h"], p["Lz"]
+    M = min(4, Nz // 4)
+    u = np.zeros((Nz, N, N + 1))
+    v = np.zeros((Nz, N + 1, N))
+    w = np.zeros((Nz + 1, N, N))
+    if M == 0 or p["seed"] == 0:
+        return u, v, w
+    a = p["seed"] * p["Uref"]
+
+    def zfun(z):                                   # S, S' and W, W' at the heights z
+        k = 2 * np.pi * np.arange(1, M + 1)[:, None] / Lz
+        S = (np.sin(k * z + np.arange(1, M + 1)[:, None]) / k).sum(axis=0)
+        dS = np.cos(k * z + np.arange(1, M + 1)[:, None]).sum(axis=0)
         if p["span"] == "walls":
-            s["w"][[0, -1]] = 0.0
+            W, dW = np.sin(np.pi * z / Lz) ** 2, np.pi / Lz * np.sin(2 * np.pi * z / Lz)
         else:
-            s["w"][-1] = s["w"][0]
+            W, dW = np.ones_like(z), np.zeros_like(z)
+        return S, dS, W, dW
+    zc = (np.arange(Nz) + 0.5) * h                 # u sits at cell-centre heights
+    zf = np.arange(Nz + 1) * h                     # w sits at face heights
+    xu, yu = np.arange(N + 1) * h, (np.arange(N) + 0.5) * h
+    xw = yw = (np.arange(N) + 0.5) * h
+    S, dS, W, dW = zfun(zc)
+    F = np.sin(np.pi * xu)[None, :] ** 2 * np.sin(np.pi * yu)[:, None]          # [j, i]
+    u[:] = -a * F[None] * (dW * S + W * dS)[:, None, None]
+    u[:, :, [0, -1]] = 0.0                         # sin^2(pi) is 1e-32, not 0
+    S, dS, W, dW = zfun(zf)
+    dFdx = np.pi * np.sin(2 * np.pi * xw)[None, :] * np.sin(np.pi * yw)[:, None]
+    w[:] = a * dFdx[None] * (W * S)[:, None, None]
+    if p["span"] == "walls":
+        w[[0, -1]] = 0.0                           # sin^2(pi) is 1e-32, not 0
+    else:
+        w[-1] = w[0]
+    return u, v, w
+
+
+def init_state(p):
+    """Fluid at rest plus the deliberate 3D seed (seed_velocity; none for Nz < 4 or seed = 0),
+    followed by one projection so that the discrete field is exactly divergence free."""
+    s = _rest_state(p)
+    if p["Nz"] >= 4 and p["seed"] != 0:
+        h = p["h"]
+        s["u"], s["v"], s["w"] = seed_velocity(p)
         rhs = divergence(s["u"], s["v"], s["w"], h)
         solve_pressure(s["q"], rhs, dict(p, vcycles=16))
         s["u"], s["v"], s["w"] = project(s["u"], s["v"], s["w"], s["q"], h, p["span"])
@@ -82,7 +118,7 @@ def _rest_state(p):
     return dict(u=np.zeros((Nz, N, N + 1)), v=np.zeros((Nz, N + 1, N)), w=np.zeros((Nz + 1, N, N)),
                 ru=np.zeros((Nz, N, N + 1)), rv=np.zeros((Nz, N + 1, N)), rw=np.zeros((Nz + 1, N, N)),
                 us=np.zeros((Nz, N, N + 1)), vs=np.zeros((Nz, N + 1, N)), ws=np.zeros((Nz + 1, N, N)),
-                q=np.zeros((Nz, N, N)), t=0.0, phi=0.0, spin=0.0, dt_prev=0.0, nstep=0)
+                q=np.zeros((Nz, N, N)), torque=0.0, maxdiv=0.0, t=0.0, phi=0.0, spin=0.0, dt_prev=0.0, nstep=0)
 
 
 # ----------------------------------------------------------------- ghost values
@@ -215,12 +251,17 @@ def body_centre(phi, p):
 
 
 def body_mask_velocity(x, y, phi, p):
-    """Smoothed indicator chi (1 inside, 0 outside, tanh over ~eps) and the
+    """Smoothed indicator chi (1 inside, 0 outside; default: linear ramp from r = R - eps
+    to r = R, eps = width h) and the
     rigid-body velocity (orbit of the centre + spin about it) at points x, y.
     The body does not depend on z; its z-velocity is 0."""
     cx, cy = body_centre(phi, p)
     dx, dy = x - cx, y - cy
-    chi = 0.5 * (1 - np.tanh((np.hypot(dx, dy) - p["R"]) / p["eps"]))
+    r = np.hypot(dx, dy)
+    if p.get("mask", "ramp") == "tanh":            # legacy (ns2d) mask: tails reach ~3 cells outside R
+        chi = 0.5 * (1 - np.tanh((r - p["R"]) / p["eps"]))
+    else:                                          # linear ramp lying INSIDE the circle:
+        chi = np.clip((p["R"] - r) / p["eps"], 0.0, 1.0)     # 0 for r >= R, 1 for r <= R - eps
     w, W = p["omega_o"], p["Omega"]
     ub = -w * (cy - 0.5) - W * dy
     vb = w * (cx - 0.5) + W * dx
@@ -395,6 +436,8 @@ def step(s, p):
     s["spin"] += p["Omega"] * dt
     s["dt_prev"] = dt
     s["nstep"] += 1
+    s["torque"] = torque(s, p)                     # last step, for diagnostics.summary
+    s["maxdiv"] = np.abs(divergence(s["u"], s["v"], s["w"], p["h"])).max()
     return s
 
 
@@ -410,7 +453,8 @@ def cell_velocity(s, p=None):
 def torque(s, p):
     """z-torque of the fluid ON the body about its centre, per unit span.
     From the penalisation force (per volume) the body puts on the fluid,
-    f = chi (u_body - u*) / dt, summed over interior faces; the body feels minus that."""
+    f = chi (u_body - u*) / dt, summed over interior faces; the body feels minus that.
+    This is exactly the force of the penalisation step that used the same chi."""
     h, dt, Nz = p["h"], p["dt"], p["Nz"]
     xu, yu, xv, yv, xw, yw = face_coords(p)
     cx, cy = body_centre(s["phi"], p)

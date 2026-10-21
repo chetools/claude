@@ -369,7 +369,10 @@ def refill(f, solid_old, solid_new, body, p):
     ub, vb = body["velocity"](ii + 0.5, jj + 0.5)
     u = np.zeros((3,) + rho.shape)
     u[0], u[1] = ub[None, :], vb[None, :]
-    f[:, :, jj, ii] = equilibrium(rho, u) + acc_neq / c
+    neq = acc_neq / c if p.get("refill", "mean") == "mean" else 0.0
+    if p.get("refill_rho1", False):
+        rho = np.ones_like(rho)
+    f[:, :, jj, ii] = equilibrium(rho, u) + neq
 
 
 # ------------------------------------------------------------------ one time step
@@ -379,7 +382,7 @@ def step(s, p):
     s["phi"] += p["omega_o"] * p["dt"]
     body = make_body(s["phi"], p)
     solid = solid_mask(body, N)
-    mode = p.get("node_exchange", "abs")
+    mode = p.get("node_exchange", "none")
     F_nodes = node_exchange(s["f"], ~s["solid"] & solid, body, p, +1.0, mode)       # covered: fluid -> body
     refill(s["f"], s["solid"], solid, body, p)
     F_nodes += node_exchange(s["f"], s["solid"] & ~solid, body, p, -1.0, mode)      # uncovered: body -> fluid
