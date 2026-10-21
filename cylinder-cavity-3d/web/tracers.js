@@ -23,7 +23,7 @@
   const CC3 = (root.CC3 = root.CC3 || {});
   const KPTS = 24;                                         // points per trail (the ring length)
   const trailTime = (s) => 0.05 * 20 ** Math.min(Math.max(s, 0), 1);
-  const SPEED_RAMP = [[0.66, 0.74, 0.86], [0.30, 0.45, 0.80], [0.42, 0.18, 0.62], [0.12, 0.04, 0.22]];
+  const SPEED_RAMP = [[0.52, 0.63, 0.82], [0.30, 0.45, 0.80], [0.42, 0.18, 0.62], [0.12, 0.04, 0.22]];
   function rampColour(t) {
     const s = Math.min(Math.max(t, 0), 1) * 3, k = Math.min(Math.floor(s), 2), f = s - k, a = SPEED_RAMP[k], b = SPEED_RAMP[k + 1];
     return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];

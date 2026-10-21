@@ -102,7 +102,7 @@ struct TOut { @builtin(position) pos: vec4<f32>, @location(0) col: vec4<f32> };
 
 // trail colour by speed, t = |u| / smax in [0, 1]: light blue (slow) .. near black (fast); tracers.js SPEED_RAMP
 fn ramp(t0: f32) -> vec3<f32> {
-  var c = array<vec3<f32>, 4>(vec3<f32>(0.66, 0.74, 0.86), vec3<f32>(0.30, 0.45, 0.80),
+  var c = array<vec3<f32>, 4>(vec3<f32>(0.52, 0.63, 0.82), vec3<f32>(0.30, 0.45, 0.80),
     vec3<f32>(0.42, 0.18, 0.62), vec3<f32>(0.12, 0.04, 0.22));
   let s = clamp(t0, 0.0, 1.0) * 3.0;
   let k = min(i32(floor(s)), 2);
