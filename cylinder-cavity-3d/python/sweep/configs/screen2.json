@@ -1,0 +1,8 @@
+{"defaults": {"N": 64, "Nz": 32, "Us": 1.0, "ro": 0.2, "span": "periodic", "seed": 1e-3, "t_end": 20, "collision": "reg", "every_t": 0.1},
+ "cases": [
+  {"name": "s_Re50", "Uo": 0.0, "Re": 50},
+  {"name": "so_Re50", "Uo": 1.0, "Re": 50},
+  {"name": "so_Re25", "Uo": 1.0, "Re": 25},
+  {"name": "s_Re25", "Uo": 0.0, "Re": 25},
+  {"name": "so_Re200_Lz1", "Uo": 1.0, "Re": 200, "Nz": 64, "t_end": 12}
+ ]}

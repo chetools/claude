@@ -7,3 +7,5 @@ python/sweep/results/sweep.out
 notes/verify/out/*.npz
 notes/verify/out/*.npy
 python/sweep/results_fv/*.log
+python/sweep/results_lowre/progress.log
+python/sweep/results_lowre/sweep.out
