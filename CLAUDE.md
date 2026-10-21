@@ -4,6 +4,10 @@
 
 - **Ask first, in one batch.** Before building anything non-trivial, ask the open design questions together, each
   with a recommended option. Proceed on the recommendation for anything left unanswered, and say which defaults were used.
+- **Work as a coordinator with parallel subagents.** Split every task into sections that can run in parallel
+  (coding, verification, reference search, theory writing) and hand each to its own subagent. Use Sonnet 5.5 for
+  substantial sections and Haiku 5.5 for simpler ones (searches, checks, boilerplate). The coordinator integrates
+  and verifies the results.
 - **Build only what was asked for.** No unrequested extras: derived verdicts, benchmark tabs, criteria, or "see also"
   notes. When a request says "X or Y", ask which one. Extras added on my own initiative get removed later.
 - **No unverified claims.** Every number, comparison with the literature or physical statement shown to the user is
@@ -180,4 +184,3 @@ project gets a new top-level directory.
     never conflicts, because they touch other directories.
 - Publishing: update only `gh-pages:<dir>/` (and the root `index.html` link list), in a git worktree.
 - Before delivering, follow the verification checklist above.
-- Don't spawn subagents to explore a single directory.
