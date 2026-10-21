@@ -1,20 +1,23 @@
-# cylinder-cavity-ns: lessons
+# cylinder-cavity-ns: project notes
 
-These lessons come from the `CLAUDE.md` on the old `claude/dazzling-euler-f9ftbv` branch. They apply to this directory; the repo-wide rules are in the root `CLAUDE.md`.
+The general rules (verification, numerics, WebGPU, visualisation, publishing) are in the root `CLAUDE.md` under
+"General practices by topic". Only notes specific to this page are here.
 
-- Use three implementations with the same names: a numpy reference (pytest), a float64 JS port (CPU fallback) and
-  the WGSL kernels. A page **Validation** tab and a `?selftest` URL option (which sets `window.SELFTEST`) compare
-  them against numpy values embedded at build time.
-- URL options worth repeating on GPU pages:
-  - `?blit` (offscreen render for headless tests; also used by Save PNG);
+- **Three implementations with the same function names:**
+  - `python/ns2d.py`, the numpy reference, checked by pytest;
+  - `web/cpu.js`, the float64 JS port and CPU fallback;
+  - `web/shaders.wgsl`, the GPU kernels.
+
+  The Validation tab (also `?selftest`) compares JS and GPU against numpy values embedded by `build.py`
+  (`SELFTEST` case: N = 64, Re 200, spin and orbit, 100 steps).
+- **URL options:**
+  - `?blit` (offscreen render, for headless tests);
   - `?cpu` (force the fallback);
-  - `?preset=…&N=…`.
-- WebGPU details:
-  - keep a reference to the adapter;
-  - check `getCompilationInfo()`;
-  - use explicit bind-group layouts per kernel;
-  - avoid WGSL reserved words such as `active`.
-- AB2 with `dt = min(dt_cfl, dt_diff)` blew up where the two limits cross. Adding the reciprocals,
-  `dt = 1/(1/dt_cfl + 1/dt_diff)`, fixed it.
-- `Plotly.react` with arrays mutated in place needs a changing `datarevision`. Keep metric-card sub-labels short,
-  with `white-space: nowrap`.
+  - `?preset=spin-lam|orbit-lam|orbit-shed|spin-high|turb`;
+  - `?N=64…1024`;
+  - `?field=0..3`.
+- **Time step:** `dt = 1/(1/dt_cfl + 1/dt_diff)` (CFL 0.3, diffusion number 0.05). With `min()`, the orbit case at
+  Re ≈ 100, N = 128 blew up, because that is where the two limits are equal.
+- **Re uses the larger of the spin and orbit speeds.** Speed and size sliders keep ν fixed, and Re follows.
+- **Presets and regime text** come from numpy runs (N = 128, 10–20 time units), not from the literature. Re-run
+  before changing them.

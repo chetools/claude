@@ -25,8 +25,11 @@
   - Only then hand over the shareable link.
 - **Make builds fail loudly.** Guard against silent no-ops, such as unfilled template placeholders.
 
-## More general working practices (learned on cylinder-cavity-ns)
+## General practices by topic
 
+These complement the rules above. They apply to every project.
+
+### Answering and claims
 - **Verify, don't recall.**
   - Before stating a physical, numerical or performance claim (regime boundaries, accuracy, speed-ups), run the
     code and report what it shows.
@@ -34,26 +37,51 @@
 - **When a result looks wrong to the user, reproduce it before answering.** Re-run the exact case with the reference
   code and quantify it. Then say whether it is real behaviour, a display or normalisation artefact, or a bug.
   Usually it is not the first explanation that comes to mind.
+
+### Verification
 - **Cross-check independent implementations.** Wherever there are two codes for the same thing (reference vs fast,
   CPU vs GPU), compare them value by value. Ship that comparison as a self-test in the deliverable, with stated
-  tolerances.
+  tolerances (for example about 1e-10 for a float64 port, about 5e-3 relative for f32 GPU code).
+- **Make the self-test scriptable.** Give the page a `?selftest` URL option that runs it on load and sets
+  `window.SELFTEST`, so a headless browser can read the verdict.
 - **Sweep the whole input range before shipping.** Cover the extremes, crossovers between regimes and limits, and
-  the largest and smallest sizes. Bugs hid exactly there: NaNs only at large grids, instability only where two
-  time-step limits crossed.
-- **Scale visual encodings to the data, not the inputs.** Colour ranges, line darkness and auto-scales should follow
-  the data's own statistics. Make clear what a control holds fixed when another changes.
-- **Check that the deployed artefact is the new one.** Compare the served bytes with the build (`cmp`), not just
-  an HTTP 200. Check that the CI or Pages run actually started; re-trigger if it didn't.
+  the largest and smallest sizes. Bugs hide exactly there: NaNs appeared only at large grids, and instability only
+  where two time-step limits crossed.
 - **Test the UI at two viewport widths** with a headless browser, and read the screenshots before reporting done.
-- **Shell hygiene.**
-  - Run long waits as background commands.
-  - Never `pkill -f` a pattern that also matches the current command.
-  - In `sed` replacements `&` means "the matched text", so escape it, or edit with Python instead.
-- **Headless WebGPU in this container.**
+
+### Numerics
+- **Combine competing explicit time-step limits harmonically,** `dt = 1/(1/dt_a + 1/dt_b)`, not with `min()`.
+  With AB2, `min(dt_cfl, dt_diff)` blew up where the two limits are equal.
+
+### WebGPU
+- **Headless testing in this container.**
   - Use `/opt/pw-browsers/chromium` with `--enable-unsafe-webgpu --use-webgpu-adapter=swiftshader`, on an
     `http://localhost` page.
-  - Compute works but a WebGPU canvas cannot be presented, so render through an offscreen texture for tests.
+  - Compute works but a WebGPU canvas cannot be presented: the device is lost with "valid external Instance
+    reference". Provide an offscreen-texture render path (`?blit`) for tests; it doubles as PNG export.
+  - Also provide `?cpu` (force the CPU fallback) and `?preset=…&N=…` URL options.
+- **Host code.**
+  - Keep a reference to the adapter.
+  - Check `getCompilationInfo()`.
+  - Use explicit bind-group layouts per kernel.
+- **WGSL.**
+  - Avoid reserved words such as `active`.
   - f32 `tanh`/`exp` overflow to NaN for large arguments, so clamp them.
+
+### Visualisation and UI
+- **Scale visual encodings to the data, not the inputs.** Colour ranges, line darkness and auto-scales should follow
+  the data's own statistics. Make clear what a control holds fixed when another changes.
+- **`Plotly.react` with arrays mutated in place** needs a changing `datarevision`, or the chart does not redraw.
+- **Metric cards:** keep sub-labels short, with `white-space: nowrap`.
+
+### Publishing
+- **Check that the deployed artefact is the new one.** Compare the served bytes with the build (`cmp`), not just
+  an HTTP 200. Check that the CI or Pages run actually started; re-trigger if it didn't.
+
+### Shell
+- Run long waits as background commands.
+- Never `pkill -f` a pattern that also matches the current command.
+- In `sed` replacements `&` means "the matched text", so escape it, or edit with Python instead.
 
 ## Interactive teaching pages (published on `gh-pages`)
 
