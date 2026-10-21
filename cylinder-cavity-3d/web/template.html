@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>@@TITLE@@</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+@@BASE_CSS@@
+/* --- additions for this page --- */
+.field.check{display:flex;align-items:center;gap:.45rem}
+.field.check input{width:auto}
+.field.check label{margin:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.field input[type=range]{padding:0;border:none;background:none;accent-color:var(--st-red)}
+.field .val{float:right;font-weight:600;font-variant-numeric:tabular-nums}
+.m-sub{font-size:.8rem;color:var(--muted)}
+.metrics .m-sub,.metrics .m-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}   /* one line; full text on hover */
+.metrics .metric{flex:1 1 150px}
+.metrics .metric .m-value{font-size:1.6rem}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.4rem 0 .8rem}
+.btn{display:inline-block;text-decoration:none;background:#fff;border:1px solid #d0d3d9;border-radius:.5rem;padding:.45rem .9rem;
+  font-size:.95rem;cursor:pointer;color:var(--text);font-family:inherit}
+.btn:hover{border-color:var(--st-red);color:var(--st-red)}
+.btn.primary{background:var(--st-red);border-color:var(--st-red);color:#fff}
+.btn.primary:hover{background:#e03c3c;color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.sidebar .btns{display:flex;flex-wrap:wrap;gap:.4rem;margin:.8rem 0}
+.sidebar .btns .btn{padding:.35rem .7rem;font-size:.9rem}
+.status{font-size:.88rem;color:var(--muted)}
+.pill{display:inline-block;font-size:.78rem;padding:.12rem .55rem;border-radius:1rem;
+  background:#eef0f4;color:var(--muted);vertical-align:middle}
+.pill.ready{background:#dcf5e3;color:#1a7f37}.pill.busy{background:#fff1d6;color:#8a5a00}
+.pill.fail{background:#fdecea;color:#8f2b22}
+table.data{border-collapse:collapse;font-size:.92rem;margin:.6rem 0}
+table.data th,table.data td{border-bottom:1px solid var(--card-border);padding:.35rem .7rem;text-align:right}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{font-weight:600;background:#fafbfc}
+td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
+.theory table{border-collapse:collapse;font-size:.93rem;margin:.8rem 0}
+.theory th,.theory td{border-bottom:1px solid var(--card-border);padding:.3rem .6rem;text-align:left;vertical-align:top}
+.theory th{background:#fafbfc}
+.theory code{background:#f3f4f6;padding:.05rem .3rem;border-radius:.25rem;font-size:.9em}
+.wt-out pre{background:#fff;border:1px dashed #d0d3d9;border-radius:.5rem;padding:.7rem 1rem;
+  margin:0;font-size:.84rem;overflow-x:auto;white-space:pre}
+.wt-step{margin:1.6rem 0 2rem}
+.wt-stepnum{font-size:.82rem;font-weight:600;color:var(--st-red);text-transform:uppercase;letter-spacing:.04em}
+.wt-title{font-size:1.2rem;font-weight:600;margin:.1rem 0 .3rem}
+.wt-prose{max-width:78ch}
+.wt-prose .eq{text-align:center;margin:.8rem 0;overflow-x:auto}
+.wt-code summary{cursor:pointer;color:var(--muted);font-size:.88rem}
+.wt-meta{font-size:.78rem;color:var(--muted);margin-top:.25rem}
+.wt-plots{display:flex;flex-wrap:wrap;gap:.6rem}
+.wt-plot{flex:1 1 420px;min-width:0}
+.views{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.2rem;align-items:start}
+.view-panel{min-width:0}
+.view-panel h3{margin-top:.2rem}
+.view-panel canvas{width:100%;aspect-ratio:1;display:block;border:1px solid var(--card-border);
+  border-radius:.4rem;background:#f7f7f7}
+.view-panel .field{margin:.5rem 0}
+.plots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:1rem}
+.chart{min-width:0}
+@media (max-width: 1100px){ .plots{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+@media (max-width: 900px){
+  .sidebar{position:static;width:auto}
+  .main{margin-left:0;padding:1rem 16px 3rem}
+  .views,.plots{grid-template-columns:minmax(0,1fr)}
+  .tabs{flex-wrap:wrap}
+  .chart,.wt-plot,table.data{max-width:100%;overflow-x:auto}
+  .theory table{display:block;max-width:100%;overflow-x:auto}
+  h1{font-size:1.8rem}
+}
+@@PYGMENTS_CSS@@
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div id="controls"></div>
+  <div class="side-foot">Solver: <span id="backend-pill" class="pill">starting&hellip;</span></div>
+</aside>
+<main class="main">
+  <div id="app">
+    <h1>Cylinder in a box, in 3D</h1>
+    <p class="intro">A cylinder spins and orbits inside a closed box, and the flow is computed in three dimensions.
+    The 2D page is the same code with one spanwise cell (N<sub>z</sub> = 1). Two solvers, lattice Boltzmann and
+    finite volumes, take the same inputs and are checked against each other.</p>
+    <div id="warn" class="warn" hidden></div>
+    <div id="err" class="err" hidden></div>
+    <div id="metrics" class="metrics"></div>
+    <nav class="tabs" data-panels="tpanel">
+      <button data-tab="panel-app" class="active">App</button>
+      <button data-tab="panel-theory">Theory</button>
+      <button data-tab="panel-code">Code</button>
+    </nav>
+
+    <!-- ============================== APP ============================== -->
+    <section id="panel-app" class="tpanel">
+      <div class="views">
+        <div class="view-panel" id="view2d">
+          <h3>2D baseline (Nz = 1)</h3>
+          <canvas id="canvas2d" width="640" height="640"></canvas>
+          <div class="field"><label for="mode2d">View</label>
+            <select id="mode2d">
+              <option value="slice-xy" selected>slice xy</option>
+              <option value="slice-xz">slice xz</option>
+              <option value="slice-yz">slice yz</option>
+              <option value="volume">volume</option>
+              <option value="isosurface">isosurface</option>
+            </select></div>
+        </div>
+        <div class="view-panel" id="view3d">
+          <h3>3D</h3>
+          <canvas id="canvas3d" width="640" height="640"></canvas>
+          <div class="field"><label for="mode3d">View</label>
+            <select id="mode3d">
+              <option value="slice-xy" selected>slice xy</option>
+              <option value="slice-xz">slice xz</option>
+              <option value="slice-yz">slice yz</option>
+              <option value="volume">volume</option>
+              <option value="isosurface">isosurface</option>
+            </select></div>
+        </div>
+      </div>
+      <div class="plots">
+        <div class="chart" id="plot-spanwise"></div>
+        <div class="chart" id="plot-spectra"></div>
+        <div class="chart" id="plot-history"></div>
+      </div>
+      <h2>Validation</h2>
+      <div id="validation"></div>
+    </section>
+
+    <!-- ============================== THEORY ============================== -->
+    <section id="panel-theory" class="tpanel" hidden>
+      <div class="theory">@@THEORY@@</div>
+    </section>
+
+    <!-- ============================== CODE ============================== -->
+    <section id="panel-code" class="tpanel" hidden>
+      <div class="theory">@@CODE_GUIDE@@</div>
+      <h2>Step-by-step breakdown</h2>
+      <p>The Python reference explained one step at a time. Every output below was produced by actually running the
+      cell (CPython, when this page was built).</p>
+      <div class="controls">
+        <button class="btn primary" id="b-pyodide">Run in browser (Pyodide)</button>
+        <a class="btn" href="@@MOLAB_URL@@" target="_blank" rel="noopener">Open in MoLab</a>
+        <span class="status" id="pyodide-status"></span>
+      </div>
+      @@WALKTHROUGH@@
+      <h2>Editable notebook</h2>
+      <div class="controls">
+        <a class="btn primary" href="@@MOLAB_URL@@" target="_blank" rel="noopener">Open in MoLab</a>
+        <a class="btn" href="walkthrough_molab.py" download>Download walkthrough_molab.py</a>
+      </div>
+      <p class="caption">The MoLab notebook is editable; run all cells once after opening</p>
+      <details>
+        <summary>Browser solver source (JavaScript)</summary>
+        <h3>cpu.js</h3>
+        @@CPUJS_SRC@@
+        <h3>gpu.js</h3>
+        @@GPUJS_SRC@@
+      </details>
+    </section>
+  </div>
+</main>
+<script>@@PLOTLY@@</script>
+<script type="text/wgsl" id="wgsl-lbm">@@WGSL_LBM@@</script>
+<script type="text/wgsl" id="wgsl-fv">@@WGSL_FV@@</script>
+<script type="text/wgsl" id="wgsl-render">@@WGSL_RENDER@@</script>
+<script type="text/wgsl" id="wgsl-iso">@@WGSL_ISO@@</script>
+<script>
+window.REF = @@REF@@;
+window.PRESETS = @@PRESETS@@;
+window.WT_PLOTS = @@WT_PLOTS@@;
+window.PY_SRC = @@PY_SRC@@;
+</script>
+<script>@@APP_JS@@</script>
+</body>
+</html>

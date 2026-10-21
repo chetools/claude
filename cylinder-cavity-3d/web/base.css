@@ -1,0 +1,54 @@
+/* Layout and typography from chetools/muse couette-standalone.html (Streamlit-like). */
+
+
+:root{
+  --st-red:#ff4b4b; --sidebar-bg:#f0f2f6; --text:#31333f; --muted:#808495;
+  --card-border:#e6e8ec;
+}
+*{box-sizing:border-box}
+body{font-family:"Source Sans Pro",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--text);margin:0;background:#fff;font-size:16px;line-height:1.55}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:308px;background:var(--sidebar-bg);
+  padding:1.4rem 1.2rem;overflow-y:auto}
+.side-h{font-size:1.02rem;font-weight:600;margin:1.3rem 0 .3rem}
+.side-h:first-child{margin-top:0}
+.field{margin:.55rem 0}
+.field label{display:block;font-size:.88rem;margin-bottom:.18rem}
+.field input,.field select{width:100%;padding:.42rem .55rem;border:1px solid #d0d3d9;
+  border-radius:.4rem;font-size:.95rem;background:#fff;color:var(--text)}
+.field input:focus,.field select:focus{outline:2px solid #a8c6fa;border-color:#7aa5f5}
+.side-cap{font-size:.82rem;color:var(--muted);margin:.3rem 0}
+.side-foot{margin-top:1.6rem;border-top:1px solid #d8dbe0;padding-top:.8rem;
+  font-size:.82rem;color:var(--muted)}
+.main{margin-left:308px;padding:1.6rem 2.6rem 4rem;max-width:1220px}
+h1{font-size:2.5rem;font-weight:600;margin:.2rem 0 .6rem;letter-spacing:-.01em}
+h2{font-size:1.55rem;font-weight:600;margin:1.6rem 0 .5rem}
+h3{font-size:1.2rem;font-weight:600;margin:1.2rem 0 .4rem}
+.intro{font-size:1.02rem;max-width:72ch}
+.metrics{display:flex;gap:1rem;flex-wrap:wrap;margin:1.1rem 0 .4rem}
+.metric{flex:1 1 190px;min-width:150px}
+.metric .m-label{font-size:.85rem;color:var(--muted);margin-bottom:.1rem}
+.metric .m-value{font-size:1.85rem;font-weight:600;letter-spacing:-.01em}
+.caption{font-size:.85rem;color:var(--muted);max-width:90ch}
+.tabs{display:flex;gap:.4rem;border-bottom:1px solid var(--card-border);margin:1.2rem 0 1rem}
+.tabs button{background:none;border:none;padding:.55rem .35rem;margin:0 .35rem 0 0;
+  font-size:1rem;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;
+  margin-bottom:-1px;font-family:inherit}
+.tabs button:hover{color:var(--text)}
+.tabs button.active{color:var(--text);border-bottom-color:var(--st-red);font-weight:600}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.chart{min-width:0}
+.note{background:#e8f4fd;border-radius:.5rem;padding:.8rem 1rem;margin:1rem 0;font-size:.95rem}
+.warn{background:#fff7e0;border:1px solid #f0dfa8;border-radius:.5rem;
+  padding:.8rem 1rem;margin:1rem 0;font-size:.95rem}
+.err{background:#fdecea;border:1px solid #f5c6c1;border-radius:.5rem;
+  padding:.8rem 1rem;margin:1rem 0;font-size:.95rem;color:#8f2b22}
+#field-img{max-width:640px;width:100%;height:auto;display:block;margin:0 auto}
+.theory{max-width:78ch}
+.theory .eq{text-align:center;margin:1rem 0;overflow-x:auto}
+.theory .katex{font-size:1.06em}
+.theory blockquote{border-left:3px solid #d0d3d9;margin:1rem 0;padding:.4rem 1rem;
+  color:#4a4e5c;background:#fafbfc}
+.codehilite{background:#fafbfc;border:1px solid var(--card-border);border-radius:.5rem;
+  padding:1rem;overflow-x:auto;font-size:.85rem;line-height:1.45}
+.codehilite pre{margin:0}
