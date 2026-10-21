@@ -399,10 +399,9 @@
     const Uref = Math.max(Math.abs(inp.Us), Math.abs(inp.Uo)) || 1;
     $('m-re-sub').textContent = `cell Re ${fmtG(Uref * p.h / p.nu, 2)} (U h / ν)`;
     $('m-e').textContent = fmtG(L.r3.E, 4);
-    const dE = L.r2.E > 0 ? (L.r3.E - L.r2.E) / L.r2.E : NaN;
-    $('m-e-sub').textContent = `2D ${fmtG(L.r2.E, 4)} · 3D vs 2D ${Number.isFinite(dE) ? (dE >= 0 ? '+' : '') + (100 * dE).toFixed(2) + '%' : '–'}`;
+    $('m-e-sub').textContent = `2D ${fmtG(L.r2.E, 4)}`;
     $('m-tq').textContent = fmtG(L.r3.torque, 4);
-    $('m-tq-sub').textContent = Number.isFinite(L.r3.torque) ? `2D ${fmtG(L.r2.torque, 4)} · mean over ${TORQUE_WIN} t.u.` : `mean starts at t = ${TORQUE_WIN}`;
+    $('m-tq-sub').textContent = Number.isFinite(L.r3.torque) ? `2D ${fmtG(L.r2.torque, 4)}` : `mean starts at t = ${TORQUE_WIN}`;
     $('m-r3').textContent = L.r3.E > 0 ? fmtE(L.r3.E3d / L.r3.E, 2) : '–';
     $('m-r3-sub').textContent = 'share of E that varies in z';
     if (inp.method === 'fv') {

@@ -19,7 +19,7 @@ fill = {"TITLE": "app test", "BASE_CSS": rd(WEB, "base.css"), "PYGMENTS_CSS": ""
         "WGSL_LBM": rd(WEB, "lbm.wgsl"), "WGSL_FV": rd(WEB, "fv.wgsl"),
         "WGSL_RENDER": rd(WEB, "render.wgsl"), "WGSL_ISO": rd(WEB, "iso.wgsl"),
         "CPUJS_SRC": "", "GPUJS_SRC": "", "REF": ref, "MOLAB_URL": "#", "PRESETS": rd(WEB, "presets.json")}
-page = tpl.replace("<head>", "<head><link rel=\"icon\" href=\"data:,\">").replace("<script>@@PLOTLY@@</script>", '<script src="vendor/plotly.min.js"></script>')
+page = tpl.replace("<script>@@PLOTLY@@</script>", '<script src="vendor/plotly.min.js"></script>')
 page = page.replace("<script>@@APP_JS@@</script>", "\n".join(f'<script src="{s}"></script>' for s in scripts))
 page = re.sub(r"@@([A-Z0-9_]+)@@", lambda m: fill[m.group(1)], page)
 assert not re.search(r"@@[A-Z0-9_]+@@", page.replace("@@", "@@")) or True
