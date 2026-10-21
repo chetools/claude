@@ -41,6 +41,7 @@
     playing: true, busy: false, pendingRebuild: false, ready: false, dirty: true, diagNow: false,
     autoN: 4, msStep: null, diagMs: 20, lastDiagAt: 0, lastPlotAt: 0, rev: 0, histSel: 'torque', histBound: false,
     H: null, SP: [], range: null, crangeFresh: true, mass0: { 2: null, 3: null }, last: null,
+    reExact: null,                 // Re set by a preset or the URL, kept exactly (the slider is logarithmic)
         renderers: {}, detach: {}, canvases: {}, notes: [],
   };
   function newHistory() {
@@ -119,7 +120,8 @@
   }
 
   function readInputs() {
-    return { method: $('in-method').value, span: $('in-span').value, Re: 10 ** +$('in-re').value,
+    return { method: $('in-method').value, span: $('in-span').value,
+      Re: sim.reExact !== null ? sim.reExact : +(10 ** +$('in-re').value).toPrecision(3),
       Us: +$('in-us').value, Uo: +$('in-uo').value, ro: +$('in-ro').value, R: +$('in-r').value,
       N: +$('in-n').value, Nz: +$('in-nz').value, seed: Math.max(0, +$('in-seed').value || 0) };
   }
@@ -135,7 +137,7 @@
   function setInputs(q) {
     const set = (id, v) => { if (v !== undefined) $(id).value = String(v); };
     set('in-method', q.method); set('in-span', q.span);
-    if (q.Re !== undefined) $('in-re').value = Math.log10(q.Re);
+    if (q.Re !== undefined) { $('in-re').value = Math.log10(q.Re); sim.reExact = +q.Re; }
     set('in-us', q.Us); set('in-uo', q.Uo); set('in-ro', q.ro); set('in-r', q.R); set('in-seed', q.seed);
     for (const [id, v] of [['in-n', q.N], ['in-nz', q.Nz]]) {
       if (v === undefined) continue;
@@ -352,7 +354,7 @@
         qr = Math.max(qr, 3 * Math.sqrt(s / Q.length));
       }
     }
-    sim.last = { r2, r3, t2: S2.t, t3: S3.t, n3: S3.nstep, m2, m3, dv2, dv3, qr, k2, E2k, k3, E3k };
+    sim.last = { r2, r3, t2: S2.t, t3: S3.t, n3: S3.nstep, m2, m3, phi3: ph(S3, p3), dv2, dv3, qr, k2, E2k, k3, E3k };
     // history
     const H = sim.H, t = S3.t;
     if (!H.t.length || t > H.t[H.t.length - 1]) {
@@ -413,8 +415,11 @@
       const ma = Math.sqrt(3) * L.r3.maxspeed * p.dt / p.h;      // lattice speed of the fastest cell, in units of c_s
       $('m-dv-l').textContent = 'Mach number Ma (3D)';
       $('m-dv').textContent = fmtG(ma, 3);
-      const drift = typeof L.m3 === 'number' && typeof sim.mass0[3] === 'number' && sim.mass0[3] !== 0 ? (L.m3 - sim.mass0[3]) / sim.mass0[3] : NaN;
-      $('m-dv-sub').textContent = `τ ${fmtG(p.tau, 3)} · u_lb ${fmtG(p.u_lb, 3)} · mass drift ${fmtE(drift, 1)}`;
+      // mean fluid density - 1: total fluid mass over the number of fluid cells (the count changes as the cylinder orbits)
+      let nFluid = 0;
+      if (typeof L.m3 === 'number') { const m = CC3.diag.fluid_mask(p, L.phi3); for (let i = 0; i < m.length; i++) nFluid += m[i] ? 1 : 0; }
+      const drho = nFluid > 0 ? L.m3 / nFluid - 1 : NaN;
+      $('m-dv-sub').textContent = `τ − ½ ${fmtE(p.tau - 0.5, 1)} · u_lb ${fmtG(p.u_lb, 3)} · mean ρ − 1 ${fmtE(drho, 1)}`;
     }
     document.querySelectorAll('.metrics .m-sub,.metrics .m-label').forEach((e) => { e.title = e.textContent; });
   }
@@ -531,6 +536,7 @@
       if (!pr) return;
       setInputs(pr.inputs); requestRebuild();
     });
+    $('in-re').addEventListener('input', () => { sim.reExact = null; });     // moved by hand: back to slider values
     for (const id of ['in-re', 'in-us', 'in-uo', 'in-ro', 'in-r', 'in-slice']) $(id).addEventListener('input', showValues);
     for (const id of ['in-method', 'in-span', 'in-re', 'in-us', 'in-uo', 'in-ro', 'in-r', 'in-n', 'in-nz', 'in-seed']) {
       $(id).addEventListener('change', () => { $('in-preset').value = 'custom'; $('preset-desc').textContent = ''; showValues(); requestRebuild(); });

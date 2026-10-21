@@ -421,7 +421,7 @@ and the dissipation scale. At the $Re$ values and grid sizes of this page there 
 by homogeneous forcing. They are the theoretical background to the comparison of 2D and 3D, not something the page has
 measured. Where the span is much shorter than the horizontal scales of the flow, a 3D layer can behave 2D-like and
 transfer energy inversely, with a crossover as the layer thickens (Smith, Chasnov & Waleffe 1996), which is one more reason to treat $L_z$ as a parameter.
-What the simulations show: TODO(measured: horizontal $E(k)$ of the 2D and 3D runs at the same $Re$, late-time average over the last 1 time unit, N = 64, N_z = 32 (not in results_final.md): the fitted slope and the $k$ range of the fit, or the statement that no power-law range exists).
+What the simulations show: horizontal spectra of one spin-only snapshot at $Re=100$ and $150$ (section 8.2) have no clean power-law range, so no slope is compared with the theoretical ones.
 
 ## 4. Strain, rotation, and the Q-criterion
 
@@ -646,7 +646,7 @@ What these numbers say, and what they do not.
 - **Growth rate rises with $Re$** in the table, from $0.23$ at $Re=60$ to $0.87$ at $Re=150$ (spin only). The saturated $E_{3d}/E$ does not: it is 0.135 at $Re=100$ and 0.095 at $Re=150$.
 - **A second method.** The same spin-only case at $Re=100$ with the finite-volume solver (inner-ramp mask, $N=64$, $N_z=32$) gives $\sigma=0.48$ (lattice-Boltzmann $0.61$) and late $E_{3d}/E=0.104$ ($0.135$). The two methods agree on the existence and rough size of the growth, not on its value to better than about 25 %.
 
-Not measured, and so not stated: the onset $Re$ for the orbit case; the dependence of the spin-only onset on $L_z$ and on $N$ (TODO(measured: growth rate at Re 40, 50 and 60 for $L_z=1$ and for N = 32 or 128, to see whether the 40 to 50 bracket moves)).
+Not measured, and so not stated: the onset $Re$ for the orbit case; the dependence of the spin-only onset on $L_z$ and on $N$ beyond the span-doubling check at $Re=100$ above.
 
 ### 5.4 The deliberate seed
 
@@ -769,7 +769,7 @@ to leave the layer upwards, away from the wall and into the core, at the uniform
 absorb it all, so it returns outwards through the core, near mid-span. The closed circulation in the box is therefore: inflow along the end walls, rise (or fall) along the cylinder, and outflow near mid-span.
 An independent review measured exactly this direction in both solvers (spin only, $Re=100$, $t=1$, $N=32$ and $64$, $L_z=0.5$; an earlier version of the finite-volume mask, so the magnitudes are not final): radial velocity directed inwards in the first cell above the end wall at all rings $0.10<r<0.40$,
 $w>0$ in the lower half near the cylinder, $u_r>0$ near $z=0.27\,L_z$ to $0.28\,L_z$, and $w$ antisymmetric about mid-span to round-off. The magnitudes were not converged: peak $|w|$ was $0.137$ (finite volumes) against $0.075$ (lattice Boltzmann) at $N=32$ and $0.100$ against $0.063$ at $N=64$,
-while the Ekman scale from the formula below is $w_E/U_s=\sqrt{2/Re}=0.14$ at $Re=100$. TODO(measured: peak $|w|$ and its location in the meridional plane of the final walls run, $Re=200$, and its change with $N$).
+while the Ekman scale from the formula below is $w_E/U_s=\sqrt{2/Re}=0.14$ at $Re=100$. In the final walls run (spin only, $Re=200$, $N=64$, one grid only) the largest $|w|$ in the $xz$ slice through $y=\tfrac12$ (through the cylinder axis; the cylinder centre is at $x=0.7$) was $0.19$ at $t=5$, at $z\approx0.15$, $x\approx0.84$, just outside the cylinder surface ($x=0.8$), and $0.13$ to $0.14$ for $t=10$ to $20$. Its dependence on $N$ was not measured.
 
 **Spin-up.** Because the pumping speed is only $\sqrt{\nu\Omega_c}$ the Ekman circulation adjusts the whole column of fluid on the time
 scale $L_z/\sqrt{\nu\Omega_c}$, much shorter than the diffusion time $L_z^2/\nu$ by a factor $E^{1/2}$ (Greenspan & Howard 1963;
@@ -783,7 +783,7 @@ there is a boundary layer of thickness $\delta$ and a pumping velocity $w_E\sim\
 smoothly as $Re$ grows and does not appear abruptly at a critical value. Taking $\Omega_c\approx\Omega$ (an upper estimate), the pumping velocity relative to the spin speed is $w_E/U_s\approx\delta/R=\sqrt{2/Re}$ for spin only (arithmetic from the formulas above).
 
 *What the final run shows.* Spin only, end walls, $Re=200$ (lattice Boltzmann, $N=64$, $N_z=32$, $L_z=0.5$), late means ($t=10$ to $20$): $E_w/E=0.034$ and $E_{3d}/E=0.24$ (here $E_{3d}$ includes the end-wall boundary layers, where $u$ and $v$ vary with $z$). Against the 2D baseline of the same inputs,
-$E$ is $0.0110$ against $0.0212$ (ratio $0.52$). One Reynolds number does not give a dependence on $Re$: TODO(measured: $E_w/E$ for the walls case at two or more further Reynolds numbers, to get the exponent and compare it with the $\sqrt{2/Re}$ scaling of $w_E/U_s$).
+$E$ is $0.0110$ against $0.0212$ (ratio $0.52$). One Reynolds number does not give a dependence on $Re$: it was not measured here at other Reynolds numbers, so no exponent is stated.
 
 **Thickness in terms of $Re$.** For spin only, $\nu=2RU_s/Re$ and $\Omega=U_s/R$, so with $\Omega_c=\Omega$,
 
@@ -792,7 +792,7 @@ $$\delta = \sqrt{\frac{\nu}{\Omega}} = R\sqrt{\frac{2}{Re}},\qquad \frac{\delta}
 If $\Omega_c$ is the actual core rotation rate, the generalisation is $\delta/R=\sqrt{2/Re}\,\sqrt{\Omega/\Omega_c}$. The
 layer needs several cells to be resolved, i.e. $N\gtrsim c\,\sqrt{Re/2}\,/R$ for $c$ cells across $\delta$. The Ekman number $E=\nu/(\Omega_cL_z^2)=(\delta/L_z)^2$ says whether
 the end-wall layers are thin compared with the span (small $E$) or fill it. *Arithmetic for the final walls run* ($Re=200$, $R=0.1$, $N=64$, $\Omega_c=\Omega$): $\delta/R=0.10$, $\delta=0.010$, $\delta/h=0.64$: **less than one cell**, so the end-wall layer is not resolved on this grid, and its measured structure should be read with that in mind
-(for $Re=100$ the same arithmetic gives $\delta=0.014$, 0.9 cell at $N=64$ and 0.45 cell at $N=32$). TODO(measured: $\Omega_c$, the angular velocity $v_\theta/r$ of the flow just outside the end-wall layer at a distance $2R$ from the cylinder axis, in the $Re=200$ walls run; the true $\delta/R$ and $\delta/h$ follow from it).
+(for $Re=100$ the same arithmetic gives $\delta=0.014$, 0.9 cell at $N=64$ and 0.45 cell at $N=32$). the actual $\Omega_c$ was not measured here, so $\delta/R$ and $\delta/h$ are given only by the upper estimate $\Omega_c=\Omega$ above.
 
 **What is an approximation.** The solution above is the *linear Ekman layer*. It is a correct picture of the mechanism and a
 reasonable guide to the *scalings* $\delta\propto\sqrt{\nu/\Omega}$ and $w_E\propto\sqrt{\nu\Omega}$. Its quantitative
@@ -808,12 +808,12 @@ profile and coefficients do not carry over to this flow, for the following reaso
 4. **Unsteadiness.** The orbiting body makes the core flow time-dependent, and the formulae assume steady flow.
 5. **The layer itself can become unstable.** Ekman and Bödewadt layers are unstable to spiral or roll waves above a
    critical *layer* Reynolds number $Re_\delta=V\delta/\nu=r\sqrt{\Omega_c/\nu}$ (Lingwood 1997 analyses the absolute instability of Ekman, Bödewadt and related layers; critical values are not quoted here). Above it the end-wall layers become 3D-unsteady themselves, on top of the forced circulation.
-   The page has not tested this: TODO(measured: late-time histories of $E_w(t)$ and $E_{3d}(t)$ of the walls run at $Re=200$ and at least two other $Re$, to see whether they settle to constants or fluctuate, and $Re_\delta=r\sqrt{\Omega_c/\nu}$ with $r=2R$ at that position for each).
+   Whether the end-wall layers of this page become unsteady was not measured here.
 
 **The cylinder meets the end walls.** The cylinder surface moves at the velocity $\mathbf u_b$ right up to the end wall where $\mathbf u=0$. At that line the model has a velocity
 jump. The shear stress there is formally infinite and is regularised only by the grid or the mask thickness $\epsilon=h$. The flow
 nearby (and the torque, section 8.3) therefore depends on the grid in a way that no physical argument above removes:
-TODO(measured: torque and $E_w/E$ of the walls run at $Re=200$ for $N=32$, $64$ and $128$ with $L_z$ fixed, to quantify that dependence).
+the grid dependence of the walls run was not measured here.
 
 ## 7. The finite-volume method in 3D
 
@@ -894,7 +894,7 @@ whose diffusive part is $\nu\Delta t/h^2\le0.05$. That is 60 % of the 3D limit, 
 reserved for the interplay with advection is smaller in 3D. The reciprocal sum, which the 2D page found necessary when the two
 limits are equal, is kept. The two limits cross where $U_{\max}h/\nu=0.3/0.05=6$. If $N_z=1$ the $z$-neighbours are the cell itself, the $k_z\neq0$ modes do not exist, and the 2D limit is recovered.
 *Measured:* AB2 applied to a checkerboard mode with the 7-point operator is stable just below and unstable just above $\nu\Delta t/h^2=1/12$ in 3D (checked here at $\pm2\,\%$ of the limit, and the same for $1/8$ in 2D and $1/4$ in 1D), and the finite-volume solver's own test found the threshold $\approx0.0833$. This is the diffusive limit only. Whether the advective constant $0.3$ is sufficient in 3D, where the three directions add, is not
-derived here: TODO(measured: for the finite-volume solver at N = 64, N_z = 32, the largest stable value of the CFL factor (default 0.3) and of the diffusion factor (default 0.05) at one low and one high Re, showing that the defaults sit inside the stable region).
+derived here: the factors $0.3$ and $0.05$ were not scanned in 3D here; only the diffusive limit above was checked.
 
 ### 7.5 The cylinder: Brinkman penalisation
 
@@ -1014,7 +1014,7 @@ is unstable, they depart from their seed level and grow; the way they grow ident
    different slopes; the steepest is the fastest-growing, and its wavelength $L_z/m$ is the preferred spanwise wavelength (limited to integers $m$). Results are in section 5.3.
    The growth rate is a finite-time number measured on a flow that is itself evolving, not an eigenvalue.
 3. *Harmonics.* If mode $m$ grows with amplitude $A\propto e^{\sigma t}$, the quadratic nonlinearity feeds mode $2m$ with an amplitude $\propto A^2$, and its energy $\propto A^4\propto e^{4\sigma t}$: a slope twice that of the fundamental. This is theory for weakly nonlinear growth, a way to tell
-   a nonlinear transfer from independent linear growth. It has not been tested: TODO(measured: for the spin-only $Re=100$ run, N = 64, N_z = 32, the slopes of $\ln E_{k_z}$ for $m=1$ and $m=2$ in the window where both are growing, to see whether the $m=2$ slope is about twice the $m=1$ slope).
+   a nonlinear transfer from independent linear growth. In the spin-only $Re=100$ run ($N=64$, $N_z=32$, lattice Boltzmann) the measured growth rates of $\ln E_{k_z}$ were $1.10$ ($m=1$, $t=1.1$ to $5.9$), $0.92$ ($m=2$, $t=1.1$ to $8.7$) and $1.03$ ($m=3$, $t=1.1$ to $10.3$) per unit time: similar rates, not twice. So $m=2$ and $m=3$ are not (only) quadratic harmonics of $m=1$, which would grow at about twice its rate; several spanwise modes are unstable at once.
 4. *Saturation.* The curve bends over and levels off or oscillates: the perturbation has grown until it modifies the base flow, the neglected $\epsilon^2$ terms matter, and growth is limited by nonlinear
    interaction and dissipation. The saturation level, relative to $E$, measures how 3D the flow finally becomes: late $E_{3d}/E$ was $0.046$, $0.135$, $0.095$ at spin-only $Re=75$, $100$, $150$ and $0.27$ at spin + orbit $Re=800$ (table in section 5.3: lattice Boltzmann, $N=64$, $N_z=32$). Late $E_w/E$ was $0.0094$, $0.026$, $0.013$ and $0.10$ for the same four runs.
 5. *The walls case.* $E_w$ and $E_{\mathrm{3d}}$ are non-zero from the beginning, since the Ekman layers (section 6) exist at every $Re$. There is no flat floor and no threshold, and only $E_w$ and $E_{3d}$ are drawn (no $E_{k_z}$ curves). In this case a
@@ -1055,7 +1055,7 @@ By construction $\sum_kE_k=\mathcal E_{\text{true}}$ for each plane, and after a
   the spectrum of a non-homogeneous, bounded flow is only a rough guide (this is an expectation, not something verified).
 
 **2D versus 3D by theory.** In 3D, energy flows forward to small scales and is dissipated there; in 2D the energy goes backward and the enstrophy forward (section 3.7). The two spectra can therefore have different slopes in the fine-scale
-range and different amounts of energy at the largest scales. What the page shows is not claimed here: TODO(measured: horizontal $E(k)$ of the 2D baseline and the 3D run at equal $Re$ (spin only, $Re=100$ and $150$, N = 64, N_z = 32), averaged over the last 1 time unit: the energy at $k=1$ to $3$ in each, and the slope and $k$ range where a straight line fits on log–log axes, or the statement that none does).
+range and different amounts of energy at the largest scales. Measured (spin only, lattice Boltzmann, $N=64$, $N_z=32$, $L_z=0.5$, one snapshot at $t=20$, fluid only): the energy at $k\le3$ is $0.0111$ (3D) against $0.0179$ (2D) at $Re=100$ and $0.0117$ against $0.0175$ at $Re=150$; the energy at $k\ge8$ is larger in 3D by the factor $1.12$ ($Re=100$) and $1.18$ ($Re=150$). Shell by shell the curves are jagged (one snapshot, and the hole left by the body leaks energy across shells). Least-squares slopes of $\ln E$ against $\ln k$ over $k=4$ to $16$ are $-1.73$ (3D) and $-1.69$ (2D) at $Re=100$, and $-1.34$ and $-1.71$ at $Re=150$, but there is no clean power-law range at these $Re$ and this grid, so these slopes are not compared with the theoretical ones.
 
 ### 8.3 Torque, kinetic energy and enstrophy histories
 
@@ -1095,7 +1095,7 @@ $$2\nu\int_{V_f}S_{ij}S_{ij}\,dV=2\nu Z_V^{\mathrm{fluid}}+2\nu B_{\mathrm{body}
 
 For a centred spinning cylinder with an axisymmetric flow, at the surface $\mathbf u=\Omega R\,\hat{\boldsymbol\theta}$ and $(\mathbf u\cdot\nabla)\mathbf u=-\Omega^2R\,\hat{\mathbf r}$, so with $\mathbf n=-\hat{\mathbf r}$ the integrand is $\Omega^2R$ and $B=2\pi\Omega^2R^2$ per unit span: exactly the enstrophy $2\pi\Omega^2R^2$ of the rigid interior. So for a centred spin the dissipation equals $2\nu$ times the enstrophy of the *whole box including the body interior*, and **the fluid-only $Z$ that the page plots is not the dissipation**: the difference is the body-surface term. I checked this with the steady annular Couette solution (inner radius $R=0.1$, outer $0.5$): the dissipation $2\nu\int S:S$ equals the power $-T\Omega$ to round-off, $2\nu Z^{\mathrm{fluid}}$ accounts for only the fraction $R^2/r_{\mathrm{out}}^2=4\,\%$ of it, and the remainder equals $2\nu\cdot2\pi\Omega^2R^2$. (In that steady flow the fluid is nearly irrotational and the dissipation is almost all strain.) For the orbiting body $B$ has extra terms that are not derived here.
 
-*What is not closed.* The page never evaluates $P_{\mathrm{in}}$ or the dissipation, so no budget residual is shown. An independent review that compared $dE/dt-P_{\mathrm{in}}+D$ for a spinning cylinder at $N=64$ (earlier code version, before the inner-ramp mask) found residuals of $10$ to $30\,\%$ of $P_{\mathrm{in}}$ at late times with $D=2\nu Z$ over the whole box, and much larger ones ($-64$ to $-77\,\%$) with $D=2\nu Z$ over the fluid only; $D=2\nu\int S:S$ over the fluid closed to $\pm2\,\%$ for finite volumes but left $+25\,\%$ for lattice Boltzmann, for a reason that was not resolved. TODO(measured: with the final code, for a spin-only run at N = 64 over a window of 1 time unit in the developing phase, $\int(dE/dt)\,dt$, $\int P_{\mathrm{in}}\,dt$ and $\int D\,dt$ with $D=2\nu\int_{\mathrm{fluid}}S:S$, for both solvers, and their relative residual).
+*What is not closed.* The page never evaluates $P_{\mathrm{in}}$ or the dissipation, so no budget residual is shown. An independent review that compared $dE/dt-P_{\mathrm{in}}+D$ for a spinning cylinder at $N=64$ (earlier code version, before the inner-ramp mask) found residuals of $10$ to $30\,\%$ of $P_{\mathrm{in}}$ at late times with $D=2\nu Z$ over the whole box, and much larger ones ($-64$ to $-77\,\%$) with $D=2\nu Z$ over the fluid only; $D=2\nu\int S:S$ over the fluid closed to $\pm2\,\%$ for finite volumes but left $+25\,\%$ for lattice Boltzmann, for a reason that was not resolved. the final-code residual was not measured here.
 
 **3D against 2D histories.** The mechanism of sections 3.4 to 3.6 is an *expectation*: before the 3D instability (periodic span), or at low $Re$, the flow stays 2D and the histories coincide ($N_z>1$ against $N_z=1$). After the transition the vortex-stretching term $\int\omega_iS_{ij}\omega_j\,dV$, which is exactly zero in the 2D run, can produce enstrophy in the 3D run. The page did not compute the stretching term itself, so what follows tests only its consequences.
 
@@ -1113,7 +1113,7 @@ Measured (lattice Boltzmann, $N=64$, $N_z=32$, $L_z=0.5$, periodic unless noted;
 
 What this shows. (i) Where the seed decays (orbit $Re=25$) or grows only extremely slowly (spin only $Re=50$) the 3D and 2D late means are equal to the digits shown; in the spin-only runs where $E_{3d}$ grows, $Z$ separates first and by far the most, $Z_{3D}/Z_{2D}$ rising with $Re$ from 1.5 to 3.4, which agrees in direction with the stretching picture (it does not prove it: other 3D effects also change $Z$). (ii) The 3D flow has *less* kinetic energy than the 2D one in the same runs (ratio 0.74 to 0.95) and a *larger* torque (ratio 1.05 to 1.32; 5.3 for the orbit case at $Re=800$, where the 2D torque is very small, $-6.6\times10^{-5}$ against $-3.5\times10^{-4}$). (iii) With end walls the histories separate at once ($t\le0.8$) because the Ekman layers (section 6) exist from the start.
 A cross-check with the finite-volume solver at spin-only $Re=100$ (inner-ramp mask, same grid) gave $E_{3D}/E_{2D}=0.864$ (lattice Boltzmann 0.785), $Z$ ratio 2.39 (2.57), $T$ ratio 1.10 (1.17): the same signs and about the same size, with differences of 6 to 10 % between the methods in these ratios. The two methods treat the cylinder surface differently, which mostly affects the enstrophy of the cells next to it.
-What is *not* measured: the stretching integral $\int\omega_iS_{ij}\omega_j\,dV$ itself (TODO(measured: the stretching term and the viscous destruction term of the enstrophy budget of section 3.6, as functions of time, for the spin-only $Re=100$ 3D run, to test directly whether stretching accounts for the enstrophy excess)). The reason for the lower energy and higher torque was not investigated.
+What is *not* measured: the stretching integral $\int\omega_iS_{ij}\omega_j\,dV$ itself (the page does not compute it, so the enstrophy excess is reported, not attributed to stretching). The reason for the lower energy and higher torque was not investigated.
 
 ## References
 
