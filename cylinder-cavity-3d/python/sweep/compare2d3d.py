@@ -1,5 +1,6 @@
 """Compare a 3D run with its Nz=1 baseline (same inputs): E, Z, torque — time averages over the last half
-of the run (torque averaged per time unit first), and the time where the two first differ by more than 5 %."""
+of the run, and the first time t >= 0.5 where the two differ by more than 5 % (5-sample running mean;
+earlier times are skipped because both energies start from zero, where relative differences are meaningless)."""
 import json
 import os
 import sys
@@ -19,6 +20,7 @@ for name in sys.argv[1:]:
         late = t >= t[-1] / 2
         rel = np.abs(x - y) / np.maximum(np.abs(y), 1e-300)
         sm = np.convolve(rel, np.ones(5) / 5, mode="same")
-        first = t[np.argmax(sm > 0.05)] if np.any(sm > 0.05) else None
+        bad = (sm > 0.05) & (t >= 0.5)
+        first = round(float(t[np.argmax(bad)]), 2) if np.any(bad) else None
         print(f"  {k:7s} 3D mean {x[late].mean():+.5g}  2D mean {y[late].mean():+.5g}  "
               f"ratio {x[late].mean() / y[late].mean():.3f}   first >5% apart at t = {first}")
