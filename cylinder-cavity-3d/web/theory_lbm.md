@@ -690,14 +690,14 @@ shrinks as $Ma^2$ but does not vanish.
 **What this means for the choice of $u_{lb}$.** The page fixes the lattice velocity of the fastest body point, $u_{lb}$ (and thereby
 $\Delta t\propto h$, called *acoustic scaling*, §7). Refining the grid at fixed $u_{lb}$ keeps $Ma$ fixed, so the $O(Ma^2)$
 errors above are *not* reduced by refinement. Only a smaller $u_{lb}$ reduces them, at the price of more time steps
-($\Delta t\propto u_{lb}$). The measured size of these errors for the page's cases is TODO(measured: not yet measured. Missing: $\max|\nabla\cdot\mathbf u|$ and the density variation $\max|\rho-1|$ of the LBM runs of `results_final.md`, and a repeat of one case at smaller `u_lb` to show the $Ma^2$ scaling; the final-run tables contain neither).
+($\Delta t\propto u_{lb}$). Measured on this page's code (`notes/verify/verify_compressibility.py`, `out/compressibility.txt`; spinning cylinder, $Re=100$, spin only, $N=64$, $N_z=1$, $t=5$): the largest density deviation over the fluid nodes is $\max|\rho-1|=2.56\times10^{-3}$ at $u_{lb}=0.05$ ($Ma=0.0866$) and $6.36\times10^{-4}$ at $u_{lb}=0.025$ ($Ma=0.0433$). The ratio is $4.0$, the $Ma^2$ scaling of the estimate above. Away from the body the values are $9.3\times10^{-4}$ and $2.4\times10^{-4}$. A divergence $\max|\nabla\cdot\mathbf u|$ from central differences of the cell velocity was also computed in that test; it did not scale with $Ma$ ($0.29$ and $0.24$), so it is dominated by the finite-difference error of that estimate and no divergence value is quoted here.
 
 **(c) Lattice errors.** The truncation in (5.1) after the second-order term gives, formally, errors of higher order in $\varepsilon\sim h/L$
 (this is the expectation from the expansion, not a measured rate). These decrease with
 refinement. They are the discretisation errors in the usual sense. Measured on this page's code, for the impulsively started spinning cylinder at
 $Re=100$, $t=5$, centred, $N_z=1$ (independent review, `notes/verify/REPORT.md`, check 2): the torque differs from the exact solution by $+6.0\,\%$, $+0.7\,\%$,
 $+0.5\,\%$ at $N=32,64,128$. These three numbers do not establish an order of convergence (the error does not fall by a constant factor), and the review's Richardson
-extrapolation of them is not a clean order estimate either. TODO(measured: observed order of accuracy of the torque or of the velocity with $N$, from a sequence with at least four resolutions, or the reason the error flattens between $N=64$ and $128$).
+extrapolation of them is not a clean order estimate either.
 
 ## 6. The collision operators used
 
@@ -868,8 +868,7 @@ For a spin-only case ($U_o=0$) $U_{ref}=U_b$ and step 5 reduces to $\nu_{lb}=D_{
 
 - **$\tau\to\tfrac12$.** From step 6, $\tau-\tfrac12\propto D_{lb}\,u_{lb}/Re$. A higher Reynolds number at a fixed resolution and $u_{lb}$
   pushes $\tau$ towards $\tfrac12$, where the viscosity vanishes and, by §3.2, BGK no longer damps the non-equilibrium parts
-  (factor $1-1/\tau\to-1$). The regularised and MRT collisions of §6 are meant to cope with this. The smallest stable $\tau-\tfrac12$ for each collision model is
-  TODO(measured: not measured. Only the case-level comparison of §6 exists (regularised finite in six cases up to $Re=3000$; BGK and MRT each failed once); what is missing is the stability limit in $\tau-\tfrac12$ for each model, at fixed grid and $u_{lb}$).
+  (factor $1-1/\tau\to-1$). The regularised and MRT collisions of §6 are meant to cope with this. The page does not measure a stability limit in $\tau-\tfrac12$. All that was tested is the case-level comparison of §6: six cases up to $Re=3000$, in which the regularised operator stayed finite in all six, BGK failed in one and MRT in one. The $\tau$ values reached and which cases failed are not recorded in the notes available to this page.
 - **Small $u_{lb}$.** Lowering $u_{lb}$ lowers $Ma$ and the $O(Ma^2)$ errors of §5.9, and it lowers $\tau-\tfrac12$ too (step 6). It also lowers $\Delta t$ in proportion, so the number of
   steps for a given physical time rises as $1/u_{lb}$.
 - **Refinement.** While $u_{lb}=0.05$ (the cap is active), $\Delta t\propto h$ (acoustic scaling). Doubling $N$ doubles the number of steps
@@ -1062,7 +1061,7 @@ i.e. a wall position wrong by $(\tfrac12-q)$ link lengths.
 
 **Why the order differs.** The staircase rule places the wall at the wrong position by $|q-\tfrac12|$ link lengths, which is of first order in $h$. The velocity at the true wall is then
 off by $|u'|\,|q-\tfrac12|\,h$ for a linear profile, again first order in $h$ for a fixed physical gradient $u'$. In addition the stair-stepped surface has the wrong shape, at order $h$.
-The Bouzidi rule places the wall exactly where it is for any linear profile, as the check above shows. What remains is the error from the curvature of the profile, of order $h^2u''$, and from the discrete circle. Bouzidi et al. (2001) report second-order accuracy for their scheme on time-dependent circular Couette flow and flow past a periodic array of cylinders (from the paper's abstract). The observed order on this page's code is TODO(measured: convergence order of the torque or velocity error with $N$; the only data are the three torque errors of §5.9(c)).
+The Bouzidi rule places the wall exactly where it is for any linear profile, as the check above shows. What remains is the error from the curvature of the profile, of order $h^2u''$, and from the discrete circle. Bouzidi et al. (2001) report second-order accuracy for their scheme on time-dependent circular Couette flow and flow past a periodic array of cylinders (from the paper's abstract). The page does not compute a convergence order. The only measured data on this code are the torque errors of §5.9(c) ($+6.0$, $+0.7$, $+0.5\,\%$ at $N=32,64,128$), which do not show a clean order.
 
 ### 8.4 Nodes uncovered by the moving cylinder: refilling
 
@@ -1202,7 +1201,6 @@ Measured comparisons on the final runs (`notes/results_final.md`; LBM and finite
 
 Accuracy of the torque of a centred, impulsively started spinning cylinder against the exact solution ($Re=100$, $t=5$, $N_z=1$; project notes and review): LBM $+6.0\,\%$, $+0.7\,\%$, $+0.5\,\%$ at $N=32,64,128$; finite volumes with the inner-ramp mask $+7.5\,\%$, $-0.7\,\%$, $-2.9\,\%$ (not monotone).
 
-TODO(measured: run time per step and per unit physical time of the two methods on the same case, and the smallest Reynolds number at which each stays stable; neither is in `results_final.md`)
 
 ## References
 
