@@ -918,7 +918,7 @@ that is,
 
 $$\boxed{\,f_{\bar q}(\mathbf x_f,t+\Delta t) = f^\star_q(\mathbf x_f,t) - \frac{2\,w_q\,\rho\,\mathbf c_q\!\cdot\!\mathbf u_w}{c_s^2}\,}$$
 
-For halfway bounce-back, with $\rho$ the local density. (The quadratic part of the equilibrium is even in $\mathbf c$ and cancels between the two directions.)
+This is the halfway rule for a moving wall; $\rho$ is the local density. (The quadratic part of the equilibrium is even in $\mathbf c$ and cancels between the two directions.)
 
 **Reading.** Bounce-back alone returns the same momentum that arrives, so the wall appears at rest. The term shifts the balance
 between the incident and returning populations so that the net flux along the link equals that of a fluid moving with the wall,
@@ -944,7 +944,7 @@ to make the velocity at the wall equal to $u_w$.
 
 The cylinder surface is generally *not* halfway between nodes. The cut fraction $q$ varies from link to link. If we
 applied the halfway rule everywhere (**staircase bounce-back**), the wall would effectively sit at distance $\tfrac12$ link from each fluid node rather than $q$. 
-Its position would be wrong by $(q-\tfrac12)h$, up to $\tfrac12h$. This is a first-order error in $h$. 
+Its position would be wrong by $(q-\tfrac12)$ link lengths, up to $\tfrac12$ of a link. This is a first-order error in $h$. 
 
 Bouzidi, Firdaouss & Lallemand (2001) fix this by following the reflected particle for exactly one time step, with the true wall position,
 and interpolating. The exact cut fractions $q$ come from the analytic circle (the page's code computes them for each link). The particle must arrive at $\mathbf x_f$ at time $t+\Delta t$ with velocity $\mathbf c_{\bar q}$.
@@ -982,8 +982,7 @@ TODO(code: confirm in lbm3d.py/WGSL that the wall term is added to the incident 
 
 **Check on the exact shear solution (any $q$, any $\tau$).** Put the wall at $y=0$ and the first node at $y_0=q$, with the link pointing down to the wall
 ($c_{qy}=-1$), and let the profile be $u=u'(y-y_w)$. For these two directions $g_q=g_{\bar q}=+\tau w_qc_{qx}u'/c_s^2\equiv g$, and
-$f^{eq}_q=w_q(1+c_{qx}u/c_s^2)$, $f^{eq}_{\bar q}=w_q(1-c_{qx}u/c_s^2)$. Since $f^{eq}$ is linear in $u$ and the weights add to one or to
-combinations shown below, the interpolation of the equilibrium parts is easy.
+$f^{eq}_q=w_q(1+c_{qx}u/c_s^2)$, $f^{eq}_{\bar q}=w_q(1-c_{qx}u/c_s^2)$. Because $f^{eq}$ is linear in $u$, interpolating it in space just interpolates the velocity.
 
 *Case $q<\tfrac12$.* The upstream node is at $y_0+1$, where the velocity is $u_0+u'$. The interpolated incident population is
 $w_q\left[1+\tfrac{c_{qx}}{c_s^2}\left(u_0+(1-2q)u'\right)\right]+(1-\tfrac1\tau)g$, and the required value is
@@ -1001,9 +1000,9 @@ In both cases the profile $u'(y-y_w)$ vanishes at $y_w=0$, exactly the wall posi
 the wall term enters the same equations as an extra $-2w_qc_{qx}u_w/c_s^2$ (case $q<\tfrac12$) or $-2w_qc_{qx}u_w/(2qc_s^2)$ (case $q\ge\tfrac12$) and turns the
 condition into $u_0-qu'=u_w$: the linear profile has exactly the velocity $u_w$ at the cut position. Without the factor $\tfrac1{2q}$ in the second
 case the condition would be $u_0-qu'=2q\,u_w$, which is wrong unless $q=\tfrac12$. The staircase rule instead gives $u(\text{half-link})=u_w$,
-i.e. the wrong wall position by $(\tfrac12-q)h$.
+i.e. a wall position wrong by $(\tfrac12-q)$ link lengths.
 
-**Why Bouzidi is second order and staircase is first order.** The staircase rule places the wall at the wrong position by an error $|q-\tfrac12|h$ of the first order. The velocity at the true wall is then
+**Why Bouzidi is second order and staircase is first order.** The staircase rule places the wall at the wrong position by an error $|q-\tfrac12|$ link lengths, which is of first order in $h$. The velocity at the true wall is then
 off by $|u'|\,|q-\tfrac12|\,h$, which is first order in $h$ for fixed physical gradient $u'$. In addition the stair-stepped surface has the wrong shape, again at order $h$.
 The Bouzidi rule places the wall exactly where it is for any linear profile, as the check above shows. What remains is the error from the curvature of the profile, of order $h^2u''$, and from the discrete circle,
 so the scheme is second-order accurate (Bouzidi et al. 2001). The observed order on the page is TODO(measured: convergence order of the torque or velocity error with $N$).

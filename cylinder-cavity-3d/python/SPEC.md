@@ -54,7 +54,7 @@ LBM (D3Q19, nodes at cell centres x = (i+½)h, etc.; halfway bounce-back walls s
   ν_lb = ν dt / h², τ = 3ν_lb + ½; u_phys = u_lb_field · h/dt.
   With Nz = 1 periodic and BGK, D3Q19 summed over c_z equals D2Q9 BGK exactly — test it.
   Body: interpolated (Bouzidi–Firdaouss–Lallemand) bounce-back with moving-wall term
-  −2 w_q ρ (c_q·u_b)/c_s²; force/torque by momentum exchange (moving-boundary corrected); newly uncovered
+  2 w_q ρ (c_q·u_b)/c_s² for q < ½, divided by 2q for q ≥ ½ (Lallemand & Luo 2003; verified by Couette test); force/torque by momentum exchange (moving-boundary corrected); newly uncovered
   fluid nodes refilled (document the scheme). Exact cut fractions q from the analytic circle.
 
 ## Module API (Python; JS/WGSL use the same names in camelCase where JS idiom demands)
