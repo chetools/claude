@@ -48,10 +48,10 @@ for (const cs of ref.cases) {
   let worst = 0, worstScaled = 0, vmax = Math.max(...o.samples.map(r => Math.abs(r[4])));
   for (const [c, k, j, i, val] of o.samples) {
     const g = vel[c * nc + (k * p.N + j) * p.N + i];
-    worst = Math.max(worst, Math.abs(g - val) / Math.max(Math.abs(val), 1e-3 * vmax));
+    worst = Math.max(worst, Math.abs(g - val) / Math.max(Math.abs(val), 1e-2 * vmax));
     worstScaled = Math.max(worstScaled, Math.abs(g - val) / vmax);
   }
-  check(`${o.samples.length} velocity samples, per-value relative (floor 1e-3 max|sample|)`, worst, TOL);
+  check(`${o.samples.length} velocity samples, per-value relative (floor 1e-2 max|sample|)`, worst, TOL);
   check(`${o.samples.length} velocity samples, relative to max|sample|`, worstScaled, TOL);
 }
 

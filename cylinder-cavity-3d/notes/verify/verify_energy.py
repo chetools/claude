@@ -60,12 +60,12 @@ if __name__ == "__main__":
     for i in range(0, len(t) - k, k * 4 if tend > 1 else k):
         sl = slice(i, i + k + 1)
         dE = (E[i + k] - E[i]) / (t[i + k] - t[i]); dEf = (Ef[i + k] - Ef[i]) / (t[i + k] - t[i])
-        Pm = np.trapz(P[sl], t[sl]) / (t[i + k] - t[i])
-        d1, d2, d3 = [np.trapz(v[sl], t[sl]) / (t[i + k] - t[i]) for v in (2 * nu * Z, 2 * nu * Zf, 2 * nu * SS)]
+        Pm = np.trapezoid(P[sl], t[sl]) / (t[i + k] - t[i])
+        d1, d2, d3 = [np.trapezoid(v[sl], t[sl]) / (t[i + k] - t[i]) for v in (2 * nu * Z, 2 * nu * Zf, 2 * nu * SS)]
         print(f" {t[i]+0.025:5.3f} {dE:10.5f} {Pm:10.5f} {d1:10.5f} {d2:10.5f} {d3:10.5f} | {(dE-Pm+d1)/Pm:8.3f} {(dE-Pm+d2)/Pm:8.3f} {(dE-Pm+d3)/Pm:8.3f} | {dEf-Pm+d3:10.5f}")
     # whole-interval integral balance
-    Pint = np.trapz(P, t); 
-    print(f" integral over [{t[0]:.2f},{t[-1]:.2f}]: E gain {E[-1]-E[0]:.5f};  int P {Pint:.5f};  int D1 {np.trapz(2*nu*Z,t):.5f}; int D2 {np.trapz(2*nu*Zf,t):.5f}; int D3 {np.trapz(2*nu*SS,t):.5f}")
-    print(f"   residual (E gain - intP + intD1) = {E[-1]-E[0]-Pint+np.trapz(2*nu*Z,t):.5f}, with D2: {E[-1]-E[0]-Pint+np.trapz(2*nu*Zf,t):.5f}, with D3: {E[-1]-E[0]-Pint+np.trapz(2*nu*SS,t):.5f}")
+    Pint = np.trapezoid(P, t); 
+    print(f" integral over [{t[0]:.2f},{t[-1]:.2f}]: E gain {E[-1]-E[0]:.5f};  int P {Pint:.5f};  int D1 {np.trapezoid(2*nu*Z,t):.5f}; int D2 {np.trapezoid(2*nu*Zf,t):.5f}; int D3 {np.trapezoid(2*nu*SS,t):.5f}")
+    print(f"   residual (E gain - intP + intD1) = {E[-1]-E[0]-Pint+np.trapezoid(2*nu*Z,t):.5f}, with D2: {E[-1]-E[0]-Pint+np.trapezoid(2*nu*Zf,t):.5f}, with D3: {E[-1]-E[0]-Pint+np.trapezoid(2*nu*SS,t):.5f}")
     print(f"   Z_tot(t_end)={Z[-1]:.4f}  of which body interior 2*pi*Om^2*R^2 = {2*np.pi*p['Omega']**2*p['R']**2:.4f}; Z_fluid={Zf[-1]:.4f}")
     print(f"   E_tot(t_end)={E[-1]:.5f}; body rigid KE pi R^4 Om^2/4 = {np.pi*p['R']**4*p['Omega']**2/4:.5f} (spin only); E_fluid(r>R)={Ef[-1]:.5f}")
