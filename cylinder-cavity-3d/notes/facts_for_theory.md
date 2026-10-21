@@ -81,3 +81,15 @@ page as final — the coordinator re-runs the presets and fills the TODO(measure
 - SCREENING sweep (LBM, N = 64, Nz = 32, Lz = 0.5, periodic): spin only Re 50: decays (σ ≈ −0.48);
   Re 200: σ ≈ 1.1, saturated E3d/E ≈ 0.11; Re 400: σ ≈ 1.4. Spin + orbit Re 50: σ ≈ 0.5; Re 100–800:
   σ ≈ 1.1–1.8, saturated E3d/E ≈ 0.19–0.23. Dominant spanwise mode kz = 1 (longest that fits) in all.
+
+## LBM stability table (from the LBM reference agent's report; N = 64, N_z = 16, u_lb = 0.05, 2 time units)
+Fail = NaN, max|u_lb| > 0.5 or ρ < 0.3, checked every 100 steps. τ − ½ computed with lbm3d.make_params.
+
+| Re | motion | τ − ½ | BGK | reg | MRT |
+|---|---|---|---|---|---|
+| 200 | spin | 9.6e-3 | ok (max u_lb 0.05) | ok 0.05 | ok 0.05 |
+| 200 | spin+orbit | 3.8e-3 | ok 0.04 | ok 0.04 | ok 0.04 |
+| 1000 | spin | 1.9e-3 | ok 0.05 | ok 0.05 | ok 0.05 |
+| 1000 | spin+orbit | 7.7e-4 | ok 0.05 | ok 0.05 | ok, max u 0.11 |
+| 3000 | spin | 6.4e-4 | FAIL t = 1.33 | ok 0.05 | ok, max u 0.29 |
+| 3000 | spin+orbit | 2.6e-4 | ok 0.054 | ok 0.049 | FAIL t = 0.88 |
