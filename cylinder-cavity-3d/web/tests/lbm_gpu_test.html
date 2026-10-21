@@ -48,7 +48,7 @@ function maxRel(a, b) { let m = 0, d = 0; for (let i = 0; i < a.length; i++) { m
       g.destroy();
     }
     // 4. buffer limits: the device above has the adapter maximum; test also a default-limits device
-    const adapter = device._adapter, dd = await adapter.requestDevice();
+    const dd = await (await navigator.gpu.requestAdapter()).requestDevice();
     R.defaultLimits = { maxStorageBufferBindingSize: dd.limits.maxStorageBufferBindingSize, maxBufferSize: dd.limits.maxBufferSize };
     try { await L.createGpuSolver(dd, L.makeParams({ N: 128, Nz: 128 }), { wgsl }); R.limitMsg = "NO ERROR"; } catch (e) { R.limitMsg = e.message; }
     R.maxNz128Default = L.maxNzGpu(dd, 128);
