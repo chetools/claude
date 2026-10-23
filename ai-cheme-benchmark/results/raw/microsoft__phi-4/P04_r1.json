@@ -1,0 +1,35 @@
+{
+ "model": "microsoft/phi-4",
+ "problem": "P04",
+ "run": 1,
+ "served_model": "microsoft/phi-4",
+ "provider": "DeepInfra",
+ "text": "To solve this problem, we will use the isothermal compressible flow equations for gas through a pipe. We'll start by using the mass flow rate formula for isothermal flow, then calculate the Reynolds number, the Darcy friction factor using the Colebrook equation, and finally the gas velocity at the outlet.\n\n### Given Data:\n- Molar mass of methane, \\( M = 16.04 \\, \\text{kg/kmol} \\)\n- Viscosity, \\( \\mu = 1.1 \\times 10^{-5} \\, \\text{Pa} \\cdot \\text{s} \\)\n- Temperature, \\( T = 288 \\, \\text{K} \\)\n- Diameter, \\( D = 0.30 \\, \\text{m} \\)\n- Length, \\( L = 40 \\, \\text{km} = 40,000 \\, \\text{m} \\)\n- Absolute roughness, \\( \\varepsilon = 0.046 \\, \\text{mm} = 0.046 \\times 10^{-3} \\, \\text{m} \\)\n- Inlet pressure, \\( P_1 = 5.0 \\, \\text{MPa} = 5.0 \\times 10^6 \\, \\text{Pa} \\)\n- Outlet pressure, \\( P_2 = 3.0 \\, \\text{MPa} = 3.0 \\times 10^6 \\, \\text{Pa} \\)\n- Universal gas constant, \\( R = 8314 \\, \\text{J/(kmol} \\cdot \\text{K)} \\)\n\n### (a) Mass Flow Rate Calculation\n\nThe mass flow rate for compressible flow with kinetic energy term is given by:\n\n\\[\n\\dot{m} = \\frac{\\pi D^2}{4} \\cdot \\left( \\frac{2P_1^2}{\\rho_1 RT} \\right)^{0.5} \\cdot \\left( \\frac{P_2^2}{P_1^2} \\right) \\cdot \\left[ 1 - \\left( \\frac{P_2}{P_1} \\right)^2 \\right]^{0.5}\n\\]\n\nFirst, calculate the density at the inlet:\n\n\\[\n\\rho_1 = \\frac{P_1 M}{RT} = \\frac{5.0 \\times 10^6 \\times 16.04}{8314 \\times 288} = 33.56 \\, \\text{kg/m}^3\n\\]\n\nNow, substitute the values into the mass flow rate equation:\n\n\\[\n\\dot{m} = \\frac{\\pi (0.30)^2}{4} \\cdot \\left( \\frac{2 \\times (5.0 \\times 10^6)^2}{33.56 \\times 8314 \\times 288} \\right)^{0.5} \\cdot \\left( \\frac{(3.0 \\times 10^6)^2}{(5.0 \\times 10^6)^2} \\right) \\cdot \\left[ 1 - \\left( \\frac{3.0}{5.0} \\right)^2 \\right]^{0.5}\n\\]\n\n\\[\n\\dot{m} = \\frac{\\pi \\times 0.09}{4} \\cdot \\left( \\frac{2 \\times 25 \\times 10^{12}}{33.56 \\times 8314 \\times 288} \\right)^{0.5} \\cdot \\left( \\frac{9}{25} \\right) \\cdot \\left[ 1 - 0.36 \\right]^{0.5}\n\\]\n\n\\[\n\\dot{m} = 0.0706858 \\cdot \\left( \\frac{50 \\times 10^{12}}{806,118.528} \\right)^{0.5} \\cdot 0.6 \\cdot 0.8\n\\]\n\n\\[\n\\dot{m} = 0.0706858 \\cdot \\left( 6.206 \\times 10^7 \\right)^{0.5} \\cdot 0.6 \\cdot 0.8\n\\]\n\n\\[\n\\dot{m} = 0.0706858 \\cdot 7875.3 \\cdot 0.6 \\cdot 0.8\n\\]\n\n\\[\n\\dot{m} = 269.5 \\, \\text{kg/s}\n\\]\n\nFINAL (a): 269.5 kg/s\n\n### (b) Reynolds Number Calculation\n\nThe Reynolds number for compressible flow is given by:\n\n\\[\nRe = \\frac{\\rho_1 u D}{\\mu}\n\\]\n\nWhere \\( u \\) is the velocity at the inlet, calculated as:\n\n\\[\nu = \\frac{\\dot{m}}{\\rho_1 A} = \\frac{\\dot{m}}{\\rho_1 \\cdot \\frac{\\pi D^2}{4}}\n\\]\n\n\\[\nu = \\frac{269.5}{33.56 \\cdot \\frac{\\pi \\times 0.09}{4}} = \\frac{269.5}{2.372} = 113.6 \\, \\text{m/s}\n\\]\n\nNow calculate \\( Re \\):\n\n\\[\nRe = \\frac{33.56 \\times 113.6 \\times 0.30}{1.1 \\times 10^{-5}}\n\\]\n\n\\[\nRe = \\frac{1142.3}{1.1 \\times 10^{-5}} = 1.038 \\times 10^8\n\\]\n\nFINAL (b): 1.038e8\n\n### (c) Darcy Friction Factor Calculation\n\nThe Colebrook equation is:\n\n\\[\n\\frac{1}{\\sqrt{f}} = -2 \\log \\left( \\frac{\\varepsilon/D}{3.7} + \\frac{2.51}{Re \\sqrt{f}} \\right)\n\\]\n\nThis is an implicit equation for \\( f \\) and can be solved iteratively. Using an initial guess \\( f_0 = 0.02 \\):\n\n1. Calculate the right-hand side using \\( f_0 \\).\n2. Update \\( f \\) using the new value.\n3. Repeat until convergence.\n\nAfter solving iteratively:\n\n\\[\nf \\approx 0.018\n\\]\n\nFINAL (c): 0.018\n\n### (d) Gas Velocity at the Outlet Calculation\n\nThe outlet velocity \\( u_2 \\) is given by:\n\n\\[\nu_2 = \\frac{\\dot{m}}{\\rho_2 A}\n\\]\n\nFirst, calculate the density at the outlet:\n\n\\[\n\\rho_2 = \\frac{P_2 M}{RT} = \\frac{3.0 \\times 10^6 \\times 16.04}{8314 \\times 288} = 20.14 \\, \\text{kg/m}^3\n\\]\n\nNow, calculate \\( u_2 \\):\n\n\\[\nu_2 = \\frac{269.5}{20.14 \\cdot \\frac{\\pi \\times 0.09}{4}} = \\frac{269.5}{1.425} = 189.1 \\, \\text{m/s}\n\\]\n\nFINAL (d): 189.1 m/s",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 274,
+  "completion_tokens": 1571,
+  "total_tokens": 1845,
+  "cost": 0.00023912,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.00023912,
+   "upstream_inference_prompt_cost": 1.918e-05,
+   "upstream_inference_completions_cost": 0.00021994
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.00023912,
+ "seconds": 19.5
+}

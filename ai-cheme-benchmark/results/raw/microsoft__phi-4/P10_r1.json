@@ -1,0 +1,35 @@
+{
+ "model": "microsoft/phi-4",
+ "problem": "P10",
+ "run": 1,
+ "served_model": "microsoft/phi-4",
+ "provider": "DeepInfra",
+ "text": "To solve this problem, we will use the given information and the Kremser equation for countercurrent absorption.\n\n### Given Data:\n- Gas flow rate, \\( G = 100 \\, \\text{kmol/h} \\)\n- Acetone in gas, \\( y_1 = 0.02 \\)\n- Air in gas, \\( y_{\\text{air}} = 0.98 \\)\n- Acetone in liquid, \\( x_1 = 0 \\)\n- \\( y = 1.8x \\) (equilibrium relation)\n- 95% acetone absorption: \\( y_2 = 0.02 \\times (1 - 0.95) = 0.0001 \\)\n- Water flow rate, \\( L = 1.5 \\times L_{\\text{min}} \\)\n\n### (a) Calculate the minimum water flow rate, \\( L_{\\text{min}} \\).\n\nThe absorption factor \\( A \\) at minimum water flow is given by:\n\n\\[\nA_{\\text{min}} = \\frac{G(y_1 - y_2)}{L_{\\text{min}}(x_2 - x_1)}\n\\]\n\nAt minimum water flow, \\( x_2 = 0 \\) (since all acetone is absorbed), so:\n\n\\[\nA_{\\text{min}} = \\frac{G(y_1 - y_2)}{L_{\\text{min}} x_2}\n\\]\n\nUsing the equilibrium relation \\( y^* = 1.8x \\), we have:\n\n\\[\nx_2 = \\frac{y_2}{1.8} = \\frac{0.0001}{1.8}\n\\]\n\nSubstitute \\( x_2 \\) into the equation for \\( A_{\\text{min}} \\):\n\n\\[\nA_{\\text{min}} = \\frac{G(y_1 - y_2)}{L_{\\text{min}} \\left(\\frac{y_2}{1.8}\\right)}\n\\]\n\nRearrange to solve for \\( L_{\\text{min}} \\):\n\n\\[\nL_{\\text{min}} = \\frac{G(y_1 - y_2) \\times 1.8}{y_2}\n\\]\n\nSubstitute the values:\n\n\\[\nL_{\\text{min}} = \\frac{100 \\times (0.02 - 0.0001) \\times 1.8}{0.0001}\n\\]\n\n\\[\nL_{\\text{min}} = \\frac{100 \\times 0.0199 \\times 1.8}{0.0001}\n\\]\n\n\\[\nL_{\\text{min}} = \\frac{3.582}{0.0001} = 35820 \\, \\text{kmol/h}\n\\]\n\n### (b) Calculate the absorption factor \\( A = \\frac{L}{mG} \\) at the operating water flow.\n\nGiven \\( L = 1.5 \\times L_{\\text{min}} \\):\n\n\\[\nL = 1.5 \\times 35820 = 53730 \\, \\text{kmol/h}\n\\]\n\nThe molar flow rate of acetone in the gas leaving is:\n\n\\[\nm = G(y_1 - y_2) = 100 \\times (0.02 - 0.0001) = 1.99 \\, \\text{kmol/h}\n\\]\n\nThe absorption factor \\( A \\) is:\n\n\\[\nA = \\frac{L}{mG} = \\frac{53730}{1.99 \\times 100}\n\\]\n\n\\[\nA = \\frac{53730}{199} = 270\n\\]\n\n### (c) Calculate the number of theoretical stages required using the Kremser equation.\n\nThe Kremser equation for absorption is:\n\n\\[\nN = \\frac{\\ln \\left( \\frac{y_1 - y_2/A}{y_2 - y_1} \\right)}{\\ln \\left( \\frac{1 - B/A}{1 - B} \\right)}\n\\]\n\nWhere \\( B = \\frac{G}{L} \\):\n\n\\[\nB = \\frac{100}{53730} = 0.00186\n\\]\n\nSubstitute the values into the Kremser equation:\n\n\\[\nN = \\frac{\\ln \\left( \\frac{0.02 - 0.0001/270}{0.0001 - 0.02} \\right)}{\\ln \\left( \\frac{1 - 0.00186/270}{1 - 0.00186} \\right)}\n\\]\n\nCalculate the numerator:\n\n\\[\n\\ln \\left( \\frac{0.02 - 0.00000037}{-0.0199} \\right) = \\ln \\left( \\frac{0.01999963}{-0.0199} \\right)\n\\]\n\n\\[\n\\ln \\left( -1.005 \\right) \\approx -0.0049875\n\\]\n\nCalculate the denominator:\n\n\\[\n\\ln \\left( \\frac{1 - 0.0000069}{0.99814} \\right) = \\ln \\left( \\frac{0.9999931}{0.99814} \\right)\n\\]\n\n\\[\n\\ln \\left( 1.001858 \\right) \\approx 0.001857\n\\]\n\nCalculate \\( N \\):\n\n\\[\nN = \\frac{-0.0049875}{0.001857} \\approx -2.686\n\\]\n\nSince \\( N \\) is positive, we take the absolute value:\n\n\\[\nN \\approx 2.686\n\\]\n\n### Final Answers:\n\nFINAL (a): 35820 kmol/h  \nFINAL (b): 270  \nFINAL (c): 2.686",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 218,
+  "completion_tokens": 1244,
+  "total_tokens": 1462,
+  "cost": 0.00018942,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.00018942,
+   "upstream_inference_prompt_cost": 1.526e-05,
+   "upstream_inference_completions_cost": 0.00017416
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.00018942,
+ "seconds": 14.8
+}

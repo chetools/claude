@@ -1,0 +1,35 @@
+{
+ "model": "qwen/qwen-2.5-7b-instruct",
+ "problem": "P03",
+ "run": 1,
+ "served_model": "qwen/qwen-2.5-7b-instruct",
+ "provider": "Phala",
+ "text": "FINAL (a): 100.0 m\nFINAL (b): 0.0025 m\u00b3/s\nFINAL (c): 0.002087 m\u00b3/s, flows out of reservoir B\nFINAL (d): 0.001256 m\u00b3/s\n\n### Working:\n\n#### (a) Piezometric Head at Junction J\n\nFirst, calculate the piezometric head at junction J for each reservoir.\n\nFor Reservoir A:\n\\[ h_{pA} = 120 - \\frac{fL}{D} \\cdot \\frac{v^2}{2g} \\]\n\nFor Reservoir B:\n\\[ h_{pB} = 100 - \\frac{fL}{D} \\cdot \\frac{v^2}{2g} \\]\n\nFor Reservoir C:\n\\[ h_{pC} = 70 - \\frac{fL}{D} \\cdot \\frac{v^2}{2g} \\]\n\nSince all pipes connect to the same junction J and we assume the system is in equilibrium, the piezometric head at J will be the same as the lowest free-surface elevation, which is Reservoir C.\n\n\\[ h_{pj} = 70 \\text{ m} \\]\n\n#### (b) Flow Rate in Pipe 1\n\nUse the Darcy-Weisbach equation and Colebrook equation:\n\n\\[ f = 0.02 \\left( \\frac{\\log_{10} \\left[ \\frac{2.51}{Re \\sqrt{f}} + \\frac{\\epsilon/D}{3.7} \\right]}{1} \\right)^2 \\]\n\nFirst, find Reynolds number \\( Re \\):\n\n\\[ Re = \\frac{vD}{\\nu} \\]\n\\[ v = \\frac{Q}{A} = \\frac{Q}{\\pi D^2 / 4} \\]\n\nAssume \\( Q_1 = Q_2 = Q_3 \\), then:\n\n\\[ Q_1 = Q_2 = Q_3 = Q \\]\n\nUsing the Darcy-Weisbach equation:\n\n\\[ \\frac{h_L}{L} = \\frac{fL}{D} \\cdot \\frac{v^2}{2g} \\]\n\nGiven \\( h_L = 70 - 120 = -50 \\) m:\n\n\\[ \\frac{-50}{1500} = \\frac{f \\cdot 1500}{0.30} \\cdot \\frac{v^2}{2 \\cdot 9.81} \\]\n\nSolving for \\( f \\) and \\( v \\):\n\n\\[ f \\approx 0.022 \\]\n\\[ v \\approx 1.14 \\text{ m/s} \\]\n\nThen:\n\n\\[ Q_1 = \\frac{1.14 \\cdot 0.30^2}{4 \\cdot 10^{-6}} = 0.0025 \\text{ m}^3/\\text{s} = 2.5 \\text{ L/s} \\]\n\n#### (c) Flow Rate in Pipe 2\n\nUsing the same method:\n\n\\[ \\frac{-50}{800} = \\frac{f \\cdot 800}{0.20} \\cdot \\frac{v^2}{2 \\cdot 9.81} \\]\n\nSolving for \\( f \\) and \\( v \\):\n\n\\[ f \\approx 0.026 \\]\n\\[ v \\approx 0.88 \\text{ m/s} \\]\n\nThen:\n\n\\[ Q_2 = \\frac{0.88 \\cdot 0.20^2}{4 \\cdot 10^{-6}} = 0.002087 \\text{ m}^3/\\text{s} = 2.087 \\text{ L/s} \\]\n\nWater flows out of Reservoir B because it has a higher piezometric head than J.\n\n#### (d) Flow Rate in Pipe 3\n\nUsing the same method:\n\n\\[ \\frac{-50}{1200} = \\frac{f \\cdot 1200}{0.25} \\cdot \\frac{v^2}{2 \\cdot 9.81} \\]\n\nSolving for \\( f \\) and \\( v \\):\n\n\\[ f \\approx 0.020 \\]\n\\[ v \\approx 1.00 \\text{ m/s} \\]\n\nThen:\n\n\\[ Q_3 = \\frac{1.00 \\cdot 0.25^2}{4 \\cdot 10^{-6}} = 0.001256 \\text{ m}^3/\\text{s} = 1.256 \\text{ L/s} \\]",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 357,
+  "completion_tokens": 1029,
+  "total_tokens": 1386,
+  "cost": 0.0002415,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 59,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.0002415,
+   "upstream_inference_prompt_cost": 3.57e-05,
+   "upstream_inference_completions_cost": 0.0002058
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.0002415,
+ "seconds": 33.9
+}
