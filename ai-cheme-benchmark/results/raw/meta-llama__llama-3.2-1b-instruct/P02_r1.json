@@ -1,0 +1,35 @@
+{
+ "model": "meta-llama/llama-3.2-1b-instruct",
+ "problem": "P02",
+ "run": 1,
+ "served_model": "meta-llama/llama-3.2-1b-instruct",
+ "provider": "Cloudflare",
+ "text": "(a) The Reynolds number is\nN = \u03c1V L / \u03bc = (998)(0.025) / (1.00\u00d710\u207b\u00b3) = 1.99\u00d710\u2076\n(b) The Darcy friction factor is\nf = 4.64/(log\u2061(2D/d) + 0.25) = 4.64/(log\u2061(2\u00d70.10/0.046) + 0.25) = 0.013\n(c) The total head is:\nH = (\u03c1gV\u00b2 / (2\u03bc))ln((L + h) / L) + (h / (2D)) = (998)(9.81)(0.025)\u00b2 / (2\u00d71.00\u00d710\u207b\u00b3) \u00d7 ln((150 + 12) / 150) + (12 / (2\u00d70.10)) = 0.218 m\n(d) The power is\nP = (\u03c1QgH) / 1000 = (998)(0.025)\u00d7(9.81)(0.218) / 1000 = 0.057 kW",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 268,
+  "completion_tokens": 245,
+  "total_tokens": 513,
+  "cost": 5.6481e-05,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 5.6481e-05,
+   "upstream_inference_prompt_cost": 7.236e-06,
+   "upstream_inference_completions_cost": 4.9245e-05
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 5.6481e-05,
+ "seconds": 3.8
+}

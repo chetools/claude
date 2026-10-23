@@ -29,7 +29,7 @@ responses = []
 for m in models:
     for p in problems:
         p_ok = max(0.03, min(0.97, skill[m[0]] - hard.get(p["difficulty"], .3)))
-        for run in (1, 2, 3):
+        for run in (1,):
             score = round(min(10, max(0, 10 * p_ok + rnd.gauss(0, 1.6))))
             text = (f"SAMPLE (fake) response of {m[1]} to {p['id']}, run {run}.\n"
                     f"Step 1: ... Answer (a) = {ref[p['id']]['a']:.4g}\n")

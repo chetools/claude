@@ -8,10 +8,11 @@ Inputs: problems/P*.md, results/reference.json, results/data.json (schema in REA
 python/solutions/*.py, web/*.  Output: one self-contained HTML file (Plotly inlined, KaTeX CSS from jsDelivr, math
 prerendered with KaTeX at build time) and notebook/solutions_molab.py (regenerated from python/solutions).
 
-data.json: {"models": [{id, name, vendor, release_date, params (billions or null), params_official, params_source,
+data.json: {"models": [{id, name, vendor, release_date (YYYY-MM or YYYY-MM-DD), params (billions or null),
+            params_active (optional, billions, mixture-of-experts), params_official, params_source,
             reasoning, effort, cost_usd}],
             "problems": [{id, topic, difficulty, title, parts}],
-            "responses": [{model, problem, run (1..3), text, score (0..10), justification}]}
+            "responses": [{model, problem, run (1..N_RUNS), text, score (0..10), justification, parts (optional)}]}
 A data file with "sample": true is FAKE: the page shows a red banner and --release refuses it.
 Model output (response text, justification) is untrusted: it is HTML-escaped here and never passes through markdown.
 Any unfilled template placeholder, unused content, a Table of contents without headings or (with --release) a TODO
@@ -43,7 +44,7 @@ PAGE_NAME = "ai-cheme-benchmark-standalone.html"
 NOTEBOOK_NAME = "solutions_molab.py"
 MOLAB_URL = "https://molab.marimo.io/github/chetools/claude/blob/gh-pages/ai-cheme-benchmark/solutions_molab.py"
 PH_RE = re.compile(r"@@([A-Z0-9_]+)@@")
-N_RUNS = 3
+N_RUNS = 1
 
 
 def fail(msg):
@@ -206,8 +207,8 @@ def validate(data):
                 fail(f"model {m.get('id')}: field '{k}' missing")
         if m["params"] is not None and not isinstance(m["params"], (int, float)):
             fail(f"model {m['id']}: params must be a number (billions) or null")
-        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(m["release_date"])):
-            fail(f"model {m['id']}: release_date must be YYYY-MM-DD")
+        if not re.fullmatch(r"\d{4}-\d{2}(-\d{2})?", str(m["release_date"])):
+            fail(f"model {m['id']}: release_date must be YYYY-MM or YYYY-MM-DD")
     seen = set()
     for r in data["responses"]:
         for k in ("model", "problem", "run", "text", "score", "justification"):
@@ -305,10 +306,11 @@ def problems_html(data, ref, batch, models):
                 continue
             scores = ", ".join(f"{r['score']:g}" for r in rs)
             avg = sum(r["score"] for r in rs) / len(rs)
-            out.append(f'<details class="resp"><summary>{esc(m["name"])}<span class="mean">mean {avg:.1f} / 10 '
-                       f'(runs: {esc(scores)})</span></summary>')
+            label = f"mean {avg:.1f} / 10 (runs: {scores})" if N_RUNS > 1 else f"score {avg:g} / 10"
+            out.append(f'<details class="resp"><summary>{esc(m["name"])}<span class="mean">{esc(label)}</span></summary>')
             for r in rs:
-                out.append(f'<h4>Run {r["run"]}<span class="score-pill">score {r["score"]:g} / 10</span></h4>'
+                head = f'Run {r["run"]}<span class="score-pill">score {r["score"]:g} / 10</span>' if N_RUNS > 1 else "Response"
+                out.append(f'<h4>{head}</h4>'
                            f'<pre>{esc(r["text"])}</pre>'
                            f'<p class="just"><strong>Grader:</strong> {esc(r["justification"])}</p>')
             out.append("</details>")
@@ -394,6 +396,10 @@ def main():
         "DATA": js_json(web_data), "EXPECT": js_json(expected_stats(data)),
         "IS_SAMPLE": "true" if is_sample else "false",
         "APP_JS": read("web", "app.js"),
+        "N_MODELS": str(len(data["models"])),
+        "RUNS_TEXT": "once each" if N_RUNS == 1 else f"{N_RUNS} runs each",
+        "RUNS_CAPTION": "" if N_RUNS == 1 else (" and the runs. In brackets: the lowest and highest of the "
+                                                 "per-run totals"),
         "MOLAB_URL": MOLAB_URL, "NOTEBOOK_NAME": NOTEBOOK_NAME,
     }
     for name in ("PLOTLY", "APP_JS"):

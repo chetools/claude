@@ -1,0 +1,35 @@
+{
+ "model": "meta-llama/llama-3.2-1b-instruct",
+ "problem": "P04",
+ "run": 1,
+ "served_model": "meta-llama/llama-3.2-1b-instruct",
+ "provider": "Cloudflare",
+ "text": "(a) The mass flow rate is given by\n\\[ \\dot{m} = \\frac{\\pi \\times \\left( 0.30 \\text{ m}\\right)^2 \\times 40 \\times 10^3 \\text{ m}}{60 \\times 10^3} = 0.0303 \\text{ kg/s} \\]\n\n(b) The Reynolds number is given by\n\\[ Re_{\\text{R}} = \\frac{\\rho \\times u \\times D}{\\mu} = \\frac{p_{\\text{in}}}{\\rho_{\\text{in}} \\times g \\times \\frac{D^2}{4}} \\]\nSince the flow is isothermal, the static pressure is constant, and the density is constant, we can simplify the equation as\n\\[ Re_{\\text{R}} = \\frac{\\rho \\times u \\times D}{\\mu} = \\frac{\\frac{p_{\\text{in}}}{\\rho_{\\text{in}}}}{\\frac{p_{\\text{out}}}{\\rho_{\\text{out}}} \\times \\frac{D^2}{4}} = \\frac{\\frac{p_{\\text{in}}}{\\rho_{\\text{in}}}}{\\frac{p_{\\text{out}}}{\\rho_{\\text{out}}} \\times \\frac{D^2}{4}} = \\frac{4 \\times \\frac{p_{\\text{in}}}{\\rho_{\\text{in}}}}{\\frac{p_{\\text{out}}}{\\rho_{\\text{out}}} \\times \\frac{D^2}{4}} \\]\nSince the flow is isothermal, we can use the ideal gas equation to simplify the equation as\n\\[ \\rho_{\\text{in}} = \\frac{p_{\\text{in}}}{R_{\\text{in}} T_{\\text{in}}} = \\frac{p_{\\text{in}}}{R_{\\text{in}} \\times 288 \\text{ K}} \\]\n\\[ \\rho_{\\text{out}} = \\frac{p_{\\text{out}}}{R_{\\text{out}} T_{\\text{out}}} = \\frac{p_{\\text{out}}}{R_{\\text{out}} \\times 288 \\text{ K}} \\]\nSubstituting the values, we get\n\\[ Re_{\\text{R}} = \\frac{4 \\times \\frac{5.0 \\times 10^6}{0.0289}}{\\frac{3.0 \\times 10^6}{0.0289} \\times \\left( \\frac{10^{-3}}{4}\\right)^2} = 1.36 \\]\n\n(c) The Darcy friction factor is given by\n\\[ f = \\frac{64}{\\left( \\frac{\\mu}{\\rho} \\right) \\left( \\frac{D}{4} \\right)^2} = \\frac{64}{\\left( \\frac{1.1 \\times 10^{-5}}{0.0289} \\right) \\left( \\frac{0.3}{4} \\right)^2} = 0.612 \\]\n\n(d) The total head is given by the equation\n\\[ h_{\\text{total}} = \\frac{h_{\\text{atm}}}{\\gamma} + \\frac{\\left( \\frac{P_{\\text{out}} - P_{\\text{in}}}{\\rho \\times g} \\right)}{2 \\times \\log_{10} \\left( \\frac{\\rho_{\\text{out}}}{\\rho_{\\text{in}}} \\right)} \\]\n\\[ h_{\\text{total}} = \\frac{1}{\\gamma} \\left( \\frac{P_{\\text{out}} - P_{\\text{in}}}{\\rho_{\\text{out}} \\times g} \\right) + \\frac{1}{2 \\times \\log_{10} \\left( \\frac{\\rho_{\\text{out}}}{\\rho_{\\text{in}}} \\right)} \\]\n\n\\[ h_{\\text{total}} = \\frac{1}{1.01} \\left( \\frac{3.0 \\times 10^6 - 5.0 \\times 10^6}{0.0289 \\times 9.81 \\times 40,000} \\right) + \\frac{1}{2 \\times \\log_{10} \\left( \\frac{0.0289}{0.0289} \\right)} \\]\n\\[ h_{\\text{total}} = 4.36 \\text{ m} \\]",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 279,
+  "completion_tokens": 1018,
+  "total_tokens": 1297,
+  "cost": 0.000212151,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.000212151,
+   "upstream_inference_prompt_cost": 7.533e-06,
+   "upstream_inference_completions_cost": 0.000204618
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.000212151,
+ "seconds": 7.6
+}

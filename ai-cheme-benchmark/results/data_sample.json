@@ -231,65 +231,17 @@
   },
   {
    "model": "sample-a",
-   "problem": "P01",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model A to P01, run 2.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 3 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P01",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model A to P01, run 3.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 3 parts."
-  },
-  {
-   "model": "sample-a",
    "problem": "P02",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model A to P02, run 1.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 4 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P02",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model A to P02, run 2.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 4 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P02",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model A to P02, run 3.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 4 parts."
+   "score": 6,
+   "justification": "FAKE grader note: 6/10 on 4 parts."
   },
   {
    "model": "sample-a",
    "problem": "P03",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model A to P03, run 1.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 4 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P03",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model A to P03, run 2.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 4 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P03",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model A to P03, run 3.\nStep 1: ... Answer (a) = 101.1\n",
    "score": 0,
    "justification": "FAKE grader note: 0/10 on 4 parts."
   },
@@ -298,22 +250,6 @@
    "problem": "P04",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model A to P04, run 1.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 4 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P04",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model A to P04, run 2.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 4 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P04",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model A to P04, run 3.\nStep 1: ... Answer (a) = 17.43\n",
    "score": 0,
    "justification": "FAKE grader note: 0/10 on 4 parts."
   },
@@ -322,24 +258,8 @@
    "problem": "P05",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model A to P05, run 1.\nStep 1: ... Answer (a) = 10\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 3 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P05",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model A to P05, run 2.\nStep 1: ... Answer (a) = 10\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 3 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P05",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model A to P05, run 3.\nStep 1: ... Answer (a) = 10\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 3 parts."
+   "score": 3,
+   "justification": "FAKE grader note: 3/10 on 3 parts."
   },
   {
    "model": "sample-a",
@@ -351,41 +271,9 @@
   },
   {
    "model": "sample-a",
-   "problem": "P06",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model A to P06, run 2.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 5 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P06",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model A to P06, run 3.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 1,
-   "justification": "FAKE grader note: 1/10 on 5 parts."
-  },
-  {
-   "model": "sample-a",
    "problem": "P07",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model A to P07, run 1.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 6 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P07",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model A to P07, run 2.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 1,
-   "justification": "FAKE grader note: 1/10 on 6 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P07",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model A to P07, run 3.\nStep 1: ... Answer (a) = 0.6773\n",
    "score": 2,
    "justification": "FAKE grader note: 2/10 on 6 parts."
   },
@@ -399,89 +287,25 @@
   },
   {
    "model": "sample-a",
-   "problem": "P08",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model A to P08, run 2.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 3 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P08",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model A to P08, run 3.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 3 parts."
-  },
-  {
-   "model": "sample-a",
    "problem": "P09",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model A to P09, run 1.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 2 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P09",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model A to P09, run 2.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 2 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P09",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model A to P09, run 3.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 2 parts."
+   "score": 4,
+   "justification": "FAKE grader note: 4/10 on 2 parts."
   },
   {
    "model": "sample-a",
    "problem": "P10",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model A to P10, run 1.\nStep 1: ... Answer (a) = 171\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 3 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P10",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model A to P10, run 2.\nStep 1: ... Answer (a) = 171\n",
    "score": 4,
    "justification": "FAKE grader note: 4/10 on 3 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P10",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model A to P10, run 3.\nStep 1: ... Answer (a) = 171\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 3 parts."
   },
   {
    "model": "sample-a",
    "problem": "P11",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model A to P11, run 1.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 5 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P11",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model A to P11, run 2.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 5 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P11",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model A to P11, run 3.\nStep 1: ... Answer (a) = 44.57\n",
    "score": 0,
    "justification": "FAKE grader note: 0/10 on 5 parts."
   },
@@ -494,68 +318,20 @@
    "justification": "FAKE grader note: 0/10 on 6 parts."
   },
   {
-   "model": "sample-a",
-   "problem": "P12",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model A to P12, run 2.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 6 parts."
-  },
-  {
-   "model": "sample-a",
-   "problem": "P12",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model A to P12, run 3.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 6 parts."
-  },
-  {
    "model": "sample-b",
    "problem": "P01",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model B to P01, run 1.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 3 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P01",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model B to P01, run 2.\nStep 1: ... Answer (a) = 350.1\n",
    "score": 6,
    "justification": "FAKE grader note: 6/10 on 3 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P01",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model B to P01, run 3.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 3 parts."
   },
   {
    "model": "sample-b",
    "problem": "P02",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model B to P02, run 1.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 4 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P02",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model B to P02, run 2.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 4 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P02",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model B to P02, run 3.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 4 parts."
+   "score": 4,
+   "justification": "FAKE grader note: 4/10 on 4 parts."
   },
   {
    "model": "sample-b",
@@ -567,22 +343,6 @@
   },
   {
    "model": "sample-b",
-   "problem": "P03",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model B to P03, run 2.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 4 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P03",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model B to P03, run 3.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 4 parts."
-  },
-  {
-   "model": "sample-b",
    "problem": "P04",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model B to P04, run 1.\nStep 1: ... Answer (a) = 17.43\n",
@@ -591,67 +351,19 @@
   },
   {
    "model": "sample-b",
-   "problem": "P04",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model B to P04, run 2.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 4 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P04",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model B to P04, run 3.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 4 parts."
-  },
-  {
-   "model": "sample-b",
    "problem": "P05",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model B to P05, run 1.\nStep 1: ... Answer (a) = 10\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 3 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P05",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model B to P05, run 2.\nStep 1: ... Answer (a) = 10\n",
    "score": 7,
    "justification": "FAKE grader note: 7/10 on 3 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P05",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model B to P05, run 3.\nStep 1: ... Answer (a) = 10\n",
-   "score": 9,
-   "justification": "FAKE grader note: 9/10 on 3 parts."
   },
   {
    "model": "sample-b",
    "problem": "P06",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model B to P06, run 1.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 5 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P06",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model B to P06, run 2.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 5 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P06",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model B to P06, run 3.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 5 parts."
+   "score": 3,
+   "justification": "FAKE grader note: 3/10 on 5 parts."
   },
   {
    "model": "sample-b",
@@ -663,65 +375,17 @@
   },
   {
    "model": "sample-b",
-   "problem": "P07",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model B to P07, run 2.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 6 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P07",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model B to P07, run 3.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 6 parts."
-  },
-  {
-   "model": "sample-b",
    "problem": "P08",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model B to P08, run 1.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 3 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P08",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model B to P08, run 2.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 3 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P08",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model B to P08, run 3.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 3 parts."
+   "score": 2,
+   "justification": "FAKE grader note: 2/10 on 3 parts."
   },
   {
    "model": "sample-b",
    "problem": "P09",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model B to P09, run 1.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 2 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P09",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model B to P09, run 2.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 2 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P09",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model B to P09, run 3.\nStep 1: ... Answer (a) = 6.427\n",
    "score": 7,
    "justification": "FAKE grader note: 7/10 on 2 parts."
   },
@@ -730,24 +394,8 @@
    "problem": "P10",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model B to P10, run 1.\nStep 1: ... Answer (a) = 171\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 3 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P10",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model B to P10, run 2.\nStep 1: ... Answer (a) = 171\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 3 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P10",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model B to P10, run 3.\nStep 1: ... Answer (a) = 171\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 3 parts."
+   "score": 4,
+   "justification": "FAKE grader note: 4/10 on 3 parts."
   },
   {
    "model": "sample-b",
@@ -759,41 +407,9 @@
   },
   {
    "model": "sample-b",
-   "problem": "P11",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model B to P11, run 2.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 5 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P11",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model B to P11, run 3.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 1,
-   "justification": "FAKE grader note: 1/10 on 5 parts."
-  },
-  {
-   "model": "sample-b",
    "problem": "P12",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model B to P12, run 1.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 1,
-   "justification": "FAKE grader note: 1/10 on 6 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P12",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model B to P12, run 2.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 6 parts."
-  },
-  {
-   "model": "sample-b",
-   "problem": "P12",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model B to P12, run 3.\nStep 1: ... Answer (a) = 40.5\n",
    "score": 1,
    "justification": "FAKE grader note: 1/10 on 6 parts."
   },
@@ -802,72 +418,24 @@
    "problem": "P01",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model C to P01, run 1.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 3 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P01",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model C to P01, run 2.\nStep 1: ... Answer (a) = 350.1\n",
    "score": 8,
    "justification": "FAKE grader note: 8/10 on 3 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P01",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model C to P01, run 3.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 3 parts."
   },
   {
    "model": "sample-c",
    "problem": "P02",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model C to P02, run 1.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 8,
-   "justification": "FAKE grader note: 8/10 on 4 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P02",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model C to P02, run 2.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 4 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P02",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model C to P02, run 3.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 4 parts."
+   "score": 3,
+   "justification": "FAKE grader note: 3/10 on 4 parts."
   },
   {
    "model": "sample-c",
    "problem": "P03",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model C to P03, run 1.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 4 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P03",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model C to P03, run 2.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 4 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P03",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model C to P03, run 3.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 4 parts."
+   "score": 3,
+   "justification": "FAKE grader note: 3/10 on 4 parts."
   },
   {
    "model": "sample-c",
@@ -879,115 +447,35 @@
   },
   {
    "model": "sample-c",
-   "problem": "P04",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model C to P04, run 2.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 4 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P04",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model C to P04, run 3.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 4 parts."
-  },
-  {
-   "model": "sample-c",
    "problem": "P05",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model C to P05, run 1.\nStep 1: ... Answer (a) = 10\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 3 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P05",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model C to P05, run 2.\nStep 1: ... Answer (a) = 10\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 3 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P05",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model C to P05, run 3.\nStep 1: ... Answer (a) = 10\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 3 parts."
+   "score": 8,
+   "justification": "FAKE grader note: 8/10 on 3 parts."
   },
   {
    "model": "sample-c",
    "problem": "P06",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model C to P06, run 1.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 9,
-   "justification": "FAKE grader note: 9/10 on 5 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P06",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model C to P06, run 2.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 5 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P06",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model C to P06, run 3.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 5 parts."
+   "score": 5,
+   "justification": "FAKE grader note: 5/10 on 5 parts."
   },
   {
    "model": "sample-c",
    "problem": "P07",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model C to P07, run 1.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 6 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P07",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model C to P07, run 2.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 6 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P07",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model C to P07, run 3.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 6 parts."
+   "score": 5,
+   "justification": "FAKE grader note: 5/10 on 6 parts."
   },
   {
    "model": "sample-c",
    "problem": "P08",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model C to P08, run 1.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 3 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P08",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model C to P08, run 2.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 3 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P08",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model C to P08, run 3.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 3 parts."
+   "score": 0,
+   "justification": "FAKE grader note: 0/10 on 3 parts."
   },
   {
    "model": "sample-c",
@@ -999,65 +487,17 @@
   },
   {
    "model": "sample-c",
-   "problem": "P09",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model C to P09, run 2.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 2 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P09",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model C to P09, run 3.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 2 parts."
-  },
-  {
-   "model": "sample-c",
    "problem": "P10",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model C to P10, run 1.\nStep 1: ... Answer (a) = 171\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 3 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P10",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model C to P10, run 2.\nStep 1: ... Answer (a) = 171\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 3 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P10",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model C to P10, run 3.\nStep 1: ... Answer (a) = 171\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 3 parts."
+   "score": 5,
+   "justification": "FAKE grader note: 5/10 on 3 parts."
   },
   {
    "model": "sample-c",
    "problem": "P11",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model C to P11, run 1.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 5 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P11",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model C to P11, run 2.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 5 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P11",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model C to P11, run 3.\nStep 1: ... Answer (a) = 44.57\n",
    "score": 0,
    "justification": "FAKE grader note: 0/10 on 5 parts."
   },
@@ -1070,116 +510,36 @@
    "justification": "FAKE grader note: 2/10 on 6 parts."
   },
   {
-   "model": "sample-c",
-   "problem": "P12",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model C to P12, run 2.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 6 parts."
-  },
-  {
-   "model": "sample-c",
-   "problem": "P12",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model C to P12, run 3.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 1,
-   "justification": "FAKE grader note: 1/10 on 6 parts."
-  },
-  {
    "model": "sample-d",
    "problem": "P01",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model D to P01, run 1.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 8,
-   "justification": "FAKE grader note: 8/10 on 3 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P01",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model D to P01, run 2.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 3 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P01",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model D to P01, run 3.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 10,
-   "justification": "FAKE grader note: 10/10 on 3 parts."
+   "score": 5,
+   "justification": "FAKE grader note: 5/10 on 3 parts."
   },
   {
    "model": "sample-d",
    "problem": "P02",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model D to P02, run 1.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 4 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P02",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model D to P02, run 2.\nStep 1: ... Answer (a) = 3.177e+05\n",
    "score": 6,
    "justification": "FAKE grader note: 6/10 on 4 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P02",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model D to P02, run 3.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 4 parts."
   },
   {
    "model": "sample-d",
    "problem": "P03",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model D to P03, run 1.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 4 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P03",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model D to P03, run 2.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 4 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P03",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model D to P03, run 3.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 4 parts."
+   "score": 1,
+   "justification": "FAKE grader note: 1/10 on 4 parts."
   },
   {
    "model": "sample-d",
    "problem": "P04",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model D to P04, run 1.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 4 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P04",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model D to P04, run 2.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 4 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P04",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model D to P04, run 3.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 4 parts."
+   "score": 2,
+   "justification": "FAKE grader note: 2/10 on 4 parts."
   },
   {
    "model": "sample-d",
@@ -1191,67 +551,19 @@
   },
   {
    "model": "sample-d",
-   "problem": "P05",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model D to P05, run 2.\nStep 1: ... Answer (a) = 10\n",
-   "score": 8,
-   "justification": "FAKE grader note: 8/10 on 3 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P05",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model D to P05, run 3.\nStep 1: ... Answer (a) = 10\n",
-   "score": 8,
-   "justification": "FAKE grader note: 8/10 on 3 parts."
-  },
-  {
-   "model": "sample-d",
    "problem": "P06",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model D to P06, run 1.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 5 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P06",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model D to P06, run 2.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 5 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P06",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model D to P06, run 3.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 5 parts."
+   "score": 9,
+   "justification": "FAKE grader note: 9/10 on 5 parts."
   },
   {
    "model": "sample-d",
    "problem": "P07",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model D to P07, run 1.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 6 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P07",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model D to P07, run 2.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 6 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P07",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model D to P07, run 3.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 6 parts."
+   "score": 3,
+   "justification": "FAKE grader note: 3/10 on 6 parts."
   },
   {
    "model": "sample-d",
@@ -1263,209 +575,65 @@
   },
   {
    "model": "sample-d",
-   "problem": "P08",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model D to P08, run 2.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 3 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P08",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model D to P08, run 3.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 3 parts."
-  },
-  {
-   "model": "sample-d",
    "problem": "P09",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model D to P09, run 1.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 2 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P09",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model D to P09, run 2.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 2 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P09",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model D to P09, run 3.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 9,
-   "justification": "FAKE grader note: 9/10 on 2 parts."
+   "score": 10,
+   "justification": "FAKE grader note: 10/10 on 2 parts."
   },
   {
    "model": "sample-d",
    "problem": "P10",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model D to P10, run 1.\nStep 1: ... Answer (a) = 171\n",
-   "score": 9,
-   "justification": "FAKE grader note: 9/10 on 3 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P10",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model D to P10, run 2.\nStep 1: ... Answer (a) = 171\n",
    "score": 7,
    "justification": "FAKE grader note: 7/10 on 3 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P10",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model D to P10, run 3.\nStep 1: ... Answer (a) = 171\n",
-   "score": 8,
-   "justification": "FAKE grader note: 8/10 on 3 parts."
   },
   {
    "model": "sample-d",
    "problem": "P11",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model D to P11, run 1.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 5 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P11",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model D to P11, run 2.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 5 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P11",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model D to P11, run 3.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 5 parts."
+   "score": 6,
+   "justification": "FAKE grader note: 6/10 on 5 parts."
   },
   {
    "model": "sample-d",
    "problem": "P12",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model D to P12, run 1.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 6 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P12",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model D to P12, run 2.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 1,
-   "justification": "FAKE grader note: 1/10 on 6 parts."
-  },
-  {
-   "model": "sample-d",
-   "problem": "P12",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model D to P12, run 3.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 6 parts."
+   "score": 7,
+   "justification": "FAKE grader note: 7/10 on 6 parts."
   },
   {
    "model": "sample-e",
    "problem": "P01",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P01, run 1.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 3 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P01",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model E to P01, run 2.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 9,
-   "justification": "FAKE grader note: 9/10 on 3 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P01",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model E to P01, run 3.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 3 parts."
+   "score": 7,
+   "justification": "FAKE grader note: 7/10 on 3 parts."
   },
   {
    "model": "sample-e",
    "problem": "P02",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P02, run 1.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 4 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P02",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model E to P02, run 2.\nStep 1: ... Answer (a) = 3.177e+05\n",
    "score": 6,
    "justification": "FAKE grader note: 6/10 on 4 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P02",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model E to P02, run 3.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 4 parts."
   },
   {
    "model": "sample-e",
    "problem": "P03",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P03, run 1.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 4 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P03",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model E to P03, run 2.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 1,
-   "justification": "FAKE grader note: 1/10 on 4 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P03",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model E to P03, run 3.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 4 parts."
+   "score": 6,
+   "justification": "FAKE grader note: 6/10 on 4 parts."
   },
   {
    "model": "sample-e",
    "problem": "P04",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P04, run 1.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 4 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P04",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model E to P04, run 2.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 1,
-   "justification": "FAKE grader note: 1/10 on 4 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P04",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model E to P04, run 3.\nStep 1: ... Answer (a) = 17.43\n",
    "score": 3,
    "justification": "FAKE grader note: 3/10 on 4 parts."
   },
@@ -1479,65 +647,17 @@
   },
   {
    "model": "sample-e",
-   "problem": "P05",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model E to P05, run 2.\nStep 1: ... Answer (a) = 10\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 3 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P05",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model E to P05, run 3.\nStep 1: ... Answer (a) = 10\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 3 parts."
-  },
-  {
-   "model": "sample-e",
    "problem": "P06",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P06, run 1.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 1,
-   "justification": "FAKE grader note: 1/10 on 5 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P06",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model E to P06, run 2.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 5 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P06",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model E to P06, run 3.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 5 parts."
+   "score": 3,
+   "justification": "FAKE grader note: 3/10 on 5 parts."
   },
   {
    "model": "sample-e",
    "problem": "P07",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P07, run 1.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 6 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P07",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model E to P07, run 2.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 6 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P07",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model E to P07, run 3.\nStep 1: ... Answer (a) = 0.6773\n",
    "score": 2,
    "justification": "FAKE grader note: 2/10 on 6 parts."
   },
@@ -1546,70 +666,22 @@
    "problem": "P08",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P08, run 1.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 3 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P08",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model E to P08, run 2.\nStep 1: ... Answer (a) = 6.357\n",
    "score": 0,
    "justification": "FAKE grader note: 0/10 on 3 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P08",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model E to P08, run 3.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 3 parts."
   },
   {
    "model": "sample-e",
    "problem": "P09",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P09, run 1.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 2 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P09",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model E to P09, run 2.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 2 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P09",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model E to P09, run 3.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 8,
-   "justification": "FAKE grader note: 8/10 on 2 parts."
+   "score": 5,
+   "justification": "FAKE grader note: 5/10 on 2 parts."
   },
   {
    "model": "sample-e",
    "problem": "P10",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P10, run 1.\nStep 1: ... Answer (a) = 171\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 3 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P10",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model E to P10, run 2.\nStep 1: ... Answer (a) = 171\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 3 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P10",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model E to P10, run 3.\nStep 1: ... Answer (a) = 171\n",
    "score": 4,
    "justification": "FAKE grader note: 4/10 on 3 parts."
   },
@@ -1618,22 +690,6 @@
    "problem": "P11",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P11, run 1.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 1,
-   "justification": "FAKE grader note: 1/10 on 5 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P11",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model E to P11, run 2.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 5 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P11",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model E to P11, run 3.\nStep 1: ... Answer (a) = 44.57\n",
    "score": 4,
    "justification": "FAKE grader note: 4/10 on 5 parts."
   },
@@ -1642,142 +698,46 @@
    "problem": "P12",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P12, run 1.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 6 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P12",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model E to P12, run 2.\nStep 1: ... Answer (a) = 40.5\n",
    "score": 5,
    "justification": "FAKE grader note: 5/10 on 6 parts."
-  },
-  {
-   "model": "sample-e",
-   "problem": "P12",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model E to P12, run 3.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 6 parts."
   },
   {
    "model": "sample-f",
    "problem": "P01",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P01, run 1.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 10,
-   "justification": "FAKE grader note: 10/10 on 3 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P01",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model F to P01, run 2.\nStep 1: ... Answer (a) = 350.1\n",
    "score": 9,
    "justification": "FAKE grader note: 9/10 on 3 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P01",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model F to P01, run 3.\nStep 1: ... Answer (a) = 350.1\n",
-   "score": 8,
-   "justification": "FAKE grader note: 8/10 on 3 parts."
   },
   {
    "model": "sample-f",
    "problem": "P02",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P02, run 1.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 8,
-   "justification": "FAKE grader note: 8/10 on 4 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P02",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model F to P02, run 2.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 4 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P02",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model F to P02, run 3.\nStep 1: ... Answer (a) = 3.177e+05\n",
-   "score": 9,
-   "justification": "FAKE grader note: 9/10 on 4 parts."
+   "score": 7,
+   "justification": "FAKE grader note: 7/10 on 4 parts."
   },
   {
    "model": "sample-f",
    "problem": "P03",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P03, run 1.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 4 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P03",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model F to P03, run 2.\nStep 1: ... Answer (a) = 101.1\n",
    "score": 5,
    "justification": "FAKE grader note: 5/10 on 4 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P03",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model F to P03, run 3.\nStep 1: ... Answer (a) = 101.1\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 4 parts."
   },
   {
    "model": "sample-f",
    "problem": "P04",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P04, run 1.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 4 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P04",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model F to P04, run 2.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 4 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P04",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model F to P04, run 3.\nStep 1: ... Answer (a) = 17.43\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 4 parts."
+   "score": 5,
+   "justification": "FAKE grader note: 5/10 on 4 parts."
   },
   {
    "model": "sample-f",
    "problem": "P05",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P05, run 1.\nStep 1: ... Answer (a) = 10\n",
-   "score": 8,
-   "justification": "FAKE grader note: 8/10 on 3 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P05",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model F to P05, run 2.\nStep 1: ... Answer (a) = 10\n",
-   "score": 8,
-   "justification": "FAKE grader note: 8/10 on 3 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P05",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model F to P05, run 3.\nStep 1: ... Answer (a) = 10\n",
    "score": 9,
    "justification": "FAKE grader note: 9/10 on 3 parts."
   },
@@ -1786,48 +746,16 @@
    "problem": "P06",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P06, run 1.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 8,
-   "justification": "FAKE grader note: 8/10 on 5 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P06",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model F to P06, run 2.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 10,
-   "justification": "FAKE grader note: 10/10 on 5 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P06",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model F to P06, run 3.\nStep 1: ... Answer (a) = 0.4\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 5 parts."
+   "score": 6,
+   "justification": "FAKE grader note: 6/10 on 5 parts."
   },
   {
    "model": "sample-f",
    "problem": "P07",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P07, run 1.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 6 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P07",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model F to P07, run 2.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 6 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P07",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model F to P07, run 3.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 6 parts."
+   "score": 3,
+   "justification": "FAKE grader note: 3/10 on 6 parts."
   },
   {
    "model": "sample-f",
@@ -1839,113 +767,33 @@
   },
   {
    "model": "sample-f",
-   "problem": "P08",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model F to P08, run 2.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 3 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P08",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model F to P08, run 3.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 3 parts."
-  },
-  {
-   "model": "sample-f",
    "problem": "P09",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P09, run 1.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 2 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P09",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model F to P09, run 2.\nStep 1: ... Answer (a) = 6.427\n",
    "score": 8,
    "justification": "FAKE grader note: 8/10 on 2 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P09",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model F to P09, run 3.\nStep 1: ... Answer (a) = 6.427\n",
-   "score": 10,
-   "justification": "FAKE grader note: 10/10 on 2 parts."
   },
   {
    "model": "sample-f",
    "problem": "P10",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P10, run 1.\nStep 1: ... Answer (a) = 171\n",
-   "score": 9,
-   "justification": "FAKE grader note: 9/10 on 3 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P10",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model F to P10, run 2.\nStep 1: ... Answer (a) = 171\n",
-   "score": 8,
-   "justification": "FAKE grader note: 8/10 on 3 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P10",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model F to P10, run 3.\nStep 1: ... Answer (a) = 171\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 3 parts."
+   "score": 7,
+   "justification": "FAKE grader note: 7/10 on 3 parts."
   },
   {
    "model": "sample-f",
    "problem": "P11",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P11, run 1.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 7,
-   "justification": "FAKE grader note: 7/10 on 5 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P11",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model F to P11, run 2.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 5 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P11",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model F to P11, run 3.\nStep 1: ... Answer (a) = 44.57\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 5 parts."
+   "score": 5,
+   "justification": "FAKE grader note: 5/10 on 5 parts."
   },
   {
    "model": "sample-f",
    "problem": "P12",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P12, run 1.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 6 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P12",
-   "run": 2,
-   "text": "SAMPLE (fake) response of Sample model F to P12, run 2.\nStep 1: ... Answer (a) = 40.5\n",
-   "score": 4,
-   "justification": "FAKE grader note: 4/10 on 6 parts."
-  },
-  {
-   "model": "sample-f",
-   "problem": "P12",
-   "run": 3,
-   "text": "SAMPLE (fake) response of Sample model F to P12, run 3.\nStep 1: ... Answer (a) = 40.5\n",
    "score": 4,
    "justification": "FAKE grader note: 4/10 on 6 parts."
   }

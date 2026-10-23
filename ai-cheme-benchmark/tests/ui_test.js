@@ -30,11 +30,11 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) failure
       if (tab === 'panel-results') {
         const n = await page.evaluate(() => document.querySelectorAll('#panel-results .js-plotly-plot').length);
         ok(n === 4, `${label}: 4 plotly charts (${n})`);
-        ok(await page.evaluate(() => document.querySelectorAll('#model-table tbody tr').length === 6), `${label}: 6 table rows`);
+        ok(await page.evaluate(() => document.querySelectorAll('#model-table tbody tr').length === window.DATA.models.length), `${label}: one table row per model`);
       }
       if (tab === 'panel-problems') {
         ok(await page.evaluate(() => document.querySelectorAll('#toc-prob a').length === 12), `${label}: 12 problem TOC entries`);
-        ok(await page.evaluate(() => document.querySelectorAll('.prob details.resp').length === 72), `${label}: 72 response details`);
+        ok(await page.evaluate(() => document.querySelectorAll('.prob details.resp').length === new Set(window.DATA.responses.map(r => r.model + '/' + r.problem)).size), `${label}: one response block per model and problem`);
         ok(await page.evaluate(() => document.querySelectorAll('.prob .katex').length > 0), `${label}: math rendered`);
       }
       if (tab === 'panel-code') {

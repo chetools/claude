@@ -78,11 +78,19 @@
   /* ------------------------------------------------------------ display */
   function paramsText(m) {
     if (m.params == null) return 'not available';
-    var s = m.params + ' B';
+    var s = m.params + ' B' + (m.params_active != null ? ' (' + m.params_active + ' B active)' : '');
     return m.params_official ? s : s + ' — estimate (unofficial)';
   }
-  function costText(m) { return m.cost_usd == null ? '—' : '$' + Number(m.cost_usd).toFixed(2); }
-  function meanText(s) { return fmt1(s.mean) + ' % (' + fmt1(s.min) + ' – ' + fmt1(s.max) + ')'; }
+  function costText(m) {
+    if (m.cost_usd == null) return '—';
+    var c = Number(m.cost_usd);
+    return c === 0 ? '$0 (free)' : '$' + (c < 0.01 ? c.toPrecision(2) : c.toFixed(2));
+  }
+  // with a single run per problem there is no run-to-run spread to show
+  var MULTI = uniq(D.responses.map(function (r) { return r.run; })).length > 1;
+  function meanText(s) {
+    return fmt1(s.mean) + ' %' + (MULTI ? ' (' + fmt1(s.min) + ' – ' + fmt1(s.max) + ')' : '');
+  }
 
   var dirty = true;
   function update() {
@@ -126,7 +134,7 @@
   function table(rows, st) {
     var t = document.getElementById('model-table'); t.textContent = '';
     var hr = el('tr');
-    ['Model', 'Vendor', 'Release', 'Parameters', 'Effort', 'Cost (USD)', 'Mean score % (min – max of runs)']
+    ['Model', 'Vendor', 'Release', 'Parameters', 'Effort', 'Cost (USD)', MULTI ? 'Mean score % (min – max of runs)' : 'Mean score %']
       .forEach(function (h) { hr.appendChild(el('th', null, h)); });
     var th = el('thead'); th.appendChild(hr); t.appendChild(th);
     var tb = el('tbody');
@@ -160,6 +168,7 @@
   function charts(rows, st, pids) {
     var names = rows.map(function (m) { return m.name; });
     function err(ms) {
+      if (!MULTI) return { visible: false };
       return { type: 'data', symmetric: false,
                array: ms.map(function (m) { return st[m.id].max - st[m.id].mean; }),
                arrayminus: ms.map(function (m) { return st[m.id].mean - st[m.id].min; }) };
@@ -170,7 +179,7 @@
       return { type: 'bar', name: v, x: ms.map(function (m) { return m.name; }),
                y: ms.map(function (m) { return st[m.id].mean; }), error_y: err(ms),
                marker: { color: vcolor(v) }, hovertemplate: '%{x}: %{y:.1f} %<extra></extra>' };
-    }), lay('Mean score, with run-to-run min–max', {
+    }), lay(MULTI ? 'Mean score, with run-to-run min–max' : 'Mean score', {
       barmode: 'overlay', yaxis: yax, xaxis: { categoryorder: 'array', categoryarray: names, tickangle: -25 },
       legend: { orientation: 'h', y: -0.35 }, datarevision: Math.random() }), CONFIG);
     // score vs release date
@@ -239,14 +248,14 @@
       var mu = perRun.reduce(function (a, b) { return a + b; }, 0) / perRun.length;
       var row = document.querySelector('#model-table tr[data-model="' + m.id + '"] td.mean');
       var shown = row ? row.textContent.match(/-?[0-9.]+/g).map(Number) : null;
-      var want = [mu, Math.min.apply(null, perRun), Math.max.apply(null, perRun)];
-      var same = !!shown && shown.length === 3 && shown.every(function (v, j) { return Math.abs(v - want[j]) < 0.051; });
+      var want = MULTI ? [mu, Math.min.apply(null, perRun), Math.max.apply(null, perRun)] : [mu];
+      var same = !!shown && shown.length === want.length && shown.every(function (v, j) { return Math.abs(v - want[j]) < 0.051; });
       check('table matches responses: ' + m.id, same, { shown: shown, recomputed: want });
       var ex = window.EXPECT[m.id];
       if (pids.length === D.problems.length && ex) {
         check('table matches build-time Python: ' + m.id,
-          !!shown && Math.abs(shown[0] - ex.mean) < 0.051 && Math.abs(shown[1] - ex.min) < 0.051 &&
-          Math.abs(shown[2] - ex.max) < 0.051, { shown: shown, python: ex });
+          !!shown && Math.abs(shown[0] - ex.mean) < 0.051 &&
+          (!MULTI || (Math.abs(shown[1] - ex.min) < 0.051 && Math.abs(shown[2] - ex.max) < 0.051)), { shown: shown, python: ex });
       }
     });
     var graded = document.querySelectorAll('#metrics .metric')[3];

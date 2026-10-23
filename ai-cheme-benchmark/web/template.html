@@ -23,7 +23,7 @@
 <main class="main">
   <div id="app">
     <h1>AI models on ChemE problems</h1>
-    <p class="intro">Six AI models answered twelve undergraduate chemical-engineering problems, three runs each.
+    <p class="intro">@@N_MODELS@@ AI models answered twelve undergraduate chemical-engineering problems, @@RUNS_TEXT@@.
     Every response was graded from 0 to 10 against a reference solution that is computed in Python (Code tab).</p>
     @@BANNER@@
     <div id="err" class="err" hidden></div>
@@ -40,8 +40,8 @@
       <div id="empty" class="warn" hidden>No problem matches the filters. Tick at least one topic and one difficulty.</div>
       <h2>Models</h2>
       <div class="tablewrap"><table class="data" id="model-table"></table></div>
-      <p class="caption">Mean score is the mean over the selected problems and the runs, in percent of the maximum
-      score of 10. In brackets: the lowest and highest of the per-run totals. Cost is for the whole benchmark and
+      <p class="caption">Mean score is the mean over the selected problems@@RUNS_CAPTION@@, in percent of the maximum
+      score of 10. Cost is for the whole benchmark and
       does not depend on the filters.</p>
       <div class="charts">
         <div class="chart" id="plot-bar"></div>
