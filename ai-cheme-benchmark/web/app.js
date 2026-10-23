@@ -84,7 +84,7 @@
   function costText(m) {
     if (m.cost_usd == null) return '—';
     var c = Number(m.cost_usd);
-    return c === 0 ? '$0 (free)' : '$' + (c < 0.01 ? c.toPrecision(2) : c.toFixed(2));
+    return c === 0 ? '$0 (free)' : '$' + (c < 1 ? c.toPrecision(2) : c.toFixed(2));
   }
   // with a single run per problem there is no run-to-run spread to show
   var MULTI = uniq(D.responses.map(function (r) { return r.run; })).length > 1;
@@ -165,6 +165,11 @@
     for (var k in extra) l[k] = extra[k];
     return l;
   }
+  function niceTop(v) {
+    var e = Math.pow(10, Math.floor(Math.log10(v))), steps = [1, 1.5, 2, 2.5, 3, 5, 10];
+    for (var i = 0; i < steps.length; i++) if (steps[i] * e >= v) return steps[i] * e;
+    return 10 * e;
+  }
   function charts(rows, st, pids) {
     var names = rows.map(function (m) { return m.name; });
     function err(ms) {
@@ -173,20 +178,22 @@
                array: ms.map(function (m) { return st[m.id].max - st[m.id].mean; }),
                arrayminus: ms.map(function (m) { return st[m.id].mean - st[m.id].min; }) };
     }
-    var yax = { title: 'Mean score (%)', range: [0, 100], gridcolor: '#eceef2' };
+    // y axis follows the data: top = highest mean (with run max), rounded up to 1, 1.5, 2, 2.5, 3, 5 x 10^k
+    var top = Math.max.apply(null, rows.map(function (m) { return st[m.id].max; }).concat([1]));
+    var yax = { title: 'Mean score (%)', range: [0, Math.min(100, niceTop(top * 1.08))], gridcolor: '#eceef2' };
     // bar chart
     Plotly.react('plot-bar', byVendor(rows, function (v, ms) {
       return { type: 'bar', name: v, x: ms.map(function (m) { return m.name; }),
                y: ms.map(function (m) { return st[m.id].mean; }), error_y: err(ms),
                marker: { color: vcolor(v) }, hovertemplate: '%{x}: %{y:.1f} %<extra></extra>' };
     }), lay(MULTI ? 'Mean score, with run-to-run min–max' : 'Mean score', {
-      barmode: 'overlay', yaxis: yax, xaxis: { categoryorder: 'array', categoryarray: names, tickangle: -25 },
+      barmode: 'overlay', yaxis: yax, xaxis: { categoryorder: 'array', categoryarray: names, tickangle: -25, automargin: true },
       legend: { orientation: 'h', y: -0.35 }, datarevision: Math.random() }), CONFIG);
     // score vs release date
     Plotly.react('plot-date', byVendor(rows, function (v, ms) {
-      return { type: 'scatter', mode: 'markers+text', name: v, x: ms.map(function (m) { return m.release_date; }),
+      return { type: 'scatter', mode: 'markers', name: v, x: ms.map(function (m) { return m.release_date; }),
                y: ms.map(function (m) { return st[m.id].mean; }), error_y: err(ms),
-               text: ms.map(function (m) { return m.name; }), textposition: 'top center', cliponaxis: false,
+               text: ms.map(function (m) { return m.name; }),
                marker: { color: vcolor(v), size: 10 }, hovertemplate: '%{text}<br>%{x}: %{y:.1f} %<extra></extra>' };
     }), lay('Score vs release date', { yaxis: yax, xaxis: { title: 'Release date', type: 'date', gridcolor: '#eceef2' },
       legend: { orientation: 'h', y: -0.3 }, datarevision: Math.random() }), CONFIG);
@@ -194,9 +201,9 @@
     var withP = rows.filter(function (m) { return m.params != null; });
     var skipped = rows.filter(function (m) { return m.params == null; }).map(function (m) { return m.name; });
     Plotly.react('plot-params', byVendor(withP, function (v, ms) {
-      return { type: 'scatter', mode: 'markers+text', name: v, x: ms.map(function (m) { return m.params; }),
+      return { type: 'scatter', mode: 'markers', name: v, x: ms.map(function (m) { return m.params; }),
                y: ms.map(function (m) { return st[m.id].mean; }), error_y: err(ms),
-               text: ms.map(function (m) { return m.name; }), textposition: 'top center', cliponaxis: false,
+               text: ms.map(function (m) { return m.name; }),
                marker: { color: vcolor(v), size: 10,
                          symbol: ms.map(function (m) { return m.params_official ? 'circle' : 'circle-open'; }),
                          line: { width: 2, color: vcolor(v) } },
@@ -204,7 +211,8 @@
     }), lay('Score vs parameters', { yaxis: yax, xaxis: { title: 'Parameters (billions, log scale)', type: 'log',
       gridcolor: '#eceef2', tickvals: [1, 3, 10, 30, 100, 300, 1000], ticktext: ['1', '3', '10', '30', '100', '300', '1000'] }, legend: { orientation: 'h', y: -0.3 }, datarevision: Math.random() }), CONFIG);
     document.getElementById('params-note').textContent =
-      'Score vs parameters: open markers are unofficial estimates of the parameter count.' +
+      'Hover over or tap a point to see the model. Score vs parameters: open markers are unofficial ' +
+      'estimates of the parameter count; for mixture-of-experts models the total count is plotted.' +
       (skipped.length ? ' Not shown, because no parameter count is available: ' + skipped.join(', ') + '.' : '');
     // heatmap models x problems
     var pl = D.problems.filter(function (p) { return pids.indexOf(p.id) >= 0; });
@@ -216,7 +224,8 @@
       hovertemplate: '%{y}<br>%{x} %{customdata}: %{z:.2f} / 10<extra></extra>',
       colorbar: { title: { text: 'score / 10' } } }],
       lay('Mean score per problem (0–10)', { height: Math.max(320, 70 + 46 * rows.length),
-        yaxis: { autorange: 'reversed', categoryorder: 'array', categoryarray: names, automargin: true }, xaxis: { type: 'category' },
+        yaxis: { autorange: 'reversed', categoryorder: 'array', categoryarray: names, automargin: true }, xaxis: { type: 'category', tickangle: 0, title: 'Problem', tickvals: pl.map(function (p) { return p.id; }),
+          ticktext: pl.map(function (p) { return String(+p.id.slice(1)); }) },
         datarevision: Math.random() }), CONFIG);
   }
 

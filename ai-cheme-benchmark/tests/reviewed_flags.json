@@ -1,0 +1,5 @@
+{
+ "openai/gpt-4o-mini P12 (f)": "0.76 is stated, but the Kirkbride formula shown is garbled and cannot give it: a value without supporting working.",
+ "qwen/qwen-2.5-72b-instruct P11 (e)": "Feed stage 7 is stated 'after detailed calculations' with no stage stepping shown: a value without supporting working.",
+ "microsoft/phi-4 P11 (e)": "Feed stage 7 is assumed ('Assume'), not obtained by stepping off stages: a value without supporting working."
+}

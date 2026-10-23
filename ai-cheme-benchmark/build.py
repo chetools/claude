@@ -344,6 +344,37 @@ def make_notebook():
     return dst
 
 
+def fill_methodology(md, data):
+    """Fill the @@NAME@@ numbers of web/methodology.md from the data, so they cannot go stale.
+    Every grade-check flag must be listed, with the reason it was kept, in tests/reviewed_flags.json."""
+    sys.path.insert(0, os.path.join(ROOT, "tests"))
+    import check_grades
+    rs = data["responses"]
+    cut = sum("[reply cut off" in r["text"] for r in rs)
+    fl = check_grades.flags(data) if all("parts" in r for r in rs) else []
+    reviewed = json.loads(read("tests", "reviewed_flags.json"))
+    keys = [f"{m} {p} ({k})" for m, p, k, *_ in fl]
+    unreviewed = [k for k in keys if k not in reviewed]
+    if unreviewed:
+        fail("grade-check flags not reviewed in tests/reviewed_flags.json:\n  " + "\n  ".join(unreviewed))
+    listed = {m["id"] for m in json.loads(read("results", "model_meta.json"))}
+    absent = sorted(listed - {m["id"] for m in data["models"]})
+    total = sum(m["cost_usd"] or 0 for m in data["models"])
+    vals = {
+        "N_TRUNCATED": f"{cut} of the {len(rs)} replies were cut off at the provider's output limit.",
+        "N_FLAGS": (f"It flagged {len(fl)} parts. Each was re-read and the grade was kept: "
+                    + " ".join(f"{k}: {reviewed[k]}" for k in keys)) if fl else "It flagged no part.",
+        "TOTAL_COST": f"The total over all models was ${total:.4f}.",
+        "ABSENT": ("Models that were planned but never returned a reply, and so are not on this page: "
+                   + ", ".join(f"`{a}`" for a in absent) + ".") if absent else "",
+    }
+    def sub(m):
+        if m.group(1) not in vals:
+            fail(f"web/methodology.md: unknown placeholder {m.group(0)}")
+        return vals[m.group(1)]
+    return PH_RE.sub(sub, md)
+
+
 def js_json(obj):
     return json.dumps(obj, separators=(",", ":")).replace("</", "<\\/")
 
@@ -358,7 +389,7 @@ def main():
     print(f"data: {os.path.relpath(data_path, ROOT)}{'  (SAMPLE, FAKE)' if is_sample else ''}")
     validate(data)
     ref = json.loads(read("results", "reference.json"))
-    meth_md = read("web", "methodology.md")
+    meth_md = fill_methodology(read("web", "methodology.md"), data)
     if args.release:
         todo = [f"web/methodology.md:{n}: {l.strip()}" for n, l in enumerate(meth_md.splitlines(), 1) if "TODO" in l]
         if todo:

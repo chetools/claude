@@ -32,10 +32,10 @@ def finals(text):
     return out
 
 
-def main():
-    data = json.loads((ROOT / "results" / "data.json").read_text())
+def flags(data):
+    """List of (model, problem, part, FINAL value, reference, judge points, part points)."""
     ref = json.loads((ROOT / "results" / "reference.json").read_text())
-    flags = 0
+    out = []
     for r in data["responses"]:
         fin = finals(r["text"])
         for k, pts in POINTS[r["problem"]].items():
@@ -45,10 +45,16 @@ def main():
                 continue
             rel = abs(got / want - 1)
             if (given == pts and rel > 0.05) or (given == 0 and rel < 0.01):
-                flags += 1
-                print(f"{r['model']} {r['problem']} ({k}): FINAL {got:.6g} vs ref {want:.6g} "
-                      f"({100 * rel:.1f} % off), judge {given}/{pts}")
-    print(f"{flags} flags")
+                out.append((r["model"], r["problem"], k, got, want, given, pts))
+    return out
+
+
+def main():
+    fl = flags(json.loads((ROOT / "results" / "data.json").read_text()))
+    for m, p, k, got, want, given, pts in fl:
+        print(f"{m} {p} ({k}): FINAL {got:.6g} vs ref {want:.6g} ({100 * abs(got / want - 1):.1f} % off), "
+              f"judge {given}/{pts}")
+    print(f"{len(fl)} flags")
 
 
 if __name__ == "__main__":
