@@ -130,5 +130,38 @@
   },
   "score": 7,
   "justification": "(a) zeta = 0.4, (b) 25.3 % and (c) t_p = 10.29 min are correct. (d) y_max = M*(1+OS) = 2.506 omits the gain K = 4 (10.03): 0. (e) correct formula exp(-2*pi*zeta/sqrt(1-zeta^2)) but the exponent was miscalculated (-3.45 instead of -2.74), giving 0.0316 instead of 0.0644: half points."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 2,
+   "b": 1,
+   "c": 2,
+   "d": 1,
+   "e": 0
+  },
+  "score": 6,
+  "justification": "(a) zeta = 0.4, correct. (b) correct overshoot formula but pi*0.4 was evaluated as 0.693, giving 46.9 % instead of 25.4 %: half points. (c) t_p = 10.28 min, correct. (d) correct method K*M*(1+OS) applied to its own wrong overshoot gives 11.75: error carried forward, half points; (e) used DR = OS instead of OS^2 (0.469): 0."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 1,
+   "d": 0,
+   "e": 1
+  },
+  "score": 3,
+  "justification": "(a) zeta = 0.6 from matching the unnormalised coefficient 2.4 and a garbled division: 0. (b) 9.48 %, (c) t_p = 11.78 min and (e) DR = OS^2 = 0.009 are correct for its own zeta with the right formulas: error carried forward, half points each. (d) used a wrong gain K = 36 (should be 4), giving 78.83 instead of 10.03: 0."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 2
+  },
+  "score": 9,
+  "justification": "(a) zeta = 0.4 and (b) 25.37 %, correct. (c) correct formula pi/omega_d but omega_d was miscalculated as 0.277 instead of 0.3055, giving 11.34 min instead of 10.28 (10 % off): half points. (d) 10.03 and (e) 0.065 (0.9 % off 0.0644) are correct."
  }
 }

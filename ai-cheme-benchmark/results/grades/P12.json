@@ -142,5 +142,41 @@
   },
   "score": 1.5,
   "justification": "(a) D = 40.5 kmol/h, correct: 1. (b) N_min = 11.00 from an inverted Fenske ratio with wrong bottoms fractions (0.03 and 2.16) and a sign flip: 0. (c) theta = 1.23 from a feed equation without alpha in the numerator, (d) R_min = 1.5 simply assumed after a negative result: 0. (e) Gilliland set-up right with its own R_min and N_min, but 0.1525^0.5668 miscomputed (0.575 instead of 0.344), N = 16.62 instead of 22.6: half of half, 0.5; (f) x_B,LK = 0.03 is wrong (should be 0.0118), ratio 1.119: 0."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 1,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 1,
+  "justification": "(a) D = 40.5 kmol/h from the correct component split: 1. From (b) on the reply degenerates into garbled text with no usable values for N_min, theta, R_min, N or N_R/N_S: 0 for (b) to (f)."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 1,
+   "e": 1,
+   "f": 1
+  },
+  "score": 7,
+  "justification": "(a) D = 40.5 kmol/h and (b) N_min = 10.63, correct: full points. (c) correct feed equation, but the trial-and-error stopped at theta = 1.35 (residual -0.09; reference 1.369, 1.4 % off): half points. (d) correct Underwood set-up, R_min = 1.70 (4.6 % off, from the theta slip): half points; (e) correct Gilliland set-up but X^0.5668 miscomputed (0.3356 instead of 0.3527), N = 22.18 (3.1 % off): half points; (f) 0.761, correct: 1."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 0,
+   "b": 2,
+   "c": 1,
+   "d": 0,
+   "e": 0.5,
+   "f": 0
+  },
+  "score": 3.5,
+  "justification": "(a) D = 39.3 kmol/h, omits the 1.2 kmol/h of n-pentane in the distillate (set-up error): 0. (b) correct Fenske with component flows, N_min = 10.56 (0.7 % off despite a slip in the product): 2. (c) correct feed equation but the root 1.47 does not satisfy it (reference 1.369, 7 % off): half points; (d) used component flows D_i instead of mole fractions x_D,i, R_min = 131.9: 0. (e) Gilliland set-up right with its own R_min and N_min, but Y miscomputed (0.535 instead of 0.425), N = 20.4 instead of 19.1: half of half, 0.5; (f) used component flows 0.7 and 1.2 instead of mole fractions (0.908): 0."
  }
 }

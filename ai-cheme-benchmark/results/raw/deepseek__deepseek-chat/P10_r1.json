@@ -1,0 +1,35 @@
+{
+ "model": "deepseek/deepseek-chat",
+ "problem": "P10",
+ "run": 1,
+ "served_model": "deepseek/deepseek-chat",
+ "provider": "DeepInfra",
+ "text": "Given:\n- Gas feed flow rate \\( G = 100 \\, \\text{kmol/h} \\)\n- Acetone mole fraction in gas feed \\( y_{\\text{in}} = 0.02 \\)\n- 95% acetone absorption \\( y_{\\text{out}} = 0.05 \\times y_{\\text{in}} = 0.001 \\)\n- Equilibrium relationship \\( y = 1.8x \\)\n- Water flow rate \\( L = 1.5 \\times L_{\\text{min}} \\)\n\n(a) **Minimum water flow rate \\( L_{\\text{min}} \\):**\n\nUsing the equilibrium relationship and the absorption requirement:\n\\[ y_{\\text{in}} = m \\cdot x_{\\text{out}} \\]\n\nFor 95% absorption:\n\\[ y_{\\text{out}} = 0.05 \\times y_{\\text{in}} = 0.001 \\]\n\nAt minimum water flow rate:\n\\[ x_{\\text{out}} = \\frac{y_{\\text{in}}}{m} = \\frac{0.02}{1.8} = 0.01111 \\]\n\nMass balance for acetone absorption:\n\\[ G \\cdot y_{\\text{in}} = L_{\\text{min}} \\cdot x_{\\text{out}} \\]\n\\[ 100 \\cdot 0.02 = L_{\\text{min}} \\cdot 0.01111 \\]\n\\[ L_{\\text{min}} = \\frac{2}{0.01111} = 180 \\, \\text{kmol/h} \\]\n\n(b) **Absorption factor \\( A = \\frac{L}{mG} \\):**\n\nOperating water flow rate \\( L = 1.5 \\times L_{\\text{min}} = 270 \\, \\text{kmol/h} \\)\n\nAbsorption factor:\n\\[ A = \\frac{L}{mG} = \\frac{270}{1.8 \\times 100} = 1.5 \\]\n\n(c) **Number of theoretical stages \\( N \\) (Kremser equation):**\n\nUsing the Kremser equation:\n\\[ N = \\frac{\\ln \\left( \\frac{y_{\\text{in}} - mx_{\\text{in}}}{y_{\\text{out}} - mx_{\\text{in}}} \\right)}{\\ln A} - 1 \\]\n\nAssume \\( x_{\\text{in}} = 0 \\) (pure water):\n\\[ N = \\frac{\\ln \\left( \\frac{0.02 - 0}{0.001 - 0} \\right)}{\\ln 1.5} - 1 \\]\n\\[ N = \\frac{\\ln 20}{\\ln 1.5} - 1 = \\frac{3.0}{0.4055} - 1 \\]\n\\[ N = 7.4 - 1 = 6.4 \\]\n\nFinal answers:\nFINAL (a): 180 kmol/h\nFINAL (b): 1.5\nFINAL (c): 6.4",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 206,
+  "completion_tokens": 629,
+  "total_tokens": 835,
+  "cost": 0.00062573,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.00062573,
+   "upstream_inference_prompt_cost": 6.592e-05,
+   "upstream_inference_completions_cost": 0.00055981
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.00062573,
+ "seconds": 37.0
+}

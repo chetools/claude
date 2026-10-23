@@ -1,0 +1,35 @@
+{
+ "model": "openai/gpt-4o-2024-05-13",
+ "problem": "P06",
+ "run": 1,
+ "served_model": "openai/gpt-4o-2024-05-13",
+ "provider": "Azure",
+ "text": "Given transfer function: G(s) = 4/(9s\u00b2 + 2.4s + 1)\n\nThe standard form of a second-order transfer function is:\n\\[ G(s) = \\frac{K}{\\tau^2 s^2 + 2 \\zeta \\tau s + 1} \\]\n\nComparing coefficients:\n\\[ K = 4 \\]\n\\[ \\tau^2 = 9 \\Rightarrow \\tau = \\sqrt{9} = 3 \\]\n\\[ 2 \\zeta \\tau = 2.4 \\Rightarrow \\zeta = \\frac{2.4}{2 \\times 3} = \\frac{2.4}{6} = 0.4 \\]\n\n(a) Calculate the damping factor \u03b6:\n\\[ \\zeta = 0.4 \\]\n\nFINAL (a): 0.4 no unit\n\nGiven the initial step change: magnitude 2.\n\n(b) Calculate the overshoot (MP), as a percentage of the final change:\n\\[ MP = e^{-\\pi\\zeta / \\sqrt{1-\\zeta^2}} \\]\n\\[ MP = e^{-\\pi(0.4) / \\sqrt{1-0.4^2}} \\]\n\\[ MP = e^{-\\pi(0.4) / \\sqrt{0.84}} \\]\n\\[ MP = e^{-0.693 / 0.9165} \\]\n\\[ MP = e^{-0.7558} \\approx 0.469 \\]\nPercentage overshoot:\n\\[ Percentage\\,Overshoot = MP \\times 100 \\approx 0.469 \\times 100 = 46.9\\% \\]\n\nFINAL (b): 46.9 %\n\n(c) Calculate the time of the first peak tp:\n\\[ tp = \\frac{\\pi}{\\omega_d} ,\\text{ where } \\omega_d = \\omega_n \\sqrt{1-\\zeta^2} \\]\n\\[ \\omega_n = \\frac{1}{\\tau} = \\frac{1}{3} \\]\n\\[ \\omega_d = \\frac{1}{3} \\sqrt{1-0.4^2} = \\frac{1}{3} \\sqrt{0.84} \\approx \\frac{1}{3} \\times 0.9165 \\approx 0.3055 \\]\n\\[ tp = \\frac{\\pi}{0.3055} \\approx 10.28 \\]\n\nFINAL (c): 10.28 minutes\n\n(d) Calculate the maximum value reached by the output deviation y\u2032:\n\\[ Maximum Value = Final Value \\times (1 + MP) \\]\nFinal value of the step input:\n\\[ Final Value = 2 \\times G(0) = 2 \\times 4 = 8 \\]\n\\[ Maximum Value = 8 \\times (1 + 0.469) = 8 \\times 1.469 \\approx 11.752 \\]\n\nFINAL (d): 11.752 no unit\n\n(e) Calculate the decay ratio \u03b4:\n\\[ \\text{Decay Ratio} = e^{-\\pi\\zeta / \\sqrt{1-\\zeta^2}} = MP \\approx 0.469 \\]\n\nFINAL (e): 0.469 no unit",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 188,
+  "completion_tokens": 681,
+  "total_tokens": 869,
+  "cost": 0.011155,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.011155,
+   "upstream_inference_prompt_cost": 0.00094,
+   "upstream_inference_completions_cost": 0.010215
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.011155,
+ "seconds": 5.6
+}

@@ -106,5 +106,32 @@
   },
   "score": 10,
   "justification": "(a) Re = 350.21, within 0.02 % of the reference: full points. (b) laminar f = 64/Re = 0.1827, within 0.05 %: full points. (c) Darcy-Weisbach gives 71.75 kPa, within 0.2 % of 71.62 kPa: full points."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 1.5,
+   "b": 0,
+   "c": 2
+  },
+  "score": 3.5,
+  "justification": "(a) velocity 1.195 m/s and Re formula correct, but the arithmetic gives 3507.55 instead of 350: numerical slip, half points. (b) assumed turbulent flow and used the Blasius correlation (0.02851 instead of 0.183): wrong method, 0. (c) Darcy-Weisbach correctly applied to its own f and velocity, 11.2 kPa follows from them: error carried forward, half points."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) Re = 349.76, 0.1 % from 350.1: full points. (b) laminar f = 64/Re = 0.183, within 0.2 %: full points. (c) Darcy-Weisbach gives 71.79 kPa, 0.2 % from 71.62 kPa: full points."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 3,
+   "b": 0,
+   "c": 2
+  },
+  "score": 5,
+  "justification": "(a) Re = 349.75, 0.1 % from 350.1: full points. (b) used the Fanning laminar formula 16/Re (0.0457) although the Darcy factor was asked (0.183): wrong formula, 0. (c) Darcy-Weisbach correctly applied to its own f, 17.93 kPa follows from it: error carried forward, half points."
  }
 }

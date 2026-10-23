@@ -130,5 +130,38 @@
   },
   "score": 1.5,
   "justification": "(a) D = 44.57 kmol/h from the overall balances, correct. (b) R_min = 22.97 from a misapplied Underwood formula (1.775): 0. (c) R = 1.5 x 22.97 = 34.46, correct step carried forward: half points. (d) 15.2 and (e) 7 are explicitly assumed without any stepping, so although (e) matches the reference it has no supporting working: 0 for both."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 1,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0
+  },
+  "score": 1.5,
+  "justification": "(a) D = 44.57 kmol/h from the overall balances, correct. (b) R_min = 1.244 from an invented formula (xD - zF)/(zF - xB) that ignores the q-line pinch (1.775): 0. (c) R = 1.5 x 1.244 = 1.866, correct step carried forward: half points. (d) about 4 stages and (e) stage 2 are guesses without stepping (12.42 and 7): 0."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 0,
+   "e": 0
+  },
+  "score": 4,
+  "justification": "(a) D = 44.57 kmol/h, correct. (b) R_min = 1.778 from the q-line/equilibrium pinch (0.364, 0.5787), 0.15 % from 1.775, correct. (c) R = 2.667, 0.15 % off, correct. (d) operating lines and their intersection (0.388) are right, but the stepping is botched and abandoned, and the stated 10.3 stages (17 % below 12.42) is not supported: 0; (e) stage 5 is claimed from stepping that is not shown (reference 7): 0."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 1,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0
+  },
+  "score": 1.5,
+  "justification": "(a) D = 44.57 kmol/h from the overall balances, correct. (b) R_min = 1.2 is assumed after abandoned Underwood and pinch attempts, with no calculation (1.775): 0. (c) R = 1.5 x 1.2 = 1.8, correct step carried forward: half points. (d) 8.5 and (e) stage 4 are explicitly supposed without stepping (12.42 and 7): 0."
  }
 }

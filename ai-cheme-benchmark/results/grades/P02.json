@@ -118,5 +118,35 @@
   },
   "score": 10,
   "justification": "(a) Re = 318,272, 0.2 % off, correct. (b) f = 0.0181 from Colebrook iteration, 1.1 % off, within tolerance. (c) H = 28.81 m, correct energy balance, 0.35 % off. (d) 9.76 kW, correct."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 2,
+   "b": 3,
+   "c": 3,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) Re = 318,000, 0.1 % off, correct. (b) f = 0.018 from Colebrook, 0.5 % off, within tolerance. (c) H = 28.68 m, correct energy balance with friction and minor losses, 0.1 % off. (d) 9.78 kW, 0.2 % off, correct."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 2,
+   "b": 1.5,
+   "c": 1.5,
+   "d": 1
+  },
+  "score": 6.0,
+  "justification": "(a) Re = 3.18e5, correct. (b) Colebrook iterated correctly in form but 2.51/(Re sqrt f) was evaluated ten times too large, so f converged to 0.0223 (24 % off): correct method with a numerical slip, half points. (c) H = 32.1 m, correct energy balance carried forward from the wrong f: half points. (d) 10.9 kW, correct formula and arithmetic from its own H: error carried forward, half points."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 2,
+   "b": 1.5,
+   "c": 0,
+   "d": 1
+  },
+  "score": 4.5,
+  "justification": "(a) Re = 318,000, correct. (b) f = 0.0185 stated as the Colebrook solution without shown iteration, 3.3 % off: half points. (c) H = 20.6 m adds an extra exit velocity head although Sum K already includes the exit, and the sum is also miscomputed (28 % off): wrong formula, 0. (d) 7.0 kW, correct formula rho g Q H/eta applied to its own H: error carried forward, half points."
  }
 }

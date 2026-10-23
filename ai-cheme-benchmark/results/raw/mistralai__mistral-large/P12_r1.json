@@ -1,0 +1,35 @@
+{
+ "model": "mistralai/mistral-large",
+ "problem": "P12",
+ "run": 1,
+ "served_model": "mistralai/mistral-large",
+ "provider": "Mistral",
+ "text": "Let's solve each part of the problem step-by-step.\n\n---\n\n### Given Data:\n- Feed flow rate, F = 100 kmol/h (saturated liquid, q = 1)\n- Component data:\n\n| Component   | z_F  | \u03b1   | Recovery in Distillate (d/D) | Recovery in Bottoms (b/B) |\n|-------------|------|-----|-----------------------------|---------------------------|\n| propane     | 0.05 | 4.2 | 1.0 (all to distillate)     | 0.0                       |\n| n-butane (LK)| 0.35 | 2.0 | 0.98                        | 0.02                      |\n| n-pentane (HK)| 0.40| 1.0 | 0.03                        | 0.97                      |\n| n-hexane    | 0.20 | 0.45| 0.0 (all to bottoms)        | 1.0                       |\n\n---\n\n### (a) Distillate flow rate, D\n\n**Component balances:**\n\n- Propane: \\( d_{C3} = F \\cdot z_{F,C3} = 100 \\cdot 0.05 = 5 \\) kmol/h\n- n-Butane (LK): \\( d_{nC4} = F \\cdot z_{F,nC4} \\cdot 0.98 = 100 \\cdot 0.35 \\cdot 0.98 = 34.3 \\) kmol/h\n- n-Pentane (HK): \\( d_{nC5} = F \\cdot z_{F,nC5} \\cdot 0.03 = 100 \\cdot 0.40 \\cdot 0.03 = 1.2 \\) kmol/h\n- n-Hexane: \\( d_{nC6} = 0 \\) kmol/h\n\nTotal distillate flow rate:\n\\[\nD = d_{C3} + d_{nC4} + d_{nC5} + d_{nC6} = 5 + 34.3 + 1.2 + 0 = 40.5 \\text{ kmol/h}\n\\]\n\n**FINAL (a): 40.5 kmol/h**\n\n---\n\n### (b) Minimum number of theoretical stages, \\( N_{min} \\) (Fenske equation)\n\nFenske equation for key components:\n\\[\nN_{min} = \\frac{\\log \\left[ \\left( \\frac{d_{LK}}{d_{HK}} \\right) \\left( \\frac{b_{HK}}{b_{LK}} \\right) \\right]}{\\log \\alpha_{LK,HK}}\n\\]\n\nCalculate \\( b_{LK} \\) and \\( b_{HK} \\):\n\\[\nb_{LK} = F \\cdot z_{F,LK} - d_{LK} = 100 \\cdot 0.35 - 34.3 = 0.7 \\text{ kmol/h}\n\\]\n\\[\nb_{HK} = F \\cdot z_{F,HK} - d_{HK} = 100 \\cdot 0.40 - 1.2 = 38.8 \\text{ kmol/h}\n\\]\n\nSubstitute into Fenske equation:\n\\[\nN_{min} = \\frac{\\log \\left[ \\left( \\frac{34.3}{1.2} \\right) \\left( \\frac{38.8}{0.7} \\right) \\right]}{\\log 2.0}\n\\]\n\\[\nN_{min} = \\frac{\\log \\left[ 28.583 \\cdot 55.429 \\right]}{\\log 2.0} = \\frac{\\log (1584.3)}{\\log 2.0} = \\frac{3.1998}{0.3010} = 10.63\n\\]\n\n**FINAL (b): 10.63**\n\n---\n\n### (c) Root \\( \\theta \\) of the Underwood feed equation\n\nUnderwood feed equation for saturated liquid (q = 1):\n\\[\n\\sum \\frac{\\alpha_i z_{F,i}}{\\alpha_i - \\theta} = 1 - q = 0\n\\]\n\nWe seek \\( \\theta \\) such that \\( \\alpha_{HK} < \\theta < \\alpha_{LK} \\), i.e., \\( 1.0 < \\theta < 2.0 \\).\n\nSubstitute values:\n\\[\n\\frac{4.2 \\cdot 0.05}{4.2 - \\theta} + \\frac{2.0 \\cdot 0.35}{2.0 - \\theta} + \\frac{1.0 \\cdot 0.40}{1.0 - \\theta} + \\frac{0.45 \\cdot 0.20}{0.45 - \\theta} = 0\n\\]\n\nSolve numerically (e.g., trial and error or iterative method). Testing \\( \\theta = 1.4 \\):\n\\[\n\\frac{0.21}{2.8} + \\frac{0.70}{0.6} + \\frac{0.40}{-0.4} + \\frac{0.09}{-0.95} = 0.075 + 1.1667 - 1.0 - 0.0947 = 0.147 \\neq 0\n\\]\n\nTesting \\( \\theta = 1.35 \\):\n\\[\n\\frac{0.21}{2.85} + \\frac{0.70}{0.65} + \\frac{0.40}{-0.35} + \\frac{0.09}{-0.90} = 0.0737 + 1.0769 - 1.1429 - 0.10 = -0.0923 \\approx 0\n\\]\n\nThus, \\( \\theta \\approx 1.35 \\).\n\n**FINAL (c): 1.35**\n\n---\n\n### (d) Minimum reflux ratio, \\( R_{min} \\)\n\nUnderwood equation for \\( R_{min} \\):\n\\[\nR_{min} + 1 = \\sum \\frac{\\alpha_i x_{D,i}}{\\alpha_i - \\theta}\n\\]\n\nCalculate \\( x_{D,i} \\):\n\\[\nx_{D,C3} = \\frac{d_{C3}}{D} = \\frac{5}{40.5} = 0.1235\n\\]\n\\[\nx_{D,nC4} = \\frac{34.3}{40.5} = 0.8469\n\\]\n\\[\nx_{D,nC5} = \\frac{1.2}{40.5} = 0.0296\n\\]\n\\[\nx_{D,nC6} = 0\n\\]\n\nSubstitute into Underwood equation (\\( \\theta = 1.35 \\)):\n\\[\nR_{min} + 1 = \\frac{4.2 \\cdot 0.1235}{4.2 - 1.35} + \\frac{2.0 \\cdot 0.8469}{2.0 - 1.35} + \\frac{1.0 \\cdot 0.0296}{1.0 - 1.35}\n\\]\n\\[\nR_{min} + 1 = \\frac{0.5187}{2.85} + \\frac{1.6938}{0.65} + \\frac{0.0296}{-0.35}\n\\]\n\\[\nR_{min} + 1 = 0.1820 + 2.6058 - 0.0846 = 2.7032\n\\]\n\\[\nR_{min} = 1.7032\n\\]\n\n**FINAL (d): 1.70**\n\n---\n\n### (e) Number of theoretical stages, \\( N \\), for \\( R = 1.3 R_{min} \\)\n\nGiven:\n\\[\nR = 1.3 R_{min} = 1.3 \\cdot 1.7032 = 2.2142\n\\]\n\nGilliland correlation (Eduljee form):\n\\[\nX = \\frac{R - R_{min}}{R + 1} = \\frac{2.2142 - 1.7032}{2.2142 + 1} = \\frac{0.5110}{3.2142} = 0.1590\n\\]\n\\[\nY = 0.75 (1 - X^{0.5668}) = 0.75 (1 - 0.1590^{0.5668}) = 0.75 (1 - 0.3356) = 0.4983\n\\]\n\\[\nY = \\frac{N - N_{min}}{N + 1} \\implies 0.4983 = \\frac{N - 10.63}{N + 1}\n\\]\n\\[\n0.4983 (N + 1) = N - 10.63\n\\]\n\\[\n0.4983 N + 0.4983 = N - 10.63\n\\]\n\\[\n10.63 + 0.4983 = N - 0.4983 N\n\\]\n\\[\n11.1283 = 0.5017 N \\implies N = \\frac{11.1283}{0.5017} = 22.18\n\\]\n\n**FINAL (e): 22.18**\n\n---\n\n### (f) Ratio \\( N_R / N_S \\) from Kirkbride equation\n\nKirkbride equation:\n\\[\n\\log_{10} \\left( \\frac{N_R}{N_S} \\right) = 0.206 \\log_{10} \\left[ \\left( \\frac{z_{HK}}{z_{LK}} \\right) \\left( \\frac{x_{B,LK}}{x_{D,HK}} \\right)^2 \\left( \\frac{B}{D} \\right) \\right]\n\\]\n\nCalculate \\( B \\), \\( x_{B,LK} \\), and \\( x_{D,HK} \\):\n\\[\nB = F - D = 100 - 40.5 = 59.5 \\text{ kmol/h}\n\\]\n\\[\nx_{B,LK} = \\frac{b_{LK}}{B} = \\frac{0.7}{59.5} = 0.0118\n\\]\n\\[\nx_{D,HK} = \\frac{d_{HK}}{D} = \\frac{1.2}{40.5} = 0.0296\n\\]\n\nSubstitute into Kirkbride equation:\n\\[\n\\log_{10} \\left( \\frac{N_R}{N_S} \\right) = 0.206 \\log_{10} \\left[ \\left( \\frac{0.40}{0.35} \\right) \\left( \\frac{0.0118}{0.0296} \\right)^2 \\left( \\frac{59.5}{40.5} \\right) \\right]\n\\]\n\\[\n= 0.206 \\log_{10} \\left[ 1.1429 \\cdot (0.3986)^2 \\cdot 1.4691 \\right]\n\\]\n\\[\n= 0.206 \\log_{10} \\left[ 1.1429 \\cdot 0.1589 \\cdot 1.4691 \\right] = 0.206 \\log_{10} (0.2666)\n\\]\n\\[\n= 0.206 \\cdot (-0.5740) = -0.1182\n\\]\n\\[\n\\frac{N_R}{N_S} = 10^{-0.1182} = 0.761\n\\]\n\n**FINAL (f): 0.761**",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 488,
+  "completion_tokens": 2771,
+  "total_tokens": 3259,
+  "cost": 0.017602,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.017602,
+   "upstream_inference_prompt_cost": 0.000976,
+   "upstream_inference_completions_cost": 0.016626
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.017602,
+ "seconds": 30.7
+}

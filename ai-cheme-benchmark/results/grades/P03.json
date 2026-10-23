@@ -118,5 +118,35 @@
   },
   "score": 0,
   "justification": "Correct symbolic set-up (energy equations, Colebrook, Q1 = Q2 + Q3) but no numerical solution; the FINAL values are declared 'typical results': (a) 92.5 m vs 101.08 m, (b) 150.0 vs 137.8 L/s (8.9 % off), (c) 50.0 L/s out of B vs 15.0 L/s into B (wrong direction), (d) 100.0 vs 122.8 L/s. All values are more than 5 % off with no supporting working: 0 for every part."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "Sets up the pipe equations with an assumed f = 0.02 (and a spurious division of head loss by g) but never solves them; the FINAL values have no supporting working: (a) 95.3 m vs 101.08 m (5.7 % off), (b) 45.2 vs 137.8 L/s, (c) 51.3 L/s out of B vs 15.0 L/s into B (wrong direction), (d) 25.0 vs 122.8 L/s. 0 for every part."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 4,
+   "b": 1,
+   "c": 1,
+   "d": 1
+  },
+  "score": 7,
+  "justification": "(a) h_J = 101 m from a correct trial-and-error continuity balance with Darcy-Weisbach and Colebrook, within 0.1 % of 101.08 m: full points. (b) 133 L/s vs 137.8 L/s (3.5 % off, loose rounding in the iterations): half points. (c) 21.7 L/s vs 15.0 L/s; the working (Q2 negative, flow from J to B) gives the correct direction into B although the FINAL line says 'out of reservoir B', and the magnitude is a numerical slip (1 m of head in pipe 2 gives about 14.4 L/s, not 21.7): half points under the working-over-FINAL rule. (d) 114 vs 122.8 L/s (7.2 % off) with the correct method but loose numerics: half points."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "Describes the correct method (guess H_J, Darcy-Weisbach with Colebrook, continuity) but shows no iteration; (a) 100.2 m is within 1 % of 101.08 m but has no supporting working, and the flows it reports are inconsistent with that head under its own equations (H_J = 100.2 m gives about 141, 6 and 121 L/s): 0. (b) 50.7 vs 137.8 L/s, (c) 1.7 L/s out of B vs 15.0 L/s into B (wrong direction), (d) 49.0 vs 122.8 L/s: 0 each."
  }
 }

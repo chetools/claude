@@ -118,5 +118,35 @@
   },
   "score": 2,
   "justification": "(a) 269.5 kg/s from an invented formula, far from 17.43: 0. (b) Re = 1.04e8 correctly computed as G D/mu from its own mass flow: error carried forward, half points. (c) f = 0.018 is asserted, but Colebrook at its own Re gives 0.0130: 0. (d) 189.1 m/s correctly computed as mdot/(rho2 A) from its own mass flow: error carried forward, half points."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 1
+  },
+  "score": 1,
+  "justification": "(a) 34.9 kg/s from a garbled flow equation, with the solution not shown and the value twice the reference: 0. (b) Re = 1.35e6 is a factor-10 arithmetic error (its own m D/(mu A) gives 1.35e7): 0. (c) f = 0.018 is asserted, but Colebrook at its own Re gives about 0.0139: 0. (d) 24.6 m/s correctly computed as mdot/(rho2 A) from its own mass flow: error carried forward, half points."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 2,
+   "d": 1
+  },
+  "score": 3,
+  "justification": "(a) 196.3 kg/s: it uses 4fL/D with a Darcy f, drops the acceleration term and makes a factor-1000 slip in M(p1^2-p2^2)/(2RT); far from 17.43: 0. (b) Re = 7.57e6 is a factor-10 arithmetic error (4 mdot/(pi D mu) with its own mass flow gives 7.57e7): 0. (c) f = 0.013 from a Colebrook trial, 1.6 % from 0.01321 and within the 2 % tolerance: full points. (d) 138.5 m/s correctly computed as mdot/(rho2 A) from its own mass flow: error carried forward, half points."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 1
+  },
+  "score": 1,
+  "justification": "(a) 2.91 kg/s from a dimensionally wrong equation (L instead of L/D, LHS divided by P1, no acceleration term): 0. (b) Re = 1.01e6 comes from its first-iteration flow (2.60 kg/s), not its final 2.91 kg/s (which gives 1.12e6), and is far from the reference: 0. (c) f = 0.016 does not match Colebrook at its own Re (0.0141): 0. (d) 2.04 m/s correctly computed as mdot/(rho2 A) from its own mass flow: error carried forward, half points."
  }
 }

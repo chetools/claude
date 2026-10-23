@@ -14,7 +14,8 @@ data.json: {"models": [{id, name, vendor, release_date (YYYY-MM or YYYY-MM-DD), 
             "problems": [{id, topic, difficulty, title, parts}],
             "responses": [{model, problem, run (1..N_RUNS), text, score (0..10), justification, parts (optional)}]}
 A data file with "sample": true is FAKE: the page shows a red banner and --release refuses it.
-Model output (response text, justification) is untrusted: it is HTML-escaped here and never passes through markdown.
+Model output (response text, justification) is untrusted: the justification is HTML-escaped; the response goes through
+response_html() (markdown-it with HTML disabled + KaTeX), so it cannot inject HTML or script.
 Any unfilled template placeholder, unused content, a Table of contents without headings or (with --release) a TODO
 stops the build with a message.  Needs: node, python packages markdown-it-py, pygments.
 """
@@ -79,10 +80,13 @@ MATH_RE = re.compile(r"\$\$(.+?)\$\$|\$(?!\$)(.+?)(?<!\\)\$", re.S)
 
 
 def render_katex(items, mods):
-    """items: list of (tex, display) -> list of HTML strings (one node call)."""
+    """items: list of (tex, display[, soft]) -> list of HTML strings (one node call)."""
     js = ("const katex=require('katex');let s='';process.stdin.on('data',d=>s+=d);"
           "process.stdin.on('end',()=>{const a=JSON.parse(s);process.stdout.write(JSON.stringify("
-          "a.map(([t,d])=>katex.renderToString(t,{displayMode:d,throwOnError:true,output:'html'}))))});")
+          "a.map(([t,d,soft])=>{if(!soft)return katex.renderToString(t,{displayMode:d,throwOnError:true,output:'html'});"
+          "try{return katex.renderToString(t,{displayMode:d,throwOnError:false,output:'html'})}"
+          "catch(e){return '<span class=\"katex-error\">'+t.replace(/&/g,'&amp;').replace(/</g,'&lt;')"
+          ".replace(/>/g,'&gt;').replace(/\"/g,'&quot;')+'</span>'}})))});")
     r = subprocess.run(["node", "-e", js], input=json.dumps(items), capture_output=True, text=True,
                        env=dict(os.environ, NODE_PATH=mods), check=False)
     if r.returncode:
@@ -102,7 +106,16 @@ class MathBatch:
     """Collect every $..$ / $$..$$ of the page's trusted markdown, render them in ONE node call, then fill in."""
 
     def __init__(self, mods):
-        self.mods, self.found = mods, []
+        self.mods, self.found, self.cache = mods, [], {}
+        self.soft_total = self.soft_failed = 0     # model-response formulas rendered / that KaTeX could not parse
+
+    def add_soft(self, tex, display):
+        """Register one formula taken from (untrusted) model output; failures show as source text. Returns a token."""
+        key = (tex, display)
+        if key not in self.cache:
+            self.found.append((tex, display, True))
+            self.cache[key] = len(self.found) - 1
+        return f"MATHX{self.cache[key]}X"
 
     def md(self, text, tag, breaks=False):
         """Markdown -> HTML with math placeholders; returns a token to be replaced by finish()."""
@@ -118,10 +131,14 @@ class MathBatch:
     def finish(self, htmls):
         """Render all math once and substitute it in each html string."""
         rendered = render_katex(self.found, self.mods) if self.found else []
+        soft = [h for f, h in zip(self.found, rendered) if len(f) > 2]
+        self.soft_total, self.soft_failed = len(soft), sum("katex-error" in h for h in soft)
 
         def restore(m):
             i = int(m.group(1))
             h = rendered[i]
+            if len(self.found[i]) > 2:      # model response: block-level span, valid inside <p>
+                return f'<span class="eq">{h}</span>' if self.found[i][1] else h
             return f'<div class="eq">{h}</div>' if self.found[i][1] else h
 
         res = []
@@ -271,6 +288,112 @@ def solution_source(pid):
     return doc, code
 
 
+# ---------------------------------------------------------------- model responses (untrusted): markdown + math
+# Raw replies are never changed (results/); this display fix-up happens only here, at build time.
+# Safety: markdown-it has HTML disabled (so '<script>' is text), links/images/reference definitions are switched off,
+# headings are demoted, and the only HTML added is KaTeX output for formulas.
+MD_RESP = MarkdownIt("commonmark", {"html": False, "breaks": True}).enable("table")
+MD_RESP.disable(["link", "image", "autolink", "reference", "code", "html_inline", "html_block"])
+MD_RESP.renderer.rules["heading_open"] = lambda tokens, i, opts, env: "<h5>"     # never <h2>/<h3>: add_toc must skip them
+MD_RESP.renderer.rules["heading_close"] = lambda tokens, i, opts, env: "</h5>\n"
+
+TEX_CMD = re.compile(r"\\[A-Za-z]+")
+TEX_MARK = re.compile(r"\\[A-Za-z]+|[\^_]\{")
+RESP_MATH_RE = re.compile(
+    r"\$\$((?:(?!\n[ \t]*\n).){1,3000}?)\$\$"                       # $$ ... $$ (may span lines, no blank line)
+    r"|\\\[((?:(?!\n[ \t]*\n).){1,3000}?)\\\]"                      # \[ ... \]
+    r"|\\\(((?:(?!\n[ \t]*\n).){1,1500}?)\\\)"                      # \( ... \)
+    r"|(?<![\\$])\$(?![\s$])([^$\n]{1,300}?)(?<![\s\\$])\$(?![\d$])", re.S)   # $ ... $ on one line, not currency
+FENCE_RE = re.compile(r"^[ \t]*```[ \t]*([A-Za-z]*)[ \t]*\n(.*?)(?:^[ \t]*```[ \t]*$|\Z)", re.S | re.M)
+TICK_RE = re.compile(r"(?<!`)`([^`\n]+)`(?!`)")
+
+
+def prose_words(tex):
+    """Words of 4+ letters outside \\commands and \\text{...}: the sign of a sentence rather than a formula."""
+    t = re.sub(r"\\(?:text|textbf|mathrm|mathbf|operatorname|mbox)\s*\{[^{}]*\}", " ", tex)
+    return len(re.findall(r"[A-Za-z]{4,}", TEX_CMD.sub(" ", t)))
+
+
+def looks_like_tex(s):
+    return bool(TEX_MARK.search(s)) and prose_words(s) == 0
+
+
+def response_html(text, batch):
+    """Untrusted model reply -> safe HTML with math tokens (finished later by batch.finish).
+    Display-only fixes: normalise \\( \\) \\[ \\] and $$ to math; LaTeX-only fences, backtick spans and bare LaTeX lines
+    become math; stray or currency dollars stay literal text; headings are demoted."""
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    text = re.sub(r"[\ue000-\uf8ff]", "", text).replace("MATHX", "MATH\u200bX")   # keep our token space clean
+
+    def dollar(m):
+        d = m.group(1) is not None or m.group(2) is not None
+        tex = next(g for g in m.groups() if g is not None).strip()
+        if not tex or (not d and m.group(4) is not None and prose_words(tex) >= 4):
+            return m.group(0)
+        return batch.add_soft(tex, d)
+
+    def tick(m):
+        return batch.add_soft(m.group(1).strip(), False) if looks_like_tex(m.group(1)) else m.group(0)
+
+    def mixed(body):
+        """A sentence containing LaTeX: wrap each run of formula-like words (no 4+ letter plain word) as inline math."""
+        parts = re.split(r"(\s+)", body)
+        words = [i for i, p in enumerate(parts) if p and not p.isspace()]
+        res, i = [], 0
+        ok = lambda p: prose_words(p) == 0 and "MATHX" not in p
+        while i < len(parts):
+            if not parts[i] or parts[i].isspace() or not ok(parts[i]):
+                res.append(parts[i]); i += 1; continue
+            j = i                                   # extend the run over formula-like words and the spaces between
+            while j + 2 < len(parts) and ok(parts[j + 2]) and parts[j + 1].strip() == "" and "\n" not in parts[j + 1]:
+                j += 2
+            run = parts[i:j + 1]
+            ws = [k for k, p in enumerate(run) if p and not p.isspace()]
+            while ws and re.fullmatch(r"[a-z]{1,3}[.,;:]?", run[ws[0]]) and not TEX_MARK.search(run[ws[0]]):
+                ws.pop(0)                           # drop plain little words (is, of, the) at the edges
+            while ws and re.fullmatch(r"[a-z]{1,3}[.,;:]?", run[ws[-1]]) and not TEX_MARK.search(run[ws[-1]]):
+                ws.pop()
+            if ws and TEX_MARK.search("".join(run[ws[0]:ws[-1] + 1])):
+                core = "".join(run[ws[0]:ws[-1] + 1])
+                tail = re.search(r"[.,;:]+$", core)
+                tex = core[:tail.start()] if tail else core
+                res += run[:ws[0]] + [batch.add_soft(tex, False) + (tail.group(0) if tail else "")] + run[ws[-1] + 1:]
+            else:
+                res += run
+            i = j + 1
+        return "".join(res)
+
+    def bare(line):
+        mk = re.match(r"^(\s*(?:[-*+]|\d+[.)])?\s*)(.*?)\s*$", line)
+        lead, body = mk.group(1), mk.group(2)
+        if "MATHX" in body or not body:
+            return line
+        if not looks_like_tex(body):
+            return lead + mixed(body)
+        tail = re.search(r"[.,;:]+$", body)
+        core = body[:tail.start()] if tail else body
+        return lead + batch.add_soft(core, True) + (tail.group(0) if tail else "")
+
+    def prose_part(seg):
+        seg = TICK_RE.sub(tick, seg)
+        seg = RESP_MATH_RE.sub(dollar, seg)
+        seg = re.sub(r"\\[\[\]()](?=\s|$)|(?<=\s)\\[\[\]()]", "", seg)    # stray unmatched \[ \] \( \)
+        return "\n".join(bare(l) for l in seg.split("\n"))
+
+    out, pos = [], 0
+    for m in FENCE_RE.finditer(text):
+        out.append(prose_part(text[pos:m.start()]))
+        lang, body = m.group(1).lower(), m.group(2)
+        lines = [l.strip() for l in body.split("\n") if l.strip()]
+        if lang in ("", "latex", "tex", "math") and lines and all(looks_like_tex(l.strip("$ ")) for l in lines):
+            out.append("\n".join(batch.add_soft(l.strip("$ ").strip(), True) for l in lines) + "\n")
+        else:
+            out.append(m.group(0))
+        pos = m.end()
+    out.append(prose_part(text[pos:]))
+    return MD_RESP.render("".join(out))
+
+
 # ---------------------------------------------------------------- page parts
 def problems_html(data, ref, batch, models):
     """Pre-rendered Problems tab. Returns a list of (html with math tokens) strings; math finished later."""
@@ -311,7 +434,7 @@ def problems_html(data, ref, batch, models):
             for r in rs:
                 head = f'Run {r["run"]}<span class="score-pill">score {r["score"]:g} / 10</span>' if N_RUNS > 1 else "Response"
                 out.append(f'<h4>{head}</h4>'
-                           f'<pre>{esc(r["text"])}</pre>'
+                           f'<div class="resp-body">{response_html(r["text"], batch)}</div>'
                            f'<p class="just"><strong>Grader:</strong> {esc(r["justification"])}</p>')
             out.append("</details>")
         out.append("</section>")
@@ -407,6 +530,7 @@ def main():
     meth_raw = batch.md(meth_md, "methodology")
     common_html, sols_raw = code_blocks(data, batch)
     prob_html, meth_html, sols_html = batch.finish([prob_raw, meth_raw, sols_raw])
+    print(f"model-response formulas: {batch.soft_total} rendered, {batch.soft_failed} failed (shown as source text)")
     prob_html, prob_toc = add_toc(prob_html, "prob-", "the Problems tab", levels="2")
     meth_html, meth_toc = add_toc(meth_html, "meth-", "the Methodology tab")
 

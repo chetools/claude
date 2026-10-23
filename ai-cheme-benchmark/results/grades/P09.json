@@ -94,5 +94,29 @@
   },
   "score": 5,
   "justification": "(a) 6.42 from the correct Fenske equation, 0.1 % from the reference 6.43: full points. (b) 0.562 from an Underwood approach with the root theta = 0.269 taken outside the interval between the volatilities (1 to 2.5) and a wrong R_min expression (reference 1.44): 0."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 5,
+   "b": 0
+  },
+  "score": 5,
+  "justification": "(a) 6.43 from the correct Fenske equation, matches the reference 6.427: full points. (b) 31 from an invented formula (alpha x_D - x_B)/((1 - x_D)(alpha - 1)) that ignores the feed pinch (reference 1.44): 0."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 5,
+   "b": 5
+  },
+  "score": 10,
+  "justification": "(a) 6.426 from the correct Fenske equation, no stage added for the reboiler, matches the reference: full points. (b) A first Underwood attempt gave a negative value and was dropped; the final working uses the correct binary saturated-liquid formula R_min = [x_D/z_F - alpha(1 - x_D)/(1 - z_F)]/(alpha - 1) = 1.444, matches the reference: full points."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 5,
+   "b": 5
+  },
+  "score": 10,
+  "justification": "(a) 6.426 from the correct Fenske equation; it considered subtracting 1 and correctly decided not to, matches the reference: full points. (b) 1.445 from the correct binary saturated-liquid formula R_min = [x_D/z_F - alpha(1 - x_D)/(1 - z_F)]/(alpha - 1), 0.04 % from the reference 1.444: full points."
  }
 }

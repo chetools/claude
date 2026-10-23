@@ -109,6 +109,14 @@ details.resp{border:1px solid var(--card-border);border-radius:.5rem;margin:.4re
 details.resp>summary{cursor:pointer;font-weight:600}
 details.resp>summary .mean{float:right;font-weight:400;color:var(--muted);font-variant-numeric:tabular-nums}
 details.resp h4{margin:.9rem 0 .3rem;font-size:1rem}
+details.resp .resp-body{font-size:.92rem;overflow-wrap:anywhere;max-height:34rem;overflow:auto;background:#fafbfc;
+  border:1px solid var(--card-border);border-radius:.4rem;padding:.4rem .9rem;margin:.3rem 0}
+details.resp .resp-body p{margin:.4rem 0}
+details.resp .resp-body h5{margin:.7rem 0 .2rem;font-size:.95rem}
+details.resp .resp-body .eq{display:block;text-align:center;margin:.5rem 0;overflow-x:auto;overflow-y:hidden;max-width:100%}
+details.resp .resp-body table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}
+details.resp .resp-body td,details.resp .resp-body th{border:1px solid var(--card-border);padding:.15rem .4rem}
+.katex-error{color:#8f2b22;font-family:monospace;font-size:.85em}
 details.resp pre{background:#fafbfc;border:1px solid var(--card-border);border-radius:.4rem;padding:.7rem .9rem;
   font-size:.82rem;white-space:pre-wrap;overflow-wrap:anywhere;max-height:26rem;overflow:auto;margin:.3rem 0}
 .just{font-size:.88rem;color:#4a4e5c;margin:.2rem 0 .6rem}

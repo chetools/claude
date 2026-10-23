@@ -106,5 +106,32 @@
   },
   "score": 0,
   "justification": "(a) 35820 kmol/h, with y_out miscomputed as 0.0001 (should be 0.001) and the pinch put at the lean end: wrong method, 0. (b) 270, with m taken as the acetone absorption rate instead of the equilibrium slope: 0. (c) 2.686 from an invented formula, made positive by taking the absolute value: 0."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 0,
+   "b": 1.5,
+   "c": 0
+  },
+  "score": 1.5,
+  "justification": "(a) 180.18 kmol/h, from a balance on all the acetone entering (2 kmol/h) instead of the 1.9 kmol/h absorbed; it is 5.4 % above 171 with a wrong method: 0. (b) A = 270.27/180 = 1.502, the correct formula applied to its own L: error carried forward, half points. (c) The working uses a garbled Kremser form and gets 0.073, then the FINAL 5.07 (5.3 % off) appears with no supporting working: 0."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 256.5/180 = 1.425, correct. (c) N = 5.36 from the correct Kremser equation, correct."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 0,
+   "b": 1.5,
+   "c": 0
+  },
+  "score": 1.5,
+  "justification": "(a) 180 kmol/h, from a balance on all the acetone entering instead of the 95 % absorbed; it is 5.3 % above 171 with a wrong method: 0. (b) A = 270/180 = 1.5, the correct formula applied to its own L: error carried forward, half points. (c) 6.4 from ln(y_in/y_out)/ln A - 1, which is not the Kremser equation: 0."
  }
 }

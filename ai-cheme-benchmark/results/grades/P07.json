@@ -142,5 +142,41 @@
   },
   "score": 3.0,
   "justification": "(a) correct phase equation but the stated root 0.196 rad/min is 71 % off 0.677: half points. (b) correct K_u = 1/|G_p(i w_u)| with a small slip (1.361 vs 1.42 for its own omega_u): half points; (c) P_u = 32.05 min and (d) K_c = 0.619, tau_I = 26.71 min correct carry-forwards: half points each. (e) GM = 1 by assumption and (f) wrong PI phase and frequency giving 54.5 deg are wrong methods (reference 1.90 and 36.3 deg): 0."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0.5,
+   "d": 0.5,
+   "e": 0,
+   "f": 0
+  },
+  "score": 2.0,
+  "justification": "(a) correct phase equation but solved with atan(x) = x at 12w = 2.6, giving 0.217 rad/min vs 0.677: 0. (b) correct K_u = 1/|G_p(i w_u)| with a small arithmetic slip (1.534 vs 1.548 for its own omega_u): half points; (c) P_u = 28.98 min and (d) K_c = 0.697, tau_I = 24.15 min correct carry-forwards: half points each. (e) GM = 2 and (f) PM = 147 deg come from incoherent approximations without a valid calculation (reference 1.90 and 36.3 deg): 0."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 1,
+   "e": 0,
+   "f": 0
+  },
+  "score": 6,
+  "justification": "(a) omega_u = 0.674 rad/min by trial and error, 0.5 % off 0.677: full points. (b) K_u = 4.527 (0.5 % off 4.549), (c) P_u = 9.32 min (0.5 % off 9.28) and (d) K_c = 2.058, tau_I = 7.77 min (both within 0.5 %): full points. (e) GM evaluated at the process ultimate frequency instead of the phase crossover of the PI loop, 2.16 vs 1.90: 0. (f) found the gain crossover (0.32 rad/min) correctly but added the PI phase with the wrong sign (+atan(1/(tau_I w))), giving 81.1 deg vs 36.3: 0."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 1,
+   "b": 0,
+   "c": 0.5,
+   "d": 0.5,
+   "e": 0,
+   "f": 0
+  },
+  "score": 2.0,
+  "justification": "(a) correct phase equation but the stated root 0.425 rad/min is 37 % off 0.677: half points. (b) multiplied |G_p| by e^(-2.5 w), wrongly treating the dead time as reducing the magnitude, so K_u = 8.77 vs 4.55: 0. (c) P_u = 14.8 min and (d) K_c = 3.99, tau_I = 12.3 min are correct carry-forwards: half points each. (e) GM = 2.0 and (f) PM = 45 deg are stated without any calculation: 0."
  }
 }
