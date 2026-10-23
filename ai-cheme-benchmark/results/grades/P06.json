@@ -1,0 +1,134 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 2,
+   "b": 1,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 3,
+  "justification": "(a) zeta = 0.4, correct. (b) correct overshoot formula but an arithmetic slip in the exponent (and a spurious factor of 2) gives 65.9 % instead of 25.4 %: half points. (c) used t_p = (pi/zeta)/sqrt(1-zeta^2), missing tau, 8.58 min: 0. (d) y_max = 1/(1-OS) = 2.94 is a wrong formula, and (e) divides by the overshoot magnitude instead of using OS^2, 0.0598: 0 each."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "(a) wrongly manipulated the characteristic equation and gave zeta = 1: 0. (b) no overshoot value, only an unrelated time constant: 0. (c) 4 min, (d) 2 and (e) 4 come from wrong methods: 0 each."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "(a) zeta = 0.1333 from a wrong normalisation (omega_n = 1): 0. (b) 26.45 % from a wrong formula 1 - exp(-zeta*pi): 0. (c) 2.85 min, (d) 73.55 % and (e) 0.625 all use invented formulas: 0 each."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "(a) zeta = 0.144 from a wrong formula b/(2a): 0. (b) right formula but with the wrong zeta and also miscalculated (21.3 % where its own zeta gives 63.3 %): 0. (c) t_p = pi/omega_n omits sqrt(1-zeta^2) and is miscalculated (3.14 min): 0. (d) 0.426 omits the gain and final value, and (e) uses DR = OS instead of OS^2 (0.177): 0 each."
+ },
+ "openai/gpt-3.5-turbo": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 4,
+  "justification": "(a) zeta = 0.4, correct. (b) 25.47 %, within 0.4 % of 25.38 %: full points. (c) used omega_n = 3 instead of 1/3 rad/min, t_p = 1.145 min instead of 10.28: 0. (d) y_max = 2*OS = 0.509 ignores the gain and final value (10.03), and (e) uses DR = OS = 0.253 instead of OS^2 = 0.0644: 0 each."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.4, correct. (b) 25.3 %, correct. (c) t_p = 10.32 min, within 0.4 % of 10.28: correct. (d) after a confused first attempt the working settles on K*M*(1+OS) = 10.05, correct; (e) DR = 0.064, correct."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 0,
+   "e": 0
+  },
+  "score": 6,
+  "justification": "(a) zeta = 0.4, correct. (b) 25.3 %, correct. (c) t_p = 10.29 min, correct. (d) y_max = 2*OS = 0.506 omits the gain and the final value (10.03): 0. (e) claimed DR = zeta = 0.4 instead of OS^2 = 0.0644: 0."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 0,
+   "e": 0
+  },
+  "score": 1,
+  "justification": "(a) zeta = 0.067 from a wrong matching (omega_n^2 = 4): 0. (b) right formula with its wrong zeta but miscalculated (52.8 % where its zeta gives 81 %): 0. (c) t_p = pi/omega_d = 1.57 min is correct for its own omega_n and zeta: error carried forward, half points. (d) 2.056 uses a wrong formula without the gain, and (e) claims DR is always 1: 0 each."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0,
+   "d": 1,
+   "e": 1
+  },
+  "score": 3,
+  "justification": "(a) zeta = 1.2 from matching 2*zeta*omega_n = 2.4 without normalising (omega_n = 1/3): 0. (b) 0 % overshoot and (d) y_max = K*M = 8 and (e) decay ratio not applicable are correct consequences of its overdamped zeta: error carried forward, half points each. (c) gave a settling-type time 4/(zeta*omega_n) = 3.33 min instead of a peak time: 0."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "(a) zeta = 1.56 from an invented formula: 0. (b) 12.5 % from an invented overshoot approximation and a wrong final value (closed-loop gain): 0. (c) 4.33 min, (d) 0.8 and (e) 0.28 (a guessed second peak) have no valid method: 0 each."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 0,
+   "e": 0
+  },
+  "score": 1,
+  "justification": "(a) zeta = 0.9 from wrong matching (omega_n^2 = 4/9, unnormalised 2.4): 0. (b) right formula with its wrong zeta but miscalculated (0.19 % where its zeta gives 0.15 %): 0. (c) t_p = pi/omega_d = 10.8 min is correct for its own omega_n and zeta: error carried forward, half points. (d) y_ss = M/K = 0.5 is a wrong formula (should be K*M), and (e) uses DR = OS instead of OS^2: 0 each."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 0,
+   "e": 1
+  },
+  "score": 7,
+  "justification": "(a) zeta = 0.4, (b) 25.3 % and (c) t_p = 10.29 min are correct. (d) y_max = M*(1+OS) = 2.506 omits the gain K = 4 (10.03): 0. (e) correct formula exp(-2*pi*zeta/sqrt(1-zeta^2)) but the exponent was miscalculated (-3.45 instead of -2.74), giving 0.0316 instead of 0.0644: half points."
+ }
+}

@@ -1,0 +1,122 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "(a) 0.000284 kg/s from a density without the molar mass and an assumed velocity, no flow equation: 0. (b) Re = 106.8 from a wrong formula (mu squared, D = 0.15 m): 0. (c) 0.0213 from a truncated Colebrook without the Re term, far from 0.0132: 0. (d) 0.0157 m/s with a wrong density and mass flow: 0."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "(a) 0.0303 kg/s from a meaningless formula: 0. (b) Re = 1.36 from a wrong expression: 0. (c) f = 0.612 from a wrong formula, not Colebrook: 0. (d) gives a head of 4.36 m instead of a velocity: 0."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "(a) 221 kg/s from Bernoulli with constant average density and no friction: wrong method, 0. (b) Re = 8.36e6 from a wrong formula (mu divided by area) and the wrong velocity: 0. (c) f = 0.051 from a garbled explicit correlation, far from 0.0132: 0. (d) 2110 m/s from an energy balance without friction: 0."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "(a) 12.2 kg/s, (b) Re = 1.23e6, (c) f = 0.0182 and (d) 28.3 m/s are stated without any supporting calculation (the working uses a polytropic formula and a density in kg/kmol and never reaches numbers); all far from the reference: 0 for every part."
+ },
+ "openai/gpt-3.5-turbo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "Only lists general formulas (density, continuity, Re, Colebrook) and never substitutes values; no numerical answer for any part: 0 for (a) to (d)."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "Writes an incorrect isothermal flow equation and describes the iteration but never performs it; the FINAL values (a) 63.45 kg/s, (b) 1.54e6, (c) 0.0168, (d) 23.1 m/s have no supporting working and are far from the reference: 0 for every part."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "(a) 2.446 kg/s from an orifice-type formula without friction: wrong method, 0. (b) Re = 32107 with arithmetic that contradicts its own numbers (velocity and Re both miscomputed): 0. (c) 0.01946 does not match the Colebrook/Swamee-Jain value at its own Re (about 0.0235) and is far from 0.0132: 0. (d) 34.57 m/s uses the inlet density and an inconsistent velocity: 0."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "Only FINAL values with no working: (a) 312.4 kg/s, (b) 17788, (c) 0.0196, (d) 63.1 m/s, all far from the reference: 0 for every part."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "(a) 0.525 kg/s from an incompressible Darcy-Weisbach form with average density, with an algebra slip (36363 instead of 1/0.0275) and an unconverged f = 0.02 guess; far from 17.43: 0. (b) Re = 2.79e6 mixes inlet and average densities instead of G D/mu: 0. (c) f = 0.018 does not even match Colebrook at its own Re (0.0135): 0. (d) 3.69 m/s is a factor-10 arithmetic error (0.525/(20.0*0.0707) = 0.37): 0."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "(a) 3223 kg/s as density times pipe volume, with a density that omits the molar mass: wrong method, 0. (b) Re = 1.33e8 from that wrong flow: 0. (c) f = 0.028 asserted after a botched Colebrook iteration, far from 0.0132: 0. (d) 7.94 m/s from incompressible Darcy-Weisbach with the wrong density: 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "(a) 19.15 kg/s (9.9 % above 17.43) from a Darcy-Weisbach equation with a spurious viscous term and an inconsistent average density (17.55 instead of 26.8 kg/m3), no acceleration term: 0. (b) Re = 464435 contradicts its own numbers (17.55*15.49*0.30/1.1e-5 = 7.4e6): 0. (c) 0.0163 does not match Colebrook at its own Re (0.0151) and is 23 % off: 0. (d) assumes constant velocity along the pipe (15.49 m/s): wrong method, 0."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0,
+   "d": 1
+  },
+  "score": 2,
+  "justification": "(a) 269.5 kg/s from an invented formula, far from 17.43: 0. (b) Re = 1.04e8 correctly computed as G D/mu from its own mass flow: error carried forward, half points. (c) f = 0.018 is asserted, but Colebrook at its own Re gives 0.0130: 0. (d) 189.1 m/s correctly computed as mdot/(rho2 A) from its own mass flow: error carried forward, half points."
+ }
+}
