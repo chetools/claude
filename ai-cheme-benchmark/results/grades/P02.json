@@ -1,0 +1,122 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "(a) Re = 80,080 from a wrong area formula (pi D^2 instead of pi D^2/4) and V rounded to 0.8 m/s, 75 % off: 0. (b) f = 0.016 read from a Moody chart instead of solving Colebrook, 11 % off: 0. (c) H = 12.05 m omits the L/D factor and all minor losses: 0. (d) 0.16 kW multiplies by the efficiency and uses only the static lift: 0."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "(a) Re = 1.99e6 computed with Q instead of velocity: 0. (b) f = 0.013 from an invented formula, not Colebrook: 0. (c) H = 0.218 m from a meaningless formula: 0. (d) 0.057 kW ignores the efficiency and uses the wrong head: 0."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "(a) Re = 249,800 uses Q in place of velocity: 0. (b) f = 0.0244 from a wrong rough-pipe formula, not Colebrook: 0. (c) H = 13,110 m from a dimensionally wrong formula: 0. (d) 1,117 kW multiplies and divides by the efficiency so it cancels, wrong method and value: 0."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 1,
+   "b": 0,
+   "c": 1.5,
+   "d": 1
+  },
+  "score": 3.5,
+  "justification": "(a) Re = 1.49e5, correct formula but velocity miscomputed as 1.59 m/s instead of 3.18 m/s (53 % off): half points. (b) Colebrook set up correctly but f = 0.022 is not its solution (0.0192 at the model's own Re, 0.0179 reference): 0. (c) H = 24.7 m, correct energy balance with friction and minor losses but arithmetic slips (h_f should be 4.25 m with its own numbers): half points. (d) 5.5 kW, correct formula rho g Q H/eta but arithmetic slip (8.4 kW with its own H): half points."
+ },
+ "openai/gpt-3.5-turbo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 1
+  },
+  "score": 1,
+  "justification": "(a) Re = 24,950 uses Q instead of velocity: 0. (b) f = 0.0205 with no iteration shown, not the Colebrook solution for either its Re or the reference (14 % off): 0. (c) H = 12.757 m omits minor losses and shows no working: 0. (d) 412.10 kW, correct formula rho g Q H/eta but a large arithmetic slip (4.34 kW with its own H): half points."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 1,
+   "b": 0,
+   "c": 1.5,
+   "d": 1
+  },
+  "score": 3.5,
+  "justification": "(a) Re = 31,772, correct method but area slip (0.0785 instead of 0.00785 m2) gives V ten times too small: half points. (b) f = 0.02 assumed after admitting the Colebrook iteration did not converge (0.0244 at its own Re): 0. (c) H = 12.18 m, correct energy balance with friction and minor losses carried forward from its own wrong V and f: half points. (d) 4.145 kW, correct formula and arithmetic from its own H: error carried forward, half points."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 2,
+   "b": 1.5,
+   "c": 3,
+   "d": 2
+  },
+  "score": 8.5,
+  "justification": "(a) Re = 317,770, correct. (b) f = 0.0174 from the Swamee-Jain approximation (with a slip in Re^0.9) instead of the Colebrook equation, 2.8 % off: half points. (c) H = 28.29 m, correct energy balance, 1.5 % off, within the 2 % tolerance: full points. (d) 9.64 kW, 1.2 % off, correct: full points."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "Only bare final values without any working. (a) Re = 2.506e4 is 92 % off: 0. (b) f = 0.0198, 11 % off, no working: 0. (c) H = 13.27, 54 % off: 0. (d) 11.56, no unit or working and 18 % off: 0."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 2,
+   "b": 0,
+   "c": 1.5,
+   "d": 1
+  },
+  "score": 4.5,
+  "justification": "(a) Re = 317,767, correct. (b) Colebrook set up and one trial shown, but the stated result f = 0.0208 is not the solution (0.0179), 16 % off: 0. (c) H = 31.10 m, correct energy balance with friction and minor losses carried forward from the wrong f: half points. (d) 10.25 kW, correct formula carried forward from its own H (with a small arithmetic slip): half points."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 1,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 1,
+  "justification": "(a) Re = 317,478 matches the reference but the working uses V = 31.83 m/s (ten times too large), a numerical slip: half points. (b) Colebrook iterations miscomputed, f = 0.0218 is 22 % off: 0. (c) H = 783.4 m omits the minor losses and uses the wrong velocity: 0. (d) 27.67 kW omits g in rho g Q H/eta: 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 2,
+   "b": 1.5,
+   "c": 3,
+   "d": 1
+  },
+  "score": 7.5,
+  "justification": "(a) Re = 317,594, correct. (b) Colebrook set up but iterated with eps/D = 0.0046 (ten times too large) and never converged; the stated solver value f = 0.0175 is 2.3 % off: half points. (c) H = 28.17 m, correct energy balance, 1.9 % off, within the 2 % tolerance: full points. (d) 9.56 kW, correct method but 2.05 % off, just outside the 2 % tolerance: half points."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 2,
+   "b": 3,
+   "c": 3,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) Re = 318,272, 0.2 % off, correct. (b) f = 0.0181 from Colebrook iteration, 1.1 % off, within tolerance. (c) H = 28.81 m, correct energy balance, 0.35 % off. (d) 9.76 kW, correct."
+ }
+}

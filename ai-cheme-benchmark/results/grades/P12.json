@@ -1,0 +1,146 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "(a) D = 115 kmol/h from a meaningless mole-fraction sum, wrong: 0. (b) N_min = 1 and (c) theta = 0.3125 from invented formulas: 0. (d) R_min = 0.0106 from an invented formula: 0. (e) used R = 1.3 instead of 1.3 R_min (N = 2.3) and (f) used volatilities as z and feed fractions as product compositions (0.914): 0."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "No numerical values for any part, only invented or generic formulas (D from volatilities, N_min = n_H/n_HK, theta = (z_HK/z_LK)^2): 0 for all parts."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0.5,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "Reply cut off in a runaway loop. (a) D = 1995.5 kmol/h, (b) N_min = 1, (c) theta = 2 and (d) R_min = 1 from wrong formulas: 0. (e) Gilliland set-up right with its own R_min = 1 and N_min = 1, but X^0.5668 and the solve for N are botched (3.16): half of half, 0.5. (f) no result, wrong inputs: 0."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "(a) D = 35.8 kmol/h, omitted the 5 kmol/h of propane (and mis-stated butane as 34.6): 0. (b) N_min = 7.2 from a wrong Fenske form, (c) theta = 0.63 from a wrong feed equation, (d) R_min = 1.7 from an invented formula: 0. (e) Eduljee form misapplied (0.5668 used as a factor) and N = Y/(1-Y) + N_min, 13.8: 0. (f) wrong inputs (0.53): 0."
+ },
+ "openai/gpt-3.5-turbo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "Only symbolic set-up with no numbers; (a) also puts 97 % of the pentane in the distillate, and the Fenske, Underwood and R_min expressions are wrong: 0 for all parts."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "(a) D = 39.3 kmol/h, omits the 1.2 kmol/h of n-pentane in the distillate (set-up error, 3 % low): 0. (b) N_min = 5.82 from recoveries 0.98/0.02 of the light key only, wrong Fenske set-up: 0. (c), (d), (e) not computed: 0. (f) 1.13 with (x_B,LK/x_D,HK) set to 0.02/0.02, wrong: 0."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "(a) D = 39.3 kmol/h, n-pentane in the distillate set to zero (set-up error): 0. (b) N_min = 3.4, (c) theta = 2.97 (outside the key range), (d) R_min = 1.5 and (e) N = 5.6 come from wrong or no working: 0. (f) 0.76 matches the reference but the shown expression is garbled and does not give it, so no supporting working: 0."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "Only FINAL values with no working (D = 49.0, N_min = 8.0, theta = 1.67, R_min = 2.0, N = 10.5, ratio 0.38), all far from the reference: 0 for all parts."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0.5,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) D = 34.89 kmol/h from treating recoveries as mole fractions: 0. (b) N_min = 3.95 from a wrong Fenske set-up, (c) theta = 1.2 from a feed equation without alpha in the numerator, (d) R_min = 145.6 from an invented formula: 0. (e) Gilliland set-up right with its own R_min and N_min, but 0.229^0.5668 miscomputed (0.476 instead of 0.434), N = 7.16 instead of 7.59: half of half, 0.5. (f) used recoveries 0.02 and 0.03 as x_B,LK and x_D,HK (0.988): 0."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "(a) D = 34 kmol/h, only the butane counted: 0. (b) N_min = 2.15, (c) theta = 1.1547 and (d) R_min = 5.00 from invented formulas with volatilities used as compositions: 0. (e) negative X and R = 1.3 instead of 1.3 R_min (N = 2.15): 0. (f) wrong inputs (1.02): 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0.5,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) D = 40 kmol/h is asserted (B = 60, D = 40) without a supporting balance; the propane and component sum are never added up: 0. (b) N_min = 6 with no valid working (its own Fenske attempts give negative values), (c) theta = 0.414 and (d) R_min = 0.5 without valid method: 0. (e) Gilliland set-up right with its own R_min = 0.5 and N_min = 6, but X^0.5668 miscomputed, N = 12.96 instead of 14.81: half of half, 0.5. (f) used recoveries 0.02 and 0.03 as mole fractions (0.948): 0."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 1,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0.5,
+   "f": 0
+  },
+  "score": 1.5,
+  "justification": "(a) D = 40.5 kmol/h, correct: 1. (b) N_min = 11.00 from an inverted Fenske ratio with wrong bottoms fractions (0.03 and 2.16) and a sign flip: 0. (c) theta = 1.23 from a feed equation without alpha in the numerator, (d) R_min = 1.5 simply assumed after a negative result: 0. (e) Gilliland set-up right with its own R_min and N_min, but 0.1525^0.5668 miscomputed (0.575 instead of 0.344), N = 16.62 instead of 22.6: half of half, 0.5; (f) x_B,LK = 0.03 is wrong (should be 0.0118), ratio 1.119: 0."
+ }
+}

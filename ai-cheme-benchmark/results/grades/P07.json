@@ -1,0 +1,146 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "(a) 0.867 rad/min from a meaningless integral expression, 28 % off the reference 0.677 with no valid method: 0. Parts (b) to (f) are missing: 0."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0.5,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) invented formula giving a negative frequency (-0.18 rad/min): 0. (b) K_u = omega_u/G_p, wrong formula: 0. (c) P_u = 1/omega_u, wrong formula: 0. (d) K_c = -0.046 and tau_I = 4.55 min follow from its own (b) and (c) with the correct Z-N formulas: half points; (e) and (f) use invented formulas (GM = -0.18, PM = 90 deg): 0."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "The reply degenerates into incoherent text; its only result is K_u = 1.8 e = 4.9 (labelled as part a) from an invalid formula, and no correct frequency, period, tuning or margins are given: 0 for every part."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 1,
+   "b": 1,
+   "c": 0,
+   "d": 0.5,
+   "e": 0,
+   "f": 0
+  },
+  "score": 2.5,
+  "justification": "(a) correct phase equation -atan(12w) - 2.5w = -pi but the stated root 0.49 rad/min is 28 % off 0.677: half points. (b) correct K_u = 1/|G_p(i w_u)| but 1.63 matches neither the reference 4.55 nor its own omega_u (3.31): half points. (c) P_u = 1/omega_u instead of 2 pi/omega_u: 0; (d) K_c = 0.74, tau_I = 1.69 min correctly carried forward: half points. (e) GM 1.67 without a phase-crossover calculation and (f) wrong PI phase (-atan(tau_I w)) and PM taken at the phase crossover (10.5 deg vs 36.3): 0."
+ },
+ "openai/gpt-3.5-turbo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0.5,
+   "e": 0,
+   "f": 0
+  },
+  "score": 1.0,
+  "justification": "(a) ignored the lag phase, omega_u = pi/2.5 = 1.257 rad/min vs 0.677: 0. (b) took K_u = |G_p| (0.177) instead of 1/|G_p|: 0. (c) P_u = 2 pi/omega_u = 5.01 min and (d) K_c = 0.0805, tau_I = 4.18 min are correct carry-forwards of its own wrong values: half points each. (e) GM = 1/|1+GcGp| is a wrong formula (0.278 vs 1.90) and (f) 44.3 deg has no working: 0."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0.5,
+   "e": 0,
+   "f": 0
+  },
+  "score": 1.0,
+  "justification": "(a) set up the correct phase equation but then used the approximation pi/(2 theta) = 0.628 rad/min, 7 % off 0.677: 0. (b) K_u = tau/(K theta) = 2.67 is not the ultimate-gain condition (reference 4.55): 0. (c) P_u = 10 min and (d) K_c = 1.212, tau_I = 8.33 min are correct carry-forwards of its own values: half points each. (e) and (f) were not calculated: 0."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0.5,
+   "d": 0.5,
+   "e": 0,
+   "f": 0
+  },
+  "score": 2.0,
+  "justification": "(a) phase of the lag written with the wrong sign (+atan(12w)), giving 0.213 rad/min vs 0.677: 0. (b) correct K_u = 1/|G_p(i w_u)| but an arithmetic slip (0.610 instead of 1.52 for its own omega_u): half points. (c) P_u = 29.6 min and (d) K_c = 0.277, tau_I = 24.7 min are correct carry-forwards: half points each. (e) GM = 0.944 evaluated without the PI controller and (f) PM = 0 deg at the wrong frequency are wrong methods (reference 1.90 and 36.3 deg): 0."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "Only FINAL lines without any working (omega_u = 2.5 rad/min, K_u = 1.8, P_u = 1.44 min, K_c = 0.818, tau_I = 1.2 min, GM = 3.5, PM = 45 deg), all far from the reference: 0 for every part."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 1,
+   "b": 1,
+   "c": 0.5,
+   "d": 0.5,
+   "e": 0,
+   "f": 0
+  },
+  "score": 3.0,
+  "justification": "(a) correct phase equation 2.5w + atan(12w) = pi but the stated root 0.88 rad/min is 30 % off 0.677: half points. (b) K_u = 5.9 correctly carried forward with 1/|G_p|: half points; (c) P_u = 7.14 min and (d) K_c = 2.68, tau_I = 5.95 min correct carry-forwards: half points each. (e) GM = 1/K_c = 0.373 and (f) an invented PM formula giving 46.2 deg are wrong methods (reference 1.90 and 36.3 deg): 0."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0.5,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) omega_u = 1/2.5 rad/s converted to 24 rad/min, wrong method (reference 0.677): 0. (b) took K_u = |G_p| = 0.0057 instead of 1/|G_p|: 0. (c) P_u = 1/omega_u, wrong formula: 0; (d) K_c = 0.0026, tau_I = 0.0348 min correctly carried forward: half points. (e) GM = 4 and (f) PM = 4 deg are guesses without valid working: 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0.5,
+   "d": 0.5,
+   "e": 0,
+   "f": 0
+  },
+  "score": 2.0,
+  "justification": "(a) correct phase equation but the dead-time term 2.5w was evaluated in degrees, giving 36 rad/min vs 0.677: 0. (b) K_u = 1/|G_p(i w_u)| = 240 correctly carried forward: half points; (c) P_u = 0.175 min and (d) K_c = 109.1, tau_I = 0.146 min correct carry-forwards: half points each. (e) GM evaluated at the process phase crossover instead of the PI loop's, with 1 + 1/(tau_I s) mis-written as 1 + 6.85 s (0.0089 vs 1.90), and (f) PM evaluated at the same wrong frequency (10.8 vs 36.3 deg): 0."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 1,
+   "b": 1,
+   "c": 0.5,
+   "d": 0.5,
+   "e": 0,
+   "f": 0
+  },
+  "score": 3.0,
+  "justification": "(a) correct phase equation but the stated root 0.196 rad/min is 71 % off 0.677: half points. (b) correct K_u = 1/|G_p(i w_u)| with a small slip (1.361 vs 1.42 for its own omega_u): half points; (c) P_u = 32.05 min and (d) K_c = 0.619, tau_I = 26.71 min correct carry-forwards: half points each. (e) GM = 1 by assumption and (f) wrong PI phase and frequency giving 54.5 deg are wrong methods (reference 1.90 and 36.3 deg): 0."
+ }
+}
