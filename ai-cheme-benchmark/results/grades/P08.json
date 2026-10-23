@@ -1,0 +1,110 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) and (b) not calculated; the reply wrote a wrong characteristic equation and gave no value: 0. (c) offset = 1 + Kc = 4 from a wrong final-value expression instead of 1/(1+Kc) = 0.25: 0."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) Kc,max = 1 from a meaningless characteristic equation with no Routh array: 0. (b) omega = 0 rad/min, wrong method: 0. (c) offset 7 from an invented integral formula instead of 0.25: 0."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) Kc,max = 0.0625 from a wrong characteristic polynomial (16s^4+24s^3+14s^2+8s+1+Kc) and no actual Routh calculation, reference 6.357: 0. (b) omega = sqrt(Kc/tauI) = 0.125 rad/min, invented formula, reference 0.658: 0. (c) offset (Kc-1)/(1+Kc) = 0.5, wrong formula, reference 0.25: 0."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) Kc,max = 20 from a wrong characteristic equation (PI zero dropped) and an incorrect Routh array, reference 6.357: 0. (b) omega = 2.53 rad/min with no valid derivation, reference 0.658: 0. (c) offset 3/10 from applying the final value theorem to the output with a spurious s, reference 0.25: 0."
+ },
+ "openai/gpt-3.5-turbo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) Kc,max = 0 from a wrong controller transfer function (extra 1/s) and a nonsensical Routh array, reference 6.357: 0. (b) 0 rad/min, follows from the wrong (a) with no valid method: 0. (c) offset -3/10 with an extra 1/s in the P controller and no shown simplification, reference 0.25: 0."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 2
+  },
+  "score": 2,
+  "justification": "(a) wrong expansion of the characteristic polynomial and no value for Kc,max given: 0. (b) not calculated: 0. (c) offset = 1 - 3/4 = 0.25 via the final value theorem, correct: full points."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 2
+  },
+  "score": 2,
+  "justification": "(a) Kc,max = 50.4 from a characteristic equation that dropped the factor s (third order with Kc/(4s) treated as a constant), reference 6.357: 0. (b) 2.06 rad/min, an unsupported approximation, reference 0.658: 0. (c) offset 1/(1+3) = 0.25, correct: full points."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) Kc,max = 1.25 with no working, reference 6.357: 0. (b) 0.48 rad/min with no working, reference 0.658 (27 % off): 0. (c) 0.2 with no working, reference 0.25: 0."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) Kc,max = 1.4: the product (s+1)(2s+1)(5s+1) was expanded wrongly (10s^3+8s^2+3s+1 instead of 10s^3+17s^2+8s+1) and only the s^2 row was checked, missing the s^1 row condition, reference 6.357: 0. (b) omega = 0.5 rad/min from a polynomial inconsistent with its own (a) whose real-part equation is not satisfied, reference 0.658: 0. (c) offset 1 using a velocity error constant instead of the position constant, reference 0.25: 0."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) Kc,max = infinity from treating the open-loop poles as the closed-loop roots, reference 6.357: 0. (b) 0.0625 rad/min with no valid method, reference 0.658: 0. (c) offset 180 from an invented formula, reference 0.25: 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) correct characteristic polynomial (a multiple of 40s^4+68s^3+32s^2+(4+4Kc)s+Kc), but the limit was taken from b1 = 0 instead of the s^1 entry c1 = 0, giving 12.6 instead of 6.357: 0. (b) 0.232 rad/min from a first-order 'auxiliary' equation with a real root, wrong method, reference 0.658: 0. (c) offset 1/T(0) - 1 = 1/3 instead of 1 - T(0) = 0.25, wrong formula: 0."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 2
+  },
+  "score": 2,
+  "justification": "(a) Kc,max = 1.075: the polynomial was expanded wrongly (52s^3+28s^2 and (4+Kc)s instead of 68s^3+32s^2 and (4+4Kc)s) and the s^1 Routh entry has the wrong sign, reference 6.357: 0. (b) 0.312 rad/min from an auxiliary equation built from the wrong rows, reference 0.658: 0. (c) offset 1/(1+Kc*Kp) = 0.25, correct: full points."
+ }
+}

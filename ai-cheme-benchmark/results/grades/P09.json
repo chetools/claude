@@ -1,0 +1,98 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0
+  },
+  "score": 0,
+  "justification": "(a) 1.625 from an invented Fenske form ln((x_D - x_F)/(1 - x_D))/ln(alpha) - 1 instead of the separation-factor form (reference 6.43): 0. (b) 0.2 from assuming L_min = 1 and D_min = 5 stages, no physical basis (reference 1.44): 0."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0
+  },
+  "score": 0,
+  "justification": "(a) no number of stages given; the working is a meaningless balance unrelated to the Fenske equation: 0. (b) 4.65 from the same invented quantities (reference 1.44): 0."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0
+  },
+  "score": 0,
+  "justification": "Most of the reply is incoherent text. (a) 2.23 from ln(x_D/x_B)/ln(alpha), which omits the bottoms term and is also mis-evaluated (ln 19/ln 2.5 = 3.21; reference 6.43): 0. (b) 4.09 from a ratio of invented quantities (reference 1.44): 0."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 0,
+   "b": 0
+  },
+  "score": 0,
+  "justification": "(a) 5.76 from a garbled Fenske form log(alpha x_D/(1-x_D)) - log((1-x_B)/x_B) with inconsistent arithmetic, 10 % below the reference 6.43: 0. (b) 2.43 from an invented 'Underwood' formula unrelated to the pinch at z_F (reference 1.44): 0."
+ },
+ "openai/gpt-3.5-turbo": {
+  "parts": {
+   "a": 0,
+   "b": 0
+  },
+  "score": 0,
+  "justification": "(a) 3.8 from a wrong Fenske form mixing z_F into the ratio (reference 6.43): 0. (b) 0.737 from R_min = (N_min - 1)/N_min, not a valid relation (reference 1.44): 0."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 5,
+   "b": 0
+  },
+  "score": 5,
+  "justification": "(a) 6.44 from the correct Fenske equation ln[(x_D/(1-x_D))/(x_B/(1-x_B))]/ln(alpha), 0.2 % from the reference 6.43: full points. (b) 11 from an invented shortcut (x_D/x_B - alpha)/(alpha - 1) that ignores the feed pinch (reference 1.44): 0."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 0,
+   "b": 0
+  },
+  "score": 0,
+  "justification": "(a) 1.03 from an invented formula log((z_F - x_B)/(x_D - x_B))/log(alpha), with the sign dropped (reference 6.43): 0. (b) 2.82 from an invented formula (alpha x_D - x_B)/(x_D - alpha x_B) (reference 1.44): 0."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0
+  },
+  "score": 0,
+  "justification": "(a) 3 stages, from an invented equation giving 0.33 and then an unexplained 3 (reference 6.43): 0. (b) 1.64 from a wrong formula (x_D - x_B)/(z_F - x_D), whose value is actually negative, 13 % off the reference 1.44: 0."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 2.5,
+   "b": 0
+  },
+  "score": 2.5,
+  "justification": "(a) Correct Fenske equation evaluated to 6.426, but then 1 added for the reboiler (the Fenske count already includes it), giving 7.426, 15.5 % above the reference: correct set-up with a slip, half points. (b) 12 from an invented formula (alpha - 1) z_F/(alpha z_F - x_D) (reference 1.44): 0."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0
+  },
+  "score": 0,
+  "justification": "(a) 1 (0.974 rounded up) from a wrong Fenske form using z_F/z_D and x_B/x_D (reference 6.43): 0. (b) 2.0 from an invented formula (reference 1.44): 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0
+  },
+  "score": 0,
+  "justification": "(a) 3.21 from log(x_D/x_B)/log(alpha), which leaves out the heavy-component terms (reference 6.43): 0. (b) 0.875 from an invented formula (alpha + 1)/(2 alpha - 1) (reference 1.44): 0."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 5,
+   "b": 0
+  },
+  "score": 5,
+  "justification": "(a) 6.42 from the correct Fenske equation, 0.1 % from the reference 6.43: full points. (b) 0.562 from an Underwood approach with the root theta = 0.269 taken outside the interval between the volatilities (1 to 2.5) and a wrong R_min expression (reference 1.44): 0."
+ }
+}

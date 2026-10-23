@@ -1,0 +1,110 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) 0.3125, wrong: used 2.5/8 as the response and ignored the step size of 4 (reference 10): 0. (b) and (c) missing: 0."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) 2, wrong method (incoherent manipulation of the transfer function): 0. (b) 5.065, wrong formula (reference 7.135): 0. (c) 0.0814 min from t = -8 ln(0.95), wrong method (reference 23.97 min): 0."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 2,
+   "c": 0
+  },
+  "score": 2,
+  "justification": "(a) 0.3125, wrong gain 2.5/8 and step size ignored (reference 10): 0. (b) the working derives the correct y'(t) = 10(1 - e^(-t/8)) but never evaluates it at t = 10 and the FINAL 0.29625 contradicts it; credit of the working, correct method without the value: half points. (c) 28.28 min from setting 10(1 - e^(-t/8)) equal to 95 % of the wrong gain 0.3125, inconsistent set-up and wrong algebra (reference 23.97 min): 0."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 0,
+   "b": 2,
+   "c": 0
+  },
+  "score": 2,
+  "justification": "(a) 1.25, wrong gain 2.5/8 (reference 10): 0. (b) convolution with an impulse response missing the 1/8 factor, ends at the correct expression 10 - 10e^(-1.25) but evaluates it as 9.94 instead of 7.135: half points for the set-up with a numerical slip. (c) 16.32 min from equating 95 % of the wrong 1.25 to 10 - 10e^(-t/8), inconsistent set-up and the algebra gives 1.66 not 16.32 (reference 23.97): 0."
+ },
+ "openai/gpt-3.5-turbo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) 5, from a wrong partial-fraction decomposition (reference 10): 0. (b) 4.063 from the wrong y'(t) = 5 - 2.5e^(-t/8) (which itself gives 4.28; reference 7.135): 0. (c) 28.897 min: the equation 4.75 = 5 - 2.5e^(-t/8) is solved wrongly (e^(-t/8) should be 0.1) and -8 ln 0.05 is 23.97, not 28.897, so neither the carried-forward value nor the reference is reached: 0."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 3,
+   "b": 0,
+   "c": 1.5
+  },
+  "score": 4.5,
+  "justification": "(a) 10, correct. (b) 9.642 from a wrong partial-fraction result y' = 10 - 1.25e^(-t/8) (reference 7.135, 35 % off): 0. (c) 7.33 min, correctly solved from its own wrong expression of (b) with the right 95 % set-up (error carried forward): half points."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 3,
+   "b": 4,
+   "c": 3
+  },
+  "score": 10,
+  "justification": "(a) 10, correct. (b) 7.135, correct. (c) 23.97 min, correct (the stated tau = 1/8 min is a slip not used in the calculation)."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "Only final values with no working: (a) 0.625 (reference 10), (b) 0.6244 (reference 7.135), (c) 13.9 min (reference 23.97), all wrong and unsupported: 0."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 3,
+   "b": 4,
+   "c": 3
+  },
+  "score": 10,
+  "justification": "(a) 10, correct. (b) 7.135, correct. (c) 24 min, correct method with 23.97 rounded, 0.14 % off: full points."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) 2.5, the gain without multiplying by the step of 4 (reference 10): 0. (b) -3.22 units/min from a closed-loop formula mixed with s and t, wrong method (reference 7.135): 0. (c) 0.11 min, wrong method and the model itself says the result is wrong (reference 23.97): 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 3,
+   "b": 4,
+   "c": 3
+  },
+  "score": 10,
+  "justification": "(a) 10, correct. (b) 7.135, correct. (c) 23.97 min, correct."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 3,
+   "b": 0,
+   "c": 1.5
+  },
+  "score": 4.5,
+  "justification": "(a) 10, correct. (b) -12.92 from a wrong inverse transform of 80/(8s+1) as 80e^(-t/8) instead of 10e^(-t/8) (reference 7.135): 0. (c) 40.60 min, correctly solved from its own wrong expression of (b) with the right 95 % set-up (error carried forward): half points."
+ }
+}

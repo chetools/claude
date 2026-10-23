@@ -1,0 +1,134 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0.5,
+  "justification": "(a) D = 261.75 kmol/h from a meaningless relation D = R*F instead of the overall balances (44.57): 0. (b) R_min = xD/(1-zF) = 1.745, invented formula ignoring the q-line pinch (1.775): 0. (c) R = 1.5 x own R_min, correct step carried forward (with a small multiplication slip, 2.6125): half points. (d) and (e) not calculated: 0."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "(a) D = 44.8 from an invalid formula zF*xD*F (which actually gives 43.2), not the overall balances: 0. (b) R_min = 180 and (c) R = 0.415 from invented formulas, and R is not 1.5 R_min: 0. (d) and (e) contain no stage stepping and no usable values: 0."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0.5,
+  "justification": "(a) D = 40 kmol/h taken as the vaporized feed fraction instead of the overall balances (44.57): 0. (b) R_min = 1.287 from an invented formula (reference 1.775): 0. (c) R = 1.5 x 1.287 = 1.929, correct step carried forward: half points. (d) 9 stages and (e) feed stage 5 asserted without any stepping (reference 12.42 and 7): 0."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0.5,
+  "justification": "(a) D = 100 kmol/h from a wrong balance (44.57): 0. (b) R_min = 11.67 from an invented formula (1.775): 0. (c) R = 1.5 x 11.67 = 17.505, correct step carried forward: half points. (d) 7.33 from misapplied Fenske/Underwood-type formulas, no stage stepping (12.42): 0; (e) stage 4 guessed (7): 0."
+ },
+ "openai/gpt-3.5-turbo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0.5,
+  "justification": "(a) D = 60 kmol/h from inconsistent balances (44.57): 0. (b) R_min = 58.06 from an invented formula (1.775): 0. (c) R = 1.5 x 58.06 = 87.10, correct step carried forward: half points. (d) 2.94 from a Fenske minimum-stage formula with a wrong argument instead of stage stepping (12.42): 0; (e) stage 2 without working (7): 0."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 1,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0
+  },
+  "score": 1.5,
+  "justification": "(a) D = 44.57 kmol/h from the overall balances, correct. (b) R_min = 1.40 from the saturated-liquid (q = 1) Underwood formula, which ignores q = 0.6 and the q-line pinch (1.775, 21 % off): 0. (c) R = 1.5 x 1.40 = 2.1, correct step carried forward: half points. (d) and (e) not calculated: 0."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0.5,
+  "justification": "(a) D = 93.18 kmol/h after wrongly replacing x_D by x_D/alpha in the balance (44.57): 0. (b) R_min = 1.025 from an invented formula (1.775): 0. (c) R = 1.5 x 1.025 = 1.5375, correct step carried forward: half points. (d) 9.0 stages and (e) feed stage 5 are assumed without stepping (12.42 and 7): 0."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "The reply gives only final values with no working: (a) D = 32.4 (44.57), (b) R_min = 1.05 (1.775), (c) R = 1.58 (2.663), (d) 7.6 (12.42), (e) 5 (7), all wrong and unsupported: 0 for every part."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 1,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0
+  },
+  "score": 1.5,
+  "justification": "(a) D = 44.57 kmol/h from the overall balances, correct. (b) R_min = 0.4475 from an invented formula that ignores the q-line pinch (1.775): 0. (c) R = 1.5 x 0.4475 = 0.671, correct step carried forward: half points. (d) 15.6 and (e) 7 are stated after 'detailed calculations' that are not shown (the q-line was used as the stripping line and R is below the true R_min), so although (e) matches the reference it has no supporting working: 0 for both."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0.5,
+  "justification": "(a) D = 2.2 kmol/h from an invented 'Fenske' formula (44.57): 0. (b) R_min = 0.691 from an invented formula (1.775): 0. (c) R = 1.5 x 0.691 = 1.0365, correct step carried forward: half points. (d) 14 from a made-up estimate with assumed compositions and (e) feed stage 4 from an invented correlation (12.42 and 7): 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 1,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0
+  },
+  "score": 1.5,
+  "justification": "(a) D = 44.565 kmol/h from the overall balances, correct. (b) R_min = 0.329 from an invented formula (1.775): 0. (c) R = 1.5 x 0.3291 = 0.494, correct step carried forward: half points. (d) 8.2 stages and (e) stage 9 come from a wrong stripping line and an unsupported 'graphical' estimate (12.42 and 7): 0."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 1,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0
+  },
+  "score": 1.5,
+  "justification": "(a) D = 44.57 kmol/h from the overall balances, correct. (b) R_min = 22.97 from a misapplied Underwood formula (1.775): 0. (c) R = 1.5 x 22.97 = 34.46, correct step carried forward: half points. (d) 15.2 and (e) 7 are explicitly assumed without any stepping, so although (e) matches the reference it has no supporting working: 0 for both."
+ }
+}

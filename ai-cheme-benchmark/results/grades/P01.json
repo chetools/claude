@@ -1,0 +1,110 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 1.5,
+   "b": 0,
+   "c": 0
+  },
+  "score": 1.5,
+  "justification": "(a) velocity 1.194 m/s and Re = rho v D/mu are correct, but the arithmetic gives 38.33 instead of 350: numerical slip, half points. (b) used the Blasius turbulent correlation although the flow is laminar (0.0071 instead of 0.183): 0. (c) 0.1828 kPa is not even consistent with its own f (about 2.8 kPa) and the formula is garbled: 0."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) put the flow rate in place of the velocity and used D = 0.004 m, Re = 5600: wrong method, 0. (b) used f = 64/Re^0.5, a wrong formula (0.0045): 0. (c) used the flow rate as velocity and the wrong f, 8.74 kPa: 0."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) garbled Reynolds formula using the flow rate and dividing by the tube length, Re = 27.9: wrong method, 0. (b) a made-up Blasius form with exponent -5/3 for laminar flow (0.0146): 0. (c) Darcy-Weisbach with the flow rate in place of velocity, 0.15 kPa: 0."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 0,
+   "b": 1.5,
+   "c": 0
+  },
+  "score": 1.5,
+  "justification": "(a) wrong area formula (pi D)^2 gives v = 0.028 m/s, and Re = 849.6 does not even follow from it: wrong method, 0. (b) correctly recognised laminar flow and used 64/Re on its own Re (0.0755): error carried forward, half points. (c) Darcy-Weisbach set up correctly but 13.6 kPa does not follow from its own values (about 0.016 kPa), so neither the value nor a clean carry-forward: 0."
+ },
+ "openai/gpt-3.5-turbo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "The reply only lists formulas and gives no numerical value for any part; the Reynolds formula in (a) even uses Q in place of velocity. (a), (b) and (c) are missing values: 0."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 2
+  },
+  "score": 8,
+  "justification": "(a) Re = 352.32, 0.6 % from 350.1 with the correct method: full points. (b) laminar f = 64/Re = 0.1817, 0.6 % off: full points. (c) correct Darcy-Weisbach set-up, but the arithmetic gives 59.24 kPa instead of about 71.1 kPa from its own values (17 % below 71.6 kPa): numerical slip, half points."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 1.5,
+   "b": 0,
+   "c": 0
+  },
+  "score": 1.5,
+  "justification": "(a) velocity 1.194 m/s and Re formula correct, but the arithmetic gives 2885 instead of 350: numerical slip, half points. (b) used the Blasius turbulent correlation for a laminar flow (0.02503 instead of 0.183): 0. (c) dropped the density from Darcy-Weisbach and used the wrong f, 0.011 kPa: 0."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "The reply gives only final values with no working: (a) 3300, (b) 0.021 and (c) 24.75 kPa are all wrong and unsupported: 0 for every part."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 1.5,
+   "b": 0,
+   "c": 2
+  },
+  "score": 3.5,
+  "justification": "(a) velocity 1.193 m/s and Re formula correct, but the arithmetic gives 3466.7 instead of 350: numerical slip, half points. (b) declared the flow turbulent and used a Fanning-type Blasius 0.079 Re^-0.25 (0.030 instead of 0.183): wrong method, 0. (c) Darcy-Weisbach correctly applied to its own f and v, 11.74 kPa follows from them: error carried forward, half points."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 1.5,
+   "c": 0
+  },
+  "score": 1.5,
+  "justification": "(a) used the volumetric flow rate in place of the velocity, Re = 4.40: wrong method, 0. (b) laminar f = 64/Re applied correctly to its own Re (14.55): error carried forward, half points. (c) again used the flow rate as velocity and a bogus J/m3 to kPa conversion, 89.44 kPa: 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 3,
+   "b": 0,
+   "c": 0
+  },
+  "score": 3,
+  "justification": "(a) Re = 351, 0.2 % from 350.1 with the correct method: full points. (b) used the turbulent Blasius correlation for laminar flow and miscomputed it (0.001 instead of 0.183): 0. (c) wrong f and an extra division by 2 in Darcy-Weisbach, 0.19 kPa: 0."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) Re = 350.21, within 0.02 % of the reference: full points. (b) laminar f = 64/Re = 0.1827, within 0.05 %: full points. (c) Darcy-Weisbach gives 71.75 kPa, within 0.2 % of 71.62 kPa: full points."
+ }
+}

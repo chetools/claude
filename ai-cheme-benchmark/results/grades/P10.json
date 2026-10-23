@@ -1,0 +1,110 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) 0.02835 kmol/h from an invented relation that assumes F = 1.5G, wrong method: 0. (b) 0.000242 with m taken as a gas mass flow instead of the equilibrium slope: 0. (c) 4.38 from an invented formula, not the Kremser equation, and 18 % off: 0."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) 1.0 kmol/h with no valid balance or pinch condition: 0. (b) 0.889 from a meaningless ratio of flows, not L/(mG): 0. (c) 2.0 from an invented relation, not the Kremser equation: 0."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "The reply loops on the same wrong rearrangement until it is cut off (finish_reason length) and gives no value for any part: (a), (b) and (c) missing, 0 each."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) 12.175 kmol/h from an invented formula (the reference is 171): 0. (b) 10.15 uses A = L/(mG) but 18.26/180 is 0.101, so the value is not even correct for its own L: 0. (c) 0.1475 from a formula that is not the Kremser equation: 0."
+ },
+ "openai/gpt-3.5-turbo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) -93 kmol/h from a balance that treats the 0.95 recovery as an outlet mole fraction and divides by zero: 0. (b) no numerical value given: 0. (c) no numerical value given, and the stated formula is not the Kremser equation: 0."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 0
+  },
+  "score": 6,
+  "justification": "(a) 171.17 kmol/h, rich-end pinch with x* = 0.02/1.8, within 0.1 % of 171: correct. (b) A = 256.75/180 = 1.426, correct. (c) The working ends at log(0.05)/log(1.426), which is -8.4 from a wrong form of the Kremser equation, and the FINAL 4.966 (7 % below 5.356) has no supporting working: 0."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 0,
+   "b": 1.5,
+   "c": 0
+  },
+  "score": 1.5,
+  "justification": "(a) Puts the pinch at the lean end (x = y_out/1.8) and balances on all the acetone entering, giving 3600 kmol/h in the working and 2400 in the FINAL, against 171: wrong method, 0. (b) A = 5400/180 = 30, the correct formula applied to its own wrong L: error carried forward, half points. (c) 0.865 from ln(19)/ln(30), which is not the Kremser equation: 0."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "The reply gives only final values with no working. (a) 10.56 kmol/h, wrong: 0. (b) 2.11, wrong: 0. (c) 4.79, 11 % off and unsupported: 0."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 1.5,
+   "c": 0
+  },
+  "score": 1.5,
+  "justification": "(a) 180 kmol/h from L_min = mG, which ignores the 95 % recovery and is the limit for complete absorption; it is 5.3 % above 171 with a wrong method: 0. (b) A = 270/180 = 1.5, the correct formula applied to its own L: error carried forward, half points. (c) 0.708 from a formula that is not the Kremser equation: 0."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) 5.4 kmol/h (actually its operating flow; W_min = 3.6) from an invented formula W = G*x_e: 0. (b) 0.082 kmol/h is a mass-transfer rate, not the absorption factor: 0. (c) 2 from an invented equation with an assumed coefficient, not the Kremser equation: 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) 3422 kmol/h, with the pinch put at the lean end (x = y_out/1.8) instead of the rich end: wrong method, 0. (b) A = 1, because m is taken as the operating-line slope L/G instead of the equilibrium slope 1.8; with its own L the correct formula would give 28.5: 0. (c) 1.9 from formulas that are not the Kremser equation: 0."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0
+  },
+  "score": 0,
+  "justification": "(a) 35820 kmol/h, with y_out miscomputed as 0.0001 (should be 0.001) and the pinch put at the lean end: wrong method, 0. (b) 270, with m taken as the acetone absorption rate instead of the equilibrium slope: 0. (c) 2.686 from an invented formula, made positive by taking the absolute value: 0."
+ }
+}
