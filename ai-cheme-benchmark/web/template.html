@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:,">
+<title>@@TITLE@@</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+@@BASE_CSS@@
+@@PYGMENTS_CSS@@
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="side-h">Topic</div>
+  <div id="f-topic"></div>
+  <div class="side-h">Difficulty</div>
+  <div id="f-diff"></div>
+  <div class="side-foot">Filters apply to the Results charts and table, and to the problems listed in the Problems tab.</div>
+</aside>
+<main class="main">
+  <div id="app">
+    <h1>AI models on ChemE problems</h1>
+    <p class="intro">Six AI models answered twelve undergraduate chemical-engineering problems, three runs each.
+    Every response was graded from 0 to 10 against a reference solution that is computed in Python (Code tab).</p>
+    @@BANNER@@
+    <div id="err" class="err" hidden></div>
+    <nav class="tabs" data-panels="tpanel">
+      <button data-tab="panel-results" class="active">Results</button>
+      <button data-tab="panel-problems">Problems</button>
+      <button data-tab="panel-method">Methodology</button>
+      <button data-tab="panel-code">Code</button>
+    </nav>
+
+    <!-- ============================== RESULTS ============================== -->
+    <section id="panel-results" class="tpanel">
+      <div id="metrics" class="metrics"></div>
+      <div id="empty" class="warn" hidden>No problem matches the filters. Tick at least one topic and one difficulty.</div>
+      <h2>Models</h2>
+      <div class="tablewrap"><table class="data" id="model-table"></table></div>
+      <p class="caption">Mean score is the mean over the selected problems and the runs, in percent of the maximum
+      score of 10. In brackets: the lowest and highest of the per-run totals. Cost is for the whole benchmark and
+      does not depend on the filters.</p>
+      <div class="charts">
+        <div class="chart" id="plot-bar"></div>
+        <div class="chart" id="plot-date"></div>
+        <div class="chart" id="plot-params"></div>
+        <div class="chart" id="plot-heat"></div>
+      </div>
+      <p class="caption" id="params-note"></p>
+    </section>
+
+    <!-- ============================== PROBLEMS ============================== -->
+    <section id="panel-problems" class="tpanel" hidden>
+      <div class="theory-layout wide">
+        <details class="toc-box" id="toc-box-prob" open>
+          <summary>Contents</summary>
+          <nav class="toc" id="toc-prob" aria-label="Problems">@@PROBLEMS_TOC@@</nav>
+        </details>
+        <div class="prob-body">@@PROBLEMS@@</div>
+      </div>
+    </section>
+
+    <!-- ============================== METHODOLOGY ============================== -->
+    <section id="panel-method" class="tpanel" hidden>
+      <div class="theory-layout">
+        <details class="toc-box" id="toc-box-meth" open>
+          <summary>Contents</summary>
+          <nav class="toc" id="toc-meth" aria-label="Methodology contents">@@METHODOLOGY_TOC@@</nav>
+        </details>
+        <div class="theory">@@METHODOLOGY@@</div>
+      </div>
+    </section>
+
+    <!-- ============================== CODE ============================== -->
+    <section id="panel-code" class="tpanel" hidden>
+      <div class="theory-layout wide">
+        <details class="toc-box" id="toc-box-code" open>
+          <summary>Contents</summary>
+          <nav class="toc" id="toc-code" aria-label="Code contents"><!--CODE_TOC--></nav>
+        </details>
+        <div class="code-body"><!--CODE_BODY-->
+      <h2>Editable notebook</h2>
+      <div class="controls">
+        <a class="btn primary" href="@@MOLAB_URL@@" target="_blank" rel="noopener">Open in MoLab</a>
+        <a class="btn" href="@@NOTEBOOK_NAME@@" download>Download @@NOTEBOOK_NAME@@</a>
+      </div>
+      <p class="caption">The MoLab notebook is editable; run all cells once after opening</p>
+      <p>The reference solutions below are plain Python. Each problem has an inputs dictionary of constants and a
+      <code>solve</code> function that returns the answer to every part.</p>
+      <h2>Shared helpers (common.py)</h2>
+      @@CODE_COMMON@@
+      @@CODE_SOLUTIONS@@
+      <!--/CODE_BODY--></div>
+      </div>
+    </section>
+  </div>
+</main>
+<script>@@PLOTLY@@</script>
+<script>
+window.DATA = @@DATA@@;
+window.EXPECT = @@EXPECT@@;
+window.IS_SAMPLE = @@IS_SAMPLE@@;
+</script>
+<script>@@APP_JS@@</script>
+<script>
+/* Tables of contents: open on wide screens, closed on phones; highlight the section being read. */
+function tocSpy(boxId, navId, panelId) {
+  var box = document.getElementById(boxId), links = [].slice.call(document.querySelectorAll('#' + navId + ' a'));
+  if (!box || !links.length) return;
+  box.open = window.matchMedia('(min-width: 901px)').matches;
+  var heads = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+  var cur = -1;
+  function visible(i) { return heads[i].offsetParent !== null; }
+  function spy() {
+    if (document.getElementById(panelId).hidden) return;
+    var k = -1;
+    for (var i = 0; i < heads.length; i++) {
+      if (!visible(i)) continue;
+      if (k < 0 || heads[i].getBoundingClientRect().top <= 80) k = i; else break;
+    }
+    if (k === cur || k < 0) return;
+    if (cur >= 0) links[cur].classList.remove('active');
+    links[k].classList.add('active'); cur = k;
+    var r = links[k].getBoundingClientRect(), b = box.getBoundingClientRect();
+    if (box.open && (r.top < b.top || r.bottom > b.bottom)) box.scrollTop += r.top - b.top - b.height / 3;
+  }
+  window.addEventListener('scroll', spy, { passive: true });
+  document.querySelector('.tabs').addEventListener('click', function () { setTimeout(spy, 0); });
+  spy();
+}
+tocSpy('toc-box-prob', 'toc-prob', 'panel-problems');
+tocSpy('toc-box-meth', 'toc-meth', 'panel-method');
+tocSpy('toc-box-code', 'toc-code', 'panel-code');
+</script>
+</body>
+</html>
