@@ -148,5 +148,35 @@
   },
   "score": 0,
   "justification": "Describes the correct method (guess H_J, Darcy-Weisbach with Colebrook, continuity) but shows no iteration; (a) 100.2 m is within 1 % of 101.08 m but has no supporting working, and the flows it reports are inconsistent with that head under its own equations (H_J = 100.2 m gives about 141, 6 and 121 L/s): 0. (b) 50.7 vs 137.8 L/s, (c) 1.7 L/s out of B vs 15.0 L/s into B (wrong direction), (d) 49.0 vs 122.8 L/s: 0 each."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 2,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "Correct method shown concisely: pipe resistances R = 8fL/(pi^2 g D^5) with Colebrook friction factors (f1 = 0.0196, f2 = 0.0234, f3 = 0.0204) and continuity at J. (a) 101.1 m vs 101.08 m, (b) 137 vs 137.8 L/s (0.6 % off), (c) 14.9 L/s into B vs 15.0 L/s into B (0.6 % off, direction correct), (d) 123 vs 122.8 L/s (0.2 % off): full points for every part."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0
+  },
+  "score": 0,
+  "justification": "The values are close to the reference, (a) 101.1 m, (b) 138 L/s, (c) 14.9 L/s into B, (d) 123 L/s, but the reply only states them in prose. It names the method without any equation, friction factor, intermediate head or continuity check. Under the rule that a value with no supporting working gets zero, every part gets 0."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 1,
+   "d": 2
+  },
+  "score": 9,
+  "justification": "Correct trial-and-error on H_J with Darcy-Weisbach, Colebrook and a continuity check shown at 100, 101.5 and 101.1 m. (a) 101.1 m vs 101.08 m: full points. (b) 139.8 L/s (FINAL 140) vs 137.8 L/s, 1.5 % off, within the 2 % tolerance: full points. (c) 15.9 L/s vs 15.0 L/s is 6.1 % off (even at its own 1.1 m head the correct flow is about 15.1 L/s), and the working states the direction into B although the FINAL line omits it: half points for correct method and direction with a numerical slip. (d) 124.1 L/s vs 122.8 L/s, 1.1 % off: full points."
  }
 }

@@ -163,5 +163,38 @@
   },
   "score": 9,
   "justification": "(a) zeta = 0.4 and (b) 25.37 %, correct. (c) correct formula pi/omega_d but omega_d was miscalculated as 0.277 instead of 0.3055, giving 11.34 min instead of 10.28 (10 % off): half points. (d) 10.03 and (e) 0.065 (0.9 % off 0.0644) are correct."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.40, (b) 25.4 % and (c) t_p = 10.3 min are correct, with concise working via tau = 3 min. (d) working gives 8*(1.2536) = 10.03 (FINAL rounded to 10.0, 0.3 % off), correct. (e) DR = exp(-2*pi*zeta/sqrt(1-zeta^2)) = 0.0646, within 0.3 % of 0.0644, correct."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.4, correct. (b) 25.37 %, correct. (c) t_p = 10.28 min, correct. (d) 8*(1+0.2537) = 10.03 and (e) DR = 0.0644, both correct."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.4, correct. (b) 25.38 % (FINAL 25.4 %), correct. (c) t_p = pi*tau/sqrt(1-zeta^2) = 10.28 min, correct. (d) 8*(1+0.2538) = 10.03 and (e) DR = OS^2 = 0.0644, both correct."
  }
 }

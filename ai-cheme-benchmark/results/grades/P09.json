@@ -118,5 +118,29 @@
   },
   "score": 10,
   "justification": "(a) 6.426 from the correct Fenske equation; it considered subtracting 1 and correctly decided not to, matches the reference: full points. (b) 1.445 from the correct binary saturated-liquid formula R_min = [x_D/z_F - alpha(1 - x_D)/(1 - z_F)]/(alpha - 1), 0.04 % from the reference 1.444: full points."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 5,
+   "b": 0
+  },
+  "score": 5,
+  "justification": "(a) 6.43 from the correct Fenske equation, matches the reference 6.427: full points. (b) 7.76 from Underwood with the root equation set to sum = 1 instead of 1 - q = 0 for a saturated-liquid feed, giving theta = 2.23 instead of 1.5625, a wrong set-up and far from the reference 1.444: 0."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 5,
+   "b": 5
+  },
+  "score": 10,
+  "justification": "(a) 6.425 from the correct Fenske equation, 0.03 % from the reference 6.427: full points. (b) Underwood with q = 1, root theta = 1.5625, gives R_min = 13/9 = 1.444, matches the reference: full points."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 5,
+   "b": 5
+  },
+  "score": 10,
+  "justification": "(a) 6.43 (6.427) from the correct Fenske equation, matches the reference: full points. (b) Pinch at x = z_F on the equilibrium curve (y* = 0.625), R_min = (x_D - y*)/(y* - z_F) = 1.444, matches the reference: full points."
  }
 }

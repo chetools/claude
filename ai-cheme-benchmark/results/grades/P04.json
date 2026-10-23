@@ -148,5 +148,35 @@
   },
   "score": 1,
   "justification": "(a) 2.91 kg/s from a dimensionally wrong equation (L instead of L/D, LHS divided by P1, no acceleration term): 0. (b) Re = 1.01e6 comes from its first-iteration flow (2.60 kg/s), not its final 2.91 kg/s (which gives 1.12e6), and is far from the reference: 0. (c) f = 0.016 does not match Colebrook at its own Re (0.0141): 0. (d) 2.04 m/s correctly computed as mdot/(rho2 A) from its own mass flow: error carried forward, half points."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 2,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) 17.4 kg/s from the isothermal equation with the 2 ln(p1/p2) term iterated with Colebrook, within 0.2 % of 17.43: full. (b) Re = 6.7e6 as G D/mu, 0.4 % off: full. (c) f = 0.0132, matches: full. (d) 12.3 m/s as G/rho2, 0.2 % off: full."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 2,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) 17.6 kg/s (17.56 in the working, 0.8 % above 17.43) from the correct isothermal equation with the acceleration term iterated with Colebrook: full. (b) Re = 6.78e6 as G D/mu, 0.8 % off: full. (c) f = 0.0130, 1.6 % below 0.01321 (slightly under-converged Colebrook) but within the 2 % tolerance: full. (d) 12.4 m/s as G/rho2 (12.36 in the working), 1.1 % off and within 2 %: full."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 2,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) 17.4 kg/s (17.44 in the working) from the correct isothermal equation with the 2 ln(p1/p2) term and a shown Colebrook iteration: full. (b) Re = 6.74e6 as 4 mdot/(pi D mu), 0.2 % off: full. (c) f = 0.0132, matches: full. (d) 12.3 m/s (12.27 in the working) as mdot/(rho2 A), matches: full."
  }
 }

@@ -133,5 +133,32 @@
   },
   "score": 10,
   "justification": "(a) 10, correct. (b) 7.135, correct. (c) 23.966 min, correct."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 3,
+   "b": 4,
+   "c": 3
+  },
+  "score": 10,
+  "justification": "(a) 10, correct. (b) 7.14, correct (7.135 rounded, 0.07 % off). (c) 24.0 min, correct method with 23.97 rounded, 0.14 % off: full points."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 3,
+   "b": 4,
+   "c": 3
+  },
+  "score": 10,
+  "justification": "(a) 10, correct. (b) 7.135, correct. (c) 23.97 min, correct."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 3,
+   "b": 4,
+   "c": 3
+  },
+  "score": 10,
+  "justification": "(a) 10, correct. (b) 7.14, correct (7.135 rounded). (c) 23.97 min, correct."
  }
 }

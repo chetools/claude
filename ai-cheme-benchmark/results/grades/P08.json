@@ -133,5 +133,32 @@
   },
   "score": 2,
   "justification": "(a) Kc,max = 0.7: the product (s+1)(2s+1)(5s+1) was expanded wrongly (10s^3+7s^2+s instead of 10s^3+17s^2+8s+1) and only the s^2 row was checked, missing the s^1 row condition, reference 6.357: 0. (b) omega = 0.316 rad/min from the imaginary part only, with a real-part equation it does not satisfy, reference 0.658: 0. (c) offset 1 - T(0) = 0.25, correct: full points."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 5,
+   "b": 3,
+   "c": 2
+  },
+  "score": 10,
+  "justification": "(a) correct characteristic polynomial 40s^4+68s^3+32s^2+4(1+Kc)s+Kc and Routh first column, s^1 condition gives Kc,max = 6.36 (reference 6.357, within 0.05 %): full points. (b) omega = 0.657 rad/min from the auxiliary equation at the limit (reference 0.658, within 0.2 %): full points. (c) offset 1/(1+3) = 0.25, correct: full points."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 5,
+   "b": 3,
+   "c": 2
+  },
+  "score": 10,
+  "justification": "(a) correct characteristic polynomial and Routh array, c1 > 0 gives 40Kc^2 - 175Kc - 504 < 0 and Kc,max = 6.357, matches the reference: full points. (b) omega = 0.658 rad/min from s = j omega at the limit, matches the reference: full points. (c) offset 1 - 0.75 = 0.25, correct: full points."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 5,
+   "b": 3,
+   "c": 2
+  },
+  "score": 10,
+  "justification": "(a) correct characteristic polynomial and full Routh array, c1 > 0 gives Kc,max = 6.357, matches the reference: full points. (b) auxiliary equation b1 s^2 + Kc = 0 gives omega = 0.658 rad/min, matches the reference: full points. (c) offset 1/(1+3) = 0.25, correct: full points."
  }
 }

@@ -178,5 +178,41 @@
   },
   "score": 3.5,
   "justification": "(a) D = 39.3 kmol/h, omits the 1.2 kmol/h of n-pentane in the distillate (set-up error): 0. (b) correct Fenske with component flows, N_min = 10.56 (0.7 % off despite a slip in the product): 2. (c) correct feed equation but the root 1.47 does not satisfy it (reference 1.369, 7 % off): half points; (d) used component flows D_i instead of mole fractions x_D,i, R_min = 131.9: 0. (e) Gilliland set-up right with its own R_min and N_min, but Y miscomputed (0.535 instead of 0.425), N = 20.4 instead of 19.1: half of half, 0.5; (f) used component flows 0.7 and 1.2 instead of mole fractions (0.908): 0."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 0,
+   "d": 1,
+   "e": 1,
+   "f": 1
+  },
+  "score": 6,
+  "justification": "(a) D = 40.5 kmol/h and (b) N_min = 10.63, correct: full points. (c) solved the wrong feed equation, sum z_i/(alpha_i - theta) = 1 without alpha in the numerator, theta = 1.786 instead of 1.369: 0. (d) correct Underwood formula, R_min = 7.10 is right for its own theta (error carried forward): half points; (e) correct Gilliland solve from its own R_min, N = 19.8 (consistent, reference 21.51): half points, error carried forward. (f) 0.76, correct: 1."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2,
+   "f": 1
+  },
+  "score": 10,
+  "justification": "(a) D = 40.5 kmol/h and (b) N_min = 10.63, correct. (c) correct feed equation, theta = 1.37 (0.1 % off): full points. (d) R_min = 1.793 (0.4 % off) and (e) N = 21.50 (0.0 % off), correct method: full points. (f) 0.7605, correct: 1."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 1,
+   "f": 1
+  },
+  "score": 9,
+  "justification": "(a) D = 40.5 kmol/h, (b) N_min = 10.63, (c) theta = 1.3686 and (d) R_min = 1.7856, all correct: full points. (e) correct Gilliland set-up but X^0.5668 miscomputed (0.4006 instead of 0.3555), N = 20.13 instead of 21.51 (6.4 % off): half points for a numerical slip. (f) 0.7606, correct: 1."
  }
 }

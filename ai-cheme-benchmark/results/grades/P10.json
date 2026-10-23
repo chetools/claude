@@ -133,5 +133,32 @@
   },
   "score": 1.5,
   "justification": "(a) 180 kmol/h, from a balance on all the acetone entering instead of the 95 % absorbed; it is 5.3 % above 171 with a wrong method: 0. (b) A = 270/180 = 1.5, the correct formula applied to its own L: error carried forward, half points. (c) 6.4 from ln(y_in/y_out)/ln A - 1, which is not the Kremser equation: 0."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425 in the working (1.43 in the FINAL, 0.4 % off), correct. (c) N = 5.36 from the Kremser form y_out/y_in = (A-1)/(A^(N+1)-1), correct."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425, correct. (c) N = 5.354 (FINAL 5.35, 0.1 % off) from the Kremser form y_out/y_in = (A-1)/(A^(N+1)-1), correct."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425, correct. (c) N = 5.356 from the correct Kremser equation, correct."
  }
 }

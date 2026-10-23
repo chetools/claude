@@ -148,5 +148,35 @@
   },
   "score": 4.5,
   "justification": "(a) Re = 318,000, correct. (b) f = 0.0185 stated as the Colebrook solution without shown iteration, 3.3 % off: half points. (c) H = 20.6 m adds an extra exit velocity head although Sum K already includes the exit, and the sum is also miscomputed (28 % off): wrong formula, 0. (d) 7.0 kW, correct formula rho g Q H/eta applied to its own H: error carried forward, half points."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 2,
+   "b": 3,
+   "c": 3,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) Re = 3.18e5, correct. (b) f = 0.0179 from Colebrook iteration (FINAL rounded to 0.018), within 0.5 %. (c) H = 28.7 m, correct energy balance with friction and minor losses. (d) 9.8 kW, 0.4 % off, correct."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 2,
+   "b": 3,
+   "c": 3,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) Re = 317,663, correct. (b) f = 0.0179 from Colebrook, correct. (c) H = 28.71 m, correct energy balance with friction and minor losses. (d) 9.76 kW, correct."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 2,
+   "b": 3,
+   "c": 3,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) Re = 317,663, correct. (b) f = 0.0179 from a shown, converged Colebrook iteration, correct. (c) H = 28.71 m from the extended Bernoulli balance, correct. (d) 9.75 kW, 0.1 % off, correct."
  }
 }

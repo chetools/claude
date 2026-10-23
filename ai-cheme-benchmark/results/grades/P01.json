@@ -133,5 +133,32 @@
   },
   "score": 5,
   "justification": "(a) Re = 349.75, 0.1 % from 350.1: full points. (b) used the Fanning laminar formula 16/Re (0.0457) although the Darcy factor was asked (0.183): wrong formula, 0. (c) Darcy-Weisbach correctly applied to its own f, 17.93 kPa follows from it: error carried forward, half points."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) Re = 3.5e2 from v = 1.19 m/s, within 0.1 % of 350.1 with concise but complete working: full points. (b) laminar f = 64/Re = 0.183, within 0.2 %: full points. (c) Darcy-Weisbach gives 71.6 kPa, matching 71.62 kPa: full points."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) Re = 350.14, matching the reference: full points. (b) laminar f = 64/Re = 0.183, within 0.2 %: full points. (c) Hagen-Poiseuille gives 71.6 kPa, matching 71.62 kPa: full points."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) Re = 349.9, reported as 350, within 0.1 % of 350.1: full points. (b) laminar f = 64/Re = 0.1829, within 0.1 %: full points. (c) 71.5 kPa from Darcy-Weisbach, refined to 71.62 kPa with Hagen-Poiseuille, matching the reference: full points."
  }
 }

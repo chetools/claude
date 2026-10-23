@@ -178,5 +178,41 @@
   },
   "score": 2.0,
   "justification": "(a) correct phase equation but the stated root 0.425 rad/min is 37 % off 0.677: half points. (b) multiplied |G_p| by e^(-2.5 w), wrongly treating the dead time as reducing the magnitude, so K_u = 8.77 vs 4.55: 0. (c) P_u = 14.8 min and (d) K_c = 3.99, tau_I = 12.3 min are correct carry-forwards: half points each. (e) GM = 2.0 and (f) PM = 45 deg are stated without any calculation: 0."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 1,
+   "e": 2,
+   "f": 2
+  },
+  "score": 10,
+  "justification": "(a) omega_u = 0.675 rad/min (0.3 % off 0.677), (b) K_u = 4.54 and (c) P_u = 9.30 min, all with concise but correct working: full points. (d) K_c = 2.06, tau_I = 7.75 min: full points. (e) phase crossover of the PI loop at 0.599 rad/min, GM = 1.91 (reference 1.90): full points. (f) gain crossover at 0.325 rad/min, PM = 36 deg (0.9 % off 36.3): full points."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 1,
+   "e": 2,
+   "f": 2
+  },
+  "score": 10,
+  "justification": "(a) omega_u = 0.677 rad/min, (b) K_u = 4.55, (c) P_u = 9.28 min and (d) K_c = 2.07, tau_I = 7.73 min, all correct with the right formulas: full points. (e) phase crossover of the PI loop at 0.599 rad/min, GM = 1.91 (reference 1.90): full points. (f) gain crossover at 0.324 rad/min, PM = 36.5 deg (0.5 % off 36.3): full points."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 1,
+   "e": 2,
+   "f": 2
+  },
+  "score": 10,
+  "justification": "(a) omega_u = 0.6772 rad/min by iteration on the phase equation, (b) K_u = 4.549, (c) P_u = 9.278 min and (d) K_c = 2.068, tau_I = 7.732 min, all matching the reference: full points. (e) phase crossover of the PI loop at 0.599 rad/min, GM = 1.906 (reference 1.904): full points. (f) gain crossover 0.3234 rad/min from a quadratic in omega squared, PM = 36.3 deg: full points."
  }
 }

@@ -163,5 +163,38 @@
   },
   "score": 1.5,
   "justification": "(a) D = 44.57 kmol/h from the overall balances, correct. (b) R_min = 1.2 is assumed after abandoned Underwood and pinch attempts, with no calculation (1.775): 0. (c) R = 1.5 x 1.2 = 1.8, correct step carried forward: half points. (d) 8.5 and (e) stage 4 are explicitly supposed without stepping (12.42 and 7): 0."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 0,
+   "e": 0
+  },
+  "score": 4,
+  "justification": "(a) D = 44.6 kmol/h, correct. (b) R_min = 1.78 from the q-line/equilibrium pinch (0.364, 0.579), correct. (c) R = 2.67, correct. (d) the stripping line is wrong (V' = V + (1-q)F instead of V - (1-q)F, slope 0.878 instead of 1.450), no stepping is shown and the fraction arithmetic is inconsistent, so 9.4 stages (24 % below 12.42) gets 0; (e) stage 5 without shown stepping (reference 7): 0."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 0
+  },
+  "score": 6,
+  "justification": "(a) D = 44.57 kmol/h, (b) R_min = 1.775 from the pinch and (c) R = 2.6625 are correct. (d) operating lines, switching point (0.387) and stage-by-stage stepping are right, but x_D is counted as the liquid of stage 1, which adds one stage, giving 13.42 instead of 12.42 (8 % off): correct method with a counting slip, half points. (e) the same offset gives feed stage 8 instead of 7, and integer answers must match exactly: 0."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 4,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) D = 44.565 kmol/h, correct. (b) R_min = 1.775 from the q-line/equilibrium pinch and (c) R = 2.662, both correct. (d) correct operating lines and a full stage-by-stage table give 12.4185 stages (reference 12.4204), correct. (e) liquid first falls below x = 0.3875 on stage 7, correct."
  }
 }
