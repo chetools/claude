@@ -142,5 +142,29 @@
   },
   "score": 10,
   "justification": "(a) 6.43 (6.427) from the correct Fenske equation, matches the reference: full points. (b) Pinch at x = z_F on the equilibrium curve (y* = 0.625), R_min = (x_D - y*)/(y* - z_F) = 1.444, matches the reference: full points."
+ },
+ "openai/gpt-5": {
+  "parts": {
+   "a": 5,
+   "b": 5
+  },
+  "score": 10,
+  "justification": "(a) 6.426 from the correct Fenske equation, matches the reference 6.427: full points. (b) Pinch at x = z_F on the equilibrium curve (y* = 0.625), R_min = (x_D - y*)/(y* - z_F) = 1.444, matches the reference: full points."
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "parts": {
+   "a": 5,
+   "b": 5
+  },
+  "score": 10,
+  "justification": "(a) 6.43 from the correct Fenske equation, matches the reference 6.427: full points. (b) Underwood with q = 1 (root equation = 0), theta = 1.5625, R_min = 1.444, matches the reference: full points."
+ },
+ "anthropic/claude-opus-4.5": {
+  "parts": {
+   "a": 5,
+   "b": 5
+  },
+  "score": 10,
+  "justification": "(a) 6.43 from the correct Fenske equation, reboiler included without adding a stage, matches the reference 6.427: full points. (b) Underwood with q = 1 (root equation = 0), theta = 1.5625, R_min = 1.444, matches the reference: full points."
  }
 }

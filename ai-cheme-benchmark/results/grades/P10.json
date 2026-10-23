@@ -160,5 +160,32 @@
   },
   "score": 10,
   "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425, correct. (c) N = 5.356 from the correct Kremser equation, correct."
+ },
+ "openai/gpt-5": {
+  "parts": {
+   "a": 0,
+   "b": 1.5,
+   "c": 0
+  },
+  "score": 1.5,
+  "justification": "(a) 180 kmol/h from L_min = mG (A_min = 1), which ignores the 95 % recovery; it is 5.3 % above 171 with a wrong method: 0. (b) A = 270/180 = 1.5, the correct formula applied to its own L: error carried forward, half points. (c) 7.389 from y_out/y_in = (1/A)^N, which is not the Kremser equation: 0."
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) 171.2 kmol/h with the rich-end pinch, within 0.1 % of 171: correct. (b) A = 1.427, within 0.2 % of 1.425: correct. (c) After a failed first attempt, it uses the correct Kremser equation and gets N = 5.35, correct."
+ },
+ "anthropic/claude-opus-4.5": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425 in the working (1.43 in the FINAL, 0.4 % off), correct. (c) N = 5.36 from the correct Kremser equation, correct."
  }
 }

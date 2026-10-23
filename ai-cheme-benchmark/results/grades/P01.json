@@ -160,5 +160,32 @@
   },
   "score": 10,
   "justification": "(a) Re = 349.9, reported as 350, within 0.1 % of 350.1: full points. (b) laminar f = 64/Re = 0.1829, within 0.1 %: full points. (c) 71.5 kPa from Darcy-Weisbach, refined to 71.62 kPa with Hagen-Poiseuille, matching the reference: full points."
+ },
+ "openai/gpt-5": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) Re = 350 from v = 1.1937 m/s, matching 350.1 with concise but complete working: full points. (b) laminar f = 64/Re = 0.183, within 0.2 %: full points. (c) Hagen-Poiseuille gives 71.6 kPa, matching 71.62 kPa: full points."
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) Re = 350.2, within 0.1 % of 350.1: full points. (b) laminar f = 64/Re = 0.1828, matching the reference: full points. (c) Darcy-Weisbach gives 71.7 kPa (0.1 % off), checked with Hagen-Poiseuille (71.6 kPa); a misprinted numerator (57.6 for 0.576) does not affect the stated result: full points."
+ },
+ "anthropic/claude-opus-4.5": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) Re = 350.3, within 0.1 % of 350.1: full points. (b) laminar f = 64/Re = 0.1827, matching the reference: full points. (c) Darcy-Weisbach gives 71.6 kPa, matching 71.62 kPa: full points."
  }
 }

@@ -7,7 +7,7 @@ sys.path.insert(0, str(ROOT / "python" / "solutions"))
 import run_all  # noqa: E402
 
 
-@pytest.mark.parametrize("pid", [f"P{i:02d}" for i in range(1, 13)])
+@pytest.mark.parametrize("pid", [f"P{i:02d}" for i in range(1, 16)])
 def test_reference_matches_independent_check(pid):
     out = subprocess.run([sys.executable, str(ROOT / "python" / "checks" / f"{pid.lower()}_check.py")],
                          capture_output=True, text=True, check=True).stdout

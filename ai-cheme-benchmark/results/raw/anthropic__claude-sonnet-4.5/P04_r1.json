@@ -1,0 +1,35 @@
+{
+ "model": "anthropic/claude-sonnet-4.5",
+ "problem": "P04",
+ "run": 1,
+ "served_model": "anthropic/claude-sonnet-4.5",
+ "provider": "Amazon Bedrock",
+ "text": "I'll solve this isothermal compressible flow problem step by step.\n\n## Given Information\n- T = 288 K\n- D = 0.30 m\n- L = 40 km = 40,000 m\n- \u03b5 = 0.046 mm = 4.6\u00d710\u207b\u2075 m\n- P\u2081 = 5.0 MPa = 5.0\u00d710\u2076 Pa\n- P\u2082 = 3.0 MPa = 3.0\u00d710\u2076 Pa\n- \u03bc = 1.1\u00d710\u207b\u2075 Pa\u00b7s\n- M = 16.04 kg/kmol\n- R = 8314 J/(kmol\u00b7K)\n\n## Solution Approach\n\nFor isothermal compressible flow with acceleration term:\n\n$$\\frac{P_1^2 - P_2^2}{P_1 P_2} = \\frac{2fLG^2RT}{MD^2P_{avg}^2} + \\frac{G^2RT}{M}\\left(\\frac{1}{P_2^2} - \\frac{1}{P_1^2}\\right)$$\n\nWhere G is mass flux (kg/(m\u00b2\u00b7s)) and the continuity equation gives: \u1e41 = G\u00b7A = constant\n\nLet me rearrange using G = \u1e41/(\u03c0D\u00b2/4):\n\nThe isothermal flow equation with acceleration:\n$$\\frac{P_1^2 - P_2^2}{2P_{avg}^2} = \\frac{fLG^2RT}{MD^2P_{avg}^2} + \\frac{G^2RT}{2M}\\left(\\frac{1}{P_2^2} - \\frac{1}{P_1^2}\\right)$$\n\nWhere P_{avg} = (P\u2081 + P\u2082)/2 = 4.0\u00d710\u2076 Pa\n\nSimplifying:\n$$P_1^2 - P_2^2 = \\frac{fLG^2RT}{MD^2} + G^2RT \\cdot P_{avg}^2 \\left(\\frac{1}{P_2^2} - \\frac{1}{P_1^2}\\right)$$\n\n## Iterative Solution\n\nFirst, estimate Reynolds number is constant:\n$$Re = \\frac{GD}{\\mu} = \\frac{4\\dot{m}}{\\pi D \\mu}$$\n\nAnd relative roughness: \u03b5/D = 4.6\u00d710\u207b\u2075/0.30 = 1.533\u00d710\u207b\u2074\n\n### Initial guess: assume f \u2248 0.015\n\nUsing the isothermal equation:\n$$P_1^2 - P_2^2 = \\frac{4fLG^2RT}{MD^2} + G^2RT\\left(\\frac{1}{P_2} - \\frac{1}{P_1}\\right) \\cdot \\frac{P_1 P_2}{1}$$\n\nSimplified form:\n$$(5\u00d710^6)^2 - (3\u00d710^6)^2 = \\frac{4f(40000)G^2(8314)(288)}{16.04(0.30)^2} + G^2(8314)(288)\\left(\\frac{1}{3\u00d710^6} - \\frac{1}{5\u00d710^6}\\right)$$\n\n$$16\u00d710^{12} = \\frac{4f(40000)G^2(2394432)}{1.4436} + G^2(2394432)(1.333\u00d710^{-7})$$\n\n$$16\u00d710^{12} = 2.647\u00d710^{11} \\cdot f \\cdot G^2 + 3.193\u00d710^5 \\cdot G^2$$\n\nFor f = 0.015:\n$$16\u00d710^{12} = (3.97\u00d710^9 + 3.193\u00d710^5)G^2 \u2248 3.97\u00d710^9 G^2$$\n\n$$G = 63.4 \\text{ kg/(m\u00b2\u00b7s)}$$\n\n$$Re = \\frac{63.4 \u00d7 0.30}{1.1\u00d710^{-5}} = 1.729\u00d710^6$$\n\nFrom Colebrook equation:\n$$\\frac{1}{\\sqrt{f}} = -2\\log_{10}\\left(\\frac{\u03b5/D}{3.7} + \\frac{2.51}{Re\\sqrt{f}}\\right)$$\n\n$$\\frac{1}{\\sqrt{f}} = -2\\log_{10}\\left(\\frac{1.533\u00d710^{-4}}{3.7} + \\frac{2.51}{1.729\u00d710^6\\sqrt{f}}\\right)$$\n\nIterating: f \u2248 0.0145\n\nRecalculating: G = 64.1 kg/(m\u00b2\u00b7s)\n\n### Final iteration:\nG = 64.0 kg/(m\u00b2\u00b7s)\nRe = 1.745\u00d710\u2076\nf = 0.0145\n\n## (a) Mass flow rate:\n$$\\dot{m} = G \u00d7 \\frac{\\pi D^2}{4} = 64.0 \u00d7 \\frac{\\pi (0.30)^2}{4} = 4.52 \\text{ kg/s}$$\n\n## (b) Reynolds number:\n$$Re = 1.745 \u00d7 10^6$$\n\n## (c) Darcy friction factor:\n$$f = 0.0145$$\n\n## (d) Outlet velocity:\n$$v_2 = \\frac{\\dot{m}RT}{P_2 A M} = \\frac{4.52 \u00d7 8314 \u00d7 288}{3\u00d710^6 \u00d7 0.0707 \u00d7 16.04} = 31.9 \\text{ m/s}$$\n\nFINAL (a): 4.52 kg/s\nFINAL (b): 1.75\u00d710\u2076\nFINAL (c): 0.0145\nFINAL (d): 31.9 m/s",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 308,
+  "completion_tokens": 1517,
+  "total_tokens": 1825,
+  "cost": 0.023679,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.023679,
+   "upstream_inference_prompt_cost": 0.000924,
+   "upstream_inference_completions_cost": 0.022755
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.023679,
+ "seconds": 22.2
+}

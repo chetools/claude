@@ -1,0 +1,35 @@
+{
+ "model": "anthropic/claude-opus-4.5",
+ "problem": "P04",
+ "run": 1,
+ "served_model": "anthropic/claude-opus-4.5",
+ "provider": "Amazon Bedrock",
+ "text": "# Isothermal Compressible Flow in a Pipeline\n\n## Given Information\n- Molar mass: M = 16.04 kg/kmol\n- Viscosity: \u03bc = 1.1\u00d710\u207b\u2075 Pa\u00b7s\n- Temperature: T = 288 K\n- Pipe diameter: D = 0.30 m\n- Pipe length: L = 40 km = 40,000 m\n- Roughness: \u03b5 = 0.046 mm = 4.6\u00d710\u207b\u2075 m\n- Inlet pressure: P\u2081 = 5.0 MPa = 5\u00d710\u2076 Pa\n- Outlet pressure: P\u2082 = 3.0 MPa = 3\u00d710\u2076 Pa\n- R = 8314 J/(kmol\u00b7K)\n\n## Isothermal Compressible Flow Equation\n\nThe isothermal pipe flow equation with kinetic energy term:\n\n$$\\frac{P_1^2 - P_2^2}{2P_1} = \\frac{G^2 RT}{M P_1}\\left[\\frac{fL}{D} + \\ln\\left(\\frac{P_1}{P_2}\\right)\\right]$$\n\nWhere G = mass flux (kg/m\u00b2\u00b7s) = \u1e41/A\n\nRearranging:\n$$P_1^2 - P_2^2 = \\frac{2G^2 RT}{M}\\left[\\frac{fL}{D} + \\ln\\left(\\frac{P_1}{P_2}\\right)\\right]$$\n\n## Calculate Key Parameters\n\n**Relative roughness:**\n$$\\frac{\\varepsilon}{D} = \\frac{4.6 \\times 10^{-5}}{0.30} = 1.533 \\times 10^{-4}$$\n\n**Cross-sectional area:**\n$$A = \\frac{\\pi D^2}{4} = \\frac{\\pi (0.30)^2}{4} = 0.07069 \\text{ m}^2$$\n\n**Pressure ratio term:**\n$$\\ln\\left(\\frac{P_1}{P_2}\\right) = \\ln\\left(\\frac{5.0}{3.0}\\right) = 0.5108$$\n\n**Pressure squared difference:**\n$$P_1^2 - P_2^2 = (5\u00d710^6)^2 - (3\u00d710^6)^2 = 16\u00d710^{12} \\text{ Pa}^2$$\n\n## Iterative Solution\n\nThe Reynolds number is constant along the pipe:\n$$Re = \\frac{GD}{\\mu} = \\frac{G(0.30)}{1.1\u00d710^{-5}} = 27,273G$$\n\n**Colebrook equation:**\n$$\\frac{1}{\\sqrt{f}} = -2\\log_{10}\\left(\\frac{\\varepsilon/D}{3.7} + \\frac{2.51}{Re\\sqrt{f}}\\right)$$\n\n**Mass flux equation:**\n$$G = \\sqrt{\\frac{M(P_1^2 - P_2^2)}{2RT\\left[\\frac{fL}{D} + \\ln(P_1/P_2)\\right]}}$$\n\nLet me calculate:\n$$\\frac{2RT}{M} = \\frac{2 \u00d7 8314 \u00d7 288}{16.04} = 298,610 \\text{ J/kg}$$\n\n**Iteration:**\n\n*Trial 1:* Assume f = 0.013\n- fL/D = 0.013 \u00d7 40000/0.30 = 1733.3\n- Bracket = 1733.3 + 0.511 = 1733.8\n- G\u00b2 = 16\u00d710\u00b9\u00b2/(298,610 \u00d7 1733.8) = 30,899\n- G = 175.8 kg/m\u00b2\u00b7s\n- Re = 27,273 \u00d7 175.8 = 4.79\u00d710\u2076\n- Colebrook: 1/\u221af = -2log\u2081\u2080(4.14\u00d710\u207b\u2075 + 5.24\u00d710\u207b\u2077/\u221af) \u2192 f = 0.01323\n\n*Trial 2:* f = 0.01323\n- fL/D = 0.01323 \u00d7 133,333 = 1764\n- Bracket = 1764.5\n- G\u00b2 = 16\u00d710\u00b9\u00b2/(298,610 \u00d7 1764.5) = 30,370\n- G = 174.3 kg/m\u00b2\u00b7s\n- Re = 4.75\u00d710\u2076\n- Colebrook gives f \u2248 0.01323 \u2713\n\n## Final Calculations\n\n**(a) Mass flow rate:**\n$$\\dot{m} = G \u00d7 A = 174.3 \u00d7 0.07069 = 12.32 \\text{ kg/s}$$\n\n**(b) Reynolds number:**\n$$Re = 4.75 \u00d7 10^6$$\n\n**(c) Darcy friction factor:**\n$$f = 0.0132$$\n\n**(d) Outlet velocity:**\n$$\\rho_2 = \\frac{P_2 M}{RT} = \\frac{3\u00d710^6 \u00d7 16.04}{8314 \u00d7 288} = 20.10 \\text{ kg/m}^3$$\n$$v_2 = \\frac{G}{\\rho_2} = \\frac{174.3}{20.10} = 8.67 \\text{ m/s}$$\n\nFINAL (a): 12.3 kg/s\nFINAL (b): 4.75\u00d710\u2076\nFINAL (c): 0.0132\nFINAL (d): 8.7 m/s",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 308,
+  "completion_tokens": 1447,
+  "total_tokens": 1755,
+  "cost": 0.037715,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.037715,
+   "upstream_inference_prompt_cost": 0.00154,
+   "upstream_inference_completions_cost": 0.036175
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.037715,
+ "seconds": 18.9
+}

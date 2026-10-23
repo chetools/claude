@@ -1,0 +1,35 @@
+{
+ "model": "anthropic/claude-opus-4.5",
+ "problem": "P02",
+ "run": 1,
+ "served_model": "anthropic/claude-opus-4.5",
+ "provider": "Amazon Bedrock",
+ "text": "# Water Pumping System Analysis\n\n## Given Information\n- Water density: \u03c1 = 998 kg/m\u00b3\n- Water viscosity: \u03bc = 1.00\u00d710\u207b\u00b3 Pa\u00b7s\n- Volumetric flow rate: Q = 0.025 m\u00b3/s\n- Elevation difference: \u0394z = 12 m\n- Pipe length: L = 150 m\n- Pipe diameter: D = 0.10 m\n- Absolute roughness: \u03b5 = 0.046 mm = 4.6\u00d710\u207b\u2075 m\n- Sum of minor loss coefficients: \u03a3K = 5.5\n- Pump efficiency: \u03b7 = 72% = 0.72\n- g = 9.81 m/s\u00b2\n\n## Part (a): Reynolds Number\n\nFirst, calculate the pipe velocity:\n$$V = \\frac{Q}{A} = \\frac{Q}{\\pi D^2/4} = \\frac{0.025}{\\pi (0.10)^2/4} = \\frac{0.025}{0.007854} = 3.183 \\text{ m/s}$$\n\nReynolds number:\n$$Re = \\frac{\\rho V D}{\\mu} = \\frac{998 \\times 3.183 \\times 0.10}{1.00 \\times 10^{-3}}$$\n\n$$Re = \\frac{317.7}{1.00 \\times 10^{-3}} = 3.18 \\times 10^5$$\n\n## Part (b): Darcy Friction Factor\n\nCalculate relative roughness:\n$$\\frac{\\varepsilon}{D} = \\frac{4.6 \\times 10^{-5}}{0.10} = 4.6 \\times 10^{-4}$$\n\nUsing the Colebrook equation:\n$$\\frac{1}{\\sqrt{f}} = -2.0 \\log_{10}\\left(\\frac{\\varepsilon/D}{3.7} + \\frac{2.51}{Re\\sqrt{f}}\\right)$$\n\n$$\\frac{1}{\\sqrt{f}} = -2.0 \\log_{10}\\left(\\frac{4.6 \\times 10^{-4}}{3.7} + \\frac{2.51}{3.18 \\times 10^5 \\sqrt{f}}\\right)$$\n\n$$\\frac{1}{\\sqrt{f}} = -2.0 \\log_{10}\\left(1.243 \\times 10^{-4} + \\frac{7.89 \\times 10^{-6}}{\\sqrt{f}}\\right)$$\n\n**Iterative solution:**\n- Guess f = 0.020: 1/\u221af = 7.07, RHS = -2.0\u00d7log\u2081\u2080(1.243\u00d710\u207b\u2074 + 1.12\u00d710\u207b\u2076) = 7.81\n- Guess f = 0.018: 1/\u221af = 7.45, RHS = -2.0\u00d7log\u2081\u2080(1.243\u00d710\u207b\u2074 + 1.06\u00d710\u207b\u2076) = 7.81\n- Guess f = 0.0164: 1/\u221af = 7.81, RHS = -2.0\u00d7log\u2081\u2080(1.243\u00d710\u207b\u2074 + 1.01\u00d710\u207b\u2076) = 7.81 \u2713\n\n$$f = 0.0164$$\n\n## Part (c): Total Pump Head\n\nApply the energy equation between the two free surfaces:\n$$h_p = \\Delta z + h_f + h_m$$\n\n**Friction head loss:**\n$$h_f = f\\frac{L}{D}\\frac{V^2}{2g} = 0.0164 \\times \\frac{150}{0.10} \\times \\frac{(3.183)^2}{2 \\times 9.81}$$\n$$h_f = 24.6 \\times 0.516 = 12.70 \\text{ m}$$\n\n**Minor head losses:**\n$$h_m = \\Sigma K \\frac{V^2}{2g} = 5.5 \\times \\frac{(3.183)^2}{2 \\times 9.81} = 5.5 \\times 0.516 = 2.84 \\text{ m}$$\n\n**Total pump head:**\n$$h_p = 12 + 12.70 + 2.84 = 27.54 \\text{ m}$$\n\n## Part (d): Pump Shaft Power\n\n$$P_{shaft} = \\frac{\\rho g Q h_p}{\\eta} = \\frac{998 \\times 9.81 \\times 0.025 \\times 27.54}{0.72}$$\n\n$$P_{shaft} = \\frac{6742}{0.72} = 9364 \\text{ W} = 9.36 \\text{ kW}$$\n\n---\n\n**FINAL (a): 3.18 \u00d7 10\u2075 (dimensionless)**\n\n**FINAL (b): 0.0164 (dimensionless)**\n\n**FINAL (c): 27.5 m**\n\n**FINAL (d): 9.4 kW**",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 300,
+  "completion_tokens": 1321,
+  "total_tokens": 1621,
+  "cost": 0.034525,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.034525,
+   "upstream_inference_prompt_cost": 0.0015,
+   "upstream_inference_completions_cost": 0.033025
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.034525,
+ "seconds": 15.7
+}

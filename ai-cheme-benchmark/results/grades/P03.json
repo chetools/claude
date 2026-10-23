@@ -178,5 +178,35 @@
   },
   "score": 9,
   "justification": "Correct trial-and-error on H_J with Darcy-Weisbach, Colebrook and a continuity check shown at 100, 101.5 and 101.1 m. (a) 101.1 m vs 101.08 m: full points. (b) 139.8 L/s (FINAL 140) vs 137.8 L/s, 1.5 % off, within the 2 % tolerance: full points. (c) 15.9 L/s vs 15.0 L/s is 6.1 % off (even at its own 1.1 m head the correct flow is about 15.1 L/s), and the working states the direction into B although the FINAL line omits it: half points for correct method and direction with a numerical slip. (d) 124.1 L/s vs 122.8 L/s, 1.1 % off: full points."
+ },
+ "openai/gpt-5": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 2,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "Full working at the converged head with Colebrook friction factors (f1 = 0.01955, f2 = 0.0233, f3 = 0.02029) and a mass-balance check. (a) 101.07 m vs 101.08 m, (b) 137.8 vs 137.8 L/s, (c) 14.9 L/s into B (stated in the answers, though omitted on the FINAL line) vs 15.0 L/s into B, (d) 122.8 vs 122.8 L/s: all within 1 %, full points."
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "parts": {
+   "a": 2,
+   "b": 1,
+   "c": 0,
+   "d": 1
+  },
+  "score": 4,
+  "justification": "Correct method (trial H_J, Q = sqrt(pi^2 g D^5 h/(8 f L)) with Colebrook, continuity), but the square-root evaluations are wrong by a factor of about 3 (at 25 m and f = 0.02 pipe 1 gives 0.157 m3/s, not 0.0534), so a false continuity balance is accepted at 95 m. (a) 95 m vs 101.08 m (6.0 % off): half points for correct method with a numerical slip. (b) 53 vs 137.8 L/s and (d) 62 vs 122.8 L/s: half points each on the same basis. (c) 10 vs 15.0 L/s; at its own H_J = 95 m the working has flow from B toward J (out of B), contradicting the FINAL 'into reservoir B', so the working's direction is wrong: 0."
+ },
+ "anthropic/claude-opus-4.5": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 1,
+   "d": 2
+  },
+  "score": 9,
+  "justification": "Correct trial-and-error on H_J with Darcy-Weisbach, Colebrook and a continuity check. (a) 100.7 m vs 101.08 m (0.4 % off): full points. (b) 139 L/s vs 137.8 L/s (0.9 % off): full points. (c) 12 L/s into B vs 15.0 L/s into B: direction correct, but the magnitude is 20 % off because the slightly low junction head leaves only 0.7 m across pipe 2, so half points for correct method with a numerical slip. (d) the working computes Q3 = 123.8 L/s (0.8 % off), while the continuity check and the FINAL line use 127 L/s (3.4 % off); the working value gets the credit, so full points."
  }
 }

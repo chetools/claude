@@ -196,5 +196,38 @@
   },
   "score": 10,
   "justification": "(a) zeta = 0.4, correct. (b) 25.38 % (FINAL 25.4 %), correct. (c) t_p = pi*tau/sqrt(1-zeta^2) = 10.28 min, correct. (d) 8*(1+0.2538) = 10.03 and (e) DR = OS^2 = 0.0644, both correct."
+ },
+ "openai/gpt-5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.4, correct. (b) 25.4 %, correct. (c) t_p = 15*pi/sqrt(21) = 10.28 min, correct. (d) 8*(1+OS) = 10.03 and (e) DR = 0.0645 (0.1 % off 0.0644), both correct."
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.4, correct. (b) 25.38 % (FINAL 25.4 %), correct. (c) t_p = pi*tau/sqrt(1-zeta^2) = 10.28 min (FINAL 10.3), correct. (d) 10.03 in the working (FINAL 10.0) and (e) 0.0644 in the working (FINAL 0.064, 0.7 % off), both correct."
+ },
+ "anthropic/claude-opus-4.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.4, correct. (b) 25.4 %, correct. (c) t_p = pi*tau/sqrt(1-zeta^2) = 10.28 min, correct. (d) 8*(1+OS) = 10.03 and (e) DR = OS^2 = 0.0645 (0.1 % off 0.0644), both correct."
  }
 }

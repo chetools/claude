@@ -1,0 +1,35 @@
+{
+ "model": "anthropic/claude-opus-4.5",
+ "problem": "P01",
+ "run": 1,
+ "served_model": "anthropic/claude-opus-4.5",
+ "provider": "Amazon Bedrock",
+ "text": "# Oil Flow Through Horizontal Pipe\n\n## Given Information\n- Oil density: \u03c1 = 880 kg/m\u00b3\n- Oil viscosity: \u03bc = 0.12 Pa\u00b7s\n- Volumetric flow rate: Q = 1.5 L/s = 1.5 \u00d7 10\u207b\u00b3 m\u00b3/s\n- Pipe diameter: D = 40 mm = 0.04 m\n- Pipe length: L = 25 m\n- Smooth, horizontal pipe with fully developed flow\n\n## Part (a): Reynolds Number\n\nFirst, calculate the cross-sectional area:\n$$A = \\frac{\\pi D^2}{4} = \\frac{\\pi (0.04)^2}{4} = 1.257 \\times 10^{-3} \\text{ m}^2$$\n\nCalculate the average velocity:\n$$V = \\frac{Q}{A} = \\frac{1.5 \\times 10^{-3}}{1.257 \\times 10^{-3}} = 1.194 \\text{ m/s}$$\n\nCalculate Reynolds number:\n$$Re = \\frac{\\rho V D}{\\mu} = \\frac{880 \\times 1.194 \\times 0.04}{0.12}$$\n\n$$Re = \\frac{42.03}{0.12} = 350.3$$\n\nSince Re < 2100, the flow is **laminar**.\n\n## Part (b): Darcy Friction Factor\n\nFor laminar flow, the Darcy friction factor is:\n$$f = \\frac{64}{Re} = \\frac{64}{350.3} = 0.1827$$\n\n## Part (c): Frictional Pressure Drop\n\nUsing the Darcy-Weisbach equation:\n$$\\Delta P = f \\frac{L}{D} \\frac{\\rho V^2}{2}$$\n\n$$\\Delta P = 0.1827 \\times \\frac{25}{0.04} \\times \\frac{880 \\times (1.194)^2}{2}$$\n\n$$\\Delta P = 0.1827 \\times 625 \\times \\frac{880 \\times 1.426}{2}$$\n\n$$\\Delta P = 114.2 \\times \\frac{1254.9}{2}$$\n\n$$\\Delta P = 114.2 \\times 627.4 = 71,649 \\text{ Pa}$$\n\n$$\\Delta P = 71.6 \\text{ kPa}$$\n\n---\n\n**FINAL (a): 350 (dimensionless)**\n\n**FINAL (b): 0.183 (dimensionless)**\n\n**FINAL (c): 71.6 kPa**",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 185,
+  "completion_tokens": 662,
+  "total_tokens": 847,
+  "cost": 0.017475,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.017475,
+   "upstream_inference_prompt_cost": 0.000925,
+   "upstream_inference_completions_cost": 0.01655
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.017475,
+ "seconds": 8.0
+}

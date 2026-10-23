@@ -1,0 +1,35 @@
+{
+ "model": "anthropic/claude-opus-4.5",
+ "problem": "P07",
+ "run": 1,
+ "served_model": "anthropic/claude-opus-4.5",
+ "provider": "Amazon Bedrock",
+ "text": "I'll solve this feedback control problem step by step.\n\n## Given Information\n- Process transfer function: G_p(s) = 1.8e^(-2.5s)/(12s + 1)\n- Time constant: \u03c4 = 12 min\n- Dead time: \u03b8 = 2.5 min\n- Valve and measurement transfer functions = 1\n\n## Part (a): Ultimate Frequency \u03c9_u\n\nFor proportional-only control, the open-loop transfer function phase angle must equal -180\u00b0.\n\nPhase angle of G_p(j\u03c9) = -2.5\u03c9 (from dead time) - arctan(12\u03c9) (from first-order lag)\n\nSetting phase = -180\u00b0 = -\u03c0 radians:\n$$-2.5\\omega_u - \\arctan(12\\omega_u) = -\\pi$$\n\n$$2.5\\omega_u + \\arctan(12\\omega_u) = \\pi$$\n\nSolving iteratively:\n- Try \u03c9 = 0.5: 2.5(0.5) + arctan(6) = 1.25 + 1.406 = 2.656 (need \u03c0 = 3.142)\n- Try \u03c9 = 0.6: 2.5(0.6) + arctan(7.2) = 1.5 + 1.432 = 2.932\n- Try \u03c9 = 0.7: 2.5(0.7) + arctan(8.4) = 1.75 + 1.452 = 3.202 (too high)\n- Try \u03c9 = 0.68: 2.5(0.68) + arctan(8.16) = 1.7 + 1.449 = 3.149 \u2248 \u03c0\n\n**\u03c9_u \u2248 0.68 rad/min**\n\n## Part (b): Ultimate Gain K_u\n\nAt \u03c9_u, the magnitude of G_p must equal 1/K_u for marginal stability.\n\n$$|G_p(j\\omega_u)| = \\frac{1.8}{\\sqrt{1 + (12\\omega_u)^2}}$$\n\nWith \u03c9_u = 0.68:\n$$|G_p(j\\omega_u)| = \\frac{1.8}{\\sqrt{1 + (8.16)^2}} = \\frac{1.8}{\\sqrt{1 + 66.59}} = \\frac{1.8}{8.22} = 0.219$$\n\n$$K_u = \\frac{1}{|G_p(j\\omega_u)|} = \\frac{1}{0.219} = 4.57$$\n\n## Part (c): Ultimate Period P_u\n\n$$P_u = \\frac{2\\pi}{\\omega_u} = \\frac{2\\pi}{0.68} = 9.24 \\text{ min}$$\n\n## Part (d): Ziegler-Nichols PI Settings\n\n$$K_c = \\frac{K_u}{2.2} = \\frac{4.57}{2.2} = 2.08$$\n\n$$\\tau_I = \\frac{P_u}{1.2} = \\frac{9.24}{1.2} = 7.70 \\text{ min}$$\n\n## Part (e): Gain Margin\n\nThe PI controller: G_c(s) = K_c(1 + 1/(\u03c4_I s))\n\nOpen-loop: G_OL = G_c \u00b7 G_p\n\nAt phase crossover (phase = -180\u00b0), we need to find the new crossover frequency.\n\nPhase of G_c(j\u03c9) = arctan(\u03c4_I \u03c9) - 90\u00b0 = arctan(7.70\u03c9) - 90\u00b0\n\nTotal phase = -90\u00b0 + arctan(7.70\u03c9) - arctan(12\u03c9) - 2.5\u03c9(180\u00b0/\u03c0) = -180\u00b0\n\narctan(7.70\u03c9) - arctan(12\u03c9) - 143.24\u03c9\u00b0 = -90\u00b0\n\nSolving iteratively: \u03c9_pc \u2248 0.52 rad/min\n\nAt \u03c9 = 0.52:\n- |G_c| = K_c\u221a(1 + (\u03c4_I \u03c9)\u00b2)/(\u03c4_I \u03c9) = 2.08\u221a(1 + 16.04)/(4.0) = 2.08(4.13)/4.0 = 2.15\n- |G_p| = 1.8/\u221a(1 + 38.94) = 1.8/6.32 = 0.285\n\n|G_OL| = 2.15 \u00d7 0.285 = 0.613\n\n**Gain Margin = 1/0.613 = 1.63**\n\n## Part (f): Phase Margin\n\nAt gain crossover, |G_OL| = 1. Find \u03c9_gc where |G_c||G_p| = 1.\n\nSolving numerically: \u03c9_gc \u2248 0.36 rad/min\n\nPhase at \u03c9_gc = -90\u00b0 + arctan(7.7\u00d70.36) - arctan(12\u00d70.36) - 2.5(0.36)(57.3\u00b0)\n= -90\u00b0 + 70.2\u00b0 - 77.0\u00b0 - 51.6\u00b0 = -148.4\u00b0\n\n**Phase Margin = 180\u00b0 - 148.4\u00b0 = 31.6\u00b0**\n\n## Final Answers\nFINAL (a): 0.68 rad/min\nFINAL (b): 4.57\nFINAL (c): 9.24 min\nFINAL (d): K_c = 2.08, \u03c4_I = 7.70 min\nFINAL (e): 1.63\nFINAL (f): 31.6 degrees",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 313,
+  "completion_tokens": 1435,
+  "total_tokens": 1748,
+  "cost": 0.03744,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.03744,
+   "upstream_inference_prompt_cost": 0.001565,
+   "upstream_inference_completions_cost": 0.035875
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.03744,
+ "seconds": 18.1
+}
