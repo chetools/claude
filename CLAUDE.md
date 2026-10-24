@@ -99,6 +99,10 @@ These complement the rules above. They apply to every project.
   - Hide what a moving body now covers, and put a turning pattern (alternating sectors) on a spinning body.
 - **Round shown values and control steps to nice numbers** (slider steps 0.05, 0.1, 0.2, …; scale tops rounded up
   to 1, 1.5, 2, 2.5, 3, 5 × 10^k), and let a preset carry display settings so the first view is the good one.
+- **The page header matches the body text width.** On wide monitors the title, intro and status/progress bar must
+  not span the whole window: wrap them in one block with the same `max-width` as the body column, set in the body
+  font (a `ch` width set on the larger title font comes out wider). Check with Playwright at 2560 px that the
+  header and body share left and right edges.
 
 ### Publishing
 - **Check that the deployed artefact is the new one.** Compare the served bytes with the build (`cmp`), not just
