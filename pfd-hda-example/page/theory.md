@@ -17,7 +17,7 @@ Two sets of numbers appear. The values printed on the sheets are in integer tent
 
 ## Feed preparation
 
-<!-- crop sheet=1 x=45 y=70 w=680 h=330 caption="Feed preparation: fresh toluene (stream 1) and recycle toluene (stream 37) to V-201 and P-201; make-up hydrogen (stream 5) and recycle gas (stream 15, from Fig. T5) joined at J2; E-201; stream 8 continues to H-201 (Fig. T2)" -->
+<!-- crop sheet=1 x=45 y=85 w=675 h=315 caption="Feed preparation: fresh toluene (stream 1) and recycle toluene (stream 37) to V-201 and P-201; make-up hydrogen (stream 5) and recycle gas (stream 15, from Fig. T5) joined at J2; E-201; stream 8 continues to H-201 (Fig. T2)" -->
 
 Fresh toluene (stream 1, 100.0 kmol/h of toluene at 25 $\mathrm{^\circ C}$ and 190 kPa) is joined at junction J1 by the toluene recycle (stream 37, from Fig. T7). The combined liquid (stream 2, 132.5 kmol/h at 50 $\mathrm{^\circ C}$ and 160 kPa) enters the feed drum V-201, which buffers the feed, and is raised by the feed pump P-201 to 2700 kPa (stream 4).
 
@@ -29,7 +29,7 @@ The flow of make-up gas is not an input of the model. It is the quantity that ma
 
 ## Fired heater
 
-<!-- crop sheet=1 x=655 y=140 w=345 h=275 caption="Fired heater H-201: stream 8 in from E-201 (Fig. T1), stream 9 out to R-201 (Fig. T3); fuel gas to the burners (utility)" -->
+<!-- crop sheet=1 x=672 y=140 w=253 h=275 caption="Fired heater H-201: stream 8 in from E-201 (Fig. T1), stream 9 out to R-201 (Fig. T3); fuel gas to the burners (utility)" -->
 
 The fired heater H-201 raises the preheated feed (stream 8, 230 $\mathrm{^\circ C}$, 2500 kPa) to reaction temperature (stream 9, 600 $\mathrm{^\circ C}$, 2450 kPa on the sheet). Fuel gas is the utility. The composition and flow do not change across the heater, so $n_{i,9} = n_{i,8}$ for every component, and the model carries no energy balance: the heater duty is not computed.
 
@@ -39,7 +39,7 @@ The reactor inlet composition (stream 9, displayed) is 661.0 kmol/h of H2, 311.4
 
 ## Reactor
 
-<!-- crop sheet=1 x=800 y=250 w=390 h=320 caption="Reactor R-201 and effluent cooler E-202: stream 9 in from H-201 (Fig. T2); stream 11 continues to V-202 (Fig. T4)" -->
+<!-- crop sheet=1 x=800 y=250 w=300 h=320 caption="Reactor R-201 and effluent cooler E-202: stream 9 in from H-201 (Fig. T2); stream 11 continues to V-202 (Fig. T4)" -->
 
 The reactor R-201 is an adiabatic packed bed. Two routes exist for the reaction, and the sheet does not select a catalyst [1] [2] [7].
 
@@ -95,7 +95,7 @@ The flash gas (stream 18, 16.0 kmol/h) joins the let-down purge (stream 41) as f
 
 ## Recycle gas and purge
 
-<!-- crop sheet=1 x=980 y=40 w=660 h=270 caption="Recycle gas and purge: stream 12 from V-202 (Fig. T4) split at J4 into the purge (stream 13, through PV-201 as stream 41) and the recycle gas (stream 14, to C-201); stream 15 continues left to J2 (Fig. T1); streams 41 and 18 join as fuel gas (stream 19)" -->
+<!-- crop sheet=1 x=980 y=40 w=660 h=245 caption="Recycle gas and purge: stream 12 from V-202 (Fig. T4) split at J4 into the purge (stream 13, through PV-201 as stream 41) and the recycle gas (stream 14, to C-201); stream 15 continues left to J2 (Fig. T1); streams 41 and 18 join as fuel gas (stream 19)" -->
 
 The vapour from V-202 (stream 12, 961.1 kmol/h) is split at J4: a fraction $\beta$ (the purge fraction, dimensionless) leaves as the purge (stream 13) and the remainder $1-\beta$ returns as recycle gas (stream 14) to the compressor C-201, which restores the pressure to 2550 kPa (stream 15). The pressure controller PIC-201 holds the loop pressure by moving the purge control valve PV-201, which lets the purge down to 260 kPa (stream 41) before it joins the flash gas in stream 19.
 
@@ -159,7 +159,7 @@ The displayed values give $95.3/100.0 = 0.953$; the live model gives 0.9546. A t
 
 ## Toluene column
 
-<!-- crop sheet=2 x=880 y=200 w=770 h=470 caption="Toluene column: stream 31 in from E-205 (Fig. T6); T-202, E-206, V-205, P-203, J7, E-207; stream 37 returns to J1 on PFD-201 (Fig. T1); stream 40 (diphenyl) to fuel" -->
+<!-- crop sheet=2 x=880 y=225 w=770 h=445 caption="Toluene column: stream 31 in from E-205 (Fig. T6); T-202, E-206, V-205, P-203, J7, E-207; stream 37 returns to J1 on PFD-201 (Fig. T1); stream 40 (diphenyl) to fuel" -->
 
 The bottoms product of T-201 (stream 31, 33.3 kmol/h at 142 $\mathrm{^\circ C}$, 230 kPa) is the feed of the toluene column T-202, which recovers unreacted toluene from diphenyl [1] [2]. The overhead (stream 32, 58.5 kmol/h, 127 $\mathrm{^\circ C}$, 160 kPa) is condensed by cooling water in E-206 into the reflux drum V-205. Pump P-203 (stream 35, 350 kPa) delivers the liquid to junction J7, which divides it into reflux (stream 36) and the toluene recycle (stream 37, 32.5 kmol/h: T 32.0, B 0.5). Stream 37 returns to feed preparation (Fig. T1). The bottoms (stream 38, 134 $\mathrm{^\circ C}$) are reboiled in E-207 with high-pressure steam (stream 39, 173 $\mathrm{^\circ C}$); the liquid leaves as diphenyl (stream 40, 0.8 kmol/h: D 0.5, T 0.3), sold as fuel in [1].
 
