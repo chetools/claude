@@ -19,7 +19,7 @@ HERE = pathlib.Path(__file__).parent
 TOPO = json.loads((HERE / "topology.json").read_text())
 NS = "{http://www.w3.org/2000/svg}"
 PX_MM = 0.25
-MIN_CLEAR = 40.0      # R5: clear spacing > 10 mm
+MIN_CLEAR = 40.0      # R5: clear spacing must EXCEED 10 mm (40 px)
 JOG = 40.0            # R3: two bends closer than 4 M = 10 mm form a jog
 APPROACH = 20.0       # R10: final straight >= 2 M = 5 mm
 ATOMS = {"H2": (0, 2), "CH4": (1, 4), "B": (6, 6), "T": (7, 8), "D": (12, 10)}
@@ -236,8 +236,8 @@ def check_sheet(S, fails, info):
         gap = abs(s1[0][1 - k] - s2[0][1 - k]) - (w1 + w2) / 2
         if gap < smin:
             smin, smin_pair = gap, (n1, n2)
-        if gap < MIN_CLEAR:
-            fails.append(f"{tag} R5 streams {n1} and {n2}: parallel clear spacing {gap:.0f} px = {gap * PX_MM:.1f} mm < 10 mm")
+        if gap <= MIN_CLEAR:
+            fails.append(f"{tag} R5 streams {n1} and {n2}: parallel clear spacing {gap:.0f} px = {gap * PX_MM:.1f} mm, not more than 10 mm")
     Lt = sum(math.dist(*s) for _, s, _ in allseg)
     # ---------------- A4 identity
     nums = {e[0] for e in expected}

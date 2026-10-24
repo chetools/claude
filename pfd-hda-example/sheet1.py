@@ -19,7 +19,7 @@ def build(out, Y20=None, Y37=None):
     D = 80                       # standard marker-bearing horizontal run
     S_T, S_HX, S_P, S_V1, S_V2, S_V3 = 0.5, 44 / 114, 44 / 114, 140 / 180, 0.6, 0.5
     S_C, S_LV, S_HR = 0.3, 0.45, 0.75
-    yL = 106                     # top gas lane: FH, J2, C-201, stream 15
+    yL = 100                     # top gas lane: FH, J2, C-201, stream 15 (> 10 mm clear of lane yA)
     yS = 285                     # spine height (pump discharge .. coil_in)
     yA = 150                     # stream 12 / 13 / 19 height
 

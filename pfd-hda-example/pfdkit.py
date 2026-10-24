@@ -307,8 +307,8 @@ class Sheet:
         self.dots()
         head = [f'<rect x="0" y="0" width="{W}" height="{H}" fill="white"/>',
                 f'<rect x="18" y="18" width="{W - 36}" height="{H - 36}" fill="none" stroke="{INK}" stroke-width="2.4"/>',
-                f'<text x="60" y="66" font-family="{FONT}" font-size="22" font-weight="bold" fill="{INK}">PROCESS FLOW DIAGRAM — {self.dwg}</text>',
-                f'<text x="60" y="90" font-family="{FONT}" font-size="13" fill="{INK}">Toluene hydrodealkylation to benzene  |  {self.section}  |  Sheet {self.no} of 2</text>']
+                f'<text class="lbl" x="60" y="58" font-family="{FONT}" font-size="22" font-weight="bold" fill="{INK}">PROCESS FLOW DIAGRAM — {self.dwg}</text>',
+                f'<text class="lbl" x="60" y="80" font-family="{FONT}" font-size="13" fill="{INK}">Toluene hydrodealkylation to benzene  |  {self.section}  |  Sheet {self.no} of 2</text>']
         svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
                f'data-sheet="{self.no}">\n' + "\n".join(head + self.el_lines + self.el_sym + self.el_top) + "\n</svg>\n")
         assert "@@" not in svg and "None" not in svg
