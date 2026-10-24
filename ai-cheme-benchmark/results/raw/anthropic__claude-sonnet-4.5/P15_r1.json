@@ -1,0 +1,35 @@
+{
+ "model": "anthropic/claude-sonnet-4.5",
+ "problem": "P15",
+ "run": 1,
+ "served_model": "anthropic/claude-sonnet-4.5",
+ "provider": "Amazon Bedrock",
+ "text": "I'll solve this flash distillation problem step by step.\n\n## Given Information\n- Mass fractions: w\u2081 = 0.30, w\u2082 = 0.40, w\u2083 = 0.30\n- Molar masses: M\u2081 = 78.11, M\u2082 = 92.14, M\u2083 = 106.17 g/mol\n- P = 120 kPa = 900.23 mmHg\n- Antoine equation: log\u2081\u2080 P^sat = A - B/(C + T)\n\n## Step 1: Convert mass fractions to mole fractions\n\nFor 100 g of feed:\n- n\u2081 = 0.30/78.11 = 0.003841 mol\n- n\u2082 = 0.40/92.14 = 0.004341 mol\n- n\u2083 = 0.30/106.17 = 0.002826 mol\n- n_total = 0.011008 mol\n\nMole fractions:\n- z\u2081 = 0.003841/0.011008 = 0.3489\n- z\u2082 = 0.004341/0.011008 = 0.3943\n- z\u2083 = 0.002826/0.011008 = 0.2567\n\n## Part (a): Bubble-point temperature\n\nAt bubble point: \u03a3(z_i \u00d7 K_i) = \u03a3(z_i \u00d7 P_i^sat/P) = 1\n\nUsing iteration at different temperatures:\n\nAt T = 100\u00b0C:\n- P\u2081^sat = 10^(6.90565 - 1211.033/320.790) = 1357.3 mmHg\n- P\u2082^sat = 10^(6.95464 - 1344.800/319.482) = 557.0 mmHg\n- P\u2083^sat = 10^(6.99891 - 1474.679/313.686) = 247.0 mmHg\n- \u03a3(z_i \u00d7 P_i^sat/P) = (0.3489\u00d71357.3 + 0.3943\u00d7557.0 + 0.2567\u00d7247.0)/900.23 = 0.8425\n\nAt T = 110\u00b0C:\n- P\u2081^sat = 1749.3 mmHg\n- P\u2082^sat = 730.8 mmHg\n- P\u2083^sat = 328.9 mmHg\n- \u03a3(z_i \u00d7 P_i^sat/P) = 1.083\n\nBy interpolation: T_bubble \u2248 108.4\u00b0C\n\nRefining: At T = 108.4\u00b0C:\n- P\u2081^sat = 1680.4 mmHg\n- P\u2082^sat = 699.4 mmHg\n- P\u2083^sat = 314.0 mmHg\n- \u03a3(z_i \u00d7 P_i^sat/P) = (0.3489\u00d71680.4 + 0.3943\u00d7699.4 + 0.2567\u00d7314.0)/900.23 = 1.000\n\n## Part (b): Dew-point temperature\n\nAt dew point: \u03a3(z_i/K_i) = \u03a3(z_i \u00d7 P/P_i^sat) = 1\n\nAt T = 120\u00b0C:\n- P\u2081^sat = 2256.1 mmHg, P\u2082^sat = 962.5 mmHg, P\u2083^sat = 438.7 mmHg\n- \u03a3(z_i \u00d7 P/P_i^sat) = 900.23\u00d7(0.3489/2256.1 + 0.3943/962.5 + 0.2567/438.7) = 0.8377\n\nAt T = 130\u00b0C:\n- P\u2081^sat = 2866.9 mmHg, P\u2082^sat = 1243.8 mmHg, P\u2083^sat = 576.6 mmHg\n- \u03a3(z_i \u00d7 P/P_i^sat) = 0.6747\n\nAt T = 115\u00b0C:\n- P\u2081^sat = 2038.5 mmHg, P\u2082^sat = 859.9 mmHg, P\u2083^sat = 389.3 mmHg\n- \u03a3(z_i \u00d7 P/P_i^sat) = 0.9315\n\nAt T = 111.8\u00b0C:\n- P\u2081^sat = 1897.8 mmHg, P\u2082^sat = 794.7 mmHg, P\u2083^sat = 358.0 mmHg\n- \u03a3(z_i \u00d7 P/P_i^sat) = 1.000\n\n## Part (c): Flash at 112\u00b0C\n\nAt T = 112\u00b0C:\n- P\u2081^sat = 1921.9 mmHg, K\u2081 = 2.135\n- P\u2082^sat = 807.5 mmHg, K\u2082 = 0.8970\n- P\u2083^sat = 364.4 mmHg, K\u2083 = 0.4048\n\nRachford-Rice equation: \u03a3[z_i(K_i - 1)/(1 + \u03c8(K_i - 1))] = 0\n\nWhere \u03c8 = V/F\n\nTesting \u03c8 = 0.9:\nf(\u03c8) = 0.3489(1.135)/(1+0.9\u00d71.135) + 0.3943(-0.103)/(1-0.9\u00d70.103) + 0.2567(-0.5952)/(1-0.9\u00d70.5952)\n= 0.2046 - 0.0415 - 0.2872 = -0.1241\n\nTesting \u03c8 = 0.85:\n= 0.2173 - 0.0450 - 0.2534 = -0.0811\n\nTesting \u03c8 = 0.80:\n= 0.2315 - 0.0490 - 0.2176 = -0.0351\n\nTesting \u03c8 = 0.76:\n= 0.2416 - 0.0520 - 0.1906 = -0.0010 \u2248 0\n\nV/F = 0.7600\n\n## Part (d): Mole fraction of benzene in vapor at 112\u00b0C\n\ny\u2081 = z\u2081K\u2081/(1 + \u03c8(K\u2081 - 1)) = 0.3489 \u00d7 2.135/(1 + 0.76 \u00d7 1.135) = 0.4039\n\n## Part (e): Flash temperature for V/F = 0.5\n\nNeed to find T where Rachford-Rice = 0 with \u03c8 = 0.5\n\nAt T = 110\u00b0C:\n- K\u2081 = 1.943, K\u2082 = 0.8117, K\u2083 = 0.3654\n- f(0.5) = 0.1626 - 0.0391 - 0.1050 = 0.0185\n\nAt T = 109.5\u00b0C:\n- K\u2081 = 1.912, K\u2082 = 0.7967, K\u2083 = 0.3575\n- f(0.5) = 0.1565 - 0.0419 - 0.0996 = 0.0150\n\nAt T = 109\u00b0C:\n- K\u2081 = 1.880, K\u2082 = 0.7817, K\u2083 = 0.3497\n- f(0.5) = 0.1505 - 0.0448 - 0.0941 = 0.0116\n\nAt T = 107.5\u00b0C:\n- K\u2081 = 1.817, K\u2082 = 0.7522, K\u2083 = 0.3343\n- f(0.5) = 0.1389 - 0.0509 - 0.0836 = -0.0044\n\nAt T = 108.0\u00b0C:\n- K\u2081 = 1.849, K\u2082 = 0.7669, K\u2083 = 0.3419\n- f(0.5) \u2248 0\n\nT_flash = 108.0\u00b0C\n\nFINAL (a): 108.4 \u00b0C\nFINAL (b): 111.8 \u00b0C\nFINAL (c): 0.7600\nFINAL (d): 0.4039\nFINAL (e): 108.0 \u00b0C",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 594,
+  "completion_tokens": 2163,
+  "total_tokens": 2757,
+  "cost": 0.034227,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.034227,
+   "upstream_inference_prompt_cost": 0.001782,
+   "upstream_inference_completions_cost": 0.032445
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.034227,
+ "seconds": 34.8
+}

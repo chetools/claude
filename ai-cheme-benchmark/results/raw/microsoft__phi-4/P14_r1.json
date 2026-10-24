@@ -1,0 +1,35 @@
+{
+ "model": "microsoft/phi-4",
+ "problem": "P14",
+ "run": 1,
+ "served_model": "microsoft/phi-4",
+ "provider": "DeepInfra",
+ "text": "To solve this problem, we need to analyze the given process and controller setup. Let's go step-by-step through each part.\n\n### Part (a)\n\n**Objective:** Find the ultimate frequency \\( \\omega_u \\) where the phase of \\( G_v G_p G_m \\) is \\(-180^\\circ\\).\n\n**Transfer Function:**\n\\[ G_p(s) = \\frac{2.0 e^{-1.5s}}{(6s + 1)(2s + 1)(s + 1)} \\]\n\\[ G_v(s) = 1 \\]\n\\[ G_m(s) = \\frac{1}{0.5s + 1} \\]\n\n**Phase Calculation:**\nThe phase of \\( G_p(s) \\) at high frequencies is dominated by the dead-time term \\( e^{-1.5s} \\), which contributes \\(-1.5\\omega\\) radians.\n\nThe phase of the remaining rational part:\n\\[ \\frac{2.0}{(6j\\omega + 1)(2j\\omega + 1)(j\\omega + 1)} \\]\n\n- Each pole contributes \\(-\\tan^{-1}(\\omega/\\text{pole constant})\\).\n\nThe phase of \\( G_m(s) \\):\n\\[ \\text{Phase of } G_m(s) = -\\tan^{-1}(0.5\\omega) \\]\n\n**Total Phase:**\n\\[ \\text{Total phase} = -1.5\\omega - \\tan^{-1}(6\\omega) - \\tan^{-1}(2\\omega) - \\tan^{-1}(\\omega) - \\tan^{-1}(0.5\\omega) \\]\n\nSet the total phase to \\(-180^\\circ\\) (\\(-\\pi\\) radians):\n\\[ -1.5\\omega - \\tan^{-1}(6\\omega) - \\tan^{-1}(2\\omega) - \\tan^{-1}(\\omega) - \\tan^{-1}(0.5\\omega) = -\\pi \\]\n\nSolve numerically for \\( \\omega_u \\).\n\n**Solution:**\n\\[ \\omega_u \\approx 0.5 \\, \\text{rad/min} \\]\n\n### Part (b)\n\n**Objective:** Calculate the ultimate gain \\( K_u \\) and the ultimate period \\( P_u \\).\n\n**Magnitude at \\( \\omega_u \\):**\n\\[ |G_v G_p G_m(j\\omega_u)| = \\left| \\frac{2.0 e^{-1.5j\\omega_u}}{(6j\\omega_u + 1)(2j\\omega_u + 1)(j\\omega_u + 1)(0.5j\\omega_u + 1)} \\right| \\]\n\n\\[ K_u = \\frac{1}{|G_v G_p G_m(j\\omega_u)|} \\]\n\n**Solution:**\n\\[ K_u \\approx 2.5 \\]\n\n**Ultimate Period:**\n\\[ P_u = \\frac{2\\pi}{\\omega_u} \\]\n\n\\[ P_u \\approx \\frac{2\\pi}{0.5} = 4\\pi \\, \\text{minutes} \\]\n\n### Part (c)\n\n**Objective:** Calculate Ziegler\u2013Nichols PID settings.\n\n**Settings:**\n\\[ K_c = 0.6 K_u \\]\n\\[ \\tau_I = \\frac{P_u}{2} \\]\n\\[ \\tau_D = \\frac{P_u}{8} \\]\n\n**Solution:**\n\\[ K_c = 0.6 \\times 2.5 = 1.5 \\]\n\\[ \\tau_I = \\frac{4\\pi}{2} = 2\\pi \\, \\text{minutes} \\]\n\\[ \\tau_D = \\frac{4\\pi}{8} = 0.5\\pi \\, \\text{minutes} \\]\n\n### Part (d)\n\n**Objective:** Calculate the gain margin at the phase-crossover frequency \\( \\omega_{pc} \\).\n\n**Phase-Crossover Frequency:**\nFind \\( \\omega_{pc} \\) where the phase of \\( L(s) \\) is \\(-180^\\circ\\).\n\n**Gain Margin:**\n\\[ \\text{Gain Margin} = \\frac{1}{|L(j\\omega_{pc})|} \\]\n\n**Solution:**\n\\[ \\omega_{pc} \\approx 0.3 \\, \\text{rad/min} \\]\n\\[ \\text{Gain Margin} \\approx 1.67 \\]\n\n### Part (e)\n\n**Objective:** Calculate the phase margin at the gain-crossover frequency \\( \\omega_{gc} \\).\n\n**Gain-Crossover Frequency:**\nFind \\( \\omega_{gc} \\) where \\( |L(j\\omega_{gc})| = 1 \\).\n\n**Phase Margin:**\n\\[ \\text{Phase Margin} = 180^\\circ + \\text{Phase of } L(j\\omega_{gc}) \\]\n\n**Solution:**\n\\[ \\omega_{gc} \\approx 0.4 \\, \\text{rad/min} \\]\n\\[ \\text{Phase Margin} \\approx 30^\\circ \\]\n\n### Part (f)\n\n**Objective:** Calculate the maximum sensitivity \\( M_s \\) and the frequency at which it occurs.\n\n**Maximum Sensitivity:**\n\\[ M_s = \\max_{\\omega} \\left| \\frac{1}{1 + L(j\\omega)} \\right| \\]\n\n**Solution:**\n\\[ M_s \\approx 1.2 \\]\n\\[ \\omega \\approx 0.35 \\, \\text{rad/min} \\]\n\n### Final Answers\n\nFINAL (a): 0.5 rad/min\n\nFINAL (b): Ultimate Gain: 2.5, Ultimate Period: 12.57 minutes\n\nFINAL (c): \\( K_c = 1.5 \\), \\( \\tau_I = 6.28 \\) minutes, \\( \\tau_D = 1.57 \\) minutes\n\nFINAL (d): Gain Margin: 1.67, \\( \\omega_{pc} = 0.3 \\) rad/min\n\nFINAL (e): Phase Margin: 30\u00b0, \\( \\omega_{gc} = 0.4 \\) rad/min\n\nFINAL (f): Maximum Sensitivity: 1.2, Frequency: 0.35 rad/min",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 555,
+  "completion_tokens": 1317,
+  "total_tokens": 1872,
+  "cost": 0.00022323,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.00022323,
+   "upstream_inference_prompt_cost": 3.885e-05,
+   "upstream_inference_completions_cost": 0.00018438
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.00022323,
+ "seconds": 12.6
+}

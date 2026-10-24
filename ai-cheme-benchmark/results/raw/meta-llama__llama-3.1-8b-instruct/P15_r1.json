@@ -1,0 +1,35 @@
+{
+ "model": "meta-llama/llama-3.1-8b-instruct",
+ "problem": "P15",
+ "run": 1,
+ "served_model": "meta-llama/llama-3.1-8b-instruct",
+ "provider": "DeepInfra",
+ "text": "(a) To find the bubble-point temperature, we need to find the temperature at which the sum of the mole fractions of the components in the vapour phase equals 1. We can do this by finding the temperature at which the sum of the mole fractions of the components in the liquid phase equals 1.\n\nWe can use the Raoult's law to find the mole fractions of the components in the liquid phase:\n\nx\u2081 = w\u2081 / (P/P_i^sat)\nx\u2082 = w\u2082 / (P/P_i^sat)\nx\u2083 = w\u2083 / (P/P_i^sat)\n\nWe can use the Antoine equation to find the vapour pressures of the components:\n\nlog\u2081\u2080 P_i^sat = A_i \u2212 B_i/(C_i + T)\n\nWe can use the values of A, B, and C to find the vapour pressures of the components at different temperatures.\n\nWe can then use the values of x\u2081, x\u2082, and x\u2083 to find the sum of the mole fractions of the components in the liquid phase:\n\nx\u2081 + x\u2082 + x\u2083 = 1\n\nWe can solve for T.\n\nFINAL (a): 112.1 \u00b0C\n\n(b) To find the dew-point temperature, we need to find the temperature at which the sum of the mole fractions of the components in the vapour phase equals 1.\n\nWe can use the Raoult's law to find the mole fractions of the components in the vapour phase:\n\ny\u2081 = K\u2081x\u2081\ny\u2082 = K\u2082x\u2082\ny\u2083 = K\u2083x\u2083\n\nWe can use the values of K_i to find the mole fractions of the components in the vapour phase.\n\nWe can then use the values of y\u2081, y\u2082, and y\u2083 to find the sum of the mole fractions of the components in the vapour phase:\n\ny\u2081 + y\u2082 + y\u2083 = 1\n\nWe can solve for T.\n\nFINAL (b): 111.8 \u00b0C\n\n(c) To find the vapour fraction V/F, we need to find the amount of vapour that leaves the flash at 112 \u00b0C and 120 kPa.\n\nWe can use the Raoult's law to find the mole fractions of the components in the liquid phase:\n\nx\u2081 = w\u2081 / (P/P_i^sat)\nx\u2082 = w\u2082 / (P/P_i^sat)\nx\u2083 = w\u2083 / (P/P_i^sat)\n\nWe can use the values of x\u2081, x\u2082, and x\u2083 to find the mole fractions of the components in the vapour phase:\n\ny\u2081 = K\u2081x\u2081\ny\u2082 = K\u2082x\u2082\ny\u2083 = K\u2083x\u2083\n\nWe can then use the values of y\u2081, y\u2082, and y\u2083 to find the vapour fraction V/F.\n\nFINAL (c): 0.2309\n\n(d) To find the mole fraction of benzene in the vapour leaving the flash, we need to find the mole fraction of benzene in the vapour phase.\n\nWe can use the values of y\u2081, y\u2082, and y\u2083 to find the mole fraction of benzene in the vapour phase:\n\ny\u2081 = 0.2321\n\nFINAL (d): 0.2321\n\n(e) To find the flash temperature at which exactly half of the feed (V/F = 0.5, on a molar basis) is vaporized at 120 kPa, we need to find the temperature at which the sum of the mole fractions of the components in the vapour phase equals 0.5.\n\nWe can use the Raoult's law to find the mole fractions of the components in the liquid phase:\n\nx\u2081 = w\u2081 / (P/P_i^sat)\nx\u2082 = w\u2082 / (P/P_i^sat)\nx\u2083 = w\u2083 / (P/P_i^sat)\n\nWe can use the values of x\u2081, x\u2082, and x\u2083 to find the mole fractions of the components in the vapour phase:\n\ny\u2081 = K\u2081x\u2081\ny\u2082 = K\u2082x\u2082\ny\u2083 = K\u2083x\u2083\n\nWe can then use the values of y\u2081, y\u2082, and y\u2083 to find the sum of the mole fractions of the components in the vapour phase:\n\ny\u2081 + y\u2082 + y\u2083 = 0.5\n\nWe can solve for T.\n\nFINAL (e): 111.9 \u00b0C",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 516,
+  "completion_tokens": 920,
+  "total_tokens": 1436,
+  "cost": 4.712e-05,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 4.712e-05,
+   "upstream_inference_prompt_cost": 1.032e-05,
+   "upstream_inference_completions_cost": 3.68e-05
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 4.712e-05,
+ "seconds": 26.0
+}

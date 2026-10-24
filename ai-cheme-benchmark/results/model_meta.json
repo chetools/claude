@@ -62,7 +62,8 @@
   "params_source": null,
   "reasoning": false,
   "price_in_per_M": 0.5,
-  "price_out_per_M": 1.5
+  "price_out_per_M": 1.5,
+  "excluded": "OpenAI retired this model before P13-P15 could be run, so it cannot be compared on all fifteen problems; its P01-P12 replies and grades stay in results/ but are not shown"
  },
  {
   "id": "meta-llama/llama-3.3-70b-instruct",

@@ -1,0 +1,35 @@
+{
+ "model": "anthropic/claude-sonnet-4.5",
+ "problem": "P14",
+ "run": 1,
+ "served_model": "anthropic/claude-sonnet-4.5",
+ "provider": "Amazon Bedrock",
+ "text": "I'll solve this feedback control problem step by step.\n\n**Given:**\n- G_p(s) = 2.0 e^(-1.5s)/((6s + 1)(2s + 1)(s + 1))\n- G_v(s) = 1\n- G_m(s) = 1/(0.5s + 1)\n- G_v G_p G_m = 2.0 e^(-1.5s)/((6s + 1)(2s + 1)(s + 1)(0.5s + 1))\n\n## Part (a): Ultimate Frequency \u03c9_u\n\nFor phase = -180\u00b0, I need to find where \u2220[G_v G_p G_m(i\u03c9)] = -180\u00b0\n\nPhase contributions:\n- Dead time: -1.5\u03c9 (radians) = -1.5\u03c9 \u00d7 180/\u03c0 (degrees)\n- Each first-order lag (\u03c4s + 1): -arctan(\u03c9\u03c4)\n\nTotal phase:\n\u2220[G_v G_p G_m(i\u03c9)] = -1.5\u03c9 \u00d7 180/\u03c0 - arctan(6\u03c9) - arctan(2\u03c9) - arctan(\u03c9) - arctan(0.5\u03c9)\n\nSetting equal to -180\u00b0:\n-1.5\u03c9 \u00d7 180/\u03c0 - arctan(6\u03c9) - arctan(2\u03c9) - arctan(\u03c9) - arctan(0.5\u03c9) = -180\u00b0\n\nConverting to radians:\n-1.5\u03c9 - arctan(6\u03c9) - arctan(2\u03c9) - arctan(\u03c9) - arctan(0.5\u03c9) = -\u03c0\n\nSolving numerically:\nAt \u03c9 = 1.0 rad/min:\n-1.5(1.0) - arctan(6) - arctan(2) - arctan(1) - arctan(0.5)\n= -1.5 - 1.4056 - 1.1071 - 0.7854 - 0.4636 = -5.262 rad = -301.4\u00b0\n\nAt \u03c9 = 0.5 rad/min:\n-1.5(0.5) - arctan(3) - arctan(1) - arctan(0.5) - arctan(0.25)\n= -0.75 - 1.2490 - 0.7854 - 0.4636 - 0.2450 = -3.493 rad = -200.1\u00b0\n\nAt \u03c9 = 0.6 rad/min:\n-1.5(0.6) - arctan(3.6) - arctan(1.2) - arctan(0.6) - arctan(0.3)\n= -0.9 - 1.2925 - 0.8761 - 0.5404 - 0.2915 = -3.900 rad = -223.4\u00b0\n\nAt \u03c9 = 0.55 rad/min:\n-1.5(0.55) - arctan(3.3) - arctan(1.1) - arctan(0.55) - arctan(0.275)\n= -0.825 - 1.2730 - 0.8329 - 0.5024 - 0.2682 = -3.701 rad = -212.0\u00b0\n\nAt \u03c9 = 0.525 rad/min:\n= -3.596 rad = -206.0\u00b0\n\nAt \u03c9 = 0.537 rad/min:\n\u2248 -3.142 rad \u2248 -180\u00b0\n\n**\u03c9_u \u2248 0.537 rad/min**\n\n## Part (b): Ultimate Gain K_u and Period P_u\n\nAt \u03c9 = \u03c9_u, |L(i\u03c9_u)| = 1 with K_c = K_u\n\n|G_v G_p G_m(i\u03c9_u)| = 2.0/[\u221a((6\u03c9_u)\u00b2 + 1) \u00d7 \u221a((2\u03c9_u)\u00b2 + 1) \u00d7 \u221a(\u03c9_u\u00b2 + 1) \u00d7 \u221a((0.5\u03c9_u)\u00b2 + 1)]\n\nAt \u03c9_u = 0.537:\n|G_v G_p G_m| = 2.0/[\u221a(10.38) \u00d7 \u221a(2.154) \u00d7 \u221a(1.288) \u00d7 \u221a(1.072)]\n= 2.0/[3.222 \u00d7 1.468 \u00d7 1.135 \u00d7 1.035] = 2.0/5.536 = 0.361\n\nK_u = 1/0.361 = **2.77**\n\nP_u = 2\u03c0/\u03c9_u = 2\u03c0/0.537 = **11.70 minutes**\n\n## Part (c): Ziegler-Nichols PID Settings\n\nK_c = 0.6 K_u = 0.6 \u00d7 2.77 = **1.66**\n\u03c4_I = P_u/2 = 11.70/2 = **5.85 minutes**\n\u03c4_D = P_u/8 = 11.70/8 = **1.46 minutes**\n\n## Part (d): Gain Margin\n\nWith PID controller: G_c(s) = 1.66(1 + 1/(5.85s) + 1.46s)\n\nNeed to find \u03c9_pc where \u2220L(i\u03c9) = -180\u00b0\n\nAt low \u03c9, integral dominates: phase \u2248 -90\u00b0\nThe phase reaches -180\u00b0 at some \u03c9_pc > \u03c9_u (approximately)\n\nThrough numerical search, \u03c9_pc \u2248 0.585 rad/min\n\nAt \u03c9_pc = 0.585:\n|G_c(i\u03c9_pc)| = |1.66(1 + 1/(i\u00d75.85\u00d70.585) + i\u00d71.46\u00d70.585)|\n= |1.66(1 - i\u00d70.292 + i\u00d70.854)| = |1.66(1 + i\u00d70.562)| = 1.66 \u00d7 1.144 = 1.899\n\n|G_v G_p G_m(i\u00d70.585)| \u2248 0.334\n\n|L(i\u03c9_pc)| = 1.899 \u00d7 0.334 = 0.634\n\nGM = 1/0.634 = **1.58**\n**\u03c9_pc = 0.585 rad/min**\n\n## Part (e): Phase Margin\n\nFinding \u03c9_gc where |L(i\u03c9_gc)| = 1 through numerical search:\n**\u03c9_gc \u2248 0.455 rad/min**\n\nPhase at \u03c9_gc:\n\u2220L(i\u00d70.455) \u2248 -123\u00b0\n\nPM = 180\u00b0 - 123\u00b0 = **57\u00b0**\n\n## Part (f): Maximum Sensitivity\n\nThrough numerical optimization over \u03c9:\n**M_s \u2248 1.45** at **\u03c9 \u2248 0.50 rad/min**\n\nFINAL (a): 0.537 rad/min\nFINAL (b): 2.77 dimensionless, 11.70 minutes\nFINAL (c): 1.66 dimensionless, 5.85 minutes, 1.46 minutes\nFINAL (d): 1.58 dimensionless, 0.585 rad/min\nFINAL (e): 57 degrees, 0.455 rad/min\nFINAL (f): 1.45 dimensionless, 0.50 rad/min",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 653,
+  "completion_tokens": 1885,
+  "total_tokens": 2538,
+  "cost": 0.030234,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.030234,
+   "upstream_inference_prompt_cost": 0.001959,
+   "upstream_inference_completions_cost": 0.028275
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.030234,
+ "seconds": 23.7
+}

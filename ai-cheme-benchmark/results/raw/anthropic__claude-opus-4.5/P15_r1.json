@@ -1,0 +1,35 @@
+{
+ "model": "anthropic/claude-opus-4.5",
+ "problem": "P15",
+ "run": 1,
+ "served_model": "anthropic/claude-opus-4.5",
+ "provider": "Amazon Bedrock",
+ "text": "I'll solve this problem step by step.\n\n## Preliminary Calculations: Convert mass fractions to mole fractions\n\nGiven: w\u2081 = 0.30, w\u2082 = 0.40, w\u2083 = 0.30\n\nBasis: 100 g of feed\n- n\u2081 = 30/78.11 = 0.3842 mol\n- n\u2082 = 40/92.14 = 0.4341 mol\n- n\u2083 = 30/106.17 = 0.2826 mol\n- Total: n = 1.1009 mol\n\nMole fractions (feed composition z):\n- z\u2081 = 0.3842/1.1009 = 0.3490\n- z\u2082 = 0.4341/1.1009 = 0.3943\n- z\u2083 = 0.2826/1.1009 = 0.2567\n\nConvert P = 120 kPa to mmHg: P = 120/0.133322 = 900.0 mmHg\n\n## Part (a): Bubble-point temperature\n\nAt bubble point: \u03a3 K\u1d62z\u1d62 = 1, where K\u1d62 = P\u1d62\u02e2\u1d43\u1d57/P\n\nNeed to find T where: \u03a3(z\u1d62P\u1d62\u02e2\u1d43\u1d57)/P = 1, or \u03a3 z\u1d62P\u1d62\u02e2\u1d43\u1d57 = 900 mmHg\n\nTrial at T = 95\u00b0C:\n- P\u2081\u02e2\u1d43\u1d57 = 10^(6.90565 - 1211.033/315.79) = 1176.4 mmHg\n- P\u2082\u02e2\u1d43\u1d57 = 10^(6.95464 - 1344.800/314.482) = 475.0 mmHg\n- P\u2083\u02e2\u1d43\u1d57 = 10^(6.99891 - 1474.679/308.686) = 186.8 mmHg\n\n\u03a3 z\u1d62P\u1d62\u02e2\u1d43\u1d57 = 0.3490(1176.4) + 0.3943(475.0) + 0.2567(186.8) = 410.6 + 187.3 + 48.0 = 645.9 mmHg (too low)\n\nTrial at T = 105\u00b0C:\n- P\u2081\u02e2\u1d43\u1d57 = 10^(6.90565 - 1211.033/325.79) = 1520.5 mmHg\n- P\u2082\u02e2\u1d43\u1d57 = 10^(6.95464 - 1344.800/324.482) = 633.0 mmHg\n- P\u2083\u02e2\u1d43\u1d57 = 10^(6.99891 - 1474.679/318.686) = 257.4 mmHg\n\n\u03a3 z\u1d62P\u1d62\u02e2\u1d43\u1d57 = 530.7 + 249.6 + 66.1 = 846.4 mmHg (still low)\n\nTrial at T = 108\u00b0C:\n- P\u2081\u02e2\u1d43\u1d57 = 10^(6.90565 - 1211.033/328.79) = 1636.0 mmHg\n- P\u2082\u02e2\u1d43\u1d57 = 10^(6.95464 - 1344.800/327.482) = 690.6 mmHg\n- P\u2083\u02e2\u1d43\u1d57 = 10^(6.99891 - 1474.679/321.686) = 283.6 mmHg\n\n\u03a3 z\u1d62P\u1d62\u02e2\u1d43\u1d57 = 571.0 + 272.3 + 72.8 = 916.1 mmHg (slightly high)\n\nTrial at T = 107.1\u00b0C:\n- P\u2081\u02e2\u1d43\u1d57 = 1601.8, P\u2082\u02e2\u1d43\u1d57 = 672.3, P\u2083\u02e2\u1d43\u1d57 = 274.8\n- \u03a3 = 559.0 + 265.1 + 70.6 = 894.7 mmHg\n\nTrial at T = 107.35\u00b0C: \u03a3 \u2248 900.0 mmHg\n\n**Bubble point: T = 107.35\u00b0C**\n\n## Part (b): Dew-point temperature\n\nAt dew point: \u03a3 z\u1d62/K\u1d62 = 1, or \u03a3 z\u1d62P/P\u1d62\u02e2\u1d43\u1d57 = 1\n\nTrial at T = 118\u00b0C:\n- P\u2081\u02e2\u1d43\u1d57 = 2036.7, P\u2082\u02e2\u1d43\u1d57 = 896.2, P\u2083\u02e2\u1d43\u1d57 = 383.0\n- \u03a3 = 0.3490(900/2036.7) + 0.3943(900/896.2) + 0.2567(900/383.0) = 0.154 + 0.396 + 0.603 = 1.153 (high)\n\nTrial at T = 122\u00b0C:\n- P\u2081\u02e2\u1d43\u1d57 = 2221.0, P\u2082\u02e2\u1d43\u1d57 = 993.7, P\u2083\u02e2\u1d43\u1d57 = 432.0\n- \u03a3 = 0.141 + 0.357 + 0.535 = 1.033\n\nTrial at T = 124\u00b0C: \u03a3 \u2248 0.990\n\n**Dew point: T = 123.59\u00b0C**\n\n## Part (c): Flash at 112\u00b0C, V/F\n\nAt T = 112\u00b0C:\n- P\u2081\u02e2\u1d43\u1d57 = 1793.5, K\u2081 = 1.993\n- P\u2082\u02e2\u1d43\u1d57 = 764.8, K\u2082 = 0.850\n- P\u2083\u02e2\u1d43\u1d57 = 319.8, K\u2083 = 0.355\n\nRachford-Rice: \u03a3 z\u1d62(K\u1d62-1)/(1+\u03c8(K\u1d62-1)) = 0, where \u03c8 = V/F\n\nSolving: \u03c8 = **0.3078**\n\n## Part (d): Benzene mole fraction in vapor\n\ny\u2081 = z\u2081K\u2081/(1+\u03c8(K\u2081-1)) = 0.3490(1.993)/(1+0.3078(0.993)) = 0.6958/1.3055 = **0.5330**\n\n## Part (e): Temperature for V/F = 0.5\n\nIterate to find T where \u03c8 = 0.5. After iteration: **T = 115.35\u00b0C**\n\nFINAL (a): 107.35 \u00b0C\nFINAL (b): 123.59 \u00b0C\nFINAL (c): 0.3078\nFINAL (d): 0.5330\nFINAL (e): 115.35 \u00b0C",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 594,
+  "completion_tokens": 1867,
+  "total_tokens": 2461,
+  "cost": 0.049645,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.049645,
+   "upstream_inference_prompt_cost": 0.00297,
+   "upstream_inference_completions_cost": 0.046675
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.049645,
+ "seconds": 21.3
+}

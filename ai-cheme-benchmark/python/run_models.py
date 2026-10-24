@@ -70,7 +70,8 @@ async def call(client, sem, model, pid, run, args, state):
                                "finish_reason": j["choices"][0].get("finish_reason"),
                                "usage": j.get("usage"), "cost": (j.get("usage") or {}).get("cost", 0.0),
                                "seconds": round(time.time() - t0, 1)}
-                        if rec["text"].strip():
+                        # --keep-cutoff: keep a reply cut off at the output limit even with no text (graded as it stands)
+                        if rec["text"].strip() or (args.keep_cutoff and rec["finish_reason"] == "length"):
                             out.parent.mkdir(parents=True, exist_ok=True)
                             out.write_text(json.dumps(rec, indent=1))
                             state["spent"] += rec["cost"] or 0.0
@@ -96,6 +97,8 @@ async def main():
     ap.add_argument("--cap", type=float, default=1.0, help="USD, total over all cached replies")
     ap.add_argument("--max-tokens", type=int, default=0, help="0 = provider default")
     ap.add_argument("--concurrency", type=int, default=4)
+    ap.add_argument("--keep-cutoff", action="store_true",
+                    help="save a reply cut off at the output limit even if it has no text, instead of retrying")
     args = ap.parse_args()
     key = os.environ.get("OPENROUTER_API_KEY")
     if not key:
