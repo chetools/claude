@@ -1,0 +1,35 @@
+{
+ "model": "anthropic/claude-opus-4.8",
+ "problem": "P10",
+ "run": 1,
+ "served_model": "anthropic/claude-opus-4.8",
+ "provider": "Claude Platform on AWS",
+ "text": "Given:\n- Gas feed G = 100 kmol/h, y\u2081 = 0.02 (bottom)\n- 95% acetone absorbed\n- y = 1.8x, so m = 1.8\n- L = 1.5 Lmin\n\nDilute system, treat flows as constant.\n\n**Inlet gas acetone:** 100 \u00d7 0.02 = 2.0 kmol/h\n**Absorbed:** 0.95 \u00d7 2.0 = 1.9 kmol/h\n**Gas out:** y\u2082 = (2.0 - 1.9)/100 = 0.001 \u2192 y\u2082 = 0.001\n\n(Dilute, G \u2248 100 kmol/h; actually gas carrier = 98 kmol/h, but take G = 100 constant.)\n\n## (a) Minimum water flow\n\nAt minimum liquid, exiting liquid is in equilibrium with entering gas:\nx\u2081* = y\u2081/m = 0.02/1.8 = 0.011111\n\nMass balance on acetone (water enters pure, x\u2082 = 0):\nLmin(x\u2081* - 0) = G(y\u2081 - y\u2082)\nLmin \u00d7 0.011111 = 100 \u00d7 (0.02 - 0.001) = 1.9\n\nLmin = 1.9/0.011111 = 171.0 kmol/h\n\n**Lmin = 171 kmol/h**\n\n## (b) Absorption factor at operating flow\n\nL = 1.5 \u00d7 171 = 256.5 kmol/h\n\nA = L/(mG) = 256.5/(1.8 \u00d7 100) = 256.5/180 = 1.425\n\n**A = 1.425**\n\n## (c) Number of theoretical stages (Kremser)\n\nFraction absorbed relation / Kremser equation:\n\nN = ln[ ((y\u2081 - m x\u2082)/(y\u2082 - m x\u2082))(1 - 1/A) + 1/A ] / ln(A)\n\nWith x\u2082 = 0:\n(y\u2081/y\u2082) = 0.02/0.001 = 20\n\nN = ln[ 20(1 - 1/1.425) + 1/1.425 ] / ln(1.425)\n\n1/1.425 = 0.70175\n1 - 0.70175 = 0.29825\n20 \u00d7 0.29825 = 5.9649\n+ 0.70175 = 6.6667\n\nln(6.6667) = 1.8971\nln(1.425) = 0.35418\n\nN = 1.8971/0.35418 = 5.36\n\n**N \u2248 5.36 stages**\n\n---\n\nFINAL (a): 171 kmol/h\nFINAL (b): 1.425 (dimensionless)\nFINAL (c): 5.36 stages",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 314,
+  "completion_tokens": 869,
+  "total_tokens": 1183,
+  "cost": 0.023295,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.023295,
+   "upstream_inference_prompt_cost": 0.00157,
+   "upstream_inference_completions_cost": 0.021725
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.023295,
+ "seconds": 10.0
+}

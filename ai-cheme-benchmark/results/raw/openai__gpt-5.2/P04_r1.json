@@ -1,0 +1,35 @@
+{
+ "model": "openai/gpt-5.2",
+ "problem": "P04",
+ "run": 1,
+ "served_model": "openai/gpt-5.2",
+ "provider": "OpenAI",
+ "text": "### Given\n- Methane, ideal gas, isothermal at \\(T=288\\ \\text{K}\\)\n- \\(D = 0.30\\ \\text{m}\\), \\(L=40\\,\\text{km}=4.0\\times 10^{4}\\ \\text{m}\\)\n- \\(\\varepsilon = 0.046\\ \\text{mm} = 4.6\\times 10^{-5}\\ \\text{m}\\)\n- \\(P_1=5.0\\ \\text{MPa}\\), \\(P_2=3.0\\ \\text{MPa}\\) (absolute)\n- \\(\\mu = 1.1\\times 10^{-5}\\ \\text{Pa\u00b7s}\\)\n- \\(M=16.04\\ \\text{kg/kmol}\\), \\(R=8314\\ \\text{J/(kmol\u00b7K)}\\)\n\nGas constant per unit mass:\n\\[\nR_s=\\frac{R}{M}=\\frac{8314}{16.04}=518.33\\ \\text{J/(kg\u00b7K)}\n\\]\n\\[\nR_sT = 518.33(288)=1.4928\\times 10^{5}\\ \\text{m}^2\\text{/s}^2\n\\]\nPipe area:\n\\[\nA=\\frac{\\pi D^2}{4}=\\frac{\\pi(0.30)^2}{4}=7.0686\\times 10^{-2}\\ \\text{m}^2\n\\]\n\n---\n\n## Isothermal compressible pipe-flow equation (with acceleration term)\nWith mass flux \\(G=\\dot m/A\\) constant, \\(v=G/\\rho\\), and \\(\\rho = P/(R_sT)\\). Integrating\n\\[\ndP + \\rho v\\,dv + \\frac{f_D}{2D}\\rho v^2\\,dx = 0\n\\]\ngives:\n\\[\n\\frac{1}{2}\\left(P_1^2-P_2^2\\right)=G^2(R_sT)\\left[\\frac{f_D L}{2D}-\\ln\\left(\\frac{P_1}{P_2}\\right)\\right]\n\\]\nSo\n\\[\nG^2=\\frac{\\tfrac{1}{2}(P_1^2-P_2^2)}{(R_sT)\\left[\\frac{f_D L}{2D}-\\ln\\left(\\frac{P_1}{P_2}\\right)\\right]}\n\\]\n\nNumerical pieces:\n\\[\n\\frac{1}{2}(P_1^2-P_2^2)=\\frac{1}{2}\\left((5.0\\times10^6)^2-(3.0\\times10^6)^2\\right)\n=8.0\\times 10^{12}\\ \\text{Pa}^2\n\\]\n\\[\n\\ln\\left(\\frac{P_1}{P_2}\\right)=\\ln\\left(\\frac{5}{3}\\right)=0.5108\n\\]\n\\[\n\\frac{L}{2D}=\\frac{4.0\\times 10^4}{0.60}=6.6667\\times 10^4\n\\]\n\n---\n\n## Relation for Reynolds number (constant along pipe)\n\\[\n\\mathrm{Re}=\\frac{\\rho v D}{\\mu}=\\frac{GD}{\\mu}\n\\]\nsince \\(G=\\rho v\\) is constant.\n\n---\n\n## Colebrook equation (Darcy friction factor)\n\\[\n\\frac{1}{\\sqrt{f_D}}=-2\\log_{10}\\!\\left(\\frac{\\varepsilon}{3.7D}+\\frac{2.51}{\\mathrm{Re}\\sqrt{f_D}}\\right)\n\\]\nwith\n\\[\n\\frac{\\varepsilon}{D}=\\frac{4.6\\times 10^{-5}}{0.30}=1.533\\times 10^{-4},\\quad\n\\frac{\\varepsilon}{3.7D}=4.142\\times 10^{-5}\n\\]\n\n---\n\n# Iteration on \\(f_D\\) (since \\(f_D\\) depends on Re, and Re depends on \\(G\\))\n\nUsing a turbulent starting estimate gives convergence at approximately:\n\\[\nf_D \\approx 0.01326\n\\]\n\nThen from the isothermal-with-acceleration equation:\n\\[\nG^2=\\frac{8.0\\times 10^{12}}{(1.4928\\times10^5)\\left[(0.01326)(6.6667\\times10^4)-0.5108\\right]}\n\\]\n\\[\n(0.01326)(6.6667\\times10^4)=884.0\n\\Rightarrow \\left[\\cdots\\right]=883.5\n\\]\n\\[\nG^2 \\approx \\frac{8.0\\times 10^{12}}{(1.4928\\times10^5)(8.835\\times10^2)}\n\\approx 6.06\\times 10^4\n\\Rightarrow G \\approx 246\\ \\text{kg/(m}^2\\text{\u00b7s)}\n\\]\n\n### (a) Mass flow rate\n\\[\n\\dot m = GA = (246)(7.0686\\times 10^{-2}) \\approx 17.4\\ \\text{kg/s}\n\\]\n\n### (b) Reynolds number\n\\[\n\\mathrm{Re}=\\frac{GD}{\\mu}=\\frac{(246)(0.30)}{1.1\\times10^{-5}}\n\\approx 6.7\\times 10^{6}\n\\]\n\n### (c) Darcy friction factor\nFrom Colebrook with \\(\\varepsilon/D=1.533\\times10^{-4}\\) and \\(\\mathrm{Re}\\approx 6.7\\times10^6\\):\n\\[\nf_D \\approx 0.0133\n\\]\n\n### (d) Outlet velocity\nOutlet density (ideal gas):\n\\[\n\\rho_2=\\frac{P_2}{R_sT}=\\frac{3.0\\times10^6}{1.4928\\times10^5}=20.1\\ \\text{kg/m}^3\n\\]\n\\[\nv_2=\\frac{G}{\\rho_2}=\\frac{246}{20.1}=12.3\\ \\text{m/s}\n\\]\n\nFINAL (a): 17.4 kg/s  \nFINAL (b): 6.7e6 dimensionless  \nFINAL (c): 0.0133 dimensionless  \nFINAL (d): 12.3 m/s",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 270,
+  "completion_tokens": 5424,
+  "total_tokens": 5694,
+  "cost": 0.0764085,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.0764085,
+   "upstream_inference_prompt_cost": 0.0004725,
+   "upstream_inference_completions_cost": 0.075936
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 3991,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.0764085,
+ "seconds": 69.3
+}
