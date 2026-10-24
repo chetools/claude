@@ -64,5 +64,225 @@
   },
   "score": 10,
   "justification": "Node-head Newton solution with Colebrook friction factors and resistances per pipe; the stated f, R, flows and heads (H_B = 29.28 m, H_C = 26.96 m) agree with my check of the network and satisfy continuity. (a) Qp = 49.79 L/s (FINAL 49.8) and (b) Hp = 50.25 m (FINAL 50.3), both within 0.1 %: full. (c) 3.5 L/s from B to C, from sqrt(2.32/1.89e5), 0.2 % off with the correct direction: full. (d) 225 kPa (224.8 kPa from the working, 0.05 % off) and (e) 35.0 kW, correct: full."
+ },
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "Only a list of generic steps with no equations solved or numbers worked out. (a) 0.012 L/s, (b) 3.21 m (the pump curve gives about 80 m at that flow), (c) 0.008 L/s from B to C, (d) 45.3 kPa and (e) 12.5 kW are unsupported and far from the reference (49.8 L/s, 50.3 m, 3.51 L/s from B to C, 224.9 kPa, 35.0 kW): 0 for every part."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "The reply is a long degenerate loop of meaningless 'Darcy-Weisbach' steps (friction factor from log(mu/(rho L)), fictitious pipes 67-69) and never states any answer to (a)-(e): 0 for every part."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "(a) Qp = 16.0 L/s, simply the withdrawal at B, with no network solution (reference 49.8 L/s): 0. (b) 79.808 m is an arithmetic slip even for its own Qp (80 - 12000*0.016^2 = 76.93 m): 0. (c) 2.03 L/s from an assumed head drop of 0.5 m, (d) -38.2 kPa from H_C = 0.5 m, and (e) 2.87 kW (its own numbers give 17.9 kW) are all wrong: 0."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "Wrong method: friction factors guessed, every pipe given the full pump flow, the head losses summed as if in series, and the efficiency put into the head balance. (a) 33 L/s (reference 49.8): 0. (b) 23.8 m is not even the pump curve at its own flow (66.9 m): 0. (c) 22.6 L/s from C to B (wrong value and direction), (d) 257.6 kPa and (e) 10.1 kW (its own Qp and Hp give 11.0 kW) are wrong: 0."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0.5
+  },
+  "score": 0.5,
+  "justification": "Wrong set-up (Q_p = Q_6 ignores the 16 L/s withdrawal, wrong loop and suction equations) and no solution shown, so (a) 50.0 L/s, although 0.4 % from the reference 49.8 L/s, is an unsupported value: 0. (b) 68.0 m is an arithmetic error (80 - 12000*0.05^2 = 50.0 m): 0. (c) 10.5 L/s from B to C (reference 3.51 L/s; direction right but magnitude 3 times too large) and (d) 81.3 kPa from an unsupported H_C = 12.33 m (reference 224.9 kPa): 0. (e) 47.4 kW correctly follows rho g Qp Hp/eta from its own Qp and Hp (47.6 kW): half points as error carried forward."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "No network analysis. (a) 16.0 L/s, the withdrawal at B taken as the pump flow (reference 49.8 L/s): 0. (b) 79.9969 m was computed with Qp = 0.016 L/s rather than its own 16 L/s (which gives 76.93 m) and is far from 50.3 m: 0. (c), (d) and (e) give no numerical answer: 0."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "The reply gives only final values with no working: (a) 12.8 L/s, (b) 64.0 m, (c) direction C to B with no magnitude, (d) -15.7 kPa, (e) 19.6 kW. All are wrong (reference 49.8 L/s, 50.3 m, 3.51 L/s from B to C, 224.9 kPa, 35.0 kW): 0 for every part."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "The node energy balances are wrong and no solution is shown, so (a) 50 L/s (0.4 % from the reference 49.8 L/s) is an unsupported value: 0. (b) 77 m is an arithmetic error (80 - 12000*0.05^2 = 50 m): 0. (c) 20 L/s from B to C and (d) 100 kPa are unsupported and wrong: 0. (e) 5.27 kW is an arithmetic error (its own Qp and Hp give 53.9 kW; reference 35.0 kW): 0."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 1,
+  "justification": "(a) Qp = 0.016 m3/s, the withdrawal at B taken as the pump flow, with nonsensical velocities V = Q/(A L) (reference 49.8 L/s): 0. (b) 76.93 m is the pump curve correctly evaluated at its own Qp: half points as error carried forward. (c) 16 L/s from B to C and (d) 0.293 kPa (H taken as z_C plus a tiny loss) are wrong: 0. (e) 8.20 kW multiplies the hydraulic power by the efficiency instead of dividing: wrong method, 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 1,
+  "justification": "Wrong set-up (Q_p = Q1, loop 1 balanced against the full pump head, suction equation wrong) and the 'iterative solution' is not shown. (a) 25.3 L/s (reference 49.8): 0. (b) 72.3 m is the pump curve correctly evaluated at its own Qp (72.32 m): half points as error carried forward. (c) 7.1 L/s from B to C, wrong magnitude (reference 3.51 L/s): 0. (d) 39.1 kPa takes H_C = z_C, wrong method: 0; (e) 2.45 kW is an arithmetic error (its own Qp and Hp give 25.6 kW): 0."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "Only a generic Hardy Cross outline with wrong continuity at C and wrong loop equations; no numbers are worked. (a) 18.0 L/s (reference 49.8): 0. (b) 38.0 m does not even follow from its own Qp (76.1 m): 0. (c) 4.0 L/s from B to C (14 % off the reference 3.51 L/s, unsupported), (d) 39.4 kPa and (e) 6.7 kW (its own Qp and Hp give 9.6 kW) are wrong: 0."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0,
+   "d": 0,
+   "e": 0.5
+  },
+  "score": 1.5,
+  "justification": "(a) Qp = 28 L/s is asserted after an unshown 'iterative scan' (reference 49.79, 44 % off): 0. (b) 70.592 m is the pump curve correctly evaluated at its own Qp: error carried forward, half points. (c) 12 L/s B to C has no working (reference 3.51 L/s): 0; (d) 652.4 kPa takes H_C equal to the pump head, a wrong method (reference 224.9 kPa): 0. (e) correct formula rho g Qp Hp/eta on its own values (27.65 kW; it reports 27.365 kW, a small arithmetic slip): error carried forward, half points."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0,
+   "d": 0,
+   "e": 0.5
+  },
+  "score": 1.5,
+  "justification": "Sets up continuity, Darcy-Weisbach and Colebrook correctly but only tries guessed flow sets, none of which balances, then declares Qp = 42 L/s 'approximately satisfied' with unshown losses (its claimed 14.8 m loss in pipe 6 is about 2.4 m at 28 L/s): (a) 42 L/s is 16 % off 49.79, 0. (b) 58.8 m is the pump curve correctly evaluated at its own Qp: error carried forward, half points. (c) 1.0 L/s B to C (reference 3.51 L/s, 71 % off) and (d) 376 kPa from an unsupported H_C = 42.41 m (reference 224.9 kPa): 0. (e) 34.5 kW, correct formula on its own Qp and Hp (1.4 % off): half points."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0,
+   "d": 0,
+   "e": 0.5
+  },
+  "score": 1.5,
+  "justification": "Describes the correct method but explicitly skips the solution and 'assumes typical values'. (a) Qp = 32 L/s (reference 49.79): 0. (b) 67.7 m is the pump curve correctly evaluated at its own Qp: error carried forward, half points. (c) 4.0 L/s B to C (14 % off 3.51) and (d) 548.5 kPa from an assumed H_C = 60 m (reference 224.9) have no supporting working: 0. (e) 30.4 kW, correct formula on its own Qp and Hp: error carried forward, half points."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "The reply gives only FINAL values with no working at all. (a) 50 L/s, (b) 50 m and (e) 35 kW happen to be within 1 % of 49.79 L/s, 50.26 m and 35.0 kW, (c) 3.6 L/s B to C is 2.6 % off 3.51 L/s and (d) 2.1e2 kPa is 6.6 % off 224.9 kPa. Under the rules a value with no supporting working gets 0, so every part scores 0."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 0,
+   "d": 0,
+   "e": 1
+  },
+  "score": 4,
+  "justification": "(a) Correct set-up (pump outlet head, pipe-6 head, continuity, Colebrook) but only one guess Qp = 50 L/s is evaluated, with an unbalanced flow split (path drops 26.8 vs 41.6 m) accepted by comparing their average with the available drop; 50.0 L/s is 0.4 % off 49.79 but not supported by a converged solution: half points. (b) 50.0 m from the pump curve (0.5 % off 50.26) and (e) 35.0 kW, correct formula and values: full points. (c) 4.0 L/s B to C is the guessed split, not solved (14 % off 3.51, direction right): 0; (d) 165.4 kPa from H_C of the unbalanced split (26 % off 224.9): 0."
+ },
+ "openai/gpt-5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 3,
+   "d": 2,
+   "e": 1
+  },
+  "score": 10,
+  "justification": "Loop and pump-path equations with Colebrook friction factors per pipe; the stated f and resistances agree with my check to within 1 % and the converged flows satisfy continuity and the loop balances. (a) 49.7 L/s (0.13 % off) and (b) 50.3 m (0.15 % off): full. (c) 3.49 L/s, 0.5 % off; the FINAL line omits the direction but the working states B to C (H_B = 29.27 m > H_C = 26.98 m), which matches: full. (d) 225 kPa and (e) 35.0 kW, correct: full."
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0,
+   "d": 0,
+   "e": 0.5
+  },
+  "score": 1.5,
+  "justification": "Sets up continuity, loop equations and Colebrook, but the 'converged' flows are asserted without any head-loss working and are changed once without explanation. (a) 38.5 L/s is 23 % off 49.79: 0. (b) 62.2 m is the pump curve correctly evaluated at its own Qp: error carried forward, half points. (c) 4.5 L/s from C to B has the wrong direction (reference 3.51 L/s from B to C): 0; (d) 498 kPa from an unsupported H_C = 54.8 m (reference 224.9): 0. (e) 33.5 kW, correct formula on its own Qp and Hp: half points."
+ },
+ "anthropic/claude-opus-4.5": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0,
+   "d": 0,
+   "e": 0.5
+  },
+  "score": 1.5,
+  "justification": "Correct equations are set up, but the stated flows are asserted without working and even fail its own continuity check at C. (a) 35.0 L/s is 30 % off 49.79: 0. (b) 65.3 m is the pump curve correctly evaluated at its own Qp: error carried forward, half points. (c) 2.4 L/s from C to B has the wrong direction (reference 3.51 L/s from B to C): 0; (d) 411 kPa from asserted suction and pipe-2 losses (reference 224.9): 0. (e) 31.9 kW, correct formula on its own Qp and Hp: error carried forward, half points."
+ },
+ "openai/gpt-5.2": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 3,
+   "d": 2,
+   "e": 1
+  },
+  "score": 10,
+  "justification": "Loop and pump-path equations with Colebrook friction factors and resistances per pipe; the stated flows satisfy continuity and the A-B-C loop balance to 0.004 m and the f values agree with my check. (a) 49.7 L/s (49.67, 0.2 % off) and (b) 50.4 m (0.3 % off): full. (c) 3.46 L/s from B to C, 1.4 % off and within the 2 % allowed, direction correct: full. (d) 224.9 kPa and (e) 35.0 kW, both within 0.1 %: full."
  }
 }

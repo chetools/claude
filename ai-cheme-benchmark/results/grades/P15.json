@@ -64,5 +64,236 @@
   },
   "score": 10,
   "justification": "(a) 106.9 C (0.02 C off) and (b) 123.7 C by trial and interpolation (123.66 in the working, 0.01 C off), correct. (c) V/F = 0.335 by Rachford-Rice, 0.7 % above the reference despite a small slip in P1sat at 112 C (1850.3 instead of 1847.6 mmHg), within 2 %: full. (d) y1 = 0.530 (0.1 % off) and (e) 114.8 C (0.03 C off) from the V/F = 0.5 form of Rachford-Rice, correct."
+ },
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "Feed mole fractions computed as w*M instead of w/M (0.253, 0.398, 0.339 instead of 0.349, 0.394, 0.257). (a), (b) and (e) not answered (states they need numerical calculation): 0. (c) V/F = 0.982 from summing x_i, not a flash calculation, with vapour pressures at 112 C wrong by orders of magnitude: 0. (d) gives a toluene fraction 0.405 instead of the benzene vapour fraction 0.5305: 0."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "No valid method: partial pressures above the total pressure (345 kPa), Antoine equation with flipped signs, and pure-component temperatures instead of bubble/dew points. (a) 120.67 C, (b) 124.34 C, (c) 127.31 C (a temperature, not V/F), (d) and (e) 0.245 from an invented ratio: all 0."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "Only generic outlines (with a wrong liquid mole fraction formula x_i = w_i/(P/Psat)) and no numerical working. (a) 112.1 C (reference 106.92), (b) 111.8 C (below its own bubble point; reference 123.65), (c) 0.2309 (31 % off), (d) 0.2321 (reference 0.5305), (e) 111.9 C (reference 114.83): all 0."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "Feed mole fractions wrong (0.251, 0.429, 0.319), P converted as 120*0.133322 = 16.0 mmHg instead of 900.1 mmHg, and vapour pressures at 112 C wrong (104.7 instead of 1847.6 mmHg for benzene). (a) and (b) both 112 C claimed without solving: 0. (c) V/F = 0.607 from sum y_i/K_i, not Rachford-Rice: 0. (d) y1 = x1/K1 = 0.0408 and (e) 110.5 C asserted: 0."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "Feed mole fractions correct (0.3493, 0.3945, 0.2562) and the bubble/dew/flash methods outlined, but no numerical working supports any final value. (a) 104.14 C (2.8 C off), (b) 146.85 C (23 C off), (c) 0.6121 (84 % off), (d) 0.4215 (21 % off), (e) 117.38 C (2.6 C off): all outside tolerance and unsupported: 0."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "Pressure converted correctly (900.7 mmHg) but mass fractions used as mole fractions and no vapour pressures actually evaluated. (a) 90.2 C and (b) 77.3 C (dew point below bubble point; references 106.92 and 123.65 C): 0. (c) 0.6605 from an invented formula and (d) 0.4932 without working: 0. (e) 95.2 C asserted (reference 114.83 C): 0."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "P converted as 120*0.133322 = 16.0 mmHg instead of 900.1 mmHg and mass fractions used directly. (a) 85.60 C from a pure-benzene Antoine inversion with an algebra error: 0. (b) 112.00 C asserted: 0. (c) V/F = 1.0000 from summing y_i: 0. (d) 0.3289 (a liquid-phase formula) and (e) 102.40 C asserted: 0."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "Feed mole fractions wrong (0.2924, 0.3388, 0.3688 instead of 0.349, 0.394, 0.257) and the dew point solved with the bubble-point equation. (a) 77.54 C and (b) 86.36 C (references 106.92 and 123.65 C): 0. (c) vapour pressures at 112 C wrong (760 instead of 1847.6 mmHg for benzene) and V/F = 0.5356 from a non-Rachford-Rice formula: 0. (d) y1 = 0.3847 and (e) 99.43 C from sum z_i K_i = 0.5: 0."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "P converted as 15.999 mmHg instead of 900.1 mmHg and the bubble/dew points taken from single-component vapour pressures at a guessed temperature. (a) 25 C and (b) 20 C: 0. (c) V/F = 0.8 assumed without calculation and (d) y1 = 0.723 from inconsistent formulas: 0. (e) 26 C from an invented iteration: 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "Feed mole fractions computed as w*M/sum(w*M) (summing to 0.31), P taken as 16.0 mmHg, and Antoine-inverted temperatures used as vapour pressures. (a) 146.02 C and (b) 174.88 C: 0. (c) V/F = 0.3176 from a wrong quadratic, not Rachford-Rice; it is 4.5 % below the reference but by an incorrect method: 0. (d) y1 = 0.0723 and (e) 155.67 C: 0."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "P correctly converted (900.58 mmHg) but feed mole fractions written as w*M/sum(w*M) and the Rachford-Rice equation written incorrectly, with no numerical working for any value. (a) 91.34 C, (b) 111.89 C and (e) 105.76 C are 15.6, 11.8 and 9.1 C off: 0. (c) V/F = 0.4325 (30 % off): 0. (d) y1 = 0.5543 is 4.5 % off but unsupported and from a wrong formula: 0."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "Wrong feed mole fractions (z1 = 0.4264 instead of 0.3489) and no actual calculation for any part. (a) 110.1 C (3.2 C off) and (b) 107.5 C, below its own bubble point (16 C off): 0. (c) V/F = 0.45 (35 % off), (d) y1 = 0.6925 (31 % off) and (e) 105.0 C (9.8 C off), all unsupported: 0."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 1,
+   "e": 0
+  },
+  "score": 2,
+  "justification": "Correct feed and Antoine trial-and-error method, but the vapour pressures are evaluated wrongly throughout (e.g. benzene 1689 instead of 1847.6 mmHg at 112 C). (a) 105.91 C (1.01 C off) and (b) 121.80 C (1.85 C off), beyond the 1 C limit: 0. (c) V/F = 0.130 by a correctly set-up Rachford-Rice solve with the wrong K-values (61 % off): correct method with a numerical slip, half points; (d) y1 = 0.5878 correctly carried forward (11 % off): half points. (e) 116.50 C, 1.67 C off: 0."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "Wrong feed mole fractions (z1 = 0.3700 instead of 0.3489) and only stated results with no calculations. (a) 104.5 C (2.4 C off) and (b) 113.2 C (10.5 C off): 0. (c) V/F = 0.4852 (46 % off), (d) y1 = 0.4706 (11 % off) and (e) 110.3 C (4.5 C off), all unsupported: 0."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "The reply gives only final values with no working: (a) 107.1 C (0.18 C off), (b) 123.8 C (0.15 C off), (c) 0.3215 (3.3 % off), (d) 0.5329 (0.4 % off) and (e) 114.9 C (0.07 C off). Under the rules a value with no supporting working gets 0, so every part scores 0 although several values are close."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) 106.95 C (0.03 C off) and (b) 123.68 C (0.03 C off) by Antoine trials and interpolation, correct. (c) V/F = 0.3306 by Rachford-Rice with correct K-values (0.6 % off, within 2 %) and (d) y1 = 0.5315 (0.2 % off), correct. (e) 114.80 C from the V/F = 0.5 form of Rachford-Rice, 0.03 C off: full points."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 2,
+   "b": 1,
+   "c": 1,
+   "d": 1,
+   "e": 1
+  },
+  "score": 6,
+  "justification": "(a) 106.99 C (0.07 C off), correct. (b) 124.00 C, sound dew-point method but slips in the K-values (K1 = 2.7193 instead of 2.7478 at 124 C) leave it 0.35 C off: half points. (c) V/F = 0.3665 by Rachford-Rice with wrong K-values at 112 C (K1 = 2.0961 instead of 2.0528), 10 % off: correct method with a numerical slip, half points; (d) y1 = 0.5218 (1.6 % off), carried forward correctly: half points. (e) 114.49 C, 0.34 C off with a sound method: half points."
+ },
+ "openai/gpt-5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) 106.98 C (0.06 C off) and (b) 123.70 C (0.05 C off) by bracketing and refinement, correct. (c) V/F = 0.3343 by Rachford-Rice, 0.5 % above the reference despite a small slip in P1sat at 112 C (1843 instead of 1847.6 mmHg), within 2 %: full. (d) y1 = 0.5293 (0.2 % off) and (e) 114.75 C (0.08 C off) from the V/F = 0.5 Rachford-Rice equation, correct."
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 1,
+   "e": 0
+  },
+  "score": 2,
+  "justification": "Correct feed and set-up, but the Antoine vapour pressures are evaluated wrongly throughout (e.g. o-xylene 364.4 instead of 295.8 mmHg at 112 C). (a) 108.4 C (1.5 C off) and (b) 111.8 C, below its own bubble point (11.9 C off): 0. (c) V/F = 0.7600 from a correctly set-up Rachford-Rice solve with wrong K-values and further arithmetic slips (0.48 with its own K), 129 % off: correct method with a numerical slip, half points; (d) y1 = 0.4039 carried forward with the correct formula (24 % off): half points. (e) 108.0 C, 6.8 C off: 0."
+ },
+ "anthropic/claude-opus-4.5": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 1
+  },
+  "score": 7,
+  "justification": "(a) 107.35 C, sound trial method but slips in the vapour pressures leave it 0.43 C off: half points. (b) 123.59 C (0.06 C off), correct. (c) V/F = 0.3078 by Rachford-Rice with wrong vapour pressures at 112 C (benzene 1793.5 instead of 1847.6 mmHg), 7.4 % off: correct method with a numerical slip, half points; (d) y1 = 0.5330, 0.5 % off with the correct formula: full points. (e) 115.35 C, 0.52 C off, iteration stated without detail but sound method: half points."
+ },
+ "openai/gpt-5.2": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) 106.94 C (0.02 C off) and (b) 123.68 C (0.03 C off) by Antoine trials and interpolation, correct. (c) V/F = 0.3284 by Rachford-Rice, 1.2 % below the reference despite small slips in the vapour pressures at 112 C, within 2 %: full. (d) y1 = 0.5316 (0.2 % off) and (e) 114.84 C (0.01 C off) by interpolation of the V/F = 0.5 Rachford-Rice function, correct."
  }
 }

@@ -70,5 +70,257 @@
   },
   "score": 10,
   "justification": "(a) omega_u = 0.4232 rad/min and (b) K_u = 1.985, P_u = 14.85 min, correct (within 0.05 %). (c) K_c = 1.191, tau_I = 7.42 min, tau_D = 1.856 min, correct. (d) GM = 2.165 at omega_pc = 0.5854 rad/min and (e) PM = 45.5 deg at omega_gc = 0.2839 rad/min, correct with phase and magnitude values that check out. (f) M_s = 2.12 at 0.47 rad/min from a scan of |1+L|^2 and a parabolic fit (0.2 % and 0.1 % off): full points."
+ },
+ "meta-llama/llama-3.2-3b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) omega_u = 1.5 rad/min is a guess with no phase calculation (reference 0.4232): 0. (b) K_u = 1.5 unsupported and P_u = 1.5*2*pi = 9.42 min uses the wrong formula: 0. (c) K_c = 0.9, tau_I = 4.71 min, tau_D = 1.175 min correctly follow the Ziegler-Nichols rules from its own (b): half points as error carried forward. (d) GM = 3.61 from a wrong formula, (e) PM = 270 deg and (f) M_s = 0.4167 are wrong: 0."
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) omega_u = pi rad/min from a meaningless phase argument (reference 0.4232): 0. (b) K_u = 1/pi is a wrong formula, P_u = 2 min follows from the wrong (a): 0. (c) K_c = 0.6/pi, tau_I = 1 min, tau_D = 0.25 min correctly follow the Ziegler-Nichols rules from its own (b): half points as error carried forward. (d)-(f) confuse L with the sensitivity and report phases instead of margins (omega = 1, 'M_s' = 90 deg): 0."
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) omega_u = 3.57 rad/min and (b) K_u = 3.44, P_u = 3.55 min are unsupported values (reference 0.4232, 1.984, 14.85; P_u is not even 2*pi/omega_u): 0. (c) K_c = 2.05, tau_I = 1.78 min, tau_D = 0.44 min follow the stated Ziegler-Nichols rules from its own (b): half points as error carried forward. (d) GM = 3.13 at 5.91 rad/min, (e) PM = 55 deg at 3.57 rad/min and (f) M_s = 1.16e-5 are unsupported and wrong: 0."
+ },
+ "mistralai/mistral-nemo": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) omega_u = 1.5 rad/min is asserted without calculation (reference 0.4232): 0. (b) K_u = 0.25 unsupported and P_u = 4.17 min taken as 1/omega_u (wrong formula): 0. (c) K_c = 0.15, tau_I = 2.085 min, tau_D = 0.522 min correctly follow the Ziegler-Nichols rules from its own (b): half points as error carried forward. (d) GM = 1.6 at 1.25 rad/min, (e) PM = 35.3 deg at 1.41 rad/min and (f) M_s = 1.6 at 1.25 rad/min are unsupported and wrong: 0."
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "(a) the phase equation is set up correctly but the value 0.664 rad/min is not solved in the working and is 57 % off (reference 0.4232): 0. (b) K_u = 2.41 is unsupported (1/|G| at its own 0.664 would be 4.32), P_u = 9.45 min: 0. (c) K_c = 1.45 and tau_I = 4.73 min follow from (b) but tau_D = 0.591 min is P_u/16, not P_u/8: 0. (d) GM = 2.06 at 0.664, (e) PM = 43.9 deg at 0.234 rad/min and (f) M_s = 1.53 at 1.32 rad/min are bare values with no working, and omega_pc, omega_gc and omega are far off: 0."
+ },
+ "openai/gpt-4o-mini": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) omega_u = 0.5 rad/min from an unsolved phase sum with wrong lag angles (arctan(omega/6) instead of arctan(6 omega)) (reference 0.4232): 0. (b) K_u = 1.5 is unsupported, P_u = 4 pi min follows from (a): 0. (c) K_c = 0.9, tau_I = 2 pi min, tau_D = pi/2 min correctly follow the Ziegler-Nichols rules from its own (b): half points as error carried forward. (d) 0.75 (no GM), (e) PM = 40 deg with no omega_gc and (f) M_s = 4 at 1 rad/min are unsupported and wrong: 0."
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "Bare FINAL lines with no working. (a) omega_u = 1.5708 rad/min (reference 0.4232) and (b) K_u = 2.0, P_u = 1.0 min (not even 2*pi/omega_u) are wrong: 0. (c) K_c = 1.2, tau_I = 0.5, tau_D = 0.125 min match 0.6 K_u, P_u/2, P_u/8 of its own (b) but with no working shown: 0. (d) GM = 1.5, (e) PM = 45.0 deg and (f) M_s = 1.5, all at 1.5708 rad/min, are unsupported and wrong: 0."
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "parts": {
+   "a": 0,
+   "b": 0.5,
+   "c": 0.5,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 1.0,
+  "justification": "(a) treats the dead time as a constant -180 deg and drops the -1.5 omega term, giving omega_u = 0.72 rad/min (reference 0.4232): 0. (b) correct formulas K_u = 1/|G(i omega_u)| and P_u = 2 pi/omega_u = 8.73 min carried forward from (a), but an arithmetic slip ((6*0.72)^2 taken as 31.1 instead of 18.7) gives K_u = 6.45 instead of 5.09 at its own omega_u: half of the carried-forward credit, 0.5. (c) K_c = 3.87, tau_I = 4.37 min, tau_D = 1.09 min follow the Ziegler-Nichols rules from its own (b): half points as error carried forward. (d) takes omega_pc = omega_u ignoring the controller (GM = 21.74), (e) PM = 102.1 deg ignores dead time and controller, and (f) M_s = 0.5 assumes |1+L| = 1+|L|: wrong methods, 0."
+ },
+ "google/gemma-3-4b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) omega_u = 1.5 rad/min is a guess (reference 0.4232): 0. (b) K_u = 1/3 from a high-frequency limit with an assumed K_c = 1 is a wrong method, P_u = 4.19 min follows from the guess: 0. (c) K_c = 0.2, tau_I = 2.095 min, tau_D = 0.524 min correctly follow the Ziegler-Nichols rules from its own (b): half points as error carried forward. (d) omega_pc = 3.78 with no GM value, (e) omega_gc = 1.8 with a guessed PM of 30 deg and (f) M_s = 1.2 at 1.8 rad/min are guesses: 0."
+ },
+ "google/gemma-3-27b-it": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) omega_u = 1.44 rad/min comes from a claimed script whose denominator polynomial is wrong (reversed coefficients) (reference 0.4232; the true phase at 1.44 is -369 deg): 0. (b) K_u = 3.54 is not 1/|G| at its own 1.44 (that is 28.6) and P_u = 4.36 min follows the wrong (a): 0. (c) K_c = 2.12, tau_I = 2.18 min, tau_D = 0.55 min correctly follow the Ziegler-Nichols rules from its own (b): half points as error carried forward. (d) GM = 1.28 at 1.64 rad/min, (e) PM = 46.93 deg at omega_gc = 0.43 rad/min (omega_gc 52 % off) and (f) M_s = 0.43 (impossible below 1 here) at 0.13 rad/min are wrong: 0."
+ },
+ "microsoft/phi-4": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0.5,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 1.5,
+  "justification": "(a) the phase equation is set up correctly but omega_u = 0.5 rad/min is not solved in the working and is 18 % off (reference 0.4232; the phase at 0.5 is -200 deg): 0. (b) correct formulas, K_u = 2.5 (1/|G| at its own 0.5 is 2.58) and P_u = 4 pi = 12.57 min carried forward from (a): half points as error carried forward. (c) K_c = 1.5, tau_I = 6.28 min, tau_D = 1.57 min correctly follow the Ziegler-Nichols rules from its own (b): half points. (d) GM = 1.67 at 0.3 rad/min (omega_pc below omega_u, impossible), (e) PM = 30 deg at 0.4 rad/min and (f) M_s = 1.2 at 0.35 rad/min are unsupported and wrong: 0."
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) omega_u = 0.5 rad/min is asserted without solving the phase equation (18 % above 0.4232): 0. (b) K_u = 5.56 comes from a miscalculated |G(0.5)| = 0.18 (the true value is 0.388), so it is not even a correct carry-forward (P_u = 12.57 min is): 0. (c) K_c = 3.34, tau_I = 6.285 min, tau_D = 1.57 min are correct carry-forwards of its own (b): half points. (d) GM = 1.0, (e) PM = 120 deg at 0.2 rad/min and (f) M_s = 2.0 at 0.5 rad/min (5.4 % and 6.5 % off) have no supporting working and are wrong: 0."
+ },
+ "mistralai/mistral-large": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 1,
+   "f": 0
+  },
+  "score": 8,
+  "justification": "(a) omega_u = 0.425 rad/min (0.4 % off) and (b) K_u = 1.984, P_u = 14.78 min (0.5 % off) by trial and interpolation, correct. (c) K_c = 1.19, tau_I = 7.39 min, tau_D = 1.85 min and (d) GM = 2.16 at omega_pc = 0.584 rad/min (0.3 % off), correct with tabulated phase and magnitude values. (e) omega_gc = 0.284 rad/min is right but PM = 45.03 deg is 1.1 % low from a small slip in summing the phase terms: half points. (f) M_s = 1.86 at 0.584 rad/min only compares omega_pc and omega_gc without a search (12 % and 24 % off): 0."
+ },
+ "deepseek/deepseek-chat": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0.5,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0.5,
+  "justification": "(a) omega_u = 0.779 rad/min (84 % off; the phase there is -261 deg) with no working: 0. (b) K_u = 3.37 from a stated |G| = 0.297 that is not the magnitude at its own 0.779 (0.166), so only P_u = 8.06 min carries forward correctly: 0. (c) K_c = 2.02, tau_I = 4.03 min, tau_D = 1.01 min are correct carry-forwards of its own (b): half points. (d) uses the controller phase as a sum of separate arctangents, a wrong formula, giving GM = 1.58 at 0.779 rad/min (27 % and 33 % off): 0; (e) omega_gc = 0.511 rad/min is 80 % off with no working (PM = 45.6 deg is unsupported) and (f) M_s = 1.34 is 37 % off: 0."
+ },
+ "openai/o3": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 0,
+  "justification": "The reply gives only FINAL values with no working at all. Several are close to the reference ((a) 0.422 rad/min, (b) 1.98 and 14.9 min, (c) 1.19, 7.44 and 1.86 min, (d) 2.18 at 0.59 rad/min, (e) 45 deg at 0.284 rad/min, (f) 2.1 at 0.48 rad/min), but under the rule that a value with no supporting working gets zero, every part gets 0."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 2,
+   "f": 0
+  },
+  "score": 9,
+  "justification": "(a) omega_u = 0.423 rad/min from the phase condition solved numerically, and (b) K_u = 1/0.5043 = 1.98, P_u = 14.85 min, correct. (c) K_c = 1.19, tau_I = 7.42 min, tau_D = 1.86 min, correct. (d) GM = 1/0.4632 = 2.16 at omega_pc = 0.584 rad/min and (e) PM = 45.4 deg at omega_gc = 0.284 rad/min, correct with intermediate magnitudes and phases that check out. (f) is not calculated: 0."
+ },
+ "google/gemini-2.5-pro": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 2,
+   "f": 1
+  },
+  "score": 10,
+  "justification": "(a) omega_u = 0.4233 rad/min and (b) K_u = 1.987, P_u = 14.84 min, correct (within 0.15 %). (c) K_c = 1.192, tau_I = 7.420 min, tau_D = 1.855 min, correct. (d) GM = 2.162 at omega_pc = 0.5856 rad/min and (e) PM = 45.42 deg at omega_gc = 0.2846 rad/min, correct with phase and magnitude values that check out. (f) M_s = 2.136 at 0.471 rad/min by minimising |1+L| numerically (1.0 % and 0.3 % off, just within tolerance despite a small slip in L(0.471i)): full points."
+ },
+ "openai/gpt-5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 2,
+   "f": 0.5
+  },
+  "score": 9.5,
+  "justification": "(a) omega_u = 0.42184 rad/min (0.3 % off) and (b) K_u = 1.975, P_u = 14.89 min (within 0.5 %), correct. (c) K_c = 1.185, tau_I = 7.447 min, tau_D = 1.862 min, correct. (d) GM = 2.17 at omega_pc = 0.586 rad/min and (e) PM = 45.8 deg at omega_gc = 0.2827 rad/min, within 0.7 %, correct with the right phase and magnitude equations. (f) M_s = 2.14 at 0.45 rad/min from a frequency scan, 1.2 % and 4.1 % off (|L(0.45i)| is 0.618, not 0.637): half points."
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "parts": {
+   "a": 0,
+   "b": 1,
+   "c": 0.5,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 1.5,
+  "justification": "(a) omega_u = 0.537 rad/min contradicts its own table (the phase is already -200 deg at 0.5) and is 27 % off: 0. (b) K_u = 2.77 and P_u = 11.70 min use the right formulas with its wrong omega_u, with a slip in |G| (dropped the +1 terms, 0.361 instead of 0.344): half points. (c) K_c = 1.66, tau_I = 5.85 min, tau_D = 1.46 min are correct carry-forwards: half points. (d) GM = 1.58 (27 % off) from an unsupported |G(0.585)| = 0.334 (true 0.295), (e) PM = 57 deg at 0.455 rad/min and (f) M_s = 1.45 have no supporting working and are far off: 0."
+ },
+ "anthropic/claude-opus-4.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "score": 5,
+  "justification": "(a) omega_u = 0.422 rad/min and (b) K_u = 1.97, P_u = 14.89 min (within 0.8 %) by tabulating the phase, correct. (c) K_c = 1.18, tau_I = 7.45 min, tau_D = 1.86 min, correct (within 0.9 %). (d) the phase equation adds an extra -90 deg on top of the PID phase, and omega_pc = 0.68 rad/min is 16 % off (GM 2.13, |L(0.68i)| is really 0.381): 0. (e) PM = 43 deg at 0.40 rad/min (5.5 % and 41 % off) and (f) M_s = 1.8 at 0.55 rad/min with no search (15 % off) have no supporting working: 0."
+ },
+ "openai/gpt-5.2": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 2,
+   "f": 0.5
+  },
+  "score": 9.5,
+  "justification": "(a) omega_u = 0.423 rad/min and (b) K_u = 1.98, P_u = 14.9 min, correct (within 0.4 %). (c) K_c = 1.19, tau_I = 7.43 min, tau_D = 1.86 min, correct. (d) GM = 2.16 at omega_pc = 0.585 rad/min and (e) PM = 45.5 deg at omega_gc = 0.284 rad/min, correct with phase and magnitude values that check out (the FINAL lines list only one value per part, the working gives all). (f) M_s = 2.12 is correct but its frequency 0.46 rad/min is 2.0 % low: half points."
  }
 }
