@@ -1,0 +1,12 @@
+{
+ "model": "anthropic/claude-haiku-5.5",
+ "problem": "P15",
+ "run": 1,
+ "served_model": "anthropic/claude-haiku-5.5",
+ "provider": "Claude Code sub-agent (this session)",
+ "text": "**Basis:** 100 g feed. Mole fractions are z = (0.34892, 0.39438, 0.25670), from 30/78.11 = 0.38407, 40/92.14 = 0.43412 and 30/106.17 = 0.28257 mol, normalised to 1.10076 mol.\n\n**Conversions:** P = 120 kPa = 900.08 mmHg (1 mmHg = 0.133322 kPa). K_i = P_i^sat(kPa)/120 = 10^(A − B/(C+T)) × 0.133322 / 120.\n\n**(a) Bubble point**\n\nSolve Σ z_i K_i = 1 by iterating on T.\n\n- At 106.9 °C: P^sat = 1621.8 (benzene), 682.8 (toluene), 250.6 (o-xylene) mmHg, giving K = 1.8027, 0.7591, 0.2786.\n- Σ z_i K_i = 0.9999 (residual of about 1e-4 gives a T correction of about 0.02 K).\n\nT_bubble ≈ 106.9 °C.\n\n**(b) Dew point**\n\nSolve Σ z_i / K_i = 1.\n\n- At 123.5 °C: K = 2.7162, 1.1992, 0.4693, so Σ z_i/K_i = 1.0043.\n- At 125 °C: Σ z_i/K_i = 0.9634.\n- Interpolating locally gives T ≈ 123.66 °C.\n\nT_dew ≈ 123.7 °C.\n\n**(c) Flash at 112 °C, 120 kPa**\n\n- P^sat at 112 °C = 1850.3, 790.1, 295.9 mmHg, giving K = 2.0557, 0.8787, 0.3288.\n- Bubble and dew checks: Σ z K = 1.148 > 1 and Σ z/K = 1.399 > 1, so the feed is inside the two-phase region.\n- Rachford–Rice: f(ψ) = Σ z_i(K_i − 1)/(1 + ψ(K_i − 1)) = 0.\n  - f(0.33) = +0.00204\n  - f(0.34) = −0.00208\n  - Root: ψ ≈ 0.335.\n\nV/F ≈ 0.335 mol/mol.\n\n**(d) Benzene mole fraction in vapour**\n\nAt ψ = 0.33495:\n- Liquid: x = z/(1 + ψ(K − 1)) = (0.25778, 0.41107, 0.33116).\n- Vapour: y = K x = (0.5299, 0.3612, 0.1089).\n- Checks: Σx = 1.0000, Σy = 0.9999.\n\ny_benzene ≈ 0.530.\n\n**(e) Temperature for V/F = 0.5**\n\nAt ψ = 0.5, Rachford–Rice reduces to Σ z_i(K_i − 1)/(K_i + 1) = 0 (since 1 + 0.5(K − 1) = 0.5(K + 1)).\n\n- At 112 °C: g = −0.03460.\n- At 114 °C: K = 2.1582, 0.9285, 0.3502; g = −0.01020.\n- At 115 °C: K = 2.2124, 0.9546, 0.3614; g = +0.00211.\n- Interpolating: T ≈ 114.8 °C, which lies between T_bubble and T_dew as required.\n\n**Accuracy:** All Antoine evaluations and root-finding steps were done by hand at about 5–6 significant figures. The temperatures are good to about ±0.1 °C and the compositions to about ±0.001. No tool or code check was run, so these figures are hand-computed, not verified by a second method.\n\nFINAL (a): 106.9 °C\nFINAL (b): 123.7 °C\nFINAL (c): 0.335 mol/mol\nFINAL (d): 0.530 (mole fraction)\nFINAL (e): 114.8 °C",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "cost": null,
+ "tools_used": []
+}

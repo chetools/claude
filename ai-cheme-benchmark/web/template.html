@@ -13,18 +13,11 @@
 </style>
 </head>
 <body>
-<aside class="sidebar">
-  <div class="side-h">Topic</div>
-  <div id="f-topic"></div>
-  <div class="side-h">Difficulty</div>
-  <div id="f-diff"></div>
-  <div class="side-foot">Filters apply to the Results charts and table, and to the problems listed in the Problems tab.</div>
-</aside>
 <main class="main">
   <div id="app">
     <h1>AI models on ChemE problems</h1>
-    <p class="intro">@@N_MODELS@@ AI models answered twelve undergraduate chemical-engineering problems, @@RUNS_TEXT@@.
-    Models that scored 10/10 on all twelve were also given three harder Frontier problems (P13–P15).
+    <p class="intro">@@N_MODELS@@ AI models answered fifteen undergraduate chemical-engineering problems, @@RUNS_TEXT@@,
+    rated from difficulty 1 (direct application of one relation) to 5 (coupled nonlinear design problems).
     Every response was graded from 0 to 10 against a reference solution that is computed in Python (Code tab).</p>
     @@BANNER@@
     <div id="err" class="err" hidden></div>
@@ -38,15 +31,14 @@
     <!-- ============================== RESULTS ============================== -->
     <section id="panel-results" class="tpanel">
       <div id="metrics" class="metrics"></div>
-      <div id="empty" class="warn" hidden>No problem matches the filters. Tick at least one topic and one difficulty.</div>
       <h2>Models</h2>
       <div class="tablewrap"><table class="data" id="model-table"></table></div>
-      <p class="caption">Mean score is the mean over the selected problems@@RUNS_CAPTION@@, in percent of the maximum
-      score of 10. Frontier problems (off by default) count only for the models that were given them, so when they
-      are selected the models are not all scored on the same problems; the last column is always the mean over the
-      twelve problems P01–P12 that every model answered, whatever the filters. Cost is for
-      the whole benchmark and
-      does not depend on the filters.</p>
+      <p class="caption">Mean score is the mean over all fifteen problems@@RUNS_CAPTION@@, in percent of the maximum
+      score of 10. Cost is for the whole benchmark.</p>
+      <h2>Problems</h2>
+      <div class="tablewrap"><table class="data" id="problem-table"></table></div>
+      <p class="caption">Difficulty is rated from 1 to 5 for an undergraduate chemical-engineering student; the levels
+      are described in the Methodology tab. Mean score is the mean over all models' replies to that problem.</p>
       <div class="charts">
         <div class="chart" id="plot-bar"></div>
         <div class="chart" id="plot-date"></div>
@@ -54,8 +46,6 @@
         <div class="chart" id="plot-heat"></div>
       </div>
       <p class="caption" id="params-note"></p>
-      <p class="caption">Heatmap: a blank cell under P13–P15 means the model was not given that problem. The
-      Frontier problems went only to models that scored 10/10 on every one of P01–P12.</p>
     </section>
 
     <!-- ============================== PROBLEMS ============================== -->

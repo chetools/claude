@@ -37,7 +37,7 @@ of `problems/PNN.md`), with nothing added. Each problem was a separate conversat
   settings are Claude Code's defaults, and their cost is not shown ("—") because these runs are not billed
   per request.
 
-## Which models were run, and the Frontier problems
+## Which models were run
 
 The models were added in steps, roughly in order of release, to follow the progress of widely available
 models over time: small and older models first, then 2024 flagships (GPT-4o, Mistral Large 2, DeepSeek V3),
@@ -51,21 +51,45 @@ called. GPT-4 and o1 were left out to stay within the budget. Muse Spark 1.3 (Me
 outside OpenRouter (see Sampling settings); its release month is shown as 2026-10, the month it was run, and
 was not checked against an announcement.
 
-Problems P13–P15 ("Frontier") were written after P01–P12 had been graded for the models up to Claude Opus
-4.5, to be much harder than P01–P12 (coupled nonlinear systems solved by hand). They were given only to
-models that scored 10/10 on every one of P01–P12. Their reference solutions were checked against an
-independent second solution like the others. They were written once and not changed after any model's
-reply was seen; no model was tried on them before they were fixed. The choice of who gets them depends
-on the P01–P12 grades, so the Frontier scores compare only the models that qualified.
+Problems P13–P15 were written after P01–P12 had been graded for the models up to Claude Opus 4.5, to be
+much harder than P01–P12 (coupled nonlinear systems solved by hand). At first they were given only to the
+models that scored 10/10 on every one of P01–P12; to compare every model on the same fifteen problems, all
+the other models were then run on them as well, with the same prompt and settings. Their reference
+solutions were checked against an independent second solution like the others. They were written once and
+not changed after any model's reply was seen; no model was tried on them before they were fixed.
 
-## Difficulty ratings
+## Difficulty levels
 
-Each problem's difficulty is the author's estimate for an undergraduate student, set when the problem was
-written (Frontier is a separate tier, described above). P07 and P08 were moved from "Extremely hard" to "Hard"
-after grading: each needs only one scalar root (the phase-crossover frequency in P07) or a closed-form
-stability test (the Routh array in P08), while the other four, P03, P04, P11 and P12, need coupled iterations
-or stage-by-stage calculations. Of those six problems, P07 and P08 also had the two highest mean scores
-across the models. The change moves them between filters and chart groups only; no grade changed.
+Each problem has a difficulty level from 1 to 5, judged for an undergraduate chemical-engineering student who
+has taken the relevant course (fluid mechanics, process dynamics and control, or separations). The levels
+describe what a problem demands of the student, not how the AI models scored on it.
+
+- **Level 1, direct application** (P01, P05, P09). The problem maps onto one standard result from the course,
+  such as the laminar friction factor, the step response of a first-order system or the Fenske equation. The
+  work is to identify that result, substitute the data with consistent units and evaluate it; no iteration and
+  no modelling decisions are needed.
+- **Level 2, routine multi-step analysis** (P02, P06, P10). Several standard relations are chained, and one of
+  them may be implicit, such as the Colebrook equation solved by simple successive substitution. The student
+  has to set up a balance (a mechanical-energy balance, a component balance) and match a transfer function to
+  its standard form, but the path to the answer is the one taught in lectures.
+- **Level 3, analysis with one nonlinear step** (P07, P08). The problem requires a frequency-response or
+  stability analysis, with one nonlinear scalar equation solved numerically by hand (the phase-crossover
+  frequency) or a symbolic stability test carried through (the Routh array), and the results then reused in
+  later parts. An error in the first step propagates through the rest.
+- **Level 4, coupled or stage-wise calculation** (P03, P04, P11, P12). Several unknowns are coupled: flows and
+  friction factors in a pipe network, the friction factor and mass flux in compressible flow, or stage-by-stage
+  stepping between equilibrium and operating lines. The student must organise a systematic iteration or a
+  long sequence of dependent calculations, and keep track of convergence and of the many intermediate values.
+- **Level 5, design-scale nonlinear problem** (P13, P14, P15). The problem is closer to a design-project task
+  than to an examination question: a pumped two-loop network with a demand node, a dead-time control loop
+  analysed for gain and phase margins and peak sensitivity without approximations, or a ternary flash with
+  bubble, dew and fixed-vaporisation conditions. It requires solving coupled nonlinear systems by hand with
+  care over every intermediate result.
+
+The levels follow the ratings set when the problems were written: level 1 was "Easy", 2 "Medium", 3 "Hard",
+4 "Extremely hard" and 5 "Frontier". P07 and P08 were moved from "Extremely hard" to "Hard" after grading,
+because each needs only one scalar root or a closed-form stability test, while P03, P04, P11 and P12 need
+coupled iterations or stage-by-stage calculations. No grade depends on the level.
 
 ## Grading rubric
 

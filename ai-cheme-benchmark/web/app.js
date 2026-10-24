@@ -1,10 +1,9 @@
-/* AI models on ChemE problems: filters, table, charts, tabs, self-test.
+/* AI models on ChemE problems: tables, charts, tabs, self-test.
    Data: window.DATA = {models, problems, responses[{model, problem, run, score}]} (response text is only in the
    pre-rendered, escaped HTML of the Problems tab; it never goes through innerHTML here). */
 (function () {
   'use strict';
   var D = window.DATA;
-  var DIFF_ORDER = ['Easy', 'Medium', 'Hard', 'Extremely hard', 'Frontier'];
   var PALETTE = ['#0072B2', '#D55E00', '#009E73', '#CC79A7', '#E69F00', '#56B4E9', '#444444', '#8C564B'];
   var CONFIG = { responsive: true, displaylogo: false };
   var LAYOUT = { font: { family: 'Source Sans Pro, sans-serif', size: 13, color: '#31333f' }, paper_bgcolor: '#fff',
@@ -23,35 +22,8 @@
   var vendors = uniq(D.models.map(function (m) { return m.vendor; }));
   function vcolor(v) { return PALETTE[vendors.indexOf(v) % PALETTE.length]; }
 
-  /* ------------------------------------------------------------ filters */
-  var topics = uniq(D.problems.map(function (p) { return p.topic; }));
-  var diffs = uniq(D.problems.map(function (p) { return p.difficulty; })).sort(function (a, b) {
-    var ia = DIFF_ORDER.indexOf(a), ib = DIFF_ORDER.indexOf(b);
-    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
-  });
-  function checks(boxId, values, group) {
-    var box = document.getElementById(boxId);
-    values.forEach(function (v, i) {
-      var id = group + '-' + i, w = el('div', { 'class': 'field check' });
-      var c = el('input', { type: 'checkbox', id: id, 'data-group': group, value: v });
-      c.checked = v !== 'Frontier';   // Frontier problems went only to some models: off by default
-      c.addEventListener('change', update);
-      w.appendChild(c); w.appendChild(el('label', { 'for': id }, v));
-      box.appendChild(w);
-    });
-  }
-  checks('f-topic', topics, 'topic');
-  checks('f-diff', diffs, 'diff');
-  var DEFAULT_PIDS = null;   // the problems selected on load; the build's Python means cover these
-  function selected(group) {
-    return [].slice.call(document.querySelectorAll('input[data-group=' + group + ']'))
-      .filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
-  }
-  function selectedProblems() {
-    var t = selected('topic'), d = selected('diff');
-    return D.problems.filter(function (p) { return t.indexOf(p.topic) >= 0 && d.indexOf(p.difficulty) >= 0; })
-      .map(function (p) { return p.id; });
-  }
+  /* Every model answered every problem, so all statistics cover all problems (no filters). */
+  var PIDS = D.problems.map(function (p) { return p.id; });
 
   /* ------------------------------------------------------------ statistics */
   /* Per model, for the problems in `pids`: mean percent, and min/max over the per-run totals. */
@@ -93,26 +65,14 @@
     return fmt1(s.mean) + ' %' + (MULTI ? ' (' + fmt1(s.min) + ' – ' + fmt1(s.max) + ')' : '');
   }
 
-  // like-for-like mean over the problems every model answered (all but Frontier), independent of the filters
-  var CORE = D.problems.filter(function (p) { return p.difficulty !== 'Frontier'; }).map(function (p) { return p.id; });
-  var CORE_ST = stats(CORE);
-
   var dirty = true;
   function update() {
-    var pids = selectedProblems(), st = stats(pids);
-    document.getElementById('empty').hidden = pids.length > 0;
-    // Problems tab: show only the selected problems
-    [].slice.call(document.querySelectorAll('.prob')).forEach(function (s) {
-      s.style.display = pids.indexOf(s.getAttribute('data-pid')) >= 0 ? '' : 'none';
-    });
-    [].slice.call(document.querySelectorAll('#toc-prob a')).forEach(function (a) {
-      var h = document.getElementById(a.getAttribute('href').slice(1));
-      a.style.display = h && h.closest('.prob').style.display === 'none' ? 'none' : '';
-    });
+    var pids = PIDS, st = stats(pids);
     var rows = D.models.filter(function (m) { return st[m.id]; })
       .sort(function (a, b) { return st[b.id].mean - st[a.id].mean; });
     metrics(rows, st, pids);
     table(rows, st);
+    problemTable();
     if (document.getElementById('panel-results').hidden) { dirty = true; return; }
     dirty = false;
     charts(rows, st, pids);
@@ -125,8 +85,9 @@
       ['Best model', fmt1(st[rows[0].id].mean) + ' %', rows[0].name],
       ['Weakest model', fmt1(st[rows[rows.length - 1].id].mean) + ' %', rows[rows.length - 1].name]
     ] : [['Best model', '—', ''], ['Weakest model', '—', '']];
-    cards.push(['Problems', String(pids.length), 'of ' + D.problems.length]);
-    cards.push(['Responses graded', String(graded), 'of ' + D.responses.length]);
+    cards.push(['Problems', String(pids.length), 'difficulty levels 1–5']);
+    cards.push(['Responses graded', String(graded), 'of ' + D.models.length * pids.length + ' (' + D.models.length +
+      ' models × ' + pids.length + ' problems)']);
     cards.forEach(function (c) {
       var d = el('div', { 'class': 'metric' });
       d.appendChild(el('div', { 'class': 'm-label' }, c[0]));
@@ -139,8 +100,7 @@
   function table(rows, st) {
     var t = document.getElementById('model-table'); t.textContent = '';
     var hr = el('tr');
-    ['Model', 'Vendor', 'Release', 'Cost (USD)', MULTI ? 'Mean score % (min – max of runs)' : 'Mean score %',
-     'Mean over P01–P12 %']
+    ['Model', 'Vendor', 'Release', 'Cost (USD)', MULTI ? 'Mean score % (min – max of runs)' : 'Mean score %']
       .forEach(function (h) { hr.appendChild(el('th', null, h)); });
     var th = el('thead'); th.appendChild(hr); t.appendChild(th);
     var tb = el('tbody');
@@ -151,7 +111,34 @@
       tr.appendChild(el('td', null, m.release_date));
       tr.appendChild(el('td', null, costText(m)));
       tr.appendChild(el('td', { 'class': 'mean' }, meanText(st[m.id])));
-      tr.appendChild(el('td', { 'class': 'core' }, CORE_ST[m.id] ? fmt1(CORE_ST[m.id].mean) + ' %' : '—'));
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+  }
+
+  /* One row per problem: its difficulty level (1–5) and the mean score over all models' replies. */
+  function problemMeans() {
+    var out = {};
+    D.problems.forEach(function (p) {
+      var s = D.responses.filter(function (r) { return r.problem === p.id; }).map(function (r) { return r.score; });
+      out[p.id] = s.length ? 10 * mean(s) : null;
+    });
+    return out;
+  }
+  function problemTable() {
+    var t = document.getElementById('problem-table'); t.textContent = '';
+    var hr = el('tr'), pm = problemMeans();
+    ['Problem', 'Title', 'Topic', 'Difficulty (1–5)', 'Mean score %']
+      .forEach(function (h) { hr.appendChild(el('th', null, h)); });
+    var th = el('thead'); th.appendChild(hr); t.appendChild(th);
+    var tb = el('tbody');
+    D.problems.forEach(function (p) {
+      var tr = el('tr', { 'data-pid': p.id });
+      tr.appendChild(el('td', null, p.id));
+      tr.appendChild(el('td', null, p.title));
+      tr.appendChild(el('td', null, p.topic));
+      tr.appendChild(el('td', { 'class': 'level' }, String(p.level)));
+      tr.appendChild(el('td', { 'class': 'pmean' }, pm[p.id] == null ? '—' : fmt1(pm[p.id]) + ' %'));
       tb.appendChild(tr);
     });
     t.appendChild(tb);
@@ -262,7 +249,7 @@
   function selftest() {
     var details = [], ok = true;
     function check(name, pass, info) { details.push({ name: name, pass: pass, info: info }); if (!pass) ok = false; }
-    var pids = selectedProblems();
+    var pids = PIDS;
     D.models.forEach(function (m) {
       var tot = {}, cnt = {}, i, r;
       for (i = 0; i < D.responses.length; i++) {
@@ -278,10 +265,7 @@
       var same = !!shown && shown.length === want.length && shown.every(function (v, j) { return Math.abs(v - want[j]) < 0.051; });
       check('table matches responses: ' + m.id, same, { shown: shown, recomputed: want });
       var ex = window.EXPECT[m.id];
-      var core = document.querySelector('#model-table tr[data-model="' + m.id + '"] td.core');
-      check('P01–P12 column matches build-time Python: ' + m.id, !!core && !!ex &&
-        Math.abs(Number(core.textContent.match(/-?[0-9.]+/)[0]) - ex.mean) < 0.051, { shown: core && core.textContent, python: ex && ex.mean });
-      if (pids.join() === DEFAULT_PIDS.join() && ex) {
+      if (ex) {
         check('table matches build-time Python: ' + m.id,
           !!shown && Math.abs(shown[0] - ex.mean) < 0.051 &&
           (!MULTI || (Math.abs(shown[1] - ex.min) < 0.051 && Math.abs(shown[2] - ex.max) < 0.051)), { shown: shown, python: ex });
@@ -290,6 +274,16 @@
     var graded = document.querySelectorAll('#metrics .metric')[3];
     check('responses-graded card', !!graded && graded.querySelector('.m-value').textContent === String(
       D.responses.filter(function (r) { return pids.indexOf(r.problem) >= 0; }).length), null);
+    /* Problem table: mean score per problem recomputed in a plain loop, and the level matches the data. */
+    D.problems.forEach(function (p) {
+      var s = 0, n = 0, i;
+      for (i = 0; i < D.responses.length; i++) if (D.responses[i].problem === p.id) { s += D.responses[i].score; n++; }
+      var tr = document.querySelector('#problem-table tr[data-pid="' + p.id + '"]');
+      var shown = tr && Number(tr.querySelector('.pmean').textContent.match(/-?[0-9.]+/)[0]);
+      check('problem table: ' + p.id, !!tr && Math.abs(shown - 10 * s / n) < 0.051 &&
+        tr.querySelector('.level').textContent === String(p.level) && p.level >= 1 && p.level <= 5,
+        { shown: shown, recomputed: 10 * s / n });
+    });
     /* Where-points-were-lost grids: parts add up to the score, and every lost part has the same note in the reply. */
     var grids = document.querySelectorAll('.egrid tbody tr'), gridOk = true, gridInfo = [];
     [].forEach.call(grids, function (tr) {
@@ -311,7 +305,6 @@
   }
 
   try {
-    DEFAULT_PIDS = selectedProblems();
     update();
     if (/[?&]selftest\b/.test(location.search)) selftest();
   } catch (e) {

@@ -1,0 +1,12 @@
+{
+ "model": "anthropic/claude-haiku-5.5",
+ "problem": "P13",
+ "run": 1,
+ "served_model": "anthropic/claude-haiku-5.5",
+ "provider": "Claude Code sub-agent (this session)",
+ "text": "**Method.** I solved this by hand, with no tools, so the results are good to about 1%. Pipe 3 is the most sensitive, since it depends on a small head difference.\n\n**Constants.** ρg = 9792 N/m³, ν = μ/ρ = 1.004×10⁻⁶ m²/s, 2g = 19.62 m/s².\n\n**Pipe resistances.** For each pipe, h = (fL/D + ΣK)·Q²/(2gA²) = R·Q², with f from Colebrook at the converged flow in that pipe.\n\n| Pipe | D (m) | f | R (s²/m⁵) |\n|---|---|---|---|\n| Suction | 0.200 | 0.0164 | 199 (h_s = 199·Q_p²) |\n| 1 (A–B) | 0.125 | 0.0242 | 2.10×10⁴ |\n| 2 (A–C) | 0.100 | 0.0184 | 7.49×10⁴ |\n| 3 (B–C) | 0.075 | 0.0260 (Re ≈ 6×10⁴) | 1.89×10⁵ |\n| 4 (B–D) | 0.100 | 0.0261 | 7.71×10⁴ |\n| 5 (C–D) | 0.125 | 0.0179 | 2.11×10⁴ |\n| 6 (D–T) | 0.150 | 0.0170 | 2.95×10³ |\n\n**Heads.**\n- Pump outlet (node A): H_A = (1 − h_s) + (80 − 12000 Q_p²) = 81 − 12199 Q_p² m.\n- B: H_B = H_A − R₁Q₁²; C: H_C = H_A − R₂Q₂².\n- D: H_D = 14 + R₆Q₆², where Q₆ = Q_p − 0.016 m³/s.\n- Pipe 3 flow is set by H_B − H_C; pipe 4 by H_B − H_D; pipe 5 by H_C − H_D.\n\n**Solution.** The unknowns are Q₁ and Q₂, with Q_p = Q₁ + Q₂. Newton iteration on the node balances at B and C gives:\n- Q₁ = 31.96 L/s, Q₂ = 17.83 L/s, so Q_p = 49.79 L/s\n- Q₃ = 3.51 L/s (B to C), Q₄ = 12.44 L/s, Q₅ = 21.33 L/s, Q₆ = 33.79 L/s\n- H_A = 50.76 m, H_B = 29.28 m, H_C = 26.96 m, H_D = 17.36 m\n\nResiduals at the solution are about 1×10⁻⁵ m³/s at both B and C, and Q₄ + Q₅ = Q₆ closes.\n\n**Derived quantities.**\n- Pump head: H_p = 80 − 12000(0.04979)² = 50.25 m.\n- Pipe 3: H_B − H_C = 2.32 m, so Q₃ = √(2.32/1.89×10⁵) = 3.5 L/s. Its direction is from B to C.\n- Pressure at C: p = ρg(H_C − z_C) = 9792 × (26.96 − 4.0) = 2.25×10⁵ Pa gauge.\n- Pump power: P_hyd = ρgQ_pH_p = 9792 × 0.04979 × 50.25 = 24.5 kW. Shaft power = 24.5 / 0.70 = 35.0 kW.\n\n**Direction of pipe 3:** from B to C (magnitude 3.5 L/s).\n\nFINAL (a): 49.8 L/s\nFINAL (b): 50.3 m\nFINAL (c): 3.5 L/s\nFINAL (d): 225 kPa\nFINAL (e): 35.0 kW",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "cost": null,
+ "tools_used": []
+}

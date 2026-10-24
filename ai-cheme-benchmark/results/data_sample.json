@@ -79,6 +79,7 @@
    "id": "P01",
    "topic": "Fluid Mechanics",
    "difficulty": "Easy",
+   "level": 1,
    "title": "Laminar oil flow in a tube",
    "parts": [
     "a",
@@ -90,6 +91,7 @@
    "id": "P02",
    "topic": "Fluid Mechanics",
    "difficulty": "Medium",
+   "level": 2,
    "title": "Pump power for a tank-to-tank transfer",
    "parts": [
     "a",
@@ -102,6 +104,7 @@
    "id": "P03",
    "topic": "Fluid Mechanics",
    "difficulty": "Extremely hard",
+   "level": 4,
    "title": "Three-reservoir problem",
    "parts": [
     "a",
@@ -114,6 +117,7 @@
    "id": "P04",
    "topic": "Fluid Mechanics",
    "difficulty": "Extremely hard",
+   "level": 4,
    "title": "Isothermal compressible flow in a gas pipeline",
    "parts": [
     "a",
@@ -126,6 +130,7 @@
    "id": "P05",
    "topic": "Process Dynamics and Control",
    "difficulty": "Easy",
+   "level": 1,
    "title": "First-order step response",
    "parts": [
     "a",
@@ -137,6 +142,7 @@
    "id": "P06",
    "topic": "Process Dynamics and Control",
    "difficulty": "Medium",
+   "level": 2,
    "title": "Underdamped second-order step response",
    "parts": [
     "a",
@@ -149,7 +155,8 @@
   {
    "id": "P07",
    "topic": "Process Dynamics and Control",
-   "difficulty": "Extremely hard",
+   "difficulty": "Hard",
+   "level": 3,
    "title": "Ultimate gain, Ziegler–Nichols tuning and stability margins of a dead-time process",
    "parts": [
     "a",
@@ -163,7 +170,8 @@
   {
    "id": "P08",
    "topic": "Process Dynamics and Control",
-   "difficulty": "Extremely hard",
+   "difficulty": "Hard",
+   "level": 3,
    "title": "Stability limit of a PI loop on a third-order process",
    "parts": [
     "a",
@@ -175,6 +183,7 @@
    "id": "P09",
    "topic": "Separations",
    "difficulty": "Easy",
+   "level": 1,
    "title": "Minimum stages and minimum reflux for a binary column",
    "parts": [
     "a",
@@ -185,6 +194,7 @@
    "id": "P10",
    "topic": "Separations",
    "difficulty": "Medium",
+   "level": 2,
    "title": "Countercurrent absorber by the Kremser equation",
    "parts": [
     "a",
@@ -196,6 +206,7 @@
    "id": "P11",
    "topic": "Separations",
    "difficulty": "Extremely hard",
+   "level": 4,
    "title": "McCabe–Thiele design with a partially vaporized feed",
    "parts": [
     "a",
@@ -209,6 +220,7 @@
    "id": "P12",
    "topic": "Separations",
    "difficulty": "Extremely hard",
+   "level": 4,
    "title": "Fenske–Underwood–Gilliland shortcut for a multicomponent column",
    "parts": [
     "a",
@@ -274,8 +286,8 @@
    "problem": "P07",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model A to P07, run 1.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 6 parts."
+   "score": 3,
+   "justification": "FAKE grader note: 3/10 on 6 parts."
   },
   {
    "model": "sample-a",
@@ -370,16 +382,16 @@
    "problem": "P07",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model B to P07, run 1.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 1,
-   "justification": "FAKE grader note: 1/10 on 6 parts."
+   "score": 2,
+   "justification": "FAKE grader note: 2/10 on 6 parts."
   },
   {
    "model": "sample-b",
    "problem": "P08",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model B to P08, run 1.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 3 parts."
+   "score": 4,
+   "justification": "FAKE grader note: 4/10 on 3 parts."
   },
   {
    "model": "sample-b",
@@ -466,16 +478,16 @@
    "problem": "P07",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model C to P07, run 1.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 6 parts."
+   "score": 6,
+   "justification": "FAKE grader note: 6/10 on 6 parts."
   },
   {
    "model": "sample-c",
    "problem": "P08",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model C to P08, run 1.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 3 parts."
+   "score": 2,
+   "justification": "FAKE grader note: 2/10 on 3 parts."
   },
   {
    "model": "sample-c",
@@ -562,16 +574,16 @@
    "problem": "P07",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model D to P07, run 1.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 6 parts."
+   "score": 4,
+   "justification": "FAKE grader note: 4/10 on 6 parts."
   },
   {
    "model": "sample-d",
    "problem": "P08",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model D to P08, run 1.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 6,
-   "justification": "FAKE grader note: 6/10 on 3 parts."
+   "score": 7,
+   "justification": "FAKE grader note: 7/10 on 3 parts."
   },
   {
    "model": "sample-d",
@@ -658,16 +670,16 @@
    "problem": "P07",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P07, run 1.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 2,
-   "justification": "FAKE grader note: 2/10 on 6 parts."
+   "score": 3,
+   "justification": "FAKE grader note: 3/10 on 6 parts."
   },
   {
    "model": "sample-e",
    "problem": "P08",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model E to P08, run 1.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 0,
-   "justification": "FAKE grader note: 0/10 on 3 parts."
+   "score": 2,
+   "justification": "FAKE grader note: 2/10 on 3 parts."
   },
   {
    "model": "sample-e",
@@ -754,16 +766,16 @@
    "problem": "P07",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P07, run 1.\nStep 1: ... Answer (a) = 0.6773\n",
-   "score": 3,
-   "justification": "FAKE grader note: 3/10 on 6 parts."
+   "score": 4,
+   "justification": "FAKE grader note: 4/10 on 6 parts."
   },
   {
    "model": "sample-f",
    "problem": "P08",
    "run": 1,
    "text": "SAMPLE (fake) response of Sample model F to P08, run 1.\nStep 1: ... Answer (a) = 6.357\n",
-   "score": 5,
-   "justification": "FAKE grader note: 5/10 on 3 parts."
+   "score": 7,
+   "justification": "FAKE grader note: 7/10 on 3 parts."
   },
   {
    "model": "sample-f",

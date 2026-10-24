@@ -11,11 +11,13 @@ import json, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "python"))
-from rubric import FRONTIER, POINTS                                    # noqa: E402
+from rubric import POINTS                                    # noqa: E402
 from run_models import load_problem, raw_path               # noqa: E402
 from error_types import ORDER, TYPES                               # noqa: E402
 
 RUN = 1
+# difficulty level shown on the page (1-5), from the rating in each problem file's header
+LEVEL = {"Easy": 1, "Medium": 2, "Hard": 3, "Extremely hard": 4, "Frontier": 5}
 
 
 def num_b(s):
@@ -32,7 +34,10 @@ def main():
     problems, grades, labels = [], {}, {}
     for pid in pids:
         h, _ = load_problem(pid)
-        problems.append(dict(id=pid, topic=h["topic"], difficulty=h["difficulty"], title=h["title"],
+        if h["difficulty"] not in LEVEL:
+            sys.exit(f"{pid}: unknown difficulty {h['difficulty']!r} (expected one of {list(LEVEL)})")
+        problems.append(dict(id=pid, topic=h["topic"], difficulty=h["difficulty"], level=LEVEL[h["difficulty"]],
+                             title=h["title"],
                              parts=h["parts"].split(",")))
         g = ROOT / "results" / "grades" / f"{pid}.json"
         grades[pid] = json.loads(g.read_text()) if g.exists() else {}
@@ -48,11 +53,6 @@ def main():
             f = raw_path(m["id"], pid, RUN)
             if not f.exists():
                 missing.append(f"{m['id']} {pid} (no reply)")
-                continue
-            if pid in FRONTIER and not all(grades[q].get(m["id"], {}).get("score") == 10
-                                           for q in pids if q not in FRONTIER):
-                # the gate: Frontier problems count only for models with 10/10 on every one of P01-P12
-                missing.append(f"{m['id']} {pid} (reply not used: below 10/10 on P01-P12)")
                 continue
             raw = json.loads(f.read_text())
             g = grades[pid].get(m["id"])

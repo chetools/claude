@@ -357,6 +357,7 @@
    "id": "P01",
    "topic": "Fluid Mechanics",
    "difficulty": "Easy",
+   "level": 1,
    "title": "Laminar oil flow in a tube",
    "parts": [
     "a",
@@ -368,6 +369,7 @@
    "id": "P02",
    "topic": "Fluid Mechanics",
    "difficulty": "Medium",
+   "level": 2,
    "title": "Pump power for a tank-to-tank transfer",
    "parts": [
     "a",
@@ -380,6 +382,7 @@
    "id": "P03",
    "topic": "Fluid Mechanics",
    "difficulty": "Extremely hard",
+   "level": 4,
    "title": "Three-reservoir problem",
    "parts": [
     "a",
@@ -392,6 +395,7 @@
    "id": "P04",
    "topic": "Fluid Mechanics",
    "difficulty": "Extremely hard",
+   "level": 4,
    "title": "Isothermal compressible flow in a gas pipeline",
    "parts": [
     "a",
@@ -404,6 +408,7 @@
    "id": "P05",
    "topic": "Process Dynamics and Control",
    "difficulty": "Easy",
+   "level": 1,
    "title": "First-order step response",
    "parts": [
     "a",
@@ -415,6 +420,7 @@
    "id": "P06",
    "topic": "Process Dynamics and Control",
    "difficulty": "Medium",
+   "level": 2,
    "title": "Underdamped second-order step response",
    "parts": [
     "a",
@@ -428,6 +434,7 @@
    "id": "P07",
    "topic": "Process Dynamics and Control",
    "difficulty": "Hard",
+   "level": 3,
    "title": "Ultimate gain, Ziegler–Nichols tuning and stability margins of a dead-time process",
    "parts": [
     "a",
@@ -442,6 +449,7 @@
    "id": "P08",
    "topic": "Process Dynamics and Control",
    "difficulty": "Hard",
+   "level": 3,
    "title": "Stability limit of a PI loop on a third-order process",
    "parts": [
     "a",
@@ -453,6 +461,7 @@
    "id": "P09",
    "topic": "Separations",
    "difficulty": "Easy",
+   "level": 1,
    "title": "Minimum stages and minimum reflux for a binary column",
    "parts": [
     "a",
@@ -463,6 +472,7 @@
    "id": "P10",
    "topic": "Separations",
    "difficulty": "Medium",
+   "level": 2,
    "title": "Countercurrent absorber by the Kremser equation",
    "parts": [
     "a",
@@ -474,6 +484,7 @@
    "id": "P11",
    "topic": "Separations",
    "difficulty": "Extremely hard",
+   "level": 4,
    "title": "McCabe–Thiele design with a partially vaporized feed",
    "parts": [
     "a",
@@ -487,6 +498,7 @@
    "id": "P12",
    "topic": "Separations",
    "difficulty": "Extremely hard",
+   "level": 4,
    "title": "Fenske–Underwood–Gilliland shortcut for a multicomponent column",
    "parts": [
     "a",
@@ -501,6 +513,7 @@
    "id": "P13",
    "topic": "Fluid Mechanics",
    "difficulty": "Frontier",
+   "level": 5,
    "title": "Pumped two-loop water network with a demand node",
    "parts": [
     "a",
@@ -514,6 +527,7 @@
    "id": "P14",
    "topic": "Process Dynamics and Control",
    "difficulty": "Frontier",
+   "level": 5,
    "title": "Ziegler–Nichols PID, stability margins and peak sensitivity of a third-order dead-time loop with a sensor lag",
    "parts": [
     "a",
@@ -528,6 +542,7 @@
    "id": "P15",
    "topic": "Separations",
    "difficulty": "Frontier",
+   "level": 5,
    "title": "Ternary flash with Antoine vapour pressures: bubble point, dew point and the half-vaporized temperature",
    "parts": [
     "a",

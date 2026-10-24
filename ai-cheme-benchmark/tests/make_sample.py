@@ -22,7 +22,9 @@ for i in range(1, 13):
     txt = open(os.path.join(ROOT, "problems", f"P{i:02d}.md"), encoding="utf-8").read()
     head = txt.split("\n---\n")[0]
     h = dict(l.split(": ", 1) for l in head.splitlines() if ": " in l)
-    problems.append(dict(id=h["id"], topic=h["topic"], difficulty=h["difficulty"], title=h["title"],
+    problems.append(dict(id=h["id"], topic=h["topic"], difficulty=h["difficulty"],
+                         level={"Easy": 1, "Medium": 2, "Hard": 3, "Extremely hard": 4, "Frontier": 5}[h["difficulty"]],
+                         title=h["title"],
                          parts=h["parts"].split(",")))
 
 responses = []

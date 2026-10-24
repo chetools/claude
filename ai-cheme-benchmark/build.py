@@ -246,6 +246,9 @@ def validate(data):
             fail(f"model {m['id']}: params must be a number (billions) or null")
         if not re.fullmatch(r"\d{4}-\d{2}(-\d{2})?", str(m["release_date"])):
             fail(f"model {m['id']}: release_date must be YYYY-MM or YYYY-MM-DD")
+    for p in data["problems"]:
+        if p.get("level") not in (1, 2, 3, 4, 5):
+            fail(f"problem {p['id']}: level must be 1..5, got {p.get('level')!r}")
     seen = set()
     for r in data["responses"]:
         for k in ("model", "problem", "run", "text", "score", "justification"):
@@ -272,14 +275,13 @@ def validate(data):
 
 
 def expected_stats(data):
-    """Per-model mean and run-total min/max in percent over the non-Frontier problems (the page's default selection),
-    for the page's self-test (independent of app.js)."""
-    frontier = {p["id"] for p in data["problems"] if p["difficulty"] == "Frontier"}
+    """Per-model mean and run-total min/max in percent over all problems, for the page's self-test
+    (independent of app.js)."""
     out = {}
     for m in data["models"]:
         per_run = {}
         for r in data["responses"]:
-            if r["model"] == m["id"] and r["problem"] not in frontier:
+            if r["model"] == m["id"]:
                 per_run.setdefault(r["run"], []).append(r["score"])
         totals = [10 * sum(v) / len(v) for v in per_run.values()]
         out[m["id"]] = dict(mean=sum(totals) / len(totals), min=min(totals), max=max(totals))
@@ -513,7 +515,7 @@ def problems_html(data, ref, batch, models):
         out = [f'<section class="prob" data-pid="{esc(p["id"])}" data-topic="{esc(p["topic"])}" '
                f'data-diff="{esc(p["difficulty"])}">',
                f'<h2 data-toc="{esc(title)}">{esc(title)}</h2>',
-               f'<div class="meta">{esc(p["topic"])} · {esc(p["difficulty"])}</div>',
+               f'<div class="meta">{esc(p["topic"])} · difficulty {p["level"]} of 5</div>',
                '<div class="label">Problem</div>', f'<div class="statement">{batch.md(statement, p["id"], breaks=True)}</div>',
                '<div class="label">Reference answer</div>',
                f'<div class="tablewrap"><table class="data"><thead><tr><th>Part</th><th>Value</th></tr></thead>'
@@ -523,11 +525,6 @@ def problems_html(data, ref, batch, models):
                error_grid(p, models, by_pr),
                '<div class="label">Responses</div>']
         out[:0] = out0
-        if p["difficulty"] == "Frontier":
-            given = [m for m in models if (p["id"], m["id"]) in by_pr]
-            out.append('<p class="caption">Frontier problems were given only to models that scored 10/10 on every one '
-                       'of P01–P12. ' + ("No model qualified." if not given else
-                                         "Given to: " + esc(", ".join(m["name"] for m in given)) + "."))
         for m in models:
             rs = sorted(by_pr.get((p["id"], m["id"]), []), key=lambda r: r["run"])
             if not rs:
@@ -709,7 +706,7 @@ def main():
     prob_html, prob_toc = add_toc(prob_html, "prob-", "the Problems tab", levels="2")
     meth_html, meth_toc = add_toc(meth_html, "meth-", "the Methodology tab")
 
-    web_data = dict(models=data["models"], problems=[{k: p[k] for k in ("id", "topic", "difficulty", "title")}
+    web_data = dict(models=data["models"], problems=[{k: p[k] for k in ("id", "topic", "level", "title")}
                                                      for p in data["problems"]],
                     responses=[{k: r[k] for k in ("model", "problem", "run", "score")} for r in data["responses"]])
     banner = ('<div class="banner">SAMPLE DATA: every number, response and score on this page is FAKE, made up to '

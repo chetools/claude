@@ -57,13 +57,13 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) failure
       await noHscroll(tab);
       await page.screenshot({ path: path.join(SHOTS, `${label}-${tab}.png`), fullPage: false });
     }
-    // filter: untick a topic, check metrics and selftest on the filtered state
+    // no filters any more; the problem table lists every problem with a 1-5 level
     await page.click('button[data-tab=panel-results]');
-    await page.evaluate(() => { document.querySelector('input[data-group=topic]').click(); });
-    await page.waitForTimeout(500);
-    const prob = await page.evaluate(() => document.querySelectorAll('#metrics .m-value')[2].textContent);
-    ok(+prob < 12 && +prob > 0, `${label}: topic filter reduces problems to ${prob}`);
-    await page.screenshot({ path: path.join(SHOTS, `${label}-filtered.png`), fullPage: true });
+    await page.waitForTimeout(300);
+    ok(await page.evaluate(() => !document.querySelector('input[type=checkbox], .sidebar')), `${label}: no filter controls`);
+    ok(await page.evaluate(() => document.querySelectorAll('#problem-table tbody tr').length === window.DATA.problems.length &&
+      [...document.querySelectorAll('#problem-table td.level')].every(td => /^[1-5]$/.test(td.textContent))), `${label}: problem table with levels 1-5`);
+    await page.screenshot({ path: path.join(SHOTS, `${label}-results-full.png`), fullPage: true });
     ok(errors.length === 0, `${label}: no console/page errors ${errors.join(' | ')}`);
     await ctx.close();
   }

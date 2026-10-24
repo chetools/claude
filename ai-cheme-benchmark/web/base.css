@@ -8,19 +8,7 @@
 *{box-sizing:border-box}
 body{font-family:"Source Sans Pro",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   color:var(--text);margin:0;background:#fff;font-size:16px;line-height:1.55}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:308px;background:var(--sidebar-bg);
-  padding:1.4rem 1.2rem;overflow-y:auto}
-.side-h{font-size:1.02rem;font-weight:600;margin:1.3rem 0 .3rem}
-.side-h:first-child{margin-top:0}
-.field{margin:.55rem 0}
-.field label{display:block;font-size:.88rem;margin-bottom:.18rem}
-.field input,.field select{width:100%;padding:.42rem .55rem;border:1px solid #d0d3d9;
-  border-radius:.4rem;font-size:.95rem;background:#fff;color:var(--text)}
-.field input:focus,.field select:focus{outline:2px solid #a8c6fa;border-color:#7aa5f5}
-.side-cap{font-size:.82rem;color:var(--muted);margin:.3rem 0}
-.side-foot{margin-top:1.6rem;border-top:1px solid #d8dbe0;padding-top:.8rem;
-  font-size:.82rem;color:var(--muted)}
-.main{margin-left:308px;padding:1.6rem 2.6rem 4rem;max-width:1220px}
+.main{padding:1.6rem 2.6rem 4rem;max-width:1220px;margin:0 auto}
 h1{font-size:2.5rem;font-weight:600;margin:.2rem 0 .6rem;letter-spacing:-.01em}
 h2{font-size:1.55rem;font-weight:600;margin:1.6rem 0 .5rem}
 h3{font-size:1.2rem;font-weight:600;margin:1.2rem 0 .4rem}
@@ -55,12 +43,7 @@ h3{font-size:1.2rem;font-weight:600;margin:1.2rem 0 .4rem}
   padding:1rem;overflow-x:auto;font-size:.85rem;line-height:1.45}
 .codehilite pre{margin:0}
 /* --- additions for this page --- */
-.field.check{display:flex;align-items:center;gap:.45rem}
-.field.check input{width:auto}
-.field.check label{margin:0}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
-.field input[type=range]{padding:0;border:none;background:none;accent-color:var(--st-red)}
-.field .val{float:right;font-weight:600;font-variant-numeric:tabular-nums}
 .m-sub{font-size:.8rem;color:var(--muted)}
 .metrics .m-sub,.metrics .m-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}   /* one line; full text on hover */
 .metrics .metric{flex:1 1 150px}
@@ -72,8 +55,6 @@ h3{font-size:1.2rem;font-weight:600;margin:1.2rem 0 .4rem}
 .btn.primary{background:var(--st-red);border-color:var(--st-red);color:#fff}
 .btn.primary:hover{background:#e03c3c;color:#fff}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.sidebar .btns{display:flex;flex-wrap:wrap;gap:.4rem;margin:.8rem 0}
-.sidebar .btns .btn{padding:.35rem .7rem;font-size:.9rem}
 .status{font-size:.88rem;color:var(--muted)}
 .pill{display:inline-block;font-size:.78rem;padding:.12rem .55rem;border-radius:1rem;
   background:#eef0f4;color:var(--muted);vertical-align:middle}
@@ -127,7 +108,8 @@ details.resp pre{background:#fafbfc;border:1px solid var(--card-border);border-r
   margin:1rem 0;font-weight:600}
 .tablewrap{overflow-x:auto;max-width:100%}
 #model-table th,#model-table td{text-align:left;vertical-align:top}
-#model-table td.mean,#model-table td.core{white-space:nowrap}
+#model-table td.mean,#problem-table td.pmean{white-space:nowrap}
+#problem-table td.level{text-align:center}
 #model-table td:nth-child(2),#model-table td:nth-child(3){white-space:nowrap}
 #model-table td:nth-child(n+6),#model-table th:nth-child(n+6){text-align:right}
 .code-body h2{margin-top:2rem}
@@ -135,8 +117,7 @@ details.resp pre{background:#fafbfc;border:1px solid var(--card-border);border-r
 .statement table,.explain table{border-collapse:collapse;font-size:.93rem}
 @media (max-width: 1100px){ .charts{grid-template-columns:minmax(0,1fr)} }
 @media (max-width: 900px){
-  .sidebar{position:static;width:auto}
-  .main{margin-left:0;padding:1rem 16px 3rem}
+  .main{padding:1rem 16px 3rem}
   .charts{grid-template-columns:minmax(0,1fr)}
   .tabs{flex-wrap:wrap}
   details.resp>summary .mean{float:none;display:block;margin-left:1rem}   /* score on its own line under the tags */
@@ -179,4 +160,3 @@ h2,h3,h4{scroll-margin-top:3.6rem}
 .egrid thead th:first-child{position:sticky;left:0;z-index:2}
 details.resp,.elist li{scroll-margin-top:3.6rem}
 .elist li:target{outline:2px solid var(--st-red);outline-offset:2px;border-radius:.3rem}
-#model-table td.core,#model-table th:last-child{text-align:left}
