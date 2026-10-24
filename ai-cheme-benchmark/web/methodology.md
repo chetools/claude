@@ -18,7 +18,7 @@ of `problems/PNN.md`), with nothing added. Each problem was a separate conversat
   refused its default limit (64 000 tokens) for lack of prepaid credit; its longest reply used 1 859 tokens. Replies cut off at the provider's output limit are marked "[reply cut off …]" and were graded
   as they stand.
 - No tools, no code execution, no web access.
-- Reasoning models ran with their default reasoning setting; no effort level was requested (Effort column: —).
+- Reasoning models ran with their default reasoning setting; no effort level was requested.
 - The requests went through OpenRouter, which picks the serving provider. @@N_TRUNCATED@@
 
 ## Which models were run, and the Frontier problems

@@ -135,7 +135,7 @@
   function table(rows, st) {
     var t = document.getElementById('model-table'); t.textContent = '';
     var hr = el('tr');
-    ['Model', 'Vendor', 'Release', 'Parameters', 'Effort', 'Cost (USD)', MULTI ? 'Mean score % (min – max of runs)' : 'Mean score %']
+    ['Model', 'Vendor', 'Release', 'Cost (USD)', MULTI ? 'Mean score % (min – max of runs)' : 'Mean score %']
       .forEach(function (h) { hr.appendChild(el('th', null, h)); });
     var th = el('thead'); th.appendChild(hr); t.appendChild(th);
     var tb = el('tbody');
@@ -144,10 +144,6 @@
       tr.appendChild(el('td', null, m.name));
       tr.appendChild(el('td', null, m.vendor));
       tr.appendChild(el('td', null, m.release_date));
-      tr.appendChild(el('td', null, paramsText(m)));
-      var eff = el('td', null, m.effort == null ? '—' : String(m.effort));
-      eff.title = 'reasoning: ' + m.reasoning;
-      tr.appendChild(eff);
       tr.appendChild(el('td', null, costText(m)));
       tr.appendChild(el('td', { 'class': 'mean' }, meanText(st[m.id])));
       tb.appendChild(tr);

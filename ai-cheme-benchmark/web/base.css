@@ -30,7 +30,8 @@ h3{font-size:1.2rem;font-weight:600;margin:1.2rem 0 .4rem}
 .metric .m-label{font-size:.85rem;color:var(--muted);margin-bottom:.1rem}
 .metric .m-value{font-size:1.85rem;font-weight:600;letter-spacing:-.01em}
 .caption{font-size:.85rem;color:var(--muted);max-width:90ch}
-.tabs{display:flex;gap:.4rem;border-bottom:1px solid var(--card-border);margin:1.2rem 0 1rem}
+.tabs{display:flex;gap:.4rem;border-bottom:1px solid var(--card-border);margin:1.2rem 0 1rem;
+  position:sticky;top:0;z-index:30;background:#fff;padding-top:.3rem}   /* stays visible while scrolling */
 .tabs button{background:none;border:none;padding:.55rem .35rem;margin:0 .35rem 0 0;
   font-size:1rem;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;
   margin-bottom:-1px;font-family:inherit}
@@ -89,7 +90,7 @@ td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
 .theory code{background:#f3f4f6;padding:.05rem .3rem;border-radius:.25rem;font-size:.9em}
 .theory-layout{display:grid;grid-template-columns:15.5rem minmax(0,78ch);gap:2rem;align-items:start}
 .theory-layout.wide{grid-template-columns:15.5rem minmax(0,1fr)}   /* Code tab: plots and code need the width */
-.toc-box{position:sticky;top:.8rem;max-height:calc(100vh - 1.6rem);overflow-y:auto;font-size:.86rem;
+.toc-box{position:sticky;top:3.6rem;max-height:calc(100vh - 4.4rem);overflow-y:auto;font-size:.86rem;
   border-right:1px solid var(--card-border);padding-right:.6rem}
 .toc-box summary{cursor:pointer;font-weight:600;font-size:.95rem;margin-bottom:.3rem}
 .toc a{display:block;color:var(--muted);text-decoration:none;padding:.12rem .4rem;line-height:1.3;
@@ -147,3 +148,4 @@ details.resp pre{background:#fafbfc;border:1px solid var(--card-border);border-r
   .metric{flex:1 1 140px}
 }
 .label{font-weight:600;margin:1.1rem 0 .3rem;font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+h2,h3,h4{scroll-margin-top:3.6rem}
