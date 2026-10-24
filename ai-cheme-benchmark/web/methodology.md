@@ -54,7 +54,10 @@ was not checked against an announcement.
 Problems P13–P15 were written after P01–P12 had been graded for the models up to Claude Opus 4.5, to be
 much harder than P01–P12 (coupled nonlinear systems solved by hand). At first they were given only to the
 models that scored 10/10 on every one of P01–P12; to compare every model on the same fifteen problems, all
-the other models were then run on them as well, with the same prompt and settings. Their reference
+the other models were then run on them as well, with the same prompt and settings. GPT-3.5 Turbo could not
+be: OpenAI had retired it by then, so it is not shown (its P01–P12 replies and grades are kept in
+`results/`). DeepSeek R1 used up its whole output allowance on reasoning in five attempts at P13 and returned
+no answer text; the sixth attempt returned an answer, which was graded like the others. Their reference
 solutions were checked against an independent second solution like the others. They were written once and
 not changed after any model's reply was seen; no model was tried on them before they were fixed.
 
