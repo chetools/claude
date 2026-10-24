@@ -26,7 +26,7 @@ Provisional text. The reactor effluent is cooled in E-202 and separated in V-202
 
 ## Recycle gas and purge
 
-<!-- crop sheet=1 x=500 y=40 w=1160 h=190 caption="Recycle gas loop and purge on PFD-201: the separator vapour (stream 12) is split into the purge (stream 13) and the recycle gas, which is compressed in C-201 (stream 14) and returns to the feed as stream 15. Boundary streams: 12 from V-202 (Fig. T4); 18 from V-203." -->
+<!-- crop sheet=1 x=800 y=40 w=860 h=190 caption="Recycle gas loop and purge on PFD-201: the separator vapour (stream 12) is split into the purge (stream 13) and the recycle gas, which is compressed in C-201 (stream 14) and returns to the feed as stream 15. Boundary streams: 12 from V-202 (Fig. T4); 18 from V-203." -->
 
 Provisional text. The purge fraction $\beta$ is the share of stream 12 sent to the purge through the pressure control valve PV-201.
 

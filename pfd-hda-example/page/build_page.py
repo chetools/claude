@@ -270,7 +270,8 @@ def sheet_svg(n, viewbox=None, label=""):
     if viewbox:
         x, y, w, h = viewbox
         root = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" '
-                f'viewBox="{x} {y} {w} {h}" role="img" aria-label="{htmllib.escape(label)}">')
+                f'viewBox="{x} {y} {w} {h}" style="max-width:{w}px;min-width:{min(w, 600)}px" '
+                f'role="img" aria-label="{htmllib.escape(label)}">')
     else:
         root = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{SHEET_W}" height="{SHEET_H}" '
                 f'viewBox="0 0 {SHEET_W} {SHEET_H}" role="img" aria-label="{htmllib.escape(label)}">')
