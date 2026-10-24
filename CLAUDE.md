@@ -24,6 +24,16 @@
   - Confirm the published URL serves the new content.
   - Only then hand over the shareable link.
 - **Make builds fail loudly.** Guard against silent no-ops, such as unfilled template placeholders.
+- **Survive usage-limit stops (auto-resume).** A session cannot see or react to its own usage limit, so arm the
+  restart before it is needed:
+  - At the start of any task expected to take more than one turn, create one recurring **hourly** scheduled task
+    into this session (`create_trigger`, cron `0 * * * *`, initiation `human_schedule`) named
+    `auto-resume <project>`. Its prompt: "Auto-resume check: if the <project> task is unfinished, continue from the
+    last commit and the task list; if it is finished or waiting on the user, delete this scheduled task and stop."
+    After a usage stop, the first firing after the 5-hour window resets picks the work up again (at most an hour late).
+  - Keep work resumable: commit and push after each finished step, and keep the task list current, so a resumed
+    turn can continue without the lost context.
+  - When the task is delivered, or blocked on the user, delete the scheduled task. Never leave more than one per project.
 
 ## General practices by topic
 
