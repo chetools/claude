@@ -284,5 +284,16 @@
   },
   "score": 10,
   "justification": "Loop and pump-path equations with Colebrook friction factors and resistances per pipe; the stated flows satisfy continuity and the A-B-C loop balance to 0.004 m and the f values agree with my check. (a) 49.7 L/s (49.67, 0.2 % off) and (b) 50.4 m (0.3 % off): full. (c) 3.46 L/s from B to C, 1.4 % off and within the 2 % allowed, direction correct: full. (d) 224.9 kPa and (e) 35.0 kW, both within 0.1 %: full."
+ },
+ "deepseek/deepseek-r1-0528": {
+  "parts": {
+   "a": 0,
+   "b": 0,
+   "c": 0,
+   "d": 0,
+   "e": 0
+  },
+  "score": 0,
+  "justification": "The reply only names the Hardy Cross method and states results with no equations solved, no friction factors, losses or iterations, and wrongly fixes H_B = 8.0 m (the elevation of B). (a) 46.0 L/s (7.6 % off 49.79) and (b) 54.5 m (8.4 % off 50.26; no working shown, as with other bare-value replies) score 0. (c) 3.5 L/s from B to C is within 0.2 % with the right direction but is an unsupported bare value: 0. (d) 11.0 kPa from H_C = 5.3 m (reference 224.9 kPa; even its own H_C gives 12.7 kPa) and (e) 36.2 kW (its own Qp and Hp give 35.1 kW) are wrong or unsupported: 0."
  }
 }
