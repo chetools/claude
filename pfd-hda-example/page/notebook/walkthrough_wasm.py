@@ -1,0 +1,552 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["marimo", "numpy", "plotly"]
+# ///
+import marimo
+
+__generated_with = "0.25.2"
+app = marimo.App(width="medium")
+
+
+@app.cell(hide_code=True)
+async def _():
+    import sys
+    if sys.platform == "emscripten":
+        import micropip
+        _ = await micropip.install("plotly")
+    return
+
+
+@app.cell
+def _():
+    import marimo as mo
+    import numpy as np
+    import plotly.graph_objects as go
+
+    def make_fig(traces, **layout):
+        return go.Figure(data=traces, layout=layout)
+    return (go, make_fig, mo, np,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Toluene hydrodealkylation plant: balance walkthrough
+
+    Seven steps of the page's Code panel. Edit the inputs of step 1 and run all cells (the results shown on the page were computed when the page was built).
+    """)
+    return
+
+
+@app.cell
+def _():
+    """Component balance model of the toluene hydrodealkylation (HDA) plant of
+    process flow diagrams PFD-201 and PFD-202.
+
+    The model computes the molar flow of each component in every numbered
+    stream of the two sheets at one steady operating point. Symbols, as
+    defined in the Theory panel (molar flows in kilomole per hour, kmol/h):
+
+      F      fresh toluene feed rate, kmol/h (stream 1)
+      X      toluene conversion per pass in the reactor R-201, dimensionless
+      beta   purge fraction: share of the high-pressure separator vapour
+             (stream 12) sent to the purge (stream 13), dimensionless
+      r      hydrogen-to-toluene molar ratio at the reactor inlet (stream 9),
+             dimensionless
+      xi1    extent of the main reaction  T + H2 -> B + CH4, kmol/h
+      xi2    extent of the side reaction  2 B -> D + H2, kmol/h; fixed here as
+             xi2 = sigma * xi1 with sigma = 0.005
+    Components: H2 hydrogen, CH4 methane, B benzene, T toluene, D diphenyl.
+
+    Unit rules (sample design basis, not a rigorous simulation): the flash
+    drums and the vent send fixed fractions of each component to the vapour;
+    the columns recover fixed fractions of each component in the distillate;
+    the reflux is R times the distillate; the boil-up total equals the
+    overhead vapour total, with composition proportional to relative
+    volatility times bottoms composition. The make-up gas (95 mol% H2,
+    5 mol% CH4) is sized so that the reactor-inlet ratio equals r.
+
+    Two solution methods for the same equations:
+      solve()       floating point; the flowsheet is affine in its tear
+                    variables (toluene recycle, recycle gas, make-up rate), so
+                    the steady state is the solution of one linear system;
+      solve_iter()  successive substitution in floating point (independent
+                    check), or in integer tenths of kmol/h with every split
+                    rounded and its last outlet taken by difference, so that
+                    every balance closes exactly on the displayed values.
+    Pure Python (no third-party packages): runs unchanged in Pyodide.
+    """
+
+    C = ["H2", "CH4", "B", "T", "D"]
+    NAME = {"H2": "Hydrogen", "CH4": "Methane", "B": "Benzene", "T": "Toluene", "D": "Diphenyl"}
+    STREAMS = list(range(1, 42))
+
+    # ---- design basis of the sheets (sample values) ----
+    BASIS = {"F": 100.0, "X": 0.75, "beta": 0.25, "r": 5.0}
+    SIGMA = 0.005                                   # xi2 / xi1
+    HMAKE = {"H2": 0.95, "CH4": 0.05}               # make-up gas mole fractions
+    VAP_HP = {"H2": 0.995, "CH4": 0.97, "B": 0.03, "T": 0.01, "D": 0.0}    # V-202 to vapour
+    VAP_LP = {"H2": 0.98, "CH4": 0.90, "B": 0.02, "T": 0.005, "D": 0.0}    # V-203 to vapour
+    VENT1 = {"H2": 1.0, "CH4": 1.0, "B": 0.001, "T": 0.0, "D": 0.0}        # V-204 vent
+    COL1 = dict(rec={"H2": 1.0, "CH4": 1.0, "B": 0.995, "T": 0.005, "D": 0.0}, R=1.2,
+                alpha={"H2": 1.0, "CH4": 1.0, "B": 2.5, "T": 1.0, "D": 0.05})  # T-201
+    COL2 = dict(rec={"H2": 1.0, "CH4": 1.0, "B": 1.0, "T": 0.99, "D": 0.0}, R=0.8,
+                alpha={"H2": 1.0, "CH4": 1.0, "B": 1.0, "T": 15.0, "D": 1.0})  # T-202
+
+    # Displayed design-basis values of the sheets (kmol/h), the anchor of the
+    # page: solve_iter(exact=True) at BASIS must reproduce them exactly.
+    DESIGN_ANCHOR = {
+        1: {"T": 100.0}, 5: {"H2": 241.4, "CH4": 12.7}, 9: {"H2": 661.0, "T": 132.2},
+        13: {"H2": 139.9, "CH4": 99.6}, 15: {"H2": 419.6, "CH4": 298.7},
+        19: {"H2": 142.6, "CH4": 110.7, "B": 2.8}, 28: {"B": 95.3, "T": 0.2},
+        37: {"B": 0.5, "T": 32.0}, 40: {"T": 0.3, "D": 0.5},
+    }
+
+    RANGES = {"F": (10.0, 500.0, "fresh toluene feed rate F", "kmol/h"),
+              "X": (0.30, 0.95, "conversion per pass X", ""),
+              "beta": (0.05, 0.60, "purge fraction beta", ""),
+              "r": (2.0, 10.0, "hydrogen-to-toluene ratio r", "")}
+
+
+    def check_inputs(F, X, beta, r):
+        """Plain-language validation; returns the inputs as floats or raises ValueError."""
+        vals = {}
+        for k, v in (("F", F), ("X", X), ("beta", beta), ("r", r)):
+            try:
+                v = float(v)
+            except (TypeError, ValueError):
+                raise ValueError(f"The {RANGES[k][2]} must be a number.")
+            lo, hi, name, unit = RANGES[k]
+            if not (lo <= v <= hi) or v != v:
+                u = f" {unit}" if unit else ""
+                raise ValueError(f"The {name} must lie between {lo:g} and {hi:g}{u}.")
+            vals[k] = v
+        return vals
+
+
+    def _add(*ss):
+        return {c: sum(s[c] for s in ss) for c in C}
+
+
+    def _q(v, exact):
+        return int(round(v)) if exact else v
+
+
+    def _split(s, f, exact):
+        """Split s: fraction f[c] of each component to the first outlet, the
+        second outlet by difference (exact closure in integer arithmetic)."""
+        a = {c: _q(s[c] * f[c], exact) for c in C}
+        return a, {c: s[c] - a[c] for c in C}
+
+
+    def _pass(p, s37, s15, fh, exact=False):
+        """One pass through the flowsheet from the tear values.
+        s37: toluene recycle, s15: recycle gas, fh: make-up gas rate.
+        Returns all streams, the new tear values and the ratio residual."""
+        U = 10 if exact else 1
+        z = {c: 0 for c in C}
+        S = {}
+        S[1] = dict(z, T=_q(p["F"] * U, exact))
+        S[2] = _add(S[1], s37); S[3] = S[2]; S[4] = S[3]
+        S[5] = {c: _q(fh * HMAKE.get(c, 0.0), exact) for c in C}
+        S[6] = _add(S[5], s15); S[7] = _add(S[4], S[6]); S[8] = S[7]; S[9] = S[8]
+        xi1 = _q(p["X"] * S[9]["T"], exact)
+        xi2 = _q(SIGMA * p["X"] * S[9]["T"], exact)
+        s10 = dict(S[9])
+        s10["T"] -= xi1; s10["H2"] += -xi1 + xi2; s10["B"] += xi1 - 2 * xi2
+        s10["CH4"] += xi1; s10["D"] += xi2
+        S[10] = s10; S[11] = s10
+        S[12], S[16] = _split(S[11], VAP_HP, exact)
+        S[13], S[14] = _split(S[12], {c: p["beta"] for c in C}, exact)
+        S[17] = S[16]
+        S[18], S[20] = _split(S[17], VAP_LP, exact)
+        S[41] = S[13]
+        S[19] = _add(S[41], S[18])
+        S[21] = S[20]
+        dist, bot = _split(S[21], COL1["rec"], exact)
+        S[24], S[28] = _split(dist, VENT1, exact)
+        S[27] = {c: _q(S[28][c] * COL1["R"], exact) for c in C}
+        S[26] = _add(S[27], S[28]); S[25] = S[26]; S[23] = _add(S[24], S[25]); S[22] = S[23]
+        w = {c: COL1["alpha"][c] * bot[c] for c in C}; sw = sum(w.values()) or 1.0
+        V1 = sum(S[22].values())
+        S[30] = {c: _q(V1 * w[c] / sw, exact) for c in C}
+        S[31] = bot; S[29] = _add(S[30], S[31])
+        S[37], S[40] = _split(S[31], COL2["rec"], exact)
+        S[36] = {c: _q(S[37][c] * COL2["R"], exact) for c in C}
+        S[35] = _add(S[36], S[37]); S[34] = S[35]; S[33] = S[34]; S[32] = S[33]
+        w = {c: COL2["alpha"][c] * S[40][c] for c in C}; sw = sum(w.values()) or 1.0
+        V2 = sum(S[32].values())
+        S[39] = {c: _q(V2 * w[c] / sw, exact) for c in C}
+        S[38] = _add(S[39], S[40])
+        S[15] = S[14]
+        resid = p["r"] * S[9]["T"] - S[9]["H2"]
+        return S, S[37], S[14], resid, (xi1, xi2)
+
+
+    def _unpack(u):
+        return ({c: u[i] for i, c in enumerate(C)}, {c: u[5 + i] for i, c in enumerate(C)}, u[10])
+
+
+    def _residual(p, u):
+        s37, s15, fh = _unpack(u)
+        _, n37, n15, res, _ = _pass(p, s37, s15, fh)
+        return [s37[c] - n37[c] for c in C] + [s15[c] - n15[c] for c in C] + [res]
+
+
+    def _gauss(A, b):
+        """Solve A x = b by Gaussian elimination with partial pivoting."""
+        n = len(b)
+        M = [row[:] + [b[i]] for i, row in enumerate(A)]
+        for k in range(n):
+            piv = max(range(k, n), key=lambda i: abs(M[i][k]))
+            if abs(M[piv][k]) < 1e-14:
+                raise ValueError("The balance equations have no unique solution at these inputs.")
+            M[k], M[piv] = M[piv], M[k]
+            for i in range(k + 1, n):
+                f = M[i][k] / M[k][k]
+                if f:
+                    for j in range(k, n + 1):
+                        M[i][j] -= f * M[k][j]
+        x = [0.0] * n
+        for i in range(n - 1, -1, -1):
+            x[i] = (M[i][n] - sum(M[i][j] * x[j] for j in range(i + 1, n))) / M[i][i]
+        return x
+
+
+    def solve(F=None, X=None, beta=None, r=None):
+        """Steady state in floating point by one linear solve (the flowsheet is
+        affine in the tear variables). Returns (streams, extents)."""
+        p = check_inputs(*(BASIS[k] if v is None else v for k, v in
+                           (("F", F), ("X", X), ("beta", beta), ("r", r))))
+        u0 = [0.0] * 11
+        f0 = _residual(p, u0)
+        J = [[0.0] * 11 for _ in range(11)]
+        for j in range(11):
+            e = u0[:]; e[j] = 1.0
+            fj = _residual(p, e)
+            for i in range(11):
+                J[i][j] = fj[i] - f0[i]
+        u = _gauss(J, [-v for v in f0])
+        s37, s15, fh = _unpack(u)
+        S, n37, n15, res, ext = _pass(p, s37, s15, fh)
+        gap = max([abs(s37[c] - n37[c]) for c in C] + [abs(s15[c] - n15[c]) for c in C] + [abs(res)])
+        if gap > 1e-6 * max(1.0, p["F"]):
+            raise ValueError("The balance did not close at these inputs.")
+        return S, ext
+
+
+    def solve_iter(F=None, X=None, beta=None, r=None, exact=False, max_iter=20000):
+        """Successive substitution (independent check); exact=True works in
+        integer tenths of kmol/h and returns values rounded to 0.1 kmol/h."""
+        p = check_inputs(*(BASIS[k] if v is None else v for k, v in
+                           (("F", F), ("X", X), ("beta", beta), ("r", r))))
+        U = 10 if exact else 1
+        s37 = {c: 0 for c in C}; s15 = {c: 0 for c in C}; fh = 3.0 * p["F"] * U
+        for it in range(max_iter):
+            S, n37, n15, res, ext = _pass(p, s37, s15, fh, exact)
+            fh_new = fh + 0.8 * res / HMAKE["H2"]
+            if exact:
+                done = n37 == s37 and n15 == s15 and _q(fh_new, True) == _q(fh, True)
+            else:
+                done = (max(abs(n37[c] - s37[c]) + abs(n15[c] - s15[c]) for c in C) < 1e-11
+                        and abs(fh_new - fh) < 1e-9)
+            s37, s15, fh = n37, n15, fh_new
+            if done:
+                break
+        else:
+            raise RuntimeError("successive substitution did not converge")
+        if exact:
+            S = {n: {c: v / 10 for c, v in s.items()} for n, s in S.items()}
+            ext = (ext[0] / 10, ext[1] / 10)
+        return S, ext
+
+
+    def evaluate(F=None, X=None, beta=None, r=None):
+        """Page model: streams plus the summary quantities shown as metric cards.
+        Raises ValueError with a plain-language message for invalid inputs."""
+        S, (xi1, xi2) = solve(F, X, beta, r)
+        Fv = S[1]["T"]
+        h2_lost = S[19]["H2"] + S[24]["H2"]
+        out = {
+            "inputs": {"F": Fv, "X": BASIS["X"] if X is None else float(X),
+                       "beta": BASIS["beta"] if beta is None else float(beta),
+                       "r": BASIS["r"] if r is None else float(r)},
+            "benzene_product": S[28]["B"],                     # kmol/h
+            "benzene_purity": S[28]["B"] / sum(S[28].values()),
+            "yield": S[28]["B"] / Fv,                          # mol benzene per mol fresh toluene
+            "selectivity": (xi1 - 2 * xi2) / xi1,              # benzene formed per toluene converted
+            "toluene_recycle": S[37]["T"],
+            "reactor_toluene": S[9]["T"],
+            "recycle_gas": sum(S[15].values()),
+            "recycle_gas_ch4": S[15]["CH4"] / sum(S[15].values()),
+            "makeup_gas": sum(S[5].values()),
+            "makeup_h2": S[5]["H2"],
+            "h2_consumed": xi1 - xi2,
+            "h2_lost": h2_lost,
+            "h2_efficiency": (xi1 - xi2) / S[5]["H2"],
+            "purge": sum(S[13].values()),
+            "diphenyl": S[40]["D"],
+            "fuel_gas": sum(S[19].values()) + sum(S[24].values()),
+            "xi1": xi1, "xi2": xi2,
+            "streams": {n: S[n] for n in STREAMS},
+        }
+        return out
+
+
+    def sweep(var, values, **fixed):
+        """Evaluate the model along one input; returns a list of result dicts."""
+        res = []
+        for v in values:
+            kw = dict(fixed); kw[var] = v
+            res.append(evaluate(**kw))
+        return res
+
+    from types import SimpleNamespace as _NS
+    balance = _NS(C=C, NAME=NAME, STREAMS=STREAMS, BASIS=BASIS, SIGMA=SIGMA, HMAKE=HMAKE, VAP_HP=VAP_HP, VAP_LP=VAP_LP, VENT1=VENT1, COL1=COL1, COL2=COL2, DESIGN_ANCHOR=DESIGN_ANCHOR, RANGES=RANGES, check_inputs=check_inputs, solve=solve, solve_iter=solve_iter, evaluate=evaluate, sweep=sweep, _add=_add, _q=_q, _split=_split, _pass=_pass, _unpack=_unpack, _residual=_residual, _gauss=_gauss)
+    return (BASIS, C, COL1, COL2, DESIGN_ANCHOR, HMAKE, NAME, RANGES, SIGMA, STREAMS, VAP_HP, VAP_LP, VENT1, balance, check_inputs, evaluate, solve, solve_iter, sweep,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Step 1: Inputs and design basis
+
+    The model has four inputs. $F$ is the fresh toluene feed rate (kmol/h,
+    kilomole per hour); $X$ is the toluene conversion per pass in the reactor
+    (dimensionless, moles converted per mole fed to the reactor); $\beta$ is the
+    purge fraction, the share of the high-pressure separator vapour sent to the
+    purge (dimensionless); $r$ is the hydrogen-to-toluene molar ratio at the reactor
+    inlet (dimensionless). The values below are plain assignments: edit a value and
+    re-run. The design basis of the sheets is $F = 100$ kmol/h, $X = 0.75$,
+    $\beta = 0.25$, $r = 5$. The function `check_inputs` returns the inputs as
+    floating-point numbers or raises an error stating the permitted range.
+    """)
+    return
+
+
+@app.cell
+def _():
+    F = 100.0      # fresh toluene feed rate, kmol/h
+    X = 0.75       # toluene conversion per pass, dimensionless
+    beta = 0.25    # purge fraction, dimensionless
+    r = 5.0        # H2 / toluene molar ratio at the reactor inlet, dimensionless
+    return (F, X, beta, r,)
+
+
+@app.cell
+def _(F, X, balance, beta, r):
+    design_basis = dict(balance.BASIS)
+    print("design basis of the sheets:", design_basis)
+    inputs = balance.check_inputs(F, X, beta, r)
+    print("validated inputs:", inputs)
+    return (design_basis, inputs,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Step 2: One pass through the flowsheet from zero tear values
+
+    The flowsheet contains two recycles. Cutting them gives eleven unknown
+    numbers, the tear variables: the five component flows of the toluene recycle
+    (stream 37, kmol/h), the five component flows of the recycle gas (stream 15,
+    kmol/h), and the make-up gas rate $F_H$ (stream 5, kmol/h). One pass computes
+    every stream from assumed tear values and returns the tear values that the
+    flowsheet then produces, together with the ratio residual
+    $\rho = r\,n_{T,9} - n_{H_2,9}$ (kmol/h), where $n_{T,9}$ and $n_{H_2,9}$ are the
+    toluene and hydrogen flows of the reactor inlet (stream 9). The flowsheet closes
+    when the produced tear values equal the assumed ones and $\rho = 0$. Starting
+    from zero tear values, it does not close.
+    """)
+    return
+
+
+@app.cell
+def _(balance, inputs):
+    tear_zero = {c: 0.0 for c in balance.C}
+    pass0 = balance._pass(inputs, tear_zero, tear_zero, 0.0)
+    streams_pass0, produced_37, produced_15, rho_pass0, extents_pass0 = pass0
+
+    print("assumed toluene recycle and recycle gas: all zero; make-up gas rate 0")
+    print("produced toluene recycle (stream 37):", {c: round(v, 3) for c, v in produced_37.items()})
+    print("produced recycle gas (stream 15):", {c: round(v, 3) for c, v in produced_15.items()})
+    print("ratio residual rho = r*nT9 - nH2_9 =", round(rho_pass0, 3), "kmol/h")
+    gap_pass0 = max(max(produced_37.values()), max(produced_15.values()), abs(rho_pass0))
+    print("largest mismatch:", round(gap_pass0, 3), "kmol/h -> the balance does not close")
+    return (extents_pass0, gap_pass0, pass0, produced_15, produced_37, rho_pass0, streams_pass0, tear_zero,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Step 3: Affine tear residual and the 11 x 11 linear solve
+
+    Every unit relation of the model is linear in the flows it receives, so
+    the residual vector $\mathbf{f}(\mathbf{u})$ of the eleven tear equations
+    (produced minus assumed tear values, and $\rho$) is affine in the tear vector
+    $\mathbf{u}$ (eleven numbers, kmol/h):
+    $\mathbf{f}(\mathbf{u}) = \mathbf{f}_0 + \mathbf{J}\,\mathbf{u}$.
+    Here $\mathbf{f}_0$ is the residual at $\mathbf{u} = \mathbf{0}$ and column $j$ of
+    the $11 \times 11$ matrix $\mathbf{J}$ is the residual change when $u_j$ is set to 1.
+    The steady state is the solution of $\mathbf{J}\,\mathbf{u}^\ast = -\mathbf{f}_0$.
+    The cell builds $\mathbf{J}$ column by column, tests the affine form at an
+    arbitrary point, solves, and compares with the model's own solver.
+    """)
+    return
+
+
+@app.cell
+def _(balance, inputs, np):
+    def tear_residual(u):
+        return np.array(balance._residual(inputs, list(u)))
+
+    f0 = tear_residual(np.zeros(11))
+    jacobian = np.column_stack([tear_residual(np.eye(11)[j]) - f0 for j in range(11)])
+
+    u_probe = np.arange(11) * 0.7
+    affine_error = np.max(np.abs(tear_residual(u_probe) - (f0 + jacobian @ u_probe)))
+    print("affine test, max |f(u) - (f0 + J u)| =", float(affine_error))
+
+    u_star = np.linalg.solve(jacobian, -f0)
+    print("make-up gas rate F_H =", round(u_star[10], 4), "kmol/h")
+    print("toluene recycle flows (kmol/h):", {c: float(round(v, 4)) + 0.0 for c, v in zip(balance.C, u_star[:5])})
+    print("recycle gas flows (kmol/h):", {c: float(round(v, 4)) + 0.0 for c, v in zip(balance.C, u_star[5:10])})
+    print("residual at the solution, max |f(u*)| =", float(np.max(np.abs(tear_residual(u_star)))))
+    return (affine_error, f0, jacobian, tear_residual, u_probe, u_star,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Step 4: Closure check: atom balances and successive substitution
+
+    Two independent checks of the solution. First, the overall atom balances:
+    the carbon (C) and hydrogen (H) atom flows (kmol/h) entering with the fresh
+    toluene and the make-up gas (streams 1 and 5) must equal those leaving in the
+    fuel gas (streams 19 and 24), the benzene product (28) and the diphenyl (40).
+    Atoms per molecule: $\mathrm{H_2}$ (0 C, 2 H), $\mathrm{CH_4}$ (1 C, 4 H), benzene (6 C, 6 H),
+    toluene (7 C, 8 H), diphenyl (12 C, 10 H). Second, successive substitution
+    (repeated passes from the previous tear values) must give the same streams as the
+    linear solve.
+    """)
+    return
+
+
+@app.cell
+def _(F, X, balance, beta, r):
+    solution_linear, extents_linear = balance.solve(F, X, beta, r)
+    solution_iter, extents_iter = balance.solve_iter(F, X, beta, r)
+
+    atoms_per_molecule = {"H2": (0, 2), "CH4": (1, 4), "B": (6, 6), "T": (7, 8), "D": (12, 10)}
+    streams_in, streams_out = (1, 5), (19, 24, 28, 40)
+    for k, element in enumerate(["C", "H"]):
+        atoms_in = sum(solution_linear[n][c] * atoms_per_molecule[c][k] for n in streams_in for c in balance.C)
+        atoms_out = sum(solution_linear[n][c] * atoms_per_molecule[c][k] for n in streams_out for c in balance.C)
+        print(element, "atoms in:", round(atoms_in, 6), " out:", round(atoms_out, 6), " difference:", atoms_in - atoms_out)
+
+    gap_methods = max(abs(solution_linear[n][c] - solution_iter[n][c]) for n in balance.STREAMS for c in balance.C)
+    print("largest difference over all streams and components, linear solve vs successive substitution:", gap_methods, "kmol/h")
+    return (atoms_in, atoms_out, atoms_per_molecule, element, extents_iter, extents_linear, gap_methods, k, solution_iter, solution_linear, streams_in, streams_out,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Step 5: Design-basis anchor
+
+    The sheets display flows rounded to 0.1 kmol/h. The anchor run repeats the
+    calculation in integer tenths of kmol/h, every split rounded and its last outlet
+    taken by difference, so that each balance closes exactly on the displayed
+    numbers. Its result must reproduce the stream values recorded in
+    `DESIGN_ANCHOR` (the values printed on the sheets); the cell fails with an
+    assertion error if any value differs.
+    """)
+    return
+
+
+@app.cell
+def _(balance, solution_linear):
+    anchor_streams, anchor_extents = balance.solve_iter(100.0, 0.75, 0.25, 5.0, exact=True)
+    anchor_checked = 0
+    for stream_no, components in balance.DESIGN_ANCHOR.items():
+        for comp, shown in components.items():
+            assert round(anchor_streams[stream_no][comp], 1) == shown, (stream_no, comp)
+            anchor_checked += 1
+    print("design-basis values reproduced exactly:", anchor_checked)
+    print("benzene product (stream 28), kmol/h:", anchor_streams[28]["B"])
+    print("toluene recycle (stream 37), kmol/h:", anchor_streams[37]["T"])
+    print("float solution minus integer-tenths run, largest difference:",
+          max(abs(solution_linear[n][c] - anchor_streams[n][c]) for n in balance.STREAMS for c in balance.C), "kmol/h")
+    return (anchor_checked, anchor_extents, anchor_streams, comp, components, shown, stream_no,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Step 6: Purge trade-off sweep
+
+    Varying the purge fraction $\beta$ at fixed $F$, $X$ and $r$ changes the
+    balance of the recycle loop. The make-up hydrogen rate (kmol/h, stream 5) and the
+    recycle gas flow (kmol/h, stream 15, the sum of its five component flows) are
+    computed at twelve values of $\beta$. The figure shows both flows against $\beta$
+    over the permitted range.
+    """)
+    return
+
+
+@app.cell
+def _(F, X, balance, make_fig, mo, r):
+    betas = [round(0.05 + 0.05 * i, 2) for i in range(12)]
+    purge_runs = balance.sweep("beta", betas, F=F, X=X, r=r)
+    makeup_h2 = [e["makeup_h2"] for e in purge_runs]
+    recycle_gas = [e["recycle_gas"] for e in purge_runs]
+    print("beta        :", betas)
+    print("make-up H2  :", [round(v, 1) for v in makeup_h2])
+    print("recycle gas :", [round(v, 1) for v in recycle_gas])
+    _fig1 = make_fig([dict(type="scatter", x=betas, y=makeup_h2, mode="lines+markers", name="make-up H2",
+                 line=dict(color="#0072B2", dash="solid"), marker=dict(symbol="circle", color="#0072B2")),
+            dict(type="scatter", x=betas, y=recycle_gas, mode="lines+markers", name="recycle gas",
+                 line=dict(color="#D55E00", dash="dash"), marker=dict(symbol="square", color="#D55E00"))],
+           xaxis=dict(title="beta"), yaxis=dict(title="flow, kmol/h"),
+           legend=dict(orientation="h", x=0, y=-0.25))
+
+    mo.vstack([_fig1])
+    return (betas, makeup_h2, purge_runs, recycle_gas,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Step 7: Conversion sweep
+
+    Varying the conversion per pass $X$ at fixed $F$, $\beta$ and $r$ shows the
+    second trade-off: at low conversion most of the toluene fed to the reactor
+    leaves unconverted and is recycled (stream 37, kmol/h), so the toluene flow through
+    the reactor (stream 9, kmol/h) is large. The figure shows the toluene recycle and
+    the reactor toluene flow against $X$.
+    """)
+    return
+
+
+@app.cell
+def _(F, balance, beta, make_fig, mo, r):
+    conversions = [round(0.30 + 0.05 * i, 2) for i in range(14)]
+    conv_runs = balance.sweep("X", conversions, F=F, beta=beta, r=r)
+    toluene_recycle = [e["toluene_recycle"] for e in conv_runs]
+    reactor_toluene = [e["reactor_toluene"] for e in conv_runs]
+    print("X                :", conversions)
+    print("toluene recycle  :", [round(v, 1) for v in toluene_recycle])
+    print("reactor toluene  :", [round(v, 1) for v in reactor_toluene])
+    _fig1 = make_fig([dict(type="scatter", x=conversions, y=toluene_recycle, mode="lines+markers", name="toluene recycle",
+                 line=dict(color="#0072B2", dash="solid"), marker=dict(symbol="circle", color="#0072B2")),
+            dict(type="scatter", x=conversions, y=reactor_toluene, mode="lines+markers", name="reactor toluene",
+                 line=dict(color="#D55E00", dash="dash"), marker=dict(symbol="square", color="#D55E00"))],
+           xaxis=dict(title="X"), yaxis=dict(title="flow, kmol/h"),
+           legend=dict(orientation="h", x=0, y=-0.25))
+
+    mo.vstack([_fig1])
+    return (conv_runs, conversions, reactor_toluene, toluene_recycle,)
+
+
+if __name__ == "__main__":
+    app.run()
