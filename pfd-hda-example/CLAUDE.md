@@ -21,3 +21,15 @@ A changed sheet that has been published is re-issued under a new revision name (
 - Header text must be in the label-overlap check (a lane under the subtitle touched it unnoticed).
 - Verifier must join continuation streams across sheets for balances, and report (not crash on)
   missing table rows; the planted-defect tests in `tests/` guard both.
+
+## Process page (`page/`, published as `hda-plant-v1.html`)
+- Built under `.claude/skills/chemical-process-wasm-page`. `page/python/balance.py` is the single model source;
+  `model.py` (sheet data) imports it, and the sheets must rebuild byte-identically after any model change.
+- Build: `python page/build_page.py` (refuses to overwrite a published version; bump `VERSION` for any change,
+  `--dev` only before first publication). Checks: `pytest page/python tests`, `marimo check page/notebook/*.py`,
+  `python page/check_page.py` (Playwright battery), then publish `dist/` files to gh-pages `pfd-hda-example/`
+  and `cmp` the served bytes.
+- Lessons: phone overflow came from long reference URLs (`overflow-wrap:anywhere`) and grid children without
+  `min-width:0`; crop windows must be fitted to label extents measured with `getBBox`, not estimated; an
+  independent review found an arithmetic slip (a percentage taken of the wrong base), an unsupported equipment
+  claim, and self-referential "not verified" sentences, which belong in the handover.
