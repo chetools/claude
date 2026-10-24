@@ -1,0 +1,35 @@
+{
+ "model": "meta-llama/llama-3.2-1b-instruct",
+ "problem": "P15",
+ "run": 1,
+ "served_model": "meta-llama/llama-3.2-1b-instruct",
+ "provider": "Cloudflare",
+ "text": "(a) From Raoult's law\nP\u2081 = w\u2081M\u2081 \u00d7 P _{1} / M _{1} = 0.30 \u00d7 78.11 \u00d7 120,000/78.11 = 345.00 kPa\nFrom Antoine equation\nlog\u2081\u2080 P\u0302 _{1} = \u22126.90565 + 1211.033/ (C _{1} + T) and T _{1} = 112 + 8.666 = 120.666 \u00b0C\nThus, T _{1} = 120.666 \u00b0C\n(b) From Raoult's law\nP\u2082 = w\u2082M\u2082 \u00d7 P _{2} / M _{2} = 0.40 \u00d7 92.14 \u00d7 120,000/92.14 = 406.00 kPa\nFrom Antoine equation\nlog\u2081\u2080 P\u0302 _{2} = \u22126.95464 + 1344.800/ (C _{2} + T) and T _{2} = 112 + 12.336 = 124.336 \u00b0C\nThus, T _{2} = 124.336 \u00b0C\n(c) From Raoult's law\nP\u00b3 = w\u2083M\u2083 \u00d7 P _{3} / M _{3} = 0.30 \u00d7 106.17 \u00d7 120,000/106.17 = 346.00 kPa\nFrom Antoine equation\nlog\u2081\u2080 P\u0302 _{3} = \u22126.99891 + 1474.679/ (C _{3} + T) and T _{3} = 112 + 15.314 = 127.314 \u00b0C\nThus, T _{3} = 127.314 \u00b0C\n(d) From Raoult's law\nV/F = (P _{1} / P _{2} ) \u00d7 (M _{1} / M _{2} ) \u00d7 (M _{3} / M _{3} ) = (345.00 / 406.00) \u00d7 (78.11/92.14) \u00d7 (106.17/106.17) = 0.245\n(e) From Raoult's law\nV/F = (P _{1} / P _{2} ) \u00d7 (M _{1} / M _{2} ) \u00d7 (M _{3} / M _{3} ) = (345.00 / 406.00) \u00d7 (78.11/92.14) \u00d7 (106.17/106.17) = 0.245",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 517,
+  "completion_tokens": 531,
+  "total_tokens": 1048,
+  "cost": 0.00012069,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.00012069,
+   "upstream_inference_prompt_cost": 1.3959e-05,
+   "upstream_inference_completions_cost": 0.000106731
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.00012069,
+ "seconds": 4.3
+}

@@ -1,0 +1,35 @@
+{
+ "model": "meta-llama/llama-3.2-3b-instruct",
+ "problem": "P14",
+ "run": 1,
+ "served_model": "meta-llama/llama-3.2-3b-instruct",
+ "provider": "Cloudflare",
+ "text": "(a) \u03c9_u = 1.5 rad/min.\n\n(b) K_u = 1.5, P_u =1.5 * 2\u03c0 = 9.42 min.\n\n(c) K_c = 0.6* 1.5 =0.9, \u03c4_I =9.42 /2 =4.71 min, \u03c4_D = 9.42 /8= 1.175 min.\n\n(d) Gain margin = K_u / |G_m(1.5)| = 1.5 / |1/(0.5*1.5 + 1)| = 1.5 / 0.4167 = 3.61.\n\n\u03c9_pc = 1.5 rad/min.\n\n(e) Phase margin =180\u00b0 - (-90\u00b0) = 270\u00b0.\n\n\u03c9_gc = 1.5 rad/min.\n\n(f) M_s = max over all \u03c9 > 0of |1/(1 + L(i\u03c9))| = 0.4167, occurs at \u03c9_gc = 1.5 rad/min.",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "usage": {
+  "prompt_tokens": 570,
+  "completion_tokens": 228,
+  "total_tokens": 798,
+  "cost": 0.000105393,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.000105393,
+   "upstream_inference_prompt_cost": 2.9013e-05,
+   "upstream_inference_completions_cost": 7.638e-05
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ },
+ "cost": 0.000105393,
+ "seconds": 1.5
+}
