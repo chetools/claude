@@ -208,5 +208,45 @@
   },
   "score": 6.0,
   "justification": "(a) Re = 3.18e5, correct. (b) Colebrook set up and iterated correctly in form but 2.51/(Re sqrt f) was evaluated about 50 times too small, so f = 0.0164 (8.4 % off): correct method with a numerical slip, half points. (c) H = 27.5 m, correct energy balance carried forward from the wrong f (4.1 % off): half points. (d) 9.36 kW (FINAL 9.4), correct formula applied to its own H, about 4 % off: half points."
+ },
+ "openai/gpt-5.2": {
+  "parts": {
+   "a": 2,
+   "b": 3,
+   "c": 3,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) Re = 3.18e5, correct. (b) f = 0.0179 from Colebrook (iteration stated, not shown step by step), correct. (c) H = 28.71 m, correct energy balance with friction and minor losses. (d) 9.76 kW, correct."
+ },
+ "google/gemini-3.1-pro-preview": {
+  "parts": {
+   "a": 2,
+   "b": 3,
+   "c": 3,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) Re = 317,673, correct. (b) f = 0.0179 from a shown, converged Colebrook iteration, correct. (c) H = 28.71 m, correct energy balance with friction and minor losses. (d) 9.76 kW, correct."
+ },
+ "anthropic/claude-opus-4.8": {
+  "parts": {
+   "a": 2,
+   "b": 3,
+   "c": 3,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) Re = 317,670, correct. (b) f = 0.0179 from a shown, converged Colebrook iteration, correct. (c) H = 28.71 m, correct energy balance with friction and minor losses. (d) 9.76 kW, correct."
+ },
+ "anthropic/claude-opus-5.5": {
+  "parts": {
+   "a": 2,
+   "b": 3,
+   "c": 3,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) Re = 3.18e5, correct. (b) f = 0.0179 from a shown, converged Colebrook iteration, correct. (c) H = 28.71 m, correct energy balance with friction and minor losses. (d) 9.76 kW, correct."
  }
 }

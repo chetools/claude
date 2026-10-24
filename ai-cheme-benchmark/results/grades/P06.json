@@ -229,5 +229,49 @@
   },
   "score": 10,
   "justification": "(a) zeta = 0.4, correct. (b) 25.4 %, correct. (c) t_p = pi*tau/sqrt(1-zeta^2) = 10.28 min, correct. (d) 8*(1+OS) = 10.03 and (e) DR = OS^2 = 0.0645 (0.1 % off 0.0644), both correct."
+ },
+ "openai/gpt-5.2": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.4, correct. (b) 25.34 % (0.2 % off 25.38 % from a small rounding in the exponent), within 1 %: correct. (c) t_p = pi/omega_d = 10.29 min, correct. (d) 8*(1+0.2534) = 10.03 and (e) DR = 0.0643 (0.2 % off 0.0644), both correct."
+ },
+ "google/gemini-3.1-pro-preview": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.4, correct. (b) 25.38 %, correct. (c) t_p = pi*tau/sqrt(1-zeta^2) = 10.28 min, correct. (d) 8*(1+OS) = 10.03 and (e) DR = OS^2 = 0.0644, both correct."
+ },
+ "anthropic/claude-opus-4.8": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.4, correct. (b) 25.4 %, correct, with concise working. (c) t_p = 10.28 min, correct. (d) 8*(1.2538) = 10.03 and (e) DR = OS^2 = 0.0644, both correct."
+ },
+ "anthropic/claude-opus-5.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.4, correct. (b) 25.4 %, correct. (c) t_p = 3*pi/sqrt(0.84) = 10.28 min, correct. (d) KM(1+OS) = 10.03 and (e) DR = OS^2 = 0.0644, both correct."
  }
 }

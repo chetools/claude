@@ -11,11 +11,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "python"))
 from rubric import POINTS            # noqa: E402
 
-NUM = r"[-+−]?\d[\d,]*\.?\d*(?:\s*(?:[eE][-+−]?\d+|[×x]\s*10\^?\{?[-+−]?\d+\}?))?"
+NUM = r"[-+−]?\d[\d,]*\.?\d*(?:\s*(?:[eE][-+−]?\d+|[×x]\s*10(?:\^?\{?[-+−]?\d+\}?|[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)))?"
+
+
+SUP = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹⁻", "0123456789-")
 
 
 def to_float(s):
-    s = s.replace(",", "").replace("−", "-").replace(" ", "")
+    s = s.translate(SUP).replace(",", "").replace("−", "-").replace(" ", "")
     m = re.match(r"([-+]?[\d.]+)(?:[×x]10\^?\{?([-+]?\d+)\}?)?$", s)
     if m and m.group(2):
         return float(m.group(1)) * 10 ** int(m.group(2))

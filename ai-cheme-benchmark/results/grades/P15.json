@@ -1,0 +1,35 @@
+{
+ "google/gemini-3.1-pro-preview": {
+  "parts": {
+   "a": 2,
+   "b": 0,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 8,
+  "justification": "(a) 106.93 C, correct (0.006 C off). (b) 121.19 C instead of 123.65 C: method sound but the toluene vapour pressure at 121.19 C is wrong (1279.1 instead of 1016.6 mmHg), so the dew point is 2.46 C off, beyond the 1 C limit: 0. (c) V/F = 0.3305, 0.6 % below the reference despite a small slip in P1sat at 112 C, within 2 %: full. (d) y1 = 0.5307 and (e) 114.88 C (0.05 C off), correct."
+ },
+ "anthropic/claude-opus-4.8": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) 106.9 C (106.92 in the working), correct. (b) 123.7 C by trial and interpolation, 0.05 C off, correct. (c) V/F = 0.3327 by Rachford-Rice, 0.05 % off, correct. (d) y1 = 0.5306 and (e) 114.8 C (114.82 in the working), correct."
+ },
+ "anthropic/claude-opus-5.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) 106.92 C and (b) 123.65 C by Newton-refined trials, both correct. (c) V/F = 0.3325 by Rachford-Rice, correct. (d) y1 = 0.5305 and (e) 114.83 C, correct."
+ }
+}

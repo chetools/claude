@@ -33,7 +33,7 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) failure
         ok(await page.evaluate(() => document.querySelectorAll('#model-table tbody tr').length === window.DATA.models.length), `${label}: one table row per model`);
       }
       if (tab === 'panel-problems') {
-        ok(await page.evaluate(() => document.querySelectorAll('#toc-prob a').length === 12), `${label}: 12 problem TOC entries`);
+        ok(await page.evaluate(() => document.querySelectorAll('#toc-prob a').length === window.DATA.problems.length), `${label}: one problem TOC entry per problem`);
         ok(await page.evaluate(() => document.querySelectorAll('.prob details.resp').length === new Set(window.DATA.responses.map(r => r.model + '/' + r.problem)).size), `${label}: one response block per model and problem`);
         ok(await page.evaluate(() => document.querySelectorAll('.prob .katex').length > 0), `${label}: math rendered`);
       }
@@ -42,7 +42,7 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) failure
         ok(await page.evaluate(() => document.body.innerText.includes('The MoLab notebook is editable; run all cells once after opening')), `${label}: MoLab caption`);
         ok(await page.evaluate(() => /molab\.marimo\.io\/github\/chetools\/claude\/blob\/gh-pages\/ai-cheme-benchmark\/solutions_molab\.py/.test(document.querySelector('#panel-code a.primary').href)), `${label}: MoLab link`);
       }
-      if (tab === 'panel-method') ok(await page.evaluate(() => document.querySelectorAll('#toc-meth a').length === 7), `${label}: methodology TOC 7 entries`);
+      if (tab === 'panel-method') ok(await page.evaluate(() => document.querySelectorAll('#toc-meth a').length === document.querySelectorAll('#panel-method h2').length && document.querySelectorAll('#toc-meth a').length >= 8), `${label}: methodology TOC lists every section`);
       await noHscroll(tab);
       await page.screenshot({ path: path.join(SHOTS, `${label}-${tab}.png`), fullPage: false });
     }

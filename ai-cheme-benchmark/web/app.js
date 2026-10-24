@@ -4,8 +4,8 @@
 (function () {
   'use strict';
   var D = window.DATA;
-  var DIFF_ORDER = ['Easy', 'Medium', 'Hard', 'Extremely hard'];
-  var PALETTE = ['#0072B2', '#D55E00', '#009E73', '#CC79A7', '#E69F00', '#56B4E9', '#444444'];
+  var DIFF_ORDER = ['Easy', 'Medium', 'Hard', 'Extremely hard', 'Frontier'];
+  var PALETTE = ['#0072B2', '#D55E00', '#009E73', '#CC79A7', '#E69F00', '#56B4E9', '#444444', '#8C564B'];
   var CONFIG = { responsive: true, displaylogo: false };
   var LAYOUT = { font: { family: 'Source Sans Pro, sans-serif', size: 13, color: '#31333f' }, paper_bgcolor: '#fff',
                  plot_bgcolor: '#fff', margin: { l: 55, r: 40, t: 46, b: 70 }, height: 380 };
@@ -34,7 +34,7 @@
     values.forEach(function (v, i) {
       var id = group + '-' + i, w = el('div', { 'class': 'field check' });
       var c = el('input', { type: 'checkbox', id: id, 'data-group': group, value: v });
-      c.checked = true;
+      c.checked = v !== 'Frontier';   // Frontier problems went only to some models: off by default
       c.addEventListener('change', update);
       w.appendChild(c); w.appendChild(el('label', { 'for': id }, v));
       box.appendChild(w);
@@ -42,6 +42,7 @@
   }
   checks('f-topic', topics, 'topic');
   checks('f-diff', diffs, 'diff');
+  var DEFAULT_PIDS = null;   // the problems selected on load; the build's Python means cover these
   function selected(group) {
     return [].slice.call(document.querySelectorAll('input[data-group=' + group + ']'))
       .filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
@@ -182,13 +183,18 @@
     var top = Math.max.apply(null, rows.map(function (m) { return st[m.id].max; }).concat([1]));
     var yax = { title: 'Mean score (%)', range: [0, Math.min(100, niceTop(top * 1.08))], gridcolor: '#eceef2' };
     // bar chart
+    var barH = Math.max(320, 110 + 22 * rows.length);   // legend placed ~40 px below the plot area
     Plotly.react('plot-bar', byVendor(rows, function (v, ms) {
-      return { type: 'bar', name: v, x: ms.map(function (m) { return m.name; }),
-               y: ms.map(function (m) { return st[m.id].mean; }), error_y: err(ms),
-               marker: { color: vcolor(v) }, hovertemplate: '%{x}: %{y:.1f} %<extra></extra>' };
+      // horizontal bars: one row per model, so every name stays readable
+      return { type: 'bar', orientation: 'h', name: v, y: ms.map(function (m) { return m.name; }),
+               x: ms.map(function (m) { return st[m.id].mean; }), error_x: err(ms),
+               marker: { color: vcolor(v) }, hovertemplate: '%{y}: %{x:.1f} %<extra></extra>' };
     }), lay(MULTI ? 'Mean score, with run-to-run min–max' : 'Mean score', {
-      barmode: 'overlay', yaxis: yax, xaxis: { categoryorder: 'array', categoryarray: names, tickangle: -25, automargin: true },
-      legend: { orientation: 'h', y: -0.35 }, datarevision: Math.random() }), CONFIG);
+      barmode: 'overlay', height: barH,
+      xaxis: { range: yax.range, gridcolor: yax.gridcolor, ticksuffix: ' %' },
+      yaxis: { categoryorder: 'array', categoryarray: names, autorange: 'reversed', automargin: true,
+               tickmode: 'array', tickvals: names },
+      legend: { orientation: 'h', yanchor: 'top', y: -40 / (barH - 120) }, datarevision: Math.random() }), CONFIG);
     // score vs release date
     Plotly.react('plot-date', byVendor(rows, function (v, ms) {
       return { type: 'scatter', mode: 'markers', name: v, x: ms.map(function (m) { return m.release_date; }),
@@ -261,7 +267,7 @@
       var same = !!shown && shown.length === want.length && shown.every(function (v, j) { return Math.abs(v - want[j]) < 0.051; });
       check('table matches responses: ' + m.id, same, { shown: shown, recomputed: want });
       var ex = window.EXPECT[m.id];
-      if (pids.length === D.problems.length && ex) {
+      if (pids.join() === DEFAULT_PIDS.join() && ex) {
         check('table matches build-time Python: ' + m.id,
           !!shown && Math.abs(shown[0] - ex.mean) < 0.051 &&
           (!MULTI || (Math.abs(shown[1] - ex.min) < 0.051 && Math.abs(shown[2] - ex.max) < 0.051)), { shown: shown, python: ex });
@@ -278,6 +284,7 @@
   }
 
   try {
+    DEFAULT_PIDS = selectedProblems();
     update();
     if (/[?&]selftest\b/.test(location.search)) selftest();
   } catch (e) {

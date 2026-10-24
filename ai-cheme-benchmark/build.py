@@ -247,12 +247,14 @@ def validate(data):
 
 
 def expected_stats(data):
-    """Overall per-model mean and run-total min/max in percent, for the page's self-test (independent of app.js)."""
+    """Per-model mean and run-total min/max in percent over the non-Frontier problems (the page's default selection),
+    for the page's self-test (independent of app.js)."""
+    frontier = {p["id"] for p in data["problems"] if p["difficulty"] == "Frontier"}
     out = {}
     for m in data["models"]:
         per_run = {}
         for r in data["responses"]:
-            if r["model"] == m["id"]:
+            if r["model"] == m["id"] and r["problem"] not in frontier:
                 per_run.setdefault(r["run"], []).append(r["score"])
         totals = [10 * sum(v) / len(v) for v in per_run.values()]
         out[m["id"]] = dict(mean=sum(totals) / len(totals), min=min(totals), max=max(totals))
@@ -423,6 +425,11 @@ def problems_html(data, ref, batch, models):
                '<div class="label">Reference solution</div>',
                f'<div class="explain">{batch.md(doc, p["id"])}</div>',
                '<div class="label">Responses</div>']
+        if p["difficulty"] == "Frontier":
+            given = [m for m in models if (p["id"], m["id"]) in by_pr]
+            out.append('<p class="caption">Frontier problems were given only to models that scored 10/10 on every one '
+                       'of P01–P12. ' + ("No model qualified." if not given else
+                                         "Given to: " + esc(", ".join(m["name"] for m in given)) + "."))
         for m in models:
             rs = sorted(by_pr.get((p["id"], m["id"]), []), key=lambda r: r["run"])
             if not rs:
@@ -480,16 +487,31 @@ def fill_methodology(md, data):
     unreviewed = [k for k in keys if k not in reviewed]
     if unreviewed:
         fail("grade-check flags not reviewed in tests/reviewed_flags.json:\n  " + "\n  ".join(unreviewed))
-    listed = {m["id"] for m in json.loads(read("results", "model_meta.json"))}
-    absent = sorted(listed - {m["id"] for m in data["models"]})
+    meta = json.loads(read("results", "model_meta.json"))
+    shown = {m["id"] for m in data["models"]}
+    absent = sorted(m["id"] for m in meta if m["id"] not in shown)
+    if any(not a.endswith(":free") for a in absent):
+        fail("models in model_meta.json without graded replies that are not free-tier (the absence note "
+             f"would be wrong): {[a for a in absent if not a.endswith(':free')]}")
+    sources = []
+    for m in meta:
+        if m["id"] not in shown:
+            continue
+        line = f"- {m['name'].split(': ', 1)[-1]} (`{m['id']}`): released {m['release_date']}; parameters " + \
+               (m["params"] or "not published")
+        if m.get("params_source"):
+            line += f"; [source]({m['params_source']})"
+        sources.append(line)
     total = sum(m["cost_usd"] or 0 for m in data["models"])
     vals = {
         "N_TRUNCATED": f"{cut} of the {len(rs)} replies were cut off at the provider's output limit.",
         "N_FLAGS": (f"It flagged {len(fl)} parts. Each was re-read and the grade was kept: "
                     + " ".join(f"{k}: {reviewed[k]}" for k in keys)) if fl else "It flagged no part.",
         "TOTAL_COST": f"The total over all models was ${total:.4f}.",
-        "ABSENT": ("Models that were planned but never returned a reply, and so are not on this page: "
+        "ABSENT": ("Free-tier models that were planned but are not on this page, because their runs did not "
+                   "complete (the free endpoints were rate-limited or returned errors): "
                    + ", ".join(f"`{a}`" for a in absent) + ".") if absent else "",
+        "MODEL_SOURCES": "\n".join(sources),
     }
     def sub(m):
         if m.group(1) not in vals:

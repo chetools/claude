@@ -166,5 +166,37 @@
   },
   "score": 10,
   "justification": "(a) 6.43 from the correct Fenske equation, reboiler included without adding a stage, matches the reference 6.427: full points. (b) Underwood with q = 1 (root equation = 0), theta = 1.5625, R_min = 1.444, matches the reference: full points."
+ },
+ "openai/gpt-5.2": {
+  "parts": {
+   "a": 5,
+   "b": 0
+  },
+  "score": 5,
+  "justification": "(a) 6.427 from the correct Fenske equation, matches the reference: full points. (b) 7.79 from Underwood with the root equation set to sum = 1 instead of 1 - q = 0 for a saturated-liquid feed, giving theta = 2.231 instead of 1.5625, a wrong set-up and far from the reference 1.444: 0."
+ },
+ "google/gemini-3.1-pro-preview": {
+  "parts": {
+   "a": 5,
+   "b": 5
+  },
+  "score": 10,
+  "justification": "(a) 6.427 from the correct Fenske equation, matches the reference: full points. (b) Pinch at x = z_F on the equilibrium curve (y* = 0.625), operating-line slope gives R_min = 13/9 = 1.444, matches the reference: full points."
+ },
+ "anthropic/claude-opus-4.8": {
+  "parts": {
+   "a": 5,
+   "b": 5
+  },
+  "score": 10,
+  "justification": "(a) 6.427 from the correct Fenske equation, matches the reference: full points. (b) Pinch at x = z_F on the equilibrium curve (y* = 0.625), operating-line slope gives R_min = 1.444, matches the reference: full points."
+ },
+ "anthropic/claude-opus-5.5": {
+  "parts": {
+   "a": 5,
+   "b": 5
+  },
+  "score": 10,
+  "justification": "(a) 6.43 from the correct Fenske equation, matches the reference 6.427: full points. (b) Pinch at x = z_F on the equilibrium curve (y* = 0.625), R_min = (x_D - y*)/(y* - z_F) = 1.444, matches the reference: full points."
  }
 }

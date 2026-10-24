@@ -14,11 +14,28 @@ of `problems/PNN.md`), with nothing added. Each problem was a separate conversat
 
 - One run per model and problem.
 - Temperature, top-p and the maximum number of output tokens were not set, so each provider's defaults
-  applied. Replies cut off at the provider's output limit are marked "[reply cut off …]" and were graded
+  applied. One exception: Claude Opus 4.5 was run with a 16 000-token output limit, because OpenRouter
+  refused its default limit (64 000 tokens) for lack of prepaid credit; its longest reply used 1 859 tokens. Replies cut off at the provider's output limit are marked "[reply cut off …]" and were graded
   as they stand.
 - No tools, no code execution, no web access.
 - Reasoning models ran with their default reasoning setting; no effort level was requested (Effort column: —).
 - The requests went through OpenRouter, which picks the serving provider. @@N_TRUNCATED@@
+
+## Which models were run, and the Frontier problems
+
+The models were added in steps, roughly in order of release, to follow the progress of widely available
+models over time: small and older models first, then 2024 flagships (GPT-4o, Mistral Large 2, DeepSeek V3),
+the first widely available reasoning models (o3, DeepSeek R1, Gemini 2.5 Pro), late-2025 models (GPT-5,
+GPT-5.2, Claude Sonnet 4.5, Claude Opus 4.5) and 2026 models (Gemini 3.1 Pro, Claude Opus 4.8, Claude
+Opus 5.5). GPT-4 Turbo, o3-mini and o4-mini were planned but OpenAI has retired them, so they could not be
+called. GPT-4 and o1 were left out to stay within the budget.
+
+Problems P13–P15 ("Frontier") were written after P01–P12 had been graded for the models up to Claude Opus
+4.5, to be much harder than P01–P12 (coupled nonlinear systems solved by hand). They were given only to
+models that scored 10/10 on every one of P01–P12. Their reference solutions were checked against an
+independent second solution like the others. They were written once and not changed after any model's
+reply was seen; no model was tried on them before they were fixed. The choice of who gets them depends
+on the P01–P12 grades, so the Frontier scores compare only the models that qualified.
 
 ## Grading rubric
 
@@ -26,8 +43,11 @@ Each problem is worth 10 points, split over its parts as shown next to each part
 For each part:
 
 - **Full points:** the final value is within 1 % of the reference (2 % for values that depend on an
-  iterative friction-factor or stage-stepping result: P02–P04, P11 (d), P12 (e)), with a sound method.
-  Integer answers (P11 (e)) and the flow direction in P03 (c) must match exactly.
+  iterative friction-factor or stage-stepping result: P02–P04, P11 (d), P12 (e), P13 (c), P15 (c)), with
+  a sound method. Integer answers (P11 (e)) and the flow directions in P03 (c) and P13 (c) must match
+  exactly. Temperatures in P15 (a), (b) and (e) must be within 0.2 °C (half points for 0.2–1 °C with a
+  sound method). A part with several values (P14 (b)–(f)) gets full points only if every value is within
+  tolerance.
 - **Half points:** correct method and set-up, but a numerical slip, a rounding carried through, or a
   value 1–5 % off; also a correct value carried forward from the model's own wrong earlier part
   ("error carried forward") when the method of this part is right.
@@ -38,7 +58,9 @@ The working is graded, not only the FINAL lines: a FINAL value that contradicts 
 credit of the working. A model's score is the mean of its problem scores, in percent.
 
 The grader was an AI model, Claude Opus 5.5, in one session: one grader instance per problem, which graded
-the replies of all models to that problem in one pass, so that the same mistake got the same deduction. It
+every model's reply to that problem, so that the same mistake got the same deduction. As models were added
+in steps, each instance graded the new replies in a further batch, keeping its earlier grades unchanged.
+Note that the grader is a model from the same family as some of the graded Claude models. It
 saw the problem, the reference answers, the reference solution and the rubric, graded the reply text only
 (not any hidden reasoning), and wrote the one-to-four-sentence justification shown under each reply. The
 instructions it followed are in `python/grading_prompt.md`.
@@ -51,40 +73,24 @@ to a value within 1 % of it. @@N_FLAGS@@
 
 The table in the Results tab lists every model. Release dates are given to the month. Parameter counts are total parameters, in billions, from
 the model card linked below; for mixture-of-experts models the active parameters per token are given in
-brackets. OpenAI does not publish the size of GPT-3.5 Turbo or GPT-4o mini, so they have no parameter
-count and are left out of the score-versus-parameters chart.
+brackets. Models whose vendor has not published a parameter count (all OpenAI, Anthropic and Gemini
+models here) have none and are left out of the score-versus-parameters chart.
+
+@@MODEL_SOURCES@@
 
 @@ABSENT@@
-
-- Llama 3.2 3B Instruct (`meta-llama/llama-3.2-3b-instruct`): released 2024-09; parameters 3.2B; [source](https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct)
-- Llama 3.2 1B Instruct (`meta-llama/llama-3.2-1b-instruct`): released 2024-09; parameters 1.2B; [source](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct)
-- Llama 3.1 8B Instruct (`meta-llama/llama-3.1-8b-instruct`): released 2024-07; parameters 8.0B; [source](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct)
-- Mistral Nemo (`mistralai/mistral-nemo`): released 2024-07; parameters 12.2B; [source](https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407)
-- GPT-3.5 Turbo (`openai/gpt-3.5-turbo`): released 2023-03; parameters not published
-- Llama 3.3 70B Instruct (`meta-llama/llama-3.3-70b-instruct`): released 2024-12; parameters 70.6B; [source](https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct)
-- GPT-4o-mini (`openai/gpt-4o-mini`): released 2024-07; parameters not published
-- Qwen2.5 7B Instruct (`qwen/qwen-2.5-7b-instruct`): released 2024-09; parameters 7.6B; [source](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct)
-- Qwen2.5 72B Instruct (`qwen/qwen-2.5-72b-instruct`): released 2024-09; parameters 72.7B; [source](https://huggingface.co/Qwen/Qwen2.5-72B-Instruct)
-- Gemma 4 31B (free) (`google/gemma-4-31b-it:free`): released 2026-03; parameters 31.3B; [source](https://huggingface.co/google/gemma-4-31B-it)
-- Gemma 4 26B A4B  (free) (`google/gemma-4-26b-a4b-it:free`): released 2026-03; parameters 25.8B (3.8B active); [source](https://huggingface.co/google/gemma-4-26B-A4B-it)
-- Nemotron 3 Ultra (free) (`nvidia/nemotron-3-ultra-550b-a55b:free`): released 2026-06; parameters 560.5B (55B active); [source](https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16)
-- Nemotron 3 Super (free) (`nvidia/nemotron-3-super-120b-a12b:free`): released 2026-03; parameters 123.6B (12B active); [source](https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16)
-- Nemotron 3 Nano Omni (free) (`nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free`): released 2026-04; parameters 33.0B (3B active); [source](https://huggingface.co/nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-BF16)
-- LFM2.5-2.6B (free) (`liquid/lfm-2.5-2.6b:free`): released 2026-08; parameters 2.7B; [source](https://huggingface.co/LiquidAI/LFM2.5-2.6B)
-- Gemma 3 4B (`google/gemma-3-4b-it`): released 2025-03; parameters 4.3B; [source](https://huggingface.co/google/gemma-3-4b-it)
-- Gemma 3 27B (`google/gemma-3-27b-it`): released 2025-03; parameters 27.4B; [source](https://huggingface.co/google/gemma-3-27b-it)
-- Phi 4 (`microsoft/phi-4`): released 2024-12; parameters 14.7B; [source](https://huggingface.co/microsoft/phi-4)
 
 ## Cost
 
 The cost of each model is the sum, over its replies, of the cost OpenRouter reported for each request
-(`usage.cost` in the response), in US dollars, at the prices of 23 October 2026 (the run date). Models marked "free" were
+(`usage.cost` in the response), in US dollars, at the prices of 23–24 October 2026 (the run dates). Models marked "free" were
 served on OpenRouter's free tier. The grading cost is not included. @@TOTAL_COST@@
 
 ## Calibration changes
 
-None. The problems, the reference solutions and the rubric were fixed before any reply was collected
-and were not changed after grading.
+P01–P12, their reference solutions and their rubric were fixed before any reply was collected and were not
+changed after grading. P13–P15 and their rubric lines were added later, as described above; they were
+fixed before any model saw them.
 
 ## What was not verified
 

@@ -187,5 +187,41 @@
   },
   "score": 10,
   "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425 in the working (1.43 in the FINAL, 0.4 % off), correct. (c) N = 5.36 from the correct Kremser equation, correct."
+ },
+ "openai/gpt-5.2": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425, correct. (c) N = 5.36 from the Kremser form y_out/y_in = (A-1)/(A^(N+1)-1), correct."
+ },
+ "google/gemini-3.1-pro-preview": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425, correct. (c) N = 5.3565 (FINAL 5.36) from the correct Kremser equation, correct."
+ },
+ "anthropic/claude-opus-4.8": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425, correct. (c) N = 5.36 from the correct Kremser equation, correct."
+ },
+ "anthropic/claude-opus-5.5": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425, correct. (c) N = 5.36 from the correct Kremser equation, correct."
  }
 }

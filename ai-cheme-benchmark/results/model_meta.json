@@ -276,20 +276,6 @@
     "release_source": null
   },
   {
-    "id": "openai/o3-mini",
-    "name": "OpenAI: o3 Mini",
-    "vendor": "OpenAI",
-    "openrouter_created": "2025-01-31",
-    "release_date": "2025-01",
-    "params": null,
-    "params_official": false,
-    "params_source": null,
-    "reasoning": true,
-    "price_in_per_M": 1.1,
-    "price_out_per_M": 4.4,
-    "release_source": null
-  },
-  {
     "id": "openai/o3",
     "name": "OpenAI: o3",
     "vendor": "OpenAI",
@@ -320,7 +306,7 @@
   {
     "id": "google/gemini-2.5-pro",
     "name": "Google: Gemini 2.5 Pro",
-    "vendor": "Google",
+    "vendor": "Google DeepMind",
     "openrouter_created": "2025-06-17",
     "release_date": "2025-06",
     "params": null,
@@ -390,7 +376,7 @@
   {
     "id": "google/gemini-3.1-pro-preview",
     "name": "Google: Gemini 3.1 Pro Preview",
-    "vendor": "Google",
+    "vendor": "Google DeepMind",
     "openrouter_created": "2026-02-19",
     "release_date": "2026-02",
     "params": null,
@@ -400,20 +386,6 @@
     "price_in_per_M": 2.0,
     "price_out_per_M": 12.0,
     "release_source": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/"
-  },
-  {
-    "id": "openai/gpt-5.5",
-    "name": "OpenAI: GPT-5.5",
-    "vendor": "OpenAI",
-    "openrouter_created": "2026-04-24",
-    "release_date": "2026-04",
-    "params": null,
-    "params_official": false,
-    "params_source": null,
-    "reasoning": true,
-    "price_in_per_M": 5.0,
-    "price_out_per_M": 30.0,
-    "release_source": null
   },
   {
     "id": "anthropic/claude-opus-4.8",

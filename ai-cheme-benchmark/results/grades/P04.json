@@ -208,5 +208,45 @@
   },
   "score": 4,
   "justification": "(a) 12.3 kg/s: its equation p1^2 - p2^2 = (2 G^2 RT/M)[fL/D + ln(p1/p2)] doubles the friction term (it should be fL/D + 2 ln), so the result is 29 % below 17.43: wrong formula, 0. (b) Re = 4.75e6 correctly computed as G D/mu from its own mass flux: error carried forward, half points. (c) f = 0.0132 from a Colebrook iteration (0.0133 at its own Re), within 0.1 % of 0.01321: full. (d) 8.7 m/s correctly computed as G/rho2 from its own mass flux: error carried forward, half points."
+ },
+ "openai/gpt-5.2": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2
+  },
+  "score": 8,
+  "justification": "(a) 17.4 kg/s is within 0.2 % of 17.43, but its derived equation has the acceleration term with the wrong sign (fL/(2D) - ln(p1/p2) instead of + ln), a slip in the set-up that the problem explicitly asks for; the value is right only because that term is small: half points. (b) Re = 6.7e6 as G D/mu, 0.4 % off: full. (c) f = 0.0133 from Colebrook, 0.7 % off: full. (d) 12.3 m/s as G/rho2, 0.2 % off: full."
+ },
+ "google/gemini-3.1-pro-preview": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 2,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) 17.43 kg/s from the correct isothermal equation with the 2 ln(p1/p2) term and a shown Colebrook iteration: matches. (b) Re = 6.725e6 as G D/mu: matches. (c) f = 0.01321: matches. (d) 12.27 m/s as G/rho2: matches; full points for every part."
+ },
+ "anthropic/claude-opus-4.8": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 2,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "The text field includes a visible think block followed by the answer; both show the correct isothermal equation with the 2 ln(p1/p2) term and a converged Colebrook iteration. (a) 17.4 kg/s, 0.2 % off: full. (b) Re = 6.73e6 as G D/mu, 0.1 % off: full. (c) f = 0.0132, 0.1 % off: full. (d) 12.3 m/s as G/rho2, 0.2 % off: full."
+ },
+ "anthropic/claude-opus-5.5": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 2,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) 17.4 kg/s from the correctly derived isothermal equation (M/(2RT))(p1^2 - p2^2) = G^2[fL/(2D) + ln(p1/p2)] with a shown Colebrook iteration, 0.2 % off: full. (b) Re = 6.72e6 as G D/mu, 0.1 % off: full. (c) f = 0.0132, 0.1 % off: full. (d) 12.3 m/s as G/rho2, 0.2 % off: full."
  }
 }

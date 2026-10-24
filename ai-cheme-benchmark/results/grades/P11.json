@@ -229,5 +229,49 @@
   },
   "score": 4,
   "justification": "(a) D = 44.57 kmol/h, (b) R_min = 1.77 from the q-line/equilibrium pinch (0.364, 0.579) and (c) R = 2.66 are correct. (d) the operating lines and their intersection (0.387) are right, but the stage table is not a valid stepping (stage 1 has x = 0.96 with y = 0.852, and the compositions fall far too fast; for y = 0.96 the liquid should be x = 0.909), so 7.71 stages (38 % below 12.42) gets 0. (e) stage 4 follows from that invalid table (reference 7): 0."
+ },
+ "openai/gpt-5.2": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 4,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) D = 44.565 kmol/h, correct. (b) R_min = 1.7739 from the q-line/equilibrium pinch (0.3641, 0.5788), 0.08 % off, and (c) R = 2.661, both correct. (d) correct operating lines (stripping line from internal flows) and a stage-by-stage list give 12.42 stages (reference 12.42), correct. (e) liquid first falls below x = 0.3874 on stage 7, correct."
+ },
+ "google/gemini-3.1-pro-preview": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 4,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) D = 44.565 kmol/h, correct. (b) R_min = 1.775 from the q-line/equilibrium pinch and (c) R = 2.663, both correct. (d) correct operating lines and full stage-by-stage stepping give 12.42 stages (reference 12.42), correct. (e) liquid first falls below x = 0.3875 on stage 7, correct."
+ },
+ "anthropic/claude-opus-4.8": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 4,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) D = 44.57 kmol/h, correct. (b) R_min = 1.775 from the q-line/equilibrium pinch and (c) R = 2.663, both correct. (d) correct operating lines and a full stage table give 12.43 stages (reference 12.42, 0.04 % off), correct. (e) liquid first falls below x = 0.3875 on stage 7, correct."
+ },
+ "anthropic/claude-opus-5.5": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 4,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) D = 44.57 kmol/h, correct. (b) R_min = 1.775 from the q-line/equilibrium pinch and (c) R = 2.663, both correct. (d) correct operating lines and a stage-by-stage table give 12.42 stages (reference 12.42), correct. (e) liquid first falls below x = 0.3875 on stage 7, correct."
  }
 }

@@ -1,0 +1,35 @@
+{
+ "google/gemini-3.1-pro-preview": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 3,
+   "d": 2,
+   "e": 1
+  },
+  "score": 10.0,
+  "justification": "Node-head set-up with Darcy-Weisbach, Colebrook and nodal continuity; the converged flows are given (iterations not shown) and they satisfy continuity at every node. (a) Qp = 49.8 L/s and (b) Hp = 50.2 m, both within 0.2 % of the reference: full. (c) 3.5 L/s from B to C, 0.2 % off with the correct direction: full. (d) 224.8 kPa (its pipe-2 loss of 23.75 m is slightly low, 23.84 m checked, and the working gives H_C = 27.00 m, i.e. 225.2 kPa; both are within 0.2 %) and (e) 35.0 kW, both correct: full."
+ },
+ "anthropic/claude-opus-4.8": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 3,
+   "d": 2,
+   "e": 1
+  },
+  "score": 10.0,
+  "justification": "Node-head Newton solution with Colebrook friction factors per pipe; the resistances, heads and flows are given and they check out. (a) 49.8 L/s and (b) 50.2 m, both within 0.2 %: full. (c) 3.5 L/s from B to C, since H_B = 29.28 m is above H_C = 26.95 m: correct value and direction, full. (d) 225 kPa (0.03 % off) and (e) 35.0 kW, both correct: full."
+ },
+ "anthropic/claude-opus-5.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 3,
+   "d": 2,
+   "e": 1
+  },
+  "score": 10.0,
+  "justification": "Node-head Newton solution with a table of Re, f and R per pipe, and of converged heads and flows; all values agree with my check of the network. (a) 49.8 L/s and (b) 50.27 m (FINAL 50.3), both within 0.1 %: full. (c) 3.51 L/s from B to C, from sqrt(2.335/189500): correct value and direction, full. (d) 225.0 kPa and (e) 35.0 kW, both within 0.05 %: full."
+ }
+}

@@ -1,0 +1,38 @@
+{
+ "google/gemini-3.1-pro-preview": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 2,
+   "f": 1
+  },
+  "justification": "(a) omega_u = 0.4233 rad/min and (b) K_u = 1.985, P_u = 14.84 min, correct (within 0.05 %). (c) K_c = 1.191, tau_I = 7.420 min, tau_D = 1.855 min, correct. (d) GM = 2.166 at omega_pc = 0.5853 rad/min and (e) PM = 45.47 deg at omega_gc = 0.2839 rad/min, correct with the right phase and magnitude equations and intermediate values. (f) M_s = 2.117 at 0.4665 rad/min from a frequency scan of |1+L|, within 0.1 % and 0.6 %: full points.",
+  "score": 10
+ },
+ "anthropic/claude-opus-4.8": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 1,
+   "f": 0
+  },
+  "justification": "(a) omega_u = 0.423 rad/min, (b) K_u = 1.98, P_u = 14.86 min and (c) K_c = 1.19, tau_I = 7.43, tau_D = 1.86 min, all correct. (d) GM = 2.18 at omega_pc = 0.587 rad/min, within 0.7 %: full points. (e) PM = 45.0 deg (1.1 % low) and omega_gc = 0.288 rad/min (1.5 % high) by a correct method with coarse interpolation: half points. (f) M_s = 2.0 at 0.35 rad/min is a one-point estimate with no search (5.4 % and 25 % off; the true |S| at 0.35 is 1.70): 0.",
+  "score": 8
+ },
+ "anthropic/claude-opus-5.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 2,
+   "f": 1
+  },
+  "justification": "(a) omega_u = 0.4232 rad/min and (b) K_u = 1.984, P_u = 14.85 min, correct. (c) K_c = 1.190, tau_I = 7.42 min, tau_D = 1.856 min, correct. (d) GM = 2.17 at omega_pc = 0.5854 rad/min and (e) PM = 45.5 deg at omega_gc = 0.2838 rad/min, correct with tabulated phase and magnitude values. (f) M_s = 2.115 at 0.4695 rad/min from a scan of |1+L|^2 and a parabolic fit, matching the reference: full points.",
+  "score": 10
+ }
+}

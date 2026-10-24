@@ -187,5 +187,41 @@
   },
   "score": 10,
   "justification": "(a) 10, correct. (b) 7.14, correct (7.135 rounded). (c) 24.0 min (23.97 in the working), 0.14 % off: full points."
+ },
+ "openai/gpt-5.2": {
+  "parts": {
+   "a": 3,
+   "b": 4,
+   "c": 3
+  },
+  "score": 10,
+  "justification": "(a) 10, correct. (b) 7.14, correct (7.135 rounded). (c) 24.0 min (23.97 in the working), 0.14 % off: full points."
+ },
+ "google/gemini-3.1-pro-preview": {
+  "parts": {
+   "a": 3,
+   "b": 4,
+   "c": 3
+  },
+  "score": 10,
+  "justification": "(a) 10, correct. (b) 7.135, correct. (c) 23.966 min, correct."
+ },
+ "anthropic/claude-opus-4.8": {
+  "parts": {
+   "a": 3,
+   "b": 4,
+   "c": 3
+  },
+  "score": 10,
+  "justification": "(a) 10, correct. (b) 7.14, correct (7.135 rounded). (c) 23.97 min, correct."
+ },
+ "anthropic/claude-opus-5.5": {
+  "parts": {
+   "a": 3,
+   "b": 4,
+   "c": 3
+  },
+  "score": 10,
+  "justification": "(a) 10, correct. (b) 7.13, correct (7.135 rounded down, 0.07 % off). (c) 23.97 min, correct."
  }
 }

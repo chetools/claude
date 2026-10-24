@@ -1,5 +1,10 @@
 {
  "openai/gpt-4o-mini P12 (f)": "0.76 is stated, but the Kirkbride formula shown is garbled and cannot give it: a value without supporting working.",
  "qwen/qwen-2.5-72b-instruct P11 (e)": "Feed stage 7 is stated 'after detailed calculations' with no stage stepping shown: a value without supporting working.",
- "microsoft/phi-4 P11 (e)": "Feed stage 7 is assumed ('Assume'), not obtained by stepping off stages: a value without supporting working."
+ "microsoft/phi-4 P11 (e)": "Feed stage 7 is assumed ('Assume'), not obtained by stepping off stages: a value without supporting working.",
+ "deepseek/deepseek-chat P03 (a)": "100.2 m is stated without any iteration, and the flows it reports contradict that head under its own equations: a value without supporting working.",
+ "deepseek/deepseek-r1-0528 P03 (a)": "All four values are close to the reference but are only stated in prose; no equation, friction factor, intermediate head or continuity check is shown: values without supporting working.",
+ "deepseek/deepseek-r1-0528 P03 (b)": "As for (a): stated in prose without any working.",
+ "deepseek/deepseek-r1-0528 P03 (c)": "As for (a): stated in prose without any working.",
+ "deepseek/deepseek-r1-0528 P03 (d)": "As for (a): stated in prose without any working."
 }
