@@ -13,7 +13,7 @@
   "T": "Toluene",
   "D": "Diphenyl"
  },
- "assumptions": "Simple component-balance model of the HDA plant (sample values).\n\nTwo independent calculations of the same flowsheet:\n  1. `solve_float`  - successive substitution in floating point (reference);\n  2. `solve_tenths` - the same unit rules in integer tenths of kmol/h, every\n     split rounded and its last outlet taken by difference, so that every unit\n     balance formed from the DISPLAYED values (0.1 kmol/h) closes exactly\n     (PFD-SPEC-001 requirement A5).\nThe two must agree to within display rounding; checked in main().\n\nAssumptions (sample design basis, not a converged rigorous simulation):\n  reactions   T + H2 -> B + CH4   (toluene conversion per pass X = 0.75)\n              2 B -> D + H2      (extent = 0.005 x extent of reaction 1)\n  make-up H2  95 mol% H2, 5 mol% CH4; flow set so that H2/toluene = 5 at the\n              reactor inlet\n  purge       25 % of the high-pressure separator vapour\n  flashes     fixed fractions of each component to the vapour\n  columns     fixed recoveries to the distillate; reflux ratio R; boil-up\n              total equal to the overhead vapour total (constant molar\n              overflow, saturated-liquid feed), boil-up composition\n              y_i ~ alpha_i x_i of the bottoms product\nTemperatures and pressures are nominal sample values; the column\ntemperatures were set near ideal-solution (Raoult + Antoine) bubble points\nof the displayed compositions, see bubble_points().\n",
+ "assumptions": "Simple component-balance model of the HDA plant (sample values).\n\nThe unit rules live in page/python/balance.py (shared with the page's live\nmodel). Two calculations of the same flowsheet are compared here:\n  1. floating point (reference);\n  2. integer tenths of kmol/h, every split rounded and its last outlet taken\n     by difference, so that every unit balance formed from the DISPLAYED\n     values (0.1 kmol/h) closes exactly (PFD-SPEC-001 requirement A5).\nThe two must agree to within display rounding; checked in main().\n\nAssumptions (sample design basis, not a converged rigorous simulation):\n  reactions   T + H2 -> B + CH4   (toluene conversion per pass X = 0.75)\n              2 B -> D + H2      (extent = 0.005 x extent of reaction 1)\n  make-up H2  95 mol% H2, 5 mol% CH4; flow set so that H2/toluene = 5 at the\n              reactor inlet\n  purge       25 % of the high-pressure separator vapour\n  flashes     fixed fractions of each component to the vapour\n  columns     fixed recoveries to the distillate; reflux ratio R; boil-up\n              total equal to the overhead vapour total (constant molar\n              overflow, saturated-liquid feed), boil-up composition\n              y_i ~ alpha_i x_i of the bottoms product\nTemperatures and pressures are nominal sample values; the column\ntemperatures were set near ideal-solution (Raoult + Antoine) bubble points\nof the displayed compositions, see bubble_points().\n",
  "streams": {
   "1": {
    "flows": {
@@ -634,6 +634,13 @@
    "T": 0.3308873591026925,
    "D": 0.0
   },
+  "16": {
+   "H2": 2.8150242075660117,
+   "CH4": 12.32848074617948,
+   "B": 97.99602495190905,
+   "T": 32.75784855116656,
+   "D": 0.4963310386540387
+  },
   "13": {
    "H2": 140.04745432640777,
    "CH4": 99.65521936495074,
@@ -647,20 +654,6 @@
    "B": 2.2731036715649005,
    "T": 0.24816551932701938,
    "D": 0.0
-  },
-  "15": {
-   "H2": 420.1423629792233,
-   "CH4": 298.9656580948522,
-   "B": 2.2731036715649005,
-   "T": 0.24816551932701938,
-   "D": 0.0
-  },
-  "16": {
-   "H2": 2.8150242075660117,
-   "CH4": 12.32848074617948,
-   "B": 97.99602495190905,
-   "T": 32.75784855116656,
-   "D": 0.4963310386540387
   },
   "17": {
    "H2": 2.8150242075660117,
@@ -676,19 +669,26 @@
    "T": 0.16378924275583281,
    "D": 0.0
   },
-  "19": {
-   "H2": 142.80617804982248,
-   "CH4": 110.75085203651227,
-   "B": 2.717621722893148,
-   "T": 0.24651108253150594,
-   "D": 0.0
-  },
   "20": {
    "H2": 0.05630048415132016,
    "CH4": 1.232848074617948,
    "B": 96.03610445287087,
    "T": 32.59405930841073,
    "D": 0.4963310386540387
+  },
+  "41": {
+   "H2": 140.04745432640777,
+   "CH4": 99.65521936495074,
+   "B": 0.7577012238549669,
+   "T": 0.08272183977567313,
+   "D": 0.0
+  },
+  "19": {
+   "H2": 142.80617804982248,
+   "CH4": 110.75085203651227,
+   "B": 2.717621722893148,
+   "T": 0.24651108253150594,
+   "D": 0.0
   },
   "21": {
    "H2": 0.05630048415132016,
@@ -697,10 +697,38 @@
    "T": 32.59405930841073,
    "D": 0.4963310386540387
   },
-  "22": {
+  "24": {
    "H2": 0.05630048415132016,
    "CH4": 1.232848074617948,
-   "B": 210.10836553861765,
+   "B": 0.09555592393060652,
+   "T": 0.0,
+   "D": 0.0
+  },
+  "28": {
+   "H2": 0.0,
+   "CH4": 0.0,
+   "B": 95.46036800667592,
+   "T": 0.16297029654205364,
+   "D": 0.0
+  },
+  "27": {
+   "H2": 0.0,
+   "CH4": 0.0,
+   "B": 114.55244160801111,
+   "T": 0.19556435585046436,
+   "D": 0.0
+  },
+  "26": {
+   "H2": 0.0,
+   "CH4": 0.0,
+   "B": 210.01280961468703,
+   "T": 0.358534652392518,
+   "D": 0.0
+  },
+  "25": {
+   "H2": 0.0,
+   "CH4": 0.0,
+   "B": 210.01280961468703,
    "T": 0.358534652392518,
    "D": 0.0
   },
@@ -711,47 +739,12 @@
    "T": 0.358534652392518,
    "D": 0.0
   },
-  "24": {
+  "22": {
    "H2": 0.05630048415132016,
    "CH4": 1.232848074617948,
-   "B": 0.09555592393060652,
-   "T": 0.0,
-   "D": 0.0
-  },
-  "25": {
-   "H2": 0.0,
-   "CH4": 0.0,
-   "B": 210.01280961468703,
+   "B": 210.10836553861765,
    "T": 0.358534652392518,
    "D": 0.0
-  },
-  "26": {
-   "H2": 0.0,
-   "CH4": 0.0,
-   "B": 210.01280961468703,
-   "T": 0.358534652392518,
-   "D": 0.0
-  },
-  "27": {
-   "H2": 0.0,
-   "CH4": 0.0,
-   "B": 114.55244160801111,
-   "T": 0.19556435585046436,
-   "D": 0.0
-  },
-  "28": {
-   "H2": 0.0,
-   "CH4": 0.0,
-   "B": 95.46036800667592,
-   "T": 0.16297029654205364,
-   "D": 0.0
-  },
-  "29": {
-   "H2": 0.0,
-   "CH4": 0.0,
-   "B": 8.033072422870143,
-   "T": 236.47810730447645,
-   "D": 0.6524695952198798
   },
   "30": {
    "H2": 0.0,
@@ -767,14 +760,35 @@
    "T": 32.43108901186867,
    "D": 0.4963310386540387
   },
-  "32": {
+  "29": {
    "H2": 0.0,
    "CH4": 0.0,
-   "B": 0.8643249400758265,
-   "T": 57.792200619149966,
+   "B": 8.033072422870143,
+   "T": 236.47810730447645,
+   "D": 0.6524695952198798
+  },
+  "37": {
+   "H2": 0.0,
+   "CH4": 0.0,
+   "B": 0.48018052226434804,
+   "T": 32.10677812174998,
    "D": 0.0
   },
-  "33": {
+  "40": {
+   "H2": 0.0,
+   "CH4": 0.0,
+   "B": 0.0,
+   "T": 0.32431089011868863,
+   "D": 0.4963310386540387
+  },
+  "36": {
+   "H2": 0.0,
+   "CH4": 0.0,
+   "B": 0.38414441781147846,
+   "T": 25.685422497399987,
+   "D": 0.0
+  },
+  "35": {
    "H2": 0.0,
    "CH4": 0.0,
    "B": 0.8643249400758265,
@@ -788,33 +802,19 @@
    "T": 57.792200619149966,
    "D": 0.0
   },
-  "35": {
+  "33": {
    "H2": 0.0,
    "CH4": 0.0,
    "B": 0.8643249400758265,
    "T": 57.792200619149966,
    "D": 0.0
   },
-  "36": {
+  "32": {
    "H2": 0.0,
    "CH4": 0.0,
-   "B": 0.38414441781147846,
-   "T": 25.685422497399987,
+   "B": 0.8643249400758265,
+   "T": 57.792200619149966,
    "D": 0.0
-  },
-  "37": {
-   "H2": 0.0,
-   "CH4": 0.0,
-   "B": 0.48018052226434804,
-   "T": 32.10677812174998,
-   "D": 0.0
-  },
-  "38": {
-   "H2": 0.0,
-   "CH4": 0.0,
-   "B": 0.0,
-   "T": 53.55030395212826,
-   "D": 5.926863535870261
   },
   "39": {
    "H2": 0.0,
@@ -823,18 +823,18 @@
    "T": 53.22599306200957,
    "D": 5.430532497216222
   },
-  "40": {
+  "38": {
    "H2": 0.0,
    "CH4": 0.0,
    "B": 0.0,
-   "T": 0.32431089011868863,
-   "D": 0.4963310386540387
+   "T": 53.55030395212826,
+   "D": 5.926863535870261
   },
-  "41": {
-   "H2": 140.04745432640777,
-   "CH4": 99.65521936495074,
-   "B": 0.7577012238549669,
-   "T": 0.08272183977567313,
+  "15": {
+   "H2": 420.1423629792233,
+   "CH4": 298.9656580948522,
+   "B": 2.2731036715649005,
+   "T": 0.24816551932701938,
    "D": 0.0
   }
  }
