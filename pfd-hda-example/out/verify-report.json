@@ -1,6 +1,6 @@
 {
  "sheet 1": {
-  "edges_compared": 21,
+  "edges_compared": 22,
   "Nc": 0,
   "crossings": [],
   "Nb": 16,
@@ -26,18 +26,19 @@
    "18": 2,
    "19": 0,
    "20": 1,
-   "37": 1
+   "37": 1,
+   "41": 0
   },
-  "Lt_mm": 962,
-  "smin_mm": 10.0,
+  "Lt_mm": 946,
+  "smin_mm": 11.5,
   "smin_pair": [
    12,
    14
   ],
   "rendered_items": {
-   "labels": 30,
-   "markers": 21,
-   "symbols": 15
+   "labels": 34,
+   "markers": 22,
+   "symbols": 16
   }
  },
  "sheet 2": {
@@ -69,14 +70,14 @@
    "39": 1,
    "40": 0
   },
-  "Lt_mm": 1328,
+  "Lt_mm": 1332,
   "smin_mm": 11.5,
   "smin_pair": [
    24,
    26
   ],
   "rendered_items": {
-   "labels": 33,
+   "labels": 35,
    "markers": 21,
    "symbols": 16
   }
@@ -102,6 +103,7 @@
   "P-201",
   "P-202",
   "P-203",
+  "PV-201",
   "R-201",
   "T-201",
   "T-202",

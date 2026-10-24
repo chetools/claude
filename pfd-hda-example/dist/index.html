@@ -43,10 +43,10 @@ footer.col{padding-bottom:40px;font-size:.88rem;color:var(--muted)}
 <p>Measured from the drawing geometry by <code>verify.py</code> (PFD-SPEC-001 section 12). Crossings N<sub>c</sub>, total bends N<sub>b</sub>, most bends on one stream b<sub>max</sub>, total routed length L<sub>t</sub> at final size, smallest clear spacing between parallel lines s<sub>min</sub> (limit: more than 10 mm).</p>
 <div class="tbl"><table>
 <tr><th>Sheet</th><th>N<sub>c</sub></th><th>N<sub>b</sub></th><th>b<sub>max</sub></th><th>L<sub>t</sub> (mm)</th><th>s<sub>min</sub> (mm)</th><th>Hard failures</th></tr>
-<tr><td>PFD-201</td><td class="num">0</td><td class="num">16</td><td class="num">2</td><td class="num">962</td><td class="num">10.0</td><td class="num">0</td></tr>
-<tr><td>PFD-202</td><td class="num">0</td><td class="num">12</td><td class="num">2</td><td class="num">1328</td><td class="num">11.5</td><td class="num">0</td></tr>
+<tr><td>PFD-201</td><td class="num">0</td><td class="num">16</td><td class="num">2</td><td class="num">946</td><td class="num">11.5</td><td class="num">0</td></tr>
+<tr><td>PFD-202</td><td class="num">0</td><td class="num">12</td><td class="num">2</td><td class="num">1332</td><td class="num">11.5</td><td class="num">0</td></tr>
 </table></div>
-<p>Hard-failure checks run on both sheets: topology (edge list re-derived from the drawn line end points and compared with the frozen topology), port axis and final straight, junction dots, arrowheads at inlets, jogs, parallel spacing, stream numbers against stream-table rows, label overlaps and line transits on the rendered page, and all 28 unit balances plus the overall carbon and hydrogen balance recomputed from the displayed table values.</p>
+<p>Hard-failure checks run on both sheets: topology (edge list re-derived from the drawn line end points and compared with the frozen topology), port axis and final straight, junction dots, arrowheads at inlets, jogs, parallel spacing, stream numbers against stream-table rows, label overlaps and line transits on the rendered page, and all 29 unit balances plus the overall carbon and hydrogen balance recomputed from the displayed table values.</p>
 
 <h2 id="symbols">Symbol variants</h2>
 <div class="tbl"><table>
@@ -60,6 +60,7 @@ footer.col{padding-bottom:40px;font-size:.88rem;color:var(--muted)}
 <tr><td>V-202</td><td>High-pressure separator</td><td>A.7</td><td><code>flash_1</code></td></tr>
 <tr><td>C-201</td><td>Recycle gas compressor</td><td>A.4</td><td><code>compressor_1</code></td></tr>
 <tr><td>LV-201</td><td>Level control valve</td><td>A.12</td><td><code>control_valve_1</code></td></tr>
+<tr><td>PV-201</td><td>Purge pressure control valve</td><td>A.12</td><td><code>control_valve_1</code></td></tr>
 <tr><td>V-203</td><td>Low-pressure flash drum</td><td>A.7</td><td><code>flash_1</code></td></tr>
 <tr><td>E-203</td><td>Column feed heater</td><td>A.6</td><td><code>heat_exchanger_1</code></td></tr>
 <tr><td>T-201</td><td>Benzene column</td><td>A.9</td><td><code>scds_1</code></td></tr>
@@ -79,10 +80,10 @@ footer.col{padding-bottom:40px;font-size:.88rem;color:var(--muted)}
 <ul>
 <li>Fresh toluene 100.0 kmol/h. Hydrogen make-up is 95 mol% H<sub>2</sub> and 5 mol% CH<sub>4</sub>, sized so that H<sub>2</sub>/toluene = 5 at the reactor inlet.</li>
 <li>Reactions T + H<sub>2</sub> → B + CH<sub>4</sub>, with toluene conversion per pass 0.75, and 2 B → D + H<sub>2</sub>, with extent 0.005 × the first extent.</li>
-<li>Purge: 25 % of the high-pressure separator vapour. The separators use fixed fractions of each component to the vapour.</li>
+<li>Purge: 25 % of the high-pressure separator vapour, let down through PV-201 to the fuel-gas header. The separators and the V-204 vent use fixed fractions of each component to the vapour.</li>
 <li>Columns: fixed recoveries to the distillate. Reflux ratio 1.2 (T-201) and 0.8 (T-202). Boil-up total equals the overhead vapour total, with composition proportional to relative volatility × bottoms composition.</li>
 </ul>
-<p>The model runs twice: once in floating point and once in integer tenths of kmol/h, where every split is rounded and its last outlet is taken by difference. Every displayed balance therefore closes exactly. The two runs differ by at most 0.78 kmol/h on any stream and component. Temperatures and pressures are nominal sample values and were not computed.</p>
+<p>The model runs twice: once in floating point and once in integer tenths of kmol/h, where every split is rounded and its last outlet is taken by difference. Every displayed balance therefore closes exactly. The two runs differ by at most 0.77 kmol/h on any stream and component. Temperatures and pressures are nominal sample values. The column temperatures are set within 1 °C of the ideal-solution bubble point of the displayed composition (Raoult's law with Antoine constants for benzene and toluene; diphenyl treated as non-volatile). The vent's benzene content stays below the limit set by benzene's vapour pressure at 45 °C (29.8 kPa).</p>
 </main>
 <footer class="col"><p>Source: <a href="https://github.com/chetools/claude/tree/master/pfd-hda-example">chetools/claude, pfd-hda-example</a>. Revision 1, 2026-10-24.</p></footer>
 </body></html>
