@@ -334,11 +334,14 @@ def _():
 
 
 @app.cell
-def _(F, X, balance, beta, r):
-    design_basis = dict(balance.BASIS)
-    print("design basis of the sheets:", design_basis)
-    inputs = balance.check_inputs(F, X, beta, r)
-    print("validated inputs:", inputs)
+def _(F, X, balance, beta, mo, r):
+    with mo.capture_stdout() as _buf:
+        design_basis = dict(balance.BASIS)
+        print("design basis of the sheets:", design_basis)
+        inputs = balance.check_inputs(F, X, beta, r)
+        print("validated inputs:", inputs)
+
+    mo.vstack([mo.plain_text(_buf.getvalue())])
     return (design_basis, inputs,)
 
 
@@ -362,17 +365,20 @@ def _(mo):
 
 
 @app.cell
-def _(balance, inputs):
-    tear_zero = {c: 0.0 for c in balance.C}
-    pass0 = balance._pass(inputs, tear_zero, tear_zero, 0.0)
-    streams_pass0, produced_37, produced_15, rho_pass0, extents_pass0 = pass0
+def _(balance, inputs, mo):
+    with mo.capture_stdout() as _buf:
+        tear_zero = {c: 0.0 for c in balance.C}
+        pass0 = balance._pass(inputs, tear_zero, tear_zero, 0.0)
+        streams_pass0, produced_37, produced_15, rho_pass0, extents_pass0 = pass0
 
-    print("assumed toluene recycle and recycle gas: all zero; make-up gas rate 0")
-    print("produced toluene recycle (stream 37):", {c: round(v, 3) for c, v in produced_37.items()})
-    print("produced recycle gas (stream 15):", {c: round(v, 3) for c, v in produced_15.items()})
-    print("ratio residual rho = r*nT9 - nH2_9 =", round(rho_pass0, 3), "kmol/h")
-    gap_pass0 = max(max(produced_37.values()), max(produced_15.values()), abs(rho_pass0))
-    print("largest mismatch:", round(gap_pass0, 3), "kmol/h -> the balance does not close")
+        print("assumed toluene recycle and recycle gas: all zero; make-up gas rate 0")
+        print("produced toluene recycle (stream 37):", {c: round(v, 3) for c, v in produced_37.items()})
+        print("produced recycle gas (stream 15):", {c: round(v, 3) for c, v in produced_15.items()})
+        print("ratio residual rho = r*nT9 - nH2_9 =", round(rho_pass0, 3), "kmol/h")
+        gap_pass0 = max(max(produced_37.values()), max(produced_15.values()), abs(rho_pass0))
+        print("largest mismatch:", round(gap_pass0, 3), "kmol/h -> the balance does not close")
+
+    mo.vstack([mo.plain_text(_buf.getvalue())])
     return (extents_pass0, gap_pass0, pass0, produced_15, produced_37, rho_pass0, streams_pass0, tear_zero,)
 
 
@@ -396,22 +402,25 @@ def _(mo):
 
 
 @app.cell
-def _(balance, inputs, np):
-    def tear_residual(u):
-        return np.array(balance._residual(inputs, list(u)))
+def _(balance, inputs, mo, np):
+    with mo.capture_stdout() as _buf:
+        def tear_residual(u):
+            return np.array(balance._residual(inputs, list(u)))
 
-    f0 = tear_residual(np.zeros(11))
-    jacobian = np.column_stack([tear_residual(np.eye(11)[j]) - f0 for j in range(11)])
+        f0 = tear_residual(np.zeros(11))
+        jacobian = np.column_stack([tear_residual(np.eye(11)[j]) - f0 for j in range(11)])
 
-    u_probe = np.arange(11) * 0.7
-    affine_error = np.max(np.abs(tear_residual(u_probe) - (f0 + jacobian @ u_probe)))
-    print("affine test, max |f(u) - (f0 + J u)| =", float(affine_error))
+        u_probe = np.arange(11) * 0.7
+        affine_error = np.max(np.abs(tear_residual(u_probe) - (f0 + jacobian @ u_probe)))
+        print("affine test, max |f(u) - (f0 + J u)| =", float(affine_error))
 
-    u_star = np.linalg.solve(jacobian, -f0)
-    print("make-up gas rate F_H =", round(u_star[10], 4), "kmol/h")
-    print("toluene recycle flows (kmol/h):", {c: float(round(v, 4)) + 0.0 for c, v in zip(balance.C, u_star[:5])})
-    print("recycle gas flows (kmol/h):", {c: float(round(v, 4)) + 0.0 for c, v in zip(balance.C, u_star[5:10])})
-    print("residual at the solution, max |f(u*)| =", float(np.max(np.abs(tear_residual(u_star)))))
+        u_star = np.linalg.solve(jacobian, -f0)
+        print("make-up gas rate F_H =", round(u_star[10], 4), "kmol/h")
+        print("toluene recycle flows (kmol/h):", {c: float(round(v, 4)) + 0.0 for c, v in zip(balance.C, u_star[:5])})
+        print("recycle gas flows (kmol/h):", {c: float(round(v, 4)) + 0.0 for c, v in zip(balance.C, u_star[5:10])})
+        print("residual at the solution, max |f(u*)| =", float(np.max(np.abs(tear_residual(u_star)))))
+
+    mo.vstack([mo.plain_text(_buf.getvalue())])
     return (affine_error, f0, jacobian, tear_residual, u_probe, u_star,)
 
 
@@ -433,19 +442,22 @@ def _(mo):
 
 
 @app.cell
-def _(F, X, balance, beta, r):
-    solution_linear, extents_linear = balance.solve(F, X, beta, r)
-    solution_iter, extents_iter = balance.solve_iter(F, X, beta, r)
+def _(F, X, balance, beta, mo, r):
+    with mo.capture_stdout() as _buf:
+        solution_linear, extents_linear = balance.solve(F, X, beta, r)
+        solution_iter, extents_iter = balance.solve_iter(F, X, beta, r)
 
-    atoms_per_molecule = {"H2": (0, 2), "CH4": (1, 4), "B": (6, 6), "T": (7, 8), "D": (12, 10)}
-    streams_in, streams_out = (1, 5), (19, 24, 28, 40)
-    for k, element in enumerate(["C", "H"]):
-        atoms_in = sum(solution_linear[n][c] * atoms_per_molecule[c][k] for n in streams_in for c in balance.C)
-        atoms_out = sum(solution_linear[n][c] * atoms_per_molecule[c][k] for n in streams_out for c in balance.C)
-        print(element, "atoms in:", round(atoms_in, 6), " out:", round(atoms_out, 6), " difference:", atoms_in - atoms_out)
+        atoms_per_molecule = {"H2": (0, 2), "CH4": (1, 4), "B": (6, 6), "T": (7, 8), "D": (12, 10)}
+        streams_in, streams_out = (1, 5), (19, 24, 28, 40)
+        for k, element in enumerate(["C", "H"]):
+            atoms_in = sum(solution_linear[n][c] * atoms_per_molecule[c][k] for n in streams_in for c in balance.C)
+            atoms_out = sum(solution_linear[n][c] * atoms_per_molecule[c][k] for n in streams_out for c in balance.C)
+            print(element, "atoms in:", round(atoms_in, 6), " out:", round(atoms_out, 6), " difference:", atoms_in - atoms_out)
 
-    gap_methods = max(abs(solution_linear[n][c] - solution_iter[n][c]) for n in balance.STREAMS for c in balance.C)
-    print("largest difference over all streams and components, linear solve vs successive substitution:", gap_methods, "kmol/h")
+        gap_methods = max(abs(solution_linear[n][c] - solution_iter[n][c]) for n in balance.STREAMS for c in balance.C)
+        print("largest difference over all streams and components, linear solve vs successive substitution:", gap_methods, "kmol/h")
+
+    mo.vstack([mo.plain_text(_buf.getvalue())])
     return (atoms_in, atoms_out, atoms_per_molecule, element, extents_iter, extents_linear, gap_methods, k, solution_iter, solution_linear, streams_in, streams_out,)
 
 
@@ -465,18 +477,21 @@ def _(mo):
 
 
 @app.cell
-def _(balance, solution_linear):
-    anchor_streams, anchor_extents = balance.solve_iter(100.0, 0.75, 0.25, 5.0, exact=True)
-    anchor_checked = 0
-    for stream_no, components in balance.DESIGN_ANCHOR.items():
-        for comp, shown in components.items():
-            assert round(anchor_streams[stream_no][comp], 1) == shown, (stream_no, comp)
-            anchor_checked += 1
-    print("design-basis values reproduced exactly:", anchor_checked)
-    print("benzene product (stream 28), kmol/h:", anchor_streams[28]["B"])
-    print("toluene recycle (stream 37), kmol/h:", anchor_streams[37]["T"])
-    print("float solution minus integer-tenths run, largest difference:",
-          max(abs(solution_linear[n][c] - anchor_streams[n][c]) for n in balance.STREAMS for c in balance.C), "kmol/h")
+def _(balance, mo, solution_linear):
+    with mo.capture_stdout() as _buf:
+        anchor_streams, anchor_extents = balance.solve_iter(100.0, 0.75, 0.25, 5.0, exact=True)
+        anchor_checked = 0
+        for stream_no, components in balance.DESIGN_ANCHOR.items():
+            for comp, shown in components.items():
+                assert round(anchor_streams[stream_no][comp], 1) == shown, (stream_no, comp)
+                anchor_checked += 1
+        print("design-basis values reproduced exactly:", anchor_checked)
+        print("benzene product (stream 28), kmol/h:", anchor_streams[28]["B"])
+        print("toluene recycle (stream 37), kmol/h:", anchor_streams[37]["T"])
+        print("float solution minus integer-tenths run, largest difference:",
+              max(abs(solution_linear[n][c] - anchor_streams[n][c]) for n in balance.STREAMS for c in balance.C), "kmol/h")
+
+    mo.vstack([mo.plain_text(_buf.getvalue())])
     return (anchor_checked, anchor_extents, anchor_streams, comp, components, shown, stream_no,)
 
 
@@ -496,21 +511,22 @@ def _(mo):
 
 @app.cell
 def _(F, X, balance, make_fig, mo, r):
-    betas = [round(0.05 + 0.05 * i, 2) for i in range(12)]
-    purge_runs = balance.sweep("beta", betas, F=F, X=X, r=r)
-    makeup_h2 = [e["makeup_h2"] for e in purge_runs]
-    recycle_gas = [e["recycle_gas"] for e in purge_runs]
-    print("beta        :", betas)
-    print("make-up H2  :", [round(v, 1) for v in makeup_h2])
-    print("recycle gas :", [round(v, 1) for v in recycle_gas])
-    _fig1 = make_fig([dict(type="scatter", x=betas, y=makeup_h2, mode="lines+markers", name="make-up H2",
-                 line=dict(color="#0072B2", dash="solid"), marker=dict(symbol="circle", color="#0072B2")),
-            dict(type="scatter", x=betas, y=recycle_gas, mode="lines+markers", name="recycle gas",
-                 line=dict(color="#D55E00", dash="dash"), marker=dict(symbol="square", color="#D55E00"))],
-           xaxis=dict(title="beta"), yaxis=dict(title="flow, kmol/h"),
-           legend=dict(orientation="h", x=0, y=-0.25))
+    with mo.capture_stdout() as _buf:
+        betas = [round(0.05 + 0.05 * i, 2) for i in range(12)]
+        purge_runs = balance.sweep("beta", betas, F=F, X=X, r=r)
+        makeup_h2 = [e["makeup_h2"] for e in purge_runs]
+        recycle_gas = [e["recycle_gas"] for e in purge_runs]
+        print("beta        :", betas)
+        print("make-up H2  :", [round(v, 1) for v in makeup_h2])
+        print("recycle gas :", [round(v, 1) for v in recycle_gas])
+        _fig1 = make_fig([dict(type="scatter", x=betas, y=makeup_h2, mode="lines+markers", name="make-up H2",
+                     line=dict(color="#0072B2", dash="solid"), marker=dict(symbol="circle", color="#0072B2")),
+                dict(type="scatter", x=betas, y=recycle_gas, mode="lines+markers", name="recycle gas",
+                     line=dict(color="#D55E00", dash="dash"), marker=dict(symbol="square", color="#D55E00"))],
+               xaxis=dict(title="beta"), yaxis=dict(title="flow, kmol/h"),
+               legend=dict(orientation="h", x=0, y=-0.25))
 
-    mo.vstack([_fig1])
+    mo.vstack([mo.plain_text(_buf.getvalue()), _fig1])
     return (betas, makeup_h2, purge_runs, recycle_gas,)
 
 
@@ -530,21 +546,22 @@ def _(mo):
 
 @app.cell
 def _(F, balance, beta, make_fig, mo, r):
-    conversions = [round(0.30 + 0.05 * i, 2) for i in range(14)]
-    conv_runs = balance.sweep("X", conversions, F=F, beta=beta, r=r)
-    toluene_recycle = [e["toluene_recycle"] for e in conv_runs]
-    reactor_toluene = [e["reactor_toluene"] for e in conv_runs]
-    print("X                :", conversions)
-    print("toluene recycle  :", [round(v, 1) for v in toluene_recycle])
-    print("reactor toluene  :", [round(v, 1) for v in reactor_toluene])
-    _fig1 = make_fig([dict(type="scatter", x=conversions, y=toluene_recycle, mode="lines+markers", name="toluene recycle",
-                 line=dict(color="#0072B2", dash="solid"), marker=dict(symbol="circle", color="#0072B2")),
-            dict(type="scatter", x=conversions, y=reactor_toluene, mode="lines+markers", name="reactor toluene",
-                 line=dict(color="#D55E00", dash="dash"), marker=dict(symbol="square", color="#D55E00"))],
-           xaxis=dict(title="X"), yaxis=dict(title="flow, kmol/h"),
-           legend=dict(orientation="h", x=0, y=-0.25))
+    with mo.capture_stdout() as _buf:
+        conversions = [round(0.30 + 0.05 * i, 2) for i in range(14)]
+        conv_runs = balance.sweep("X", conversions, F=F, beta=beta, r=r)
+        toluene_recycle = [e["toluene_recycle"] for e in conv_runs]
+        reactor_toluene = [e["reactor_toluene"] for e in conv_runs]
+        print("X                :", conversions)
+        print("toluene recycle  :", [round(v, 1) for v in toluene_recycle])
+        print("reactor toluene  :", [round(v, 1) for v in reactor_toluene])
+        _fig1 = make_fig([dict(type="scatter", x=conversions, y=toluene_recycle, mode="lines+markers", name="toluene recycle",
+                     line=dict(color="#0072B2", dash="solid"), marker=dict(symbol="circle", color="#0072B2")),
+                dict(type="scatter", x=conversions, y=reactor_toluene, mode="lines+markers", name="reactor toluene",
+                     line=dict(color="#D55E00", dash="dash"), marker=dict(symbol="square", color="#D55E00"))],
+               xaxis=dict(title="X"), yaxis=dict(title="flow, kmol/h"),
+               legend=dict(orientation="h", x=0, y=-0.25))
 
-    mo.vstack([_fig1])
+    mo.vstack([mo.plain_text(_buf.getvalue()), _fig1])
     return (conv_runs, conversions, reactor_toluene, toluene_recycle,)
 
 

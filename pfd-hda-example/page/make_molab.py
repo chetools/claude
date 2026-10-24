@@ -80,7 +80,11 @@ def step_cells(i, cell, available):
         pieces.append(code)
     for piece in pieces:
         body, figs = core.convert_figures(piece)
-        if figs:
+        if "print(" in body:
+            # show the printed intermediate as the cell's output (read-only runs hide stdout)
+            body = ("with mo.capture_stdout() as _buf:\n" + textwrap.indent(body, "    ")
+                    + "\n\nmo.vstack([mo.plain_text(_buf.getvalue())" + "".join(", " + f for f in figs) + "])")
+        elif figs:
             body += "\n\nmo.vstack([" + ", ".join(figs) + "])"
         defs = core.defs_of(body)
         args = (core.loads_of(body) & available) - defs

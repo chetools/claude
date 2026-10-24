@@ -35,7 +35,7 @@ def test_float_model_closes_overall_atom_balance():
 
 def test_reactor_inlet_ratio_spec():
     Sf, _ = model.run(model.Arith(False))
-    assert abs(Sf[9]["H2"] / Sf[9]["T"] - model.RATIO_H2_T) < 1e-6
+    assert abs(Sf[9]["H2"] / Sf[9]["T"] - model.balance.BASIS["r"]) < 1e-6
 
 
 def run_verify(paths):
