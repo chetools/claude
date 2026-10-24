@@ -1,0 +1,1088 @@
+{
+ "nodes": {
+  "FT": {
+   "kind": "terminal",
+   "sheets": [
+    1
+   ],
+   "key": "feed_1",
+   "tag": "",
+   "service": "Fresh toluene"
+  },
+  "FH": {
+   "kind": "terminal",
+   "sheets": [
+    1
+   ],
+   "key": "feed_1",
+   "tag": "",
+   "service": "Hydrogen make-up"
+  },
+  "J1": {
+   "kind": "junction",
+   "sheets": [
+    1
+   ],
+   "key": null,
+   "tag": "",
+   "service": "toluene + recycle toluene"
+  },
+  "V-201": {
+   "kind": "equip",
+   "sheets": [
+    1
+   ],
+   "key": "vessel_1",
+   "tag": "V-201",
+   "service": "Toluene feed drum"
+  },
+  "P-201": {
+   "kind": "equip",
+   "sheets": [
+    1
+   ],
+   "key": "pump_1",
+   "tag": "P-201",
+   "service": "Toluene feed pump"
+  },
+  "J2": {
+   "kind": "junction",
+   "sheets": [
+    1
+   ],
+   "key": null,
+   "tag": "",
+   "service": "make-up H2 + recycle gas"
+  },
+  "J3": {
+   "kind": "junction",
+   "sheets": [
+    1
+   ],
+   "key": null,
+   "tag": "",
+   "service": "gas + liquid toluene"
+  },
+  "E-201": {
+   "kind": "equip",
+   "sheets": [
+    1
+   ],
+   "key": "heat_exchanger_1",
+   "tag": "E-201",
+   "service": "Feed preheater"
+  },
+  "H-201": {
+   "kind": "equip",
+   "sheets": [
+    1
+   ],
+   "key": "fired_heater_x",
+   "tag": "H-201",
+   "service": "Feed heater (furnace)"
+  },
+  "R-201": {
+   "kind": "equip",
+   "sheets": [
+    1
+   ],
+   "key": "packed_reactor_x",
+   "tag": "R-201",
+   "service": "HDA reactor"
+  },
+  "E-202": {
+   "kind": "equip",
+   "sheets": [
+    1
+   ],
+   "key": "heat_exchanger_1",
+   "tag": "E-202",
+   "service": "Effluent cooler"
+  },
+  "V-202": {
+   "kind": "equip",
+   "sheets": [
+    1
+   ],
+   "key": "flash_1",
+   "tag": "V-202",
+   "service": "High-pressure separator"
+  },
+  "J4": {
+   "kind": "junction",
+   "sheets": [
+    1
+   ],
+   "key": null,
+   "tag": "",
+   "service": "purge split"
+  },
+  "C-201": {
+   "kind": "equip",
+   "sheets": [
+    1
+   ],
+   "key": "compressor_1",
+   "tag": "C-201",
+   "service": "Recycle gas compressor"
+  },
+  "LV-201": {
+   "kind": "equip",
+   "sheets": [
+    1
+   ],
+   "key": "control_valve_1",
+   "tag": "LV-201",
+   "service": "Level control valve"
+  },
+  "V-203": {
+   "kind": "equip",
+   "sheets": [
+    1
+   ],
+   "key": "flash_1",
+   "tag": "V-203",
+   "service": "Low-pressure flash drum"
+  },
+  "J5": {
+   "kind": "junction",
+   "sheets": [
+    1
+   ],
+   "key": null,
+   "tag": "",
+   "service": "fuel gas mix"
+  },
+  "FG": {
+   "kind": "terminal",
+   "sheets": [
+    1
+   ],
+   "key": "product_1",
+   "tag": "",
+   "service": "Fuel gas"
+  },
+  "OUT21": {
+   "kind": "terminal",
+   "sheets": [
+    1
+   ],
+   "key": "product_1",
+   "tag": "",
+   "service": "To PFD-202 (column feed)"
+  },
+  "IN38": {
+   "kind": "terminal",
+   "sheets": [
+    1
+   ],
+   "key": "feed_1",
+   "tag": "",
+   "service": "From PFD-202 (toluene recycle)"
+  },
+  "IN21": {
+   "kind": "terminal",
+   "sheets": [
+    2
+   ],
+   "key": "feed_1",
+   "tag": "",
+   "service": "From PFD-201 (column feed)"
+  },
+  "E-203": {
+   "kind": "equip",
+   "sheets": [
+    2
+   ],
+   "key": "heat_exchanger_1",
+   "tag": "E-203",
+   "service": "Column feed heater"
+  },
+  "T-201": {
+   "kind": "equip",
+   "sheets": [
+    2
+   ],
+   "key": "scds_1",
+   "tag": "T-201",
+   "service": "Benzene column"
+  },
+  "E-204": {
+   "kind": "equip",
+   "sheets": [
+    2
+   ],
+   "key": "heat_exchanger_1",
+   "tag": "E-204",
+   "service": "Benzene condenser"
+  },
+  "V-204": {
+   "kind": "equip",
+   "sheets": [
+    2
+   ],
+   "key": "vessel_1",
+   "tag": "V-204",
+   "service": "Benzene reflux drum"
+  },
+  "P-202": {
+   "kind": "equip",
+   "sheets": [
+    2
+   ],
+   "key": "pump_1",
+   "tag": "P-202",
+   "service": "Benzene reflux pump"
+  },
+  "J6": {
+   "kind": "junction",
+   "sheets": [
+    2
+   ],
+   "key": null,
+   "tag": "",
+   "service": "reflux / benzene product split"
+  },
+  "E-205": {
+   "kind": "equip",
+   "sheets": [
+    2
+   ],
+   "key": "heat_exchanger_1",
+   "tag": "E-205",
+   "service": "Benzene column reboiler"
+  },
+  "T-202": {
+   "kind": "equip",
+   "sheets": [
+    2
+   ],
+   "key": "scds_1",
+   "tag": "T-202",
+   "service": "Toluene column"
+  },
+  "E-206": {
+   "kind": "equip",
+   "sheets": [
+    2
+   ],
+   "key": "heat_exchanger_1",
+   "tag": "E-206",
+   "service": "Toluene condenser"
+  },
+  "V-205": {
+   "kind": "equip",
+   "sheets": [
+    2
+   ],
+   "key": "vessel_1",
+   "tag": "V-205",
+   "service": "Toluene reflux drum"
+  },
+  "P-203": {
+   "kind": "equip",
+   "sheets": [
+    2
+   ],
+   "key": "pump_1",
+   "tag": "P-203",
+   "service": "Toluene reflux pump"
+  },
+  "J7": {
+   "kind": "junction",
+   "sheets": [
+    2
+   ],
+   "key": null,
+   "tag": "",
+   "service": "reflux / toluene recycle split"
+  },
+  "E-207": {
+   "kind": "equip",
+   "sheets": [
+    2
+   ],
+   "key": "heat_exchanger_1",
+   "tag": "E-207",
+   "service": "Toluene column reboiler"
+  },
+  "LE": {
+   "kind": "terminal",
+   "sheets": [
+    2
+   ],
+   "key": "product_1",
+   "tag": "",
+   "service": "Light ends to fuel gas"
+  },
+  "BZ": {
+   "kind": "terminal",
+   "sheets": [
+    2
+   ],
+   "key": "product_1",
+   "tag": "",
+   "service": "Benzene product"
+  },
+  "DP": {
+   "kind": "terminal",
+   "sheets": [
+    2
+   ],
+   "key": "product_1",
+   "tag": "",
+   "service": "Diphenyl (heavy ends) to fuel"
+  },
+  "OUT38": {
+   "kind": "terminal",
+   "sheets": [
+    2
+   ],
+   "key": "product_1",
+   "tag": "",
+   "service": "To PFD-201 (toluene recycle)"
+  }
+ },
+ "edges": {
+  "1": {
+   "src": "FT",
+   "src_port": "outlet",
+   "dst": "J1",
+   "dst_port": "j",
+   "sheets": [
+    1
+   ],
+   "desc": "Fresh toluene"
+  },
+  "2": {
+   "src": "J1",
+   "src_port": "j",
+   "dst": "V-201",
+   "dst_port": "inlet",
+   "sheets": [
+    1
+   ],
+   "desc": "Toluene to feed drum"
+  },
+  "3": {
+   "src": "V-201",
+   "src_port": "bottom",
+   "dst": "P-201",
+   "dst_port": "suction",
+   "sheets": [
+    1
+   ],
+   "desc": "Toluene to pump"
+  },
+  "4": {
+   "src": "P-201",
+   "src_port": "discharge",
+   "dst": "J3",
+   "dst_port": "j",
+   "sheets": [
+    1
+   ],
+   "desc": "Toluene to reactor feed"
+  },
+  "5": {
+   "src": "FH",
+   "src_port": "outlet",
+   "dst": "J2",
+   "dst_port": "j",
+   "sheets": [
+    1
+   ],
+   "desc": "Hydrogen make-up"
+  },
+  "6": {
+   "src": "J2",
+   "src_port": "j",
+   "dst": "J3",
+   "dst_port": "j",
+   "sheets": [
+    1
+   ],
+   "desc": "Combined gas"
+  },
+  "7": {
+   "src": "J3",
+   "src_port": "j",
+   "dst": "E-201",
+   "dst_port": "left",
+   "sheets": [
+    1
+   ],
+   "desc": "Reactor feed"
+  },
+  "8": {
+   "src": "E-201",
+   "src_port": "right",
+   "dst": "H-201",
+   "dst_port": "coil_in",
+   "sheets": [
+    1
+   ],
+   "desc": "Preheated feed"
+  },
+  "9": {
+   "src": "H-201",
+   "src_port": "coil_out",
+   "dst": "R-201",
+   "dst_port": "top",
+   "sheets": [
+    1
+   ],
+   "desc": "Reactor inlet"
+  },
+  "10": {
+   "src": "R-201",
+   "src_port": "bottom",
+   "dst": "E-202",
+   "dst_port": "left",
+   "sheets": [
+    1
+   ],
+   "desc": "Reactor effluent"
+  },
+  "11": {
+   "src": "E-202",
+   "src_port": "right",
+   "dst": "V-202",
+   "dst_port": "side_3",
+   "sheets": [
+    1
+   ],
+   "desc": "Cooled effluent"
+  },
+  "12": {
+   "src": "V-202",
+   "src_port": "top",
+   "dst": "J4",
+   "dst_port": "j",
+   "sheets": [
+    1
+   ],
+   "desc": "Separator vapour"
+  },
+  "13": {
+   "src": "J4",
+   "src_port": "j",
+   "dst": "J5",
+   "dst_port": "j",
+   "sheets": [
+    1
+   ],
+   "desc": "Purge"
+  },
+  "14": {
+   "src": "J4",
+   "src_port": "j",
+   "dst": "C-201",
+   "dst_port": "suction",
+   "sheets": [
+    1
+   ],
+   "desc": "Recycle gas to compressor"
+  },
+  "15": {
+   "src": "C-201",
+   "src_port": "discharge",
+   "dst": "J2",
+   "dst_port": "j",
+   "sheets": [
+    1
+   ],
+   "desc": "Recycle gas"
+  },
+  "16": {
+   "src": "V-202",
+   "src_port": "bottom",
+   "dst": "LV-201",
+   "dst_port": "left",
+   "sheets": [
+    1
+   ],
+   "desc": "Separator liquid"
+  },
+  "17": {
+   "src": "LV-201",
+   "src_port": "right",
+   "dst": "V-203",
+   "dst_port": "side_3",
+   "sheets": [
+    1
+   ],
+   "desc": "Let-down liquid"
+  },
+  "18": {
+   "src": "V-203",
+   "src_port": "top",
+   "dst": "J5",
+   "dst_port": "j",
+   "sheets": [
+    1
+   ],
+   "desc": "Flash gas"
+  },
+  "19": {
+   "src": "J5",
+   "src_port": "j",
+   "dst": "FG",
+   "dst_port": "inlet_edge",
+   "sheets": [
+    1
+   ],
+   "desc": "Fuel gas"
+  },
+  "20": {
+   "src": "V-203",
+   "src_port": "bottom",
+   "dst": "OUT21",
+   "dst_port": "inlet_edge",
+   "sheets": [
+    1
+   ],
+   "desc": "Crude benzene"
+  },
+  "21": {
+   "src": "E-203",
+   "src_port": "right",
+   "dst": "T-201",
+   "dst_port": "side_left",
+   "sheets": [
+    2
+   ],
+   "desc": "Column feed"
+  },
+  "22": {
+   "src": "T-201",
+   "src_port": "overhead",
+   "dst": "E-204",
+   "dst_port": "left",
+   "sheets": [
+    2
+   ],
+   "desc": "Benzene column overhead"
+  },
+  "23": {
+   "src": "E-204",
+   "src_port": "right",
+   "dst": "V-204",
+   "dst_port": "inlet",
+   "sheets": [
+    2
+   ],
+   "desc": "Condensate"
+  },
+  "24": {
+   "src": "V-204",
+   "src_port": "outlet",
+   "dst": "LE",
+   "dst_port": "inlet_edge",
+   "sheets": [
+    2
+   ],
+   "desc": "Light ends"
+  },
+  "25": {
+   "src": "V-204",
+   "src_port": "bottom",
+   "dst": "P-202",
+   "dst_port": "suction",
+   "sheets": [
+    2
+   ],
+   "desc": "Reflux drum liquid"
+  },
+  "26": {
+   "src": "P-202",
+   "src_port": "discharge",
+   "dst": "J6",
+   "dst_port": "j",
+   "sheets": [
+    2
+   ],
+   "desc": "Pump discharge"
+  },
+  "27": {
+   "src": "J6",
+   "src_port": "j",
+   "dst": "T-201",
+   "dst_port": "side_right",
+   "sheets": [
+    2
+   ],
+   "desc": "Benzene column reflux"
+  },
+  "28": {
+   "src": "J6",
+   "src_port": "j",
+   "dst": "BZ",
+   "dst_port": "inlet_edge",
+   "sheets": [
+    2
+   ],
+   "desc": "Benzene product"
+  },
+  "29": {
+   "src": "T-201",
+   "src_port": "bottoms",
+   "dst": "E-205",
+   "dst_port": "left",
+   "sheets": [
+    2
+   ],
+   "desc": "Benzene column bottoms"
+  },
+  "30": {
+   "src": "E-205",
+   "src_port": "top",
+   "dst": "T-201",
+   "dst_port": "side_right",
+   "sheets": [
+    2
+   ],
+   "desc": "Benzene column boil-up"
+  },
+  "31": {
+   "src": "E-205",
+   "src_port": "right",
+   "dst": "T-202",
+   "dst_port": "side_left",
+   "sheets": [
+    2
+   ],
+   "desc": "Toluene column feed"
+  },
+  "32": {
+   "src": "T-202",
+   "src_port": "overhead",
+   "dst": "E-206",
+   "dst_port": "left",
+   "sheets": [
+    2
+   ],
+   "desc": "Toluene column overhead"
+  },
+  "33": {
+   "src": "E-206",
+   "src_port": "right",
+   "dst": "V-205",
+   "dst_port": "inlet",
+   "sheets": [
+    2
+   ],
+   "desc": "Condensate"
+  },
+  "34": {
+   "src": "V-205",
+   "src_port": "bottom",
+   "dst": "P-203",
+   "dst_port": "suction",
+   "sheets": [
+    2
+   ],
+   "desc": "Reflux drum liquid"
+  },
+  "35": {
+   "src": "P-203",
+   "src_port": "discharge",
+   "dst": "J7",
+   "dst_port": "j",
+   "sheets": [
+    2
+   ],
+   "desc": "Pump discharge"
+  },
+  "36": {
+   "src": "J7",
+   "src_port": "j",
+   "dst": "T-202",
+   "dst_port": "side_right",
+   "sheets": [
+    2
+   ],
+   "desc": "Toluene column reflux"
+  },
+  "37": {
+   "src": "J7",
+   "src_port": "j",
+   "dst": "OUT38",
+   "dst_port": "inlet_edge",
+   "sheets": [
+    2
+   ],
+   "desc": "Toluene recycle"
+  },
+  "38": {
+   "src": "T-202",
+   "src_port": "bottoms",
+   "dst": "E-207",
+   "dst_port": "left",
+   "sheets": [
+    2
+   ],
+   "desc": "Toluene column bottoms"
+  },
+  "39": {
+   "src": "E-207",
+   "src_port": "top",
+   "dst": "T-202",
+   "dst_port": "side_right",
+   "sheets": [
+    2
+   ],
+   "desc": "Toluene column boil-up"
+  },
+  "40": {
+   "src": "E-207",
+   "src_port": "right",
+   "dst": "DP",
+   "dst_port": "inlet_edge",
+   "sheets": [
+    2
+   ],
+   "desc": "Diphenyl"
+  }
+ },
+ "continuations": {
+  "20": {
+   "sheet1": [
+    "V-203",
+    "bottom",
+    "OUT21",
+    "inlet_edge"
+   ],
+   "sheet2": [
+    "IN21",
+    "outlet",
+    "E-203",
+    "left"
+   ]
+  },
+  "37": {
+   "sheet2": [
+    "J7",
+    "j",
+    "OUT38",
+    "inlet_edge"
+   ],
+   "sheet1": [
+    "IN38",
+    "outlet",
+    "J1",
+    "j"
+   ]
+  }
+ },
+ "sheet_edges": {
+  "1": [
+   [
+    1,
+    "FT",
+    "outlet",
+    "J1",
+    "j"
+   ],
+   [
+    2,
+    "J1",
+    "j",
+    "V-201",
+    "inlet"
+   ],
+   [
+    3,
+    "V-201",
+    "bottom",
+    "P-201",
+    "suction"
+   ],
+   [
+    4,
+    "P-201",
+    "discharge",
+    "J3",
+    "j"
+   ],
+   [
+    5,
+    "FH",
+    "outlet",
+    "J2",
+    "j"
+   ],
+   [
+    6,
+    "J2",
+    "j",
+    "J3",
+    "j"
+   ],
+   [
+    7,
+    "J3",
+    "j",
+    "E-201",
+    "left"
+   ],
+   [
+    8,
+    "E-201",
+    "right",
+    "H-201",
+    "coil_in"
+   ],
+   [
+    9,
+    "H-201",
+    "coil_out",
+    "R-201",
+    "top"
+   ],
+   [
+    10,
+    "R-201",
+    "bottom",
+    "E-202",
+    "left"
+   ],
+   [
+    11,
+    "E-202",
+    "right",
+    "V-202",
+    "side_3"
+   ],
+   [
+    12,
+    "V-202",
+    "top",
+    "J4",
+    "j"
+   ],
+   [
+    13,
+    "J4",
+    "j",
+    "J5",
+    "j"
+   ],
+   [
+    14,
+    "J4",
+    "j",
+    "C-201",
+    "suction"
+   ],
+   [
+    15,
+    "C-201",
+    "discharge",
+    "J2",
+    "j"
+   ],
+   [
+    16,
+    "V-202",
+    "bottom",
+    "LV-201",
+    "left"
+   ],
+   [
+    17,
+    "LV-201",
+    "right",
+    "V-203",
+    "side_3"
+   ],
+   [
+    18,
+    "V-203",
+    "top",
+    "J5",
+    "j"
+   ],
+   [
+    19,
+    "J5",
+    "j",
+    "FG",
+    "inlet_edge"
+   ],
+   [
+    20,
+    "V-203",
+    "bottom",
+    "OUT21",
+    "inlet_edge"
+   ],
+   [
+    37,
+    "IN38",
+    "outlet",
+    "J1",
+    "j"
+   ]
+  ],
+  "2": [
+   [
+    20,
+    "IN21",
+    "outlet",
+    "E-203",
+    "left"
+   ],
+   [
+    21,
+    "E-203",
+    "right",
+    "T-201",
+    "side_left"
+   ],
+   [
+    22,
+    "T-201",
+    "overhead",
+    "E-204",
+    "left"
+   ],
+   [
+    23,
+    "E-204",
+    "right",
+    "V-204",
+    "inlet"
+   ],
+   [
+    24,
+    "V-204",
+    "outlet",
+    "LE",
+    "inlet_edge"
+   ],
+   [
+    25,
+    "V-204",
+    "bottom",
+    "P-202",
+    "suction"
+   ],
+   [
+    26,
+    "P-202",
+    "discharge",
+    "J6",
+    "j"
+   ],
+   [
+    27,
+    "J6",
+    "j",
+    "T-201",
+    "side_right"
+   ],
+   [
+    28,
+    "J6",
+    "j",
+    "BZ",
+    "inlet_edge"
+   ],
+   [
+    29,
+    "T-201",
+    "bottoms",
+    "E-205",
+    "left"
+   ],
+   [
+    30,
+    "E-205",
+    "top",
+    "T-201",
+    "side_right"
+   ],
+   [
+    31,
+    "E-205",
+    "right",
+    "T-202",
+    "side_left"
+   ],
+   [
+    32,
+    "T-202",
+    "overhead",
+    "E-206",
+    "left"
+   ],
+   [
+    33,
+    "E-206",
+    "right",
+    "V-205",
+    "inlet"
+   ],
+   [
+    34,
+    "V-205",
+    "bottom",
+    "P-203",
+    "suction"
+   ],
+   [
+    35,
+    "P-203",
+    "discharge",
+    "J7",
+    "j"
+   ],
+   [
+    36,
+    "J7",
+    "j",
+    "T-202",
+    "side_right"
+   ],
+   [
+    37,
+    "J7",
+    "j",
+    "OUT38",
+    "inlet_edge"
+   ],
+   [
+    38,
+    "T-202",
+    "bottoms",
+    "E-207",
+    "left"
+   ],
+   [
+    39,
+    "E-207",
+    "top",
+    "T-202",
+    "side_right"
+   ],
+   [
+    40,
+    "E-207",
+    "right",
+    "DP",
+    "inlet_edge"
+   ]
+  ]
+ },
+ "utilities": {
+  "E-201": "HP steam",
+  "H-201": "Fuel gas",
+  "E-202": "Cooling water",
+  "E-203": "LP steam",
+  "E-204": "Cooling water",
+  "E-205": "MP steam",
+  "E-206": "Cooling water",
+  "E-207": "HP steam"
+ }
+}

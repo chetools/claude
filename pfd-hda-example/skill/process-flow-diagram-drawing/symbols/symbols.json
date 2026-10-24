@@ -1,0 +1,302 @@
+{
+ "feed_1": {
+  "file": "feed_1.svg",
+  "name": "Feed terminal",
+  "ports": {
+   "outlet": [
+    270,
+    360
+   ],
+   "inlet_edge": [
+    200,
+    360
+   ]
+  },
+  "frame": [
+   200,
+   340,
+   270,
+   380
+  ],
+  "scale_mm_per_unit": 0.2,
+  "basis": "Polygon point list decoded verbatim from the source symbol file (8 points)."
+ },
+ "product_1": {
+  "file": "product_1.svg",
+  "name": "Product terminal",
+  "ports": {
+   "inlet_edge": [
+    200,
+    410
+   ],
+   "outlet": [
+    290,
+    410
+   ]
+  },
+  "frame": [
+   200,
+   390,
+   290,
+   430
+  ],
+  "scale_mm_per_unit": 0.2,
+  "basis": "Polygon point list decoded verbatim from the source symbol file (7 points)."
+ },
+ "pump_1": {
+  "file": "pump_1.svg",
+  "name": "Centrifugal pump",
+  "ports": {
+   "suction": [
+    441,
+    230
+   ],
+   "discharge": [
+    534,
+    173
+   ]
+  },
+  "frame": [
+   442,
+   167,
+   556,
+   305
+  ],
+  "scale_mm_per_unit": 0.0965,
+  "basis": "Circle outline (centre 499,230; radius 57), suction port (441,230), discharge line (500,173)-(534,173) and its arrowhead decoded numerically. Internal filled triangle: presence and form from the solid-arrow and closed-bezier shape inventory; exact bezier control geometry is stored in a local frame and was not fully decoded."
+ },
+ "compressor_1": {
+  "file": "compressor_1.svg",
+  "name": "Compressor",
+  "ports": {
+   "suction": [
+    614,
+    461
+   ],
+   "discharge": [
+    806,
+    461
+   ]
+  },
+  "frame": [
+   614,
+   346,
+   806,
+   576
+  ],
+  "scale_mm_per_unit": 0.198,
+  "basis": "Trapezoid corner points decoded verbatim: left edge 230 units tall, right edge 115 units tall, width 192 units, common centreline at y = 461; ports at the edge midpoints on the centreline."
+ },
+ "expander_1": {
+  "file": "expander_1.svg",
+  "name": "Expander",
+  "ports": {
+   "inlet": [
+    614,
+    461
+   ],
+   "outlet": [
+    806,
+    461
+   ]
+  },
+  "frame": [
+   614,
+   346,
+   806,
+   576
+  ],
+  "scale_mm_per_unit": 0.198,
+  "basis": "Traced by symmetry with compressor_1 (same polygon class, reversed taper). The stored instance in the expander source file has a portrait bounding box (307,634)-(383,748), indicating a 90-degree rotated stored orientation; the library supplies the horizontal flowsheet form, with rotation noted. Port extraction for this file was partial (two port anchors at (364,641) and (324,726) in the stored orientation)."
+ },
+ "heat_exchanger_1": {
+  "file": "heat_exchanger_1.svg",
+  "name": "Heat exchanger",
+  "ports": {
+   "left": [
+    172,
+    175
+   ],
+   "top": [
+    229,
+    118
+   ],
+   "right": [
+    285,
+    175
+   ],
+   "bottom": [
+    229,
+    231
+   ]
+  },
+  "frame": [
+   173,
+   115,
+   287,
+   231
+  ],
+  "scale_mm_per_unit": 0.0982,
+  "basis": "Circle decoded from the extracted outline ring (bounding box (173,119)-(285,231), centre (229,175), radius 56); four ports decoded verbatim. The two internal lines (line shape records) are drawn as the diameter diagonals of the circle."
+ },
+ "flash_1": {
+  "file": "flash_1.svg",
+  "name": "Flash drum (vertical vessel)",
+  "ports": {
+   "side_1": [
+    249,
+    307
+   ],
+   "side_2": [
+    249,
+    326
+   ],
+   "side_3": [
+    249,
+    346
+   ],
+   "side_4": [
+    249,
+    384
+   ],
+   "side_5": [
+    249,
+    422
+   ],
+   "side_6": [
+    249,
+    461
+   ],
+   "top": [
+    308,
+    249
+   ],
+   "right": [
+    366,
+    461
+   ]
+  },
+  "frame": [
+   250,
+   250,
+   366,
+   518
+  ],
+  "scale_mm_per_unit": 0.1026,
+  "basis": "Body bounding frame (250,250)-(366,518) and all eight port anchors decoded verbatim (six left-side ports, top centre port, right port at the liquid level). Head form: 2:1 elliptical caps (depth 29 units on a 116-unit diameter); the cap outline piece decoded from the file is a shallow ellipse segment (30 by 11 units in its local frame). Liquid level line at the right-port elevation y = 461."
+ },
+ "vessel_1": {
+  "file": "vessel_1.svg",
+  "name": "Horizontal vessel (reflux drum)",
+  "ports": {
+   "inlet": [
+    0,
+    30
+   ],
+   "outlet": [
+    180,
+    30
+   ],
+   "bottom": [
+    90,
+    60
+   ]
+  },
+  "frame": [
+   0,
+   0,
+   180,
+   60
+  ],
+  "scale_mm_per_unit": 0.25,
+  "basis": "Structural trace. The file contains 12 port instances and two instances of an end-cap outline piece (30 by 11 units in local frame, cap depth 0.37 of diameter); the body is drawn as a horizontal drum of diameter 60 units with half-ellipse caps of depth 22 units and a liquid level line. Body proportions follow the decoded cap ratio; absolute body length is a library convention (3 diameters overall)."
+ },
+ "scds_1": {
+  "file": "scds_1.svg",
+  "name": "Distillation column",
+  "ports": {
+   "overhead": [
+    560,
+    200
+   ],
+   "bottoms": [
+    560,
+    520
+   ]
+  },
+  "frame": [
+   530,
+   200,
+   590,
+   520
+  ],
+  "scale_mm_per_unit": 0.2188,
+  "basis": "Body rectangle (530,200)-(590,520) and top cap arc decoded verbatim (arc points (530,235),(530,227),(543,220),(559,220),(575,220),(588,227),(588,235): chord at y = 235, apex at y = 220, depth 15 on a 60 width); bottom cap mirrored. Five tray lines represent the repeated tray group instances in the file (group shape records). The file contains 20 port instances (stage ports); principal ports listed are the overhead and bottoms anchors on the body axis."
+ },
+ "kinetic_1": {
+  "file": "kinetic_1.svg",
+  "name": "Stirred reactor",
+  "ports": {
+   "bottom": [
+    634,
+    767
+   ],
+   "top": [
+    634,
+    461
+   ]
+  },
+  "frame": [
+   557,
+   461,
+   711,
+   767
+  ],
+  "scale_mm_per_unit": 0.147,
+  "basis": "Body frame (557,461)-(711,767), top head arc points and bottom port (634,767) decoded verbatim; the arc is drawn through the seven decoded points. Agitator shaft, impeller, and drive block: forms from the shape inventory (line, rectangle, and chord shape records). One decoded line segment ((691,460)-(726,422)) could not be interpreted and is not drawn."
+ },
+ "valve_1": {
+  "file": "valve_1.svg",
+  "name": "Valve",
+  "ports": {
+   "left": [
+    545,
+    565
+   ],
+   "right": [
+    585,
+    565
+   ]
+  },
+  "frame": [
+   545,
+   555,
+   585,
+   575
+  ],
+  "scale_mm_per_unit": 0.25,
+  "basis": "Bowtie outline decoded verbatim as a single self-crossing polygon through (545,555),(545,575),(585,555),(585,575). Ports at the edge midpoints; the file contains two port instances."
+ },
+ "control_valve_1": {
+  "file": "control_valve_1.svg",
+  "name": "Control valve",
+  "ports": {
+   "left": [
+    558,
+    576
+   ],
+   "right": [
+    651,
+    576
+   ]
+  },
+  "frame": [
+   559,
+   485,
+   651,
+   599
+  ],
+  "scale_mm_per_unit": 0.247,
+  "basis": "Port anchors (558,576) and (651,576) and the symbol frame (559,485)-(651,599) decoded verbatim. Bowtie and stem geometry decoded in a local frame ((545,555)-(585,575) bowtie; stem segment (565,565)-(565,540)) and placed at the port centreline (605,576); actuator dome from the chord shape inventory."
+ }
+}
