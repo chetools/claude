@@ -248,7 +248,7 @@ class Sheet:
         tw = sum(w for _, w in cols)
         out = []
         out.append(f'<text x="{x}" y="{y - 10}" font-family="{FONT}" font-size="12" font-weight="bold" fill="{INK}">'
-                   f'Stream table: sample values (flows from a simple component-balance model; temperatures and pressures nominal, not computed)</text>')
+                   f'Stream table: sample values (flows from a simple component-balance model; temperatures and pressures nominal, column temperatures near ideal bubble points)</text>')
         th = headh + rowh * len(nums)
         out.append(f'<rect x="{x}" y="{y}" width="{tw}" height="{th}" fill="none" stroke="{INK}" stroke-width="1.4"/>')
         out.append(f'<line x1="{x}" y1="{y + headh}" x2="{x + tw}" y2="{y + headh}" stroke="{INK}" stroke-width="1"/>')

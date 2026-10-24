@@ -8,9 +8,55 @@ CONT = json.loads((HERE / "continuations.json").read_text())
 Y20, Y37 = CONT["20"], CONT["37"]
 
 s = Sheet(2)
+TOPO_SVC = {k: v["service"] for k, v in K.TOPO["nodes"].items()}
 S_HX, S_PUMP, S_TERM = 44 / 112, 44 / 114, 0.6
-UTIL = 34
+UTIL = 32
 X_TERM = 1575
+
+
+def cs(node, side, y):
+    """column shell point; allows entries down to 3 px above the lower head"""
+    try:
+        return s.column_side(node, side, y)
+    except AssertionError:
+        a, b, c, d, e, f = s.nodes[node]["m"]
+        yb = d * 490 + f
+        assert d * 235 + f + 10 <= y < yb - 2, (node, y)
+        return (a * (530 if side == "left" else 590) + e, y)
+
+
+def trays(node):
+    a, b, c, d, e, f = s.nodes[node]["m"]
+    return [d * v + f for v in (285, 330, 375, 420, 465)]
+
+
+def auto_marker(n, pts, last_arrow=True, junction_end=None):
+    """marker on the horizontal segment with the widest clear interval; >= 6 px
+    from arrowheads, >= 10 px from bends/junctions"""
+    w = 19 if n < 10 else 22
+    best = None
+    k = len(pts) - 1
+    for i, ((x1, y1), (x2, y2)) in enumerate(zip(pts, pts[1:])):
+        if abs(y1 - y2) > 1e-6:
+            continue
+        sgn = 1 if x2 > x1 else -1
+        a = 4 if i == 0 else 10                      # start clearance
+        a = 10 if (i == 0 and junction_end == "start") else a
+        if i == k - 1:
+            b = (22 if last_arrow else 4)
+            if junction_end == "end":
+                b = 38                               # arrow at J-10 (16 long) + 6 + 6
+        else:
+            b = 10
+        lo, hi = min(x1, x2), max(x1, x2)
+        if sgn > 0:
+            lo, hi = lo + a, hi - b
+        else:
+            lo, hi = lo + b, hi - a
+        if hi - lo >= 2 * w and (best is None or hi - lo > best[1] - best[0]):
+            best = (lo, hi, y1)
+    assert best, f"no room for marker {n}"
+    s.marker(n, (best[0] + best[1]) / 2, best[2])
 
 
 def hseg(n, pts, x):
@@ -22,10 +68,10 @@ def hseg(n, pts, x):
     raise AssertionError(f"no horizontal segment at x={x} on stream {n}")
 
 
-def flow(n, pts, src, dst, marker_x, arrow=True, arrow_dir=None):
+def flow(n, pts, src, dst, marker_x=None, arrow=True, arrow_dir=None):
     """draw stream; arrowhead at the end of the last segment (tip at the point)"""
     s.stream(n, pts, src, dst)
-    hseg(n, pts, marker_x)
+    auto_marker(n, pts, junction_end="start" if src[1] == "j" else None)
     if arrow:
         (x1, y1), (x2, y2) = pts[-2], pts[-1]
         d = arrow_dir or ("R" if x2 > x1 else "L" if x2 < x1 else "D" if y2 > y1 else "U")
@@ -37,7 +83,7 @@ IN21 = s.place("IN21", 100, Y20, 0.6, anchor="outlet")
 E203 = s.place("E-203", 230, Y20, S_HX, anchor="left")
 
 # ---- benzene column T-201 (scale 1.0)
-S1, CX1, YT1 = 1.0, 430, 210
+S1, CX1, YT1 = 1.0, 430, 240
 T1 = s.place("T-201", CX1 - 30 * S1, YT1, S1)
 col1_l, col1_r = CX1 - 30 * S1, CX1 + 30 * S1
 CY4 = 160
@@ -48,16 +94,16 @@ P202 = s.place("P-202", V204["bottom"][0] + 100, YS1, S_PUMP, anchor="suction")
 Y28 = round(P202["discharge"][1], 1)
 XJ6 = round(P202["discharge"][0] + 95)
 s.junction("J6", XJ6, Y28)
-Y27 = 310
-CY5 = 565
+Y27 = 305
+CY5 = 585
 E205 = s.place("E-205", 520, CY5, S_HX, anchor="left")
-YBU1, YF2 = 488, 470
+YBU1, YF2 = 517, 470
 LE = s.place("LE", X_TERM, CY4, S_TERM, anchor="inlet_edge")
 BZ = s.place("BZ", X_TERM, Y28, S_TERM, anchor="inlet_edge")
 
 # ---- toluene column T-202 (scale 0.66)
 S2, CX2, CY6 = 0.66, XJ6 + 55, 282
-YT2 = CY6 + 45
+YT2 = 349
 T2 = s.place("T-202", CX2 - 30 * S2, YT2, S2)
 col2_l, col2_r = CX2 - 30 * S2, CX2 + 30 * S2
 E206 = s.place("E-206", CX2 + 90, CY6, S_HX, anchor="left")
@@ -66,11 +112,11 @@ P203 = s.place("P-203", V205["bottom"][0] + 100, Y37 + 22, S_PUMP, anchor="sucti
 assert abs(P203["discharge"][1] - Y37) < 0.6
 XJ7 = round(P203["discharge"][0] + 95)
 s.junction("J7", XJ7, Y37)
-Y36 = 405
+Y36 = 392
 YBOT2 = T2["bottoms"][1]
-CY7 = round(YBOT2 + 35)
+CY7 = 585
 E207 = s.place("E-207", CX2 + 90, CY7, S_HX, anchor="left")
-YBU2, YF2b = 495, 470
+YBU2, YF2b = 535, 450
 OUT38 = s.place("OUT38", X_TERM, Y37, S_TERM, anchor="inlet_edge")
 DP = s.place("DP", X_TERM, CY7, S_TERM, anchor="inlet_edge")
 
@@ -79,7 +125,7 @@ A = lambda n, nd, pt: (nd, pt)
 # feed
 flow(20, [IN21["outlet"], E203["left"]], ("IN21", "outlet"), ("E-203", "left"), 155)
 y21 = Y20
-side1 = s.column_side("T-201", "left", y21)
+side1 = cs("T-201", "left", y21)
 flow(21, [E203["right"], side1], ("E-203", "right"), ("T-201", "side_left"), 330)
 # T-201 overhead train
 p22 = [T1["overhead"], (CX1, CY4), E204["left"]]
@@ -92,9 +138,9 @@ p25 = [V204["bottom"], (xb, YS1), P202["suction"]]
 flow(25, p25, ("V-204", "bottom"), ("P-202", "suction"), xb + 36)
 p26 = [P202["discharge"], (XJ6, Y28)]
 s.stream(26, p26, ("P-202", "discharge"), ("J6", "j"))
-hseg(26, p26, P202["discharge"][0] + 38)
+auto_marker(26, p26, junction_end="end")
 s.arrow(XJ6 - 10, Y28, "R")
-side1r = s.column_side("T-201", "right", Y27)
+side1r = cs("T-201", "right", Y27)
 p27 = [(XJ6, Y28), (XJ6, Y27), side1r]
 flow(27, p27, ("J6", "j"), ("T-201", "side_right"), 700)
 flow(28, [(XJ6, Y28), BZ["inlet_edge"]], ("J6", "j"), ("BZ", "inlet_edge"), 1250)
@@ -102,10 +148,10 @@ flow(28, [(XJ6, Y28), BZ["inlet_edge"]], ("J6", "j"), ("BZ", "inlet_edge"), 1250
 p29 = [T1["bottoms"], (CX1, CY5), E205["left"]]
 flow(29, p29, ("T-201", "bottoms"), ("E-205", "left"), 475)
 xt5 = E205["top"][0]
-p30 = [E205["top"], (xt5, YBU1), s.column_side("T-201", "right", YBU1)]
+p30 = [E205["top"], (xt5, YBU1), cs("T-201", "right", YBU1)]
 flow(30, p30, ("E-205", "top"), ("T-201", "side_right"), xt5 - 34)
 XV = 620
-side2 = s.column_side("T-202", "left", YF2b)
+side2 = cs("T-202", "left", YF2b)
 p31 = [E205["right"], (XV, CY5), (XV, YF2b), side2]
 flow(31, p31, ("E-205", "right"), ("T-202", "side_left"), 780)
 # T-202 overhead train
@@ -118,16 +164,16 @@ p34 = [V205["bottom"], (xb2, Y37 + 22), P203["suction"]]
 flow(34, p34, ("V-205", "bottom"), ("P-203", "suction"), xb2 + 36)
 p35 = [P203["discharge"], (XJ7, Y37)]
 s.stream(35, p35, ("P-203", "discharge"), ("J7", "j"))
-hseg(35, p35, P203["discharge"][0] + 38)
+auto_marker(35, p35, junction_end="end")
 s.arrow(XJ7 - 10, Y37, "R")
-side2r = s.column_side("T-202", "right", Y36)
+side2r = cs("T-202", "right", Y36)
 flow(36, [(XJ7, Y37), (XJ7, Y36), side2r], ("J7", "j"), ("T-202", "side_right"), 1200)
 flow(37, [(XJ7, Y37), OUT38["inlet_edge"]], ("J7", "j"), ("OUT38", "inlet_edge"), (XJ7 + X_TERM) / 2)
 # T-202 base
 p38 = [T2["bottoms"], (CX2, CY7), E207["left"]]
 flow(38, p38, ("T-202", "bottoms"), ("E-207", "left"), CX2 + 45)
 xt7 = E207["top"][0]
-p39 = [E207["top"], (xt7, YBU2), s.column_side("T-202", "right", YBU2)]
+p39 = [E207["top"], (xt7, YBU2), cs("T-202", "right", YBU2)]
 flow(39, p39, ("E-207", "top"), ("T-202", "side_right"), xt7 - 34)
 flow(40, [E207["right"], DP["inlet_edge"]], ("E-207", "right"), ("DP", "inlet_edge"), 1300)
 
@@ -153,9 +199,18 @@ for n, p, yt in (("T-201", T1, YT1), ("T-202", T2, YT2)):            # columns: 
 # terminals
 s.terminal_label("IN21", 58, Y20 + 12 + 13, anchor="start")
 for n, y in (("LE", CY4), ("BZ", Y28), ("OUT38", Y37), ("DP", CY7)):
-    s.terminal_label(n, X_TERM + 54, (y - 12 - 8) if n == "LE" else (y + 12 + 13), anchor="end",
-                     lines=["To PFD-201", "(toluene recycle)"] if n == "OUT38" else None)
+    ls = ["To PFD-201", "(toluene recycle)"] if n == "OUT38" else [TOPO_SVC[n]]
+    s.terminal_label(n, X_TERM + 54, y - 12 - 8 - 13 * (len(ls) - 1), anchor="end", lines=ls)
 
+# clean pump discharge nozzle: thick line over the glyph's thin stub (port unchanged)
+for P_ in (P202, P203):
+    x, y = P_["discharge"]
+    s.el_top.append(f'<line x1="{x - 34 * S_PUMP:.2f}" y1="{y:.2f}" x2="{x:.2f}" y2="{y:.2f}" stroke="{K.INK}" stroke-width="{K.W_MAIN}" stroke-linecap="butt"/>')
+# tray checks (Annex A.9)
+tr1, tr2 = trays("T-201"), trays("T-202")
+assert Y27 < tr1[0] and tr1[0] - Y27 >= 12 and YBU1 > tr1[-1] + 10 and tr1[1] < Y20 < tr1[2] and min(abs(Y20 - v) for v in tr1) > 15, tr1
+assert Y36 < tr2[0] and YBU2 > tr2[-1] + 10 and all(abs(YF2b - v) > 12 for v in tr2), tr2
+print("trays T-201", [round(v) for v in tr1], "T-202", [round(v) for v in tr2])
 s.stream_table()
 s.title_block()
 s.notes(1000, 710, ["Abbreviations",
