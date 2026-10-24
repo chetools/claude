@@ -1,0 +1,11 @@
+{
+ "model": "meta/muse-spark-1.3",
+ "problem": "P10",
+ "run": 1,
+ "served_model": "meta/muse-spark-1.3",
+ "provider": "Muse app (replies pasted by the user)",
+ "text": "(a) Minimum water flow\nAcetone in gas in: 100 x 0.020 = 2.00 kmol/h.\nAcetone absorbed (95%): 0.95 x 2.00 = 1.90 kmol/h.\nGas out acetone mole fraction: 0.05 x 0.020 = 0.0010.\nAt minimum flow the liquid out is in equilibrium with gas in:\nx_out = 0.020 / 1.8 = 0.01111.\nBalance: L_min x 0.01111 = 1.90, so L_min = 1.90 / 0.01111 = 171 kmol/h.\n\n(b) Absorption factor\nOperating water flow L = 1.5 x 171 = 256.5 kmol/h.\nA = L / (m G) = 256.5 / (1.8 x 100) = 256.5 / 180 = 1.425.\n\n(c) Number of theoretical stages\nKremser equation, with x_in = 0 for pure water:\nN = ln[ (y_in / y_out)(1 - 1/A) + 1/A ] / ln A\nN = ln[ (0.020 / 0.0010)(1 - 1/1.425) + 1/1.425 ] / ln 1.425\nN = ln[ 20 x 0.2982 + 0.7018 ] / 0.3542 = ln(6.667) / 0.3542\nN = 1.897 / 0.3542 = 5.36.\n\nFINAL (a): 171 kmol/h\nFINAL (b): 1.425 dimensionless\nFINAL (c): 5.36 stages",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "cost": 0.0
+}

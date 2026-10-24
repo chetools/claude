@@ -127,7 +127,7 @@ details.resp pre{background:#fafbfc;border:1px solid var(--card-border);border-r
   margin:1rem 0;font-weight:600}
 .tablewrap{overflow-x:auto;max-width:100%}
 #model-table th,#model-table td{text-align:left;vertical-align:top}
-#model-table td.mean{white-space:nowrap}
+#model-table td.mean,#model-table td.core{white-space:nowrap}
 #model-table td:nth-child(2),#model-table td:nth-child(3){white-space:nowrap}
 #model-table td:nth-child(n+6),#model-table th:nth-child(n+6){text-align:right}
 .code-body h2{margin-top:2rem}
@@ -179,3 +179,4 @@ h2,h3,h4{scroll-margin-top:3.6rem}
 .egrid thead th:first-child{position:sticky;left:0;z-index:2}
 details.resp,.elist li{scroll-margin-top:3.6rem}
 .elist li:target{outline:2px solid var(--st-red);outline-offset:2px;border-radius:.3rem}
+#model-table td.core,#model-table th:last-child{text-align:left}

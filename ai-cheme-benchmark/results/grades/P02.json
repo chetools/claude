@@ -248,5 +248,15 @@
   },
   "score": 10,
   "justification": "(a) Re = 3.18e5, correct. (b) f = 0.0179 from a shown, converged Colebrook iteration, correct. (c) H = 28.71 m, correct energy balance with friction and minor losses. (d) 9.76 kW, correct."
+ },
+ "meta/muse-spark-1.3": {
+  "parts": {
+   "a": 2,
+   "b": 3,
+   "c": 3,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "(a) Re = 317700 vs 317673: full points. (b) Colebrook iterated to f = 0.0179 vs 0.01790: full points. (c) H = 12 + (fL/D + sum K) V^2/2g = 28.70 m vs 28.71 m: full points. (d) rho g Q H / 0.72 = 9.76 kW vs 9.76 kW: full points."
  }
 }

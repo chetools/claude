@@ -324,6 +324,19 @@
    "reasoning": "provider default",
    "effort": null,
    "cost_usd": 1.133176
+  },
+  {
+   "id": "meta/muse-spark-1.3",
+   "name": "Muse Spark 1.3",
+   "vendor": "Meta",
+   "release_date": "2026-10",
+   "params": null,
+   "params_active": null,
+   "params_official": false,
+   "params_source": null,
+   "reasoning": "provider default",
+   "effort": null,
+   "cost_usd": 0.0
   }
  ],
  "problems": [
@@ -401,7 +414,7 @@
   {
    "id": "P07",
    "topic": "Process Dynamics and Control",
-   "difficulty": "Extremely hard",
+   "difficulty": "Hard",
    "title": "Ultimate gain, Ziegler–Nichols tuning and stability margins of a dead-time process",
    "parts": [
     "a",
@@ -415,7 +428,7 @@
   {
    "id": "P08",
    "topic": "Process Dynamics and Control",
-   "difficulty": "Extremely hard",
+   "difficulty": "Hard",
    "title": "Stability limit of a PI loop on a third-order process",
    "parts": [
     "a",
@@ -8068,6 +8081,235 @@
    "text": "The feed is about 34.9 mol % benzene. At 120 kPa it boils at 106.92 °C and is fully vaporized at 123.65 °C. At 112 °C about one third of it (V/F = 0.3325) vaporizes, and half of it vaporizes at 114.83 °C. All results below come from hand iteration; the worked values are shown so each step can be re-checked.\n\n**Feed mole fractions (basis: 1 g of feed)**\n\n| | moles | zᵢ |\n|---|---|---|\n| benzene | 0.30/78.11 = 0.0038407 | **0.34892** |\n| toluene | 0.40/92.14 = 0.0043412 | **0.39438** |\n| o-xylene | 0.30/106.17 = 0.0028257 | **0.25670** |\n| total | 0.0110076 | 1 |\n\nThe pressure in mmHg is P = 120/0.133322 = 900.08 mmHg.\n\nEach step was refined with a Newton step, using d ln Pᵢˢᵃᵗ/dT = 2.302585·Bᵢ/(Cᵢ+T)². In (c) and (e) the vaporized fraction V/F is written ψ.\n\n**(a) Bubble point: Σ zᵢPᵢˢᵃᵗ = P**\n\n- At 105 °C: Σ zᵢPᵢˢᵃᵗ = 853.5 mmHg, too low.\n- At 107 °C:\n  - P₁ˢᵃᵗ = 1625.96, P₂ˢᵃᵗ = 684.82, P₃ˢᵃᵗ = 251.42 mmHg.\n  - Σ zᵢPᵢˢᵃᵗ = 567.32 + 270.08 + 64.54 = 901.94 mmHg.\n- The slope at 107 °C is about 24.7 mmHg/°C.\n- So ΔT = −1.87/24.7 = −0.076 °C, giving **T_b ≈ 106.92 °C**.\n\n**(b) Dew point: Σ zᵢ/Pᵢˢᵃᵗ = 1/P = 1.111017×10⁻³ mmHg⁻¹**\n\n- At 120 °C: Σ zᵢ/Pᵢˢᵃᵗ = 1.2315×10⁻³, too high.\n- At 123.6 °C:\n  - P₁ˢᵃᵗ = 2450.1, P₂ˢᵃᵗ = 1083.6, P₃ˢᵃᵗ = 423.37 mmHg.\n  - Σ zᵢ/Pᵢˢᵃᵗ = 1.112689×10⁻³.\n- The logarithmic slope is 0.02788 per °C.\n- So ΔT = ln(1.001505)/0.02788 = +0.054 °C, giving **T_d ≈ 123.65 °C**.\n\n**(c) Isothermal flash at 112 °C**\n\nThe vapour pressures are P₁ˢᵃᵗ = 1847.65, P₂ˢᵃᵗ = 790.15 and P₃ˢᵃᵗ = 295.80 mmHg. This gives:\n\n- K₁ = 2.05275\n- K₂ = 0.87787\n- K₃ = 0.32864\n\nSolve the Rachford–Rice equation for ψ:\n\nf(ψ) = Σ zᵢ(Kᵢ−1)/[1+ψ(Kᵢ−1)] = 0\n\n| ψ | f(ψ) |\n|---|---|\n| 0.300 | +0.01336 |\n| 0.330 | +0.001037 |\n| 0.333 | −0.000194 |\n\nInterpolating gives **V/F ≈ 0.3325**.\n\n**(d) Benzene in the vapour**\n\ny₁ = z₁K₁/[1+ψ(K₁−1)] = 0.716238/1.350069 = **0.5305**\n\n**(e) Temperature for V/F = 0.5**\n\n| T (°C) | K₁, K₂, K₃ | f(0.5) |\n|---|---|---|\n| 112.0 | 2.0528, 0.8779, 0.3286 | −0.07007 |\n| 114.8 | 2.2014, 0.9493, 0.3592 | −0.000689 |\n| 115.0 | 2.2123, 0.9546, 0.3614 | +0.00424 |\n\nInterpolating between 114.8 and 115 °C gives T = 114.8 + 0.000689/0.02461 ≈ **114.83 °C**.\n\nFINAL (a): 106.92 °C\nFINAL (b): 123.65 °C\nFINAL (c): 0.3325\nFINAL (d): 0.5305\nFINAL (e): 114.83 °C",
    "score": 10,
    "justification": "(a) 106.92 C and (b) 123.65 C by Newton-refined trials, both correct. (c) V/F = 0.3325 by Rachford-Rice, correct. (d) y1 = 0.5305 and (e) 114.83 C, correct.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 2,
+    "d": 2,
+    "e": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P01",
+   "run": 1,
+   "text": "Data: rho = 880 kg/m3, mu = 0.12 Pa s, Q = 1.5 L/s = 0.0015 m3/s, D = 0.04 m, L = 25 m.\n\n(a) Cross-sectional area A = pi D^2/4 = 3.1416 x 0.04^2/4 = 0.001257 m2.\nMean velocity v = Q/A = 0.0015/0.001257 = 1.194 m/s.\nRe = rho v D/mu = 880 x 1.194 x 0.04/0.12 = 350.\nThe flow is laminar, since Re < 2100.\n\n(b) For laminar flow in a tube, Darcy friction factor f = 64/Re.\nf = 64/350 = 0.183.\n\n(c) Darcy-Weisbach: dP = f (L/D) rho v^2/2.\nL/D = 25/0.04 = 625. rho v^2/2 = 880 x 1.194^2/2 = 627 Pa.\ndP = 0.1828 x 625 x 627 = 71600 Pa = 71.6 kPa.\n\nFINAL (a): 350 dimensionless\nFINAL (b): 0.183 dimensionless\nFINAL (c): 71.6 kPa",
+   "score": 10,
+   "justification": "(a) v = 1.194 m/s and Re = 350, within 0.1 % of 350.1: full points. (b) laminar Darcy f = 64/Re = 0.183, 0.1 % off: full points. (c) Darcy-Weisbach with f = 0.1828 gives 71.6 kPa vs 71.6 kPa: full points.",
+   "parts": {
+    "a": 3,
+    "b": 3,
+    "c": 4
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P02",
+   "run": 1,
+   "text": "Pipe area A = pi D^2 / 4 = pi (0.10)^2 / 4 = 0.007854 m2.\nVelocity V = Q / A = 0.025 / 0.007854 = 3.183 m/s.\n(a) Re = rho V D / mu = 998 x 3.183 x 0.10 / 0.001 = 317700.\n(b) epsilon / D = 0.046 mm / 100 mm = 0.00046.\nColebrook: 1/sqrt(f) = -2 log10[(epsilon/D)/3.7 + 2.51/(Re sqrt(f))].\nIteration gives 1/sqrt(f) = 7.47 and f = 0.0179.\n(c) Velocity head V^2/(2g) = 3.183^2/(2 x 9.81) = 0.516 m.\nLoss coefficient: f L/D + sum K = 0.0179 x 150/0.10 + 5.5 = 32.35.\nFriction and minor loss = 32.35 x 0.516 = 16.70 m.\nPump head H = 12 + 16.70 = 28.70 m.\n(d) Hydraulic power = rho g Q H = 998 x 9.81 x 0.025 x 28.70 = 7026 W.\nShaft power = 7026 / 0.72 = 9758 W = 9.76 kW.\nFINAL (a): 317700 dimensionless\nFINAL (b): 0.0179 dimensionless\nFINAL (c): 28.70 m\nFINAL (d): 9.76 kW",
+   "score": 10,
+   "justification": "(a) Re = 317700 vs 317673: full points. (b) Colebrook iterated to f = 0.0179 vs 0.01790: full points. (c) H = 12 + (fL/D + sum K) V^2/2g = 28.70 m vs 28.71 m: full points. (d) rho g Q H / 0.72 = 9.76 kW vs 9.76 kW: full points.",
+   "parts": {
+    "a": 2,
+    "b": 3,
+    "c": 3,
+    "d": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P03",
+   "run": 1,
+   "text": "Symbols and governing equations\nH_A = 120 m, H_B = 100 m and H_C = 70 m are the reservoir heads; h is the piezometric head at junction J, in m.\nFor pipe i, head loss is hf_i = f_i (L_i/D_i) V_i^2/(2g), with V_i the mean velocity, f_i the Darcy friction factor, L_i the length, D_i the diameter and g = 9.81 m/s^2.\nColebrook: 1/sqrt(f_i) = -2 log10( eps/(3.7 D_i) + 2.51/(Re_i sqrt(f_i)) ), Re_i = V_i D_i/nu, nu = 1.0e-6 m^2/s, eps = 0.26 mm.\nAreas: A1 = 0.07069 m^2, A2 = 0.03142 m^2, A3 = 0.04909 m^2.\nRoughness ratios: eps/D = 0.000867 (pipe 1), 0.001300 (pipe 2), 0.001040 (pipe 3).\nHence Q_i = C_i sqrt(|dH_i|), where C_i = A_i sqrt(2 g D_i/(f_i L_i)). Continuity at J: inflow = outflow.\nIteration on h (with f updated from Colebrook at each step):\nh = 100 m: Q1 = 142 L/s exceeds Q3 = 121 L/s, so h rises above H_B and pipe 2 flow reverses (J to B).\nTrial h = 101 m: Q1 = 138.1, Q2 = 14.5, Q3 = 122.6 L/s; inflow exceeds outflow by 1.0 L/s.\nTrial h = 101.2 m: Q1 = 137.4, Q2 = 15.8, Q3 = 123.0 L/s; outflow exceeds inflow by 1.5 L/s.\nInterpolation gives h = 101.08 m, where the balance closes:\nQ1 = 137.8 L/s, Q2 = 15.0 L/s, Q3 = 122.8 L/s; 15.0 + 122.8 = 137.8.\nVelocities: V1 = 1.95 m/s, V2 = 0.48 m/s, V3 = 2.50 m/s.\nReynolds numbers: Re1 = 5.85e5, Re2 = 9.6e4, Re3 = 6.25e5.\nColebrook factors at these Re: f1 = 0.0195, f2 = 0.0232, f3 = 0.0203, consistent with the C_i used.\nCheck, pipe 1: hf = 0.0195 (1500/0.30) (1.95^2/(2 x 9.81)) = 18.9 m = 120 - 101.08.\nCheck, pipe 3: hf = 0.0203 (1200/0.25) (2.50^2/(2 x 9.81)) = 31.0 m = 101.08 - 70.\nCheck, pipe 2: hf = 0.0232 (800/0.20) (0.48^2/(2 x 9.81)) = 1.09 m = 101.08 - 100, so flow is from J into reservoir B.\nTherefore pipe 2 carries 15.0 L/s into reservoir B (reservoir B gains water).\nFINAL (a): 101.08 m\nFINAL (b): 137.8 L/s\nFINAL (c): 15.0 L/s\nFINAL (d): 122.8 L/s",
+   "score": 10,
+   "justification": "Correct trial-and-error on the junction head with Darcy-Weisbach and Colebrook in each pipe, trials at 100, 101 and 101.2 m (values check) and a continuity and head-loss check at the solution. (a) 101.08 m vs 101.08 m, (b) 137.8 vs 137.8 L/s, (c) 15.0 L/s into B vs 15.0 L/s into B (0.1 % off, direction correct), (d) 122.8 vs 122.8 L/s: all within 0.2 %, full points.",
+   "parts": {
+    "a": 4,
+    "b": 2,
+    "c": 2,
+    "d": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P04",
+   "run": 1,
+   "text": "Area A = pi D^2 / 4 = pi (0.30)^2 / 4 = 0.07069 m2.\nRT/M = 8314 x 288 / 16.04 = 149279 J/kg.\nFor horizontal isothermal flow, integration of the momentum balance gives\np1^2 - p2^2 = G^2 (RT/M) [ f L/D + 2 ln(p1/p2) ] (1)\nwhere G is the (constant) mass flux in kg/(m2 s).\np1^2 - p2^2 = (5.0e6)^2 - (3.0e6)^2 = 1.60e13 Pa2.\n2 ln(p1/p2) = 2 ln(5/3) = 1.022.\nL/D = 40000 / 0.30 = 133333.\nHence 1.60e13 = G^2 x 149279 x (133333 f + 1.022).\nReynolds number Re = G D / mu, with mu = 1.1e-5 Pa s, so Re = G x 0.30 / 1.1e-5 = 27273 G.\nColebrook: 1/sqrt(f) = -2 log10[ e/(3.7D) + 2.51/(Re sqrt(f)) ], with e/D = 0.046/300 = 1.533e-4.\nIteration of (2) with Colebrook gives f = 0.01321, because at Re = 6.73e6:\ne/(3.7D) = 4.14e-5 and 2.51/(Re sqrt(f)) = 3.25e-6, sum = 4.47e-5,\nso 1/sqrt(f) = -2 log10(4.47e-5) = 8.70 and f = 0.01321, consistent.\nFrom (2): G^2 = 1.60e13 / [149279 x (133333 x 0.01321 + 1.022)] = 60810, so G = 246.6 kg/(m2 s).\nMass flow rate m = G A = 246.6 x 0.07069 = 17.43 kg/s.\nRe = 27273 x 246.6 = 6.73e6.\nOutlet density rho2 = p2 M/(RT) = 3.0e6 / 149279 = 20.10 kg/m3.\nOutlet velocity v2 = G / rho2 = 246.6 / 20.10 = 12.27 m/s.\nFINAL (a): 17.43 kg/s\nFINAL (b): 6.73e6 dimensionless\nFINAL (c): 0.01321 dimensionless\nFINAL (d): 12.27 m/s",
+   "score": 10,
+   "justification": "Correct isothermal equation p1^2 - p2^2 = G^2 (RT/M)[fL/D + 2 ln(p1/p2)] solved together with Colebrook. (a) 17.43 kg/s vs 17.43: full points. (b) Re = 6.73e6 vs 6.725e6 (0.07 % off): full points. (c) f = 0.01321 vs 0.01321: full points. (d) v2 = G/rho2 = 12.27 m/s vs 12.27: full points.",
+   "parts": {
+    "a": 4,
+    "b": 2,
+    "c": 2,
+    "d": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P05",
+   "run": 1,
+   "text": "Kp = 2.5, tau = 8 min, step = 4 units.\n\n(a) dy_final = Kp x step = 2.5 x 4 = 10 units.\n\n(b) y'(t) = 10(1 - exp(-t/8)). At t = 10: exp(-1.25) = 0.2865, so y' = 10(0.7135) = 7.13 units.\n\n(c) 0.95 = 1 - exp(-t/8) gives exp(-t/8) = 0.05, so t = -8 ln(0.05) = 23.97 min.\n\nFINAL (a): 10 units\nFINAL (b): 7.13 units\nFINAL (c): 23.97 min",
+   "score": 10,
+   "justification": "(a) K times step = 10, correct. (b) 10(1 - e^(-1.25)) = 7.13 vs 7.135 (0.07 % off): full points. (c) t = -8 ln(0.05) = 23.97 min vs 23.97: full points.",
+   "parts": {
+    "a": 3,
+    "b": 4,
+    "c": 3
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P06",
+   "run": 1,
+   "text": "The transfer function is G(s), where s is the Laplace variable in inverse minutes (min^-1). The output deviation is y' and the input step magnitude is A, where A = 2.\n\nStandard second-order form:\nG(s) = Kp / (tau^2 s^2 + 2 zeta tau s + 1)\nwhere Kp is the steady-state gain, dimensionless in the given form; tau is the time constant, in minutes (min); and zeta is the damping factor, dimensionless.\n\nGiven:\nG(s) = 4 / (9 s^2 + 2.4 s + 1)\n\nHence Kp = 4, tau^2 = 9, and 2 zeta tau = 2.4.\n\n(a) Damping factor\n\ntau = sqrt(9) = 3 min\n\n2 zeta tau = 2.4\n2 zeta (3) = 2.4\n6 zeta = 2.4\nzeta = 2.4 / 6 = 0.40\n\nSince 0 < zeta < 1, the response is underdamped and oscillatory.\n\n(b) Overshoot\n\nThe overshoot fraction, defined as the first peak height above the final value divided by the final value, is:\nOvershoot fraction = exp(-pi zeta / sqrt(1 - zeta^2))\n\nsqrt(1 - zeta^2) = sqrt(1 - 0.40^2) = sqrt(1 - 0.16) = sqrt(0.84) = 0.917\n\npi zeta / sqrt(1 - zeta^2) = pi (0.40) / 0.917 = 1.257 / 0.917 = 1.371\n\nOvershoot fraction = exp(-1.371) = 0.254\n\nAs a percentage:\n0.254 x 100 = 25.4 %\n\n(c) Time of the first peak\n\nThe time of the first peak, t_p in minutes, is:\nt_p = pi tau / sqrt(1 - zeta^2)\n\nt_p = pi (3 min) / 0.917 = 9.425 min / 0.917 = 10.28 min\n\n(d) Maximum value of the output deviation\n\nThe final change in the output deviation is:\nFinal y' = Kp x A = 4 x 2 = 8\n\nThe first peak exceeds the final value by the overshoot fraction times the final change:\nPeak excess = 0.254 x 8 = 2.03\n\nMaximum y' = final y' + peak excess = 8 + 2.03 = 10.03\n\nThe units of y' are the output deviation units corresponding to the given gain and step; no separate output unit is specified in the problem, so the value is reported as a dimensionless deviation value.\n\n(e) Decay ratio\n\nThe decay ratio, defined as the second peak overshoot divided by the first peak overshoot, is:\nDecay ratio = exp(-2 pi zeta / sqrt(1 - zeta^2))\n\nDecay ratio = exp(-2 x 1.371) = exp(-2.742) = 0.0644\n\nEquivalently, it is the square of the overshoot fraction: 0.254^2 = 0.0644.\n\nFINAL (a): 0.40 dimensionless\nFINAL (b): 25.4 %\nFINAL (c): 10.28 min\nFINAL (d): 10.03 dimensionless\nFINAL (e): 0.0644 dimensionless",
+   "score": 10,
+   "justification": "(a) zeta = 0.40 from 2 zeta tau = 2.4 with tau = 3 min, correct. (b) overshoot 25.4 % (reference 25.38 %), correct. (c) t_p = 10.28 min, correct. (d) y'max = 8 x (1 + 0.254) = 10.03 and (e) decay ratio 0.0644, both correct: full points.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 2,
+    "d": 2,
+    "e": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P07",
+   "run": 1,
+   "text": "Given Gp = 1.8 e^(-2.5s)/(12s+1), with time in min.\n(a) Phase = -arctan(12w) - 2.5w rad. Set phase = -pi:\narctan(12w) + 2.5w = 3.1416. Trial gives w = 0.6773, since arctan(8.1275) = 1.4483 and 2.5w = 1.6933, sum = 3.1416.\n(b) |Gp| at w_u = 1.8/sqrt(1+8.1275^2) = 1.8/8.1888 = 0.2198. Ku = 1/0.2198 = 4.55.\n(c) Pu = 2pi/w_u = 6.2832/0.6773 = 9.28 min.\n(d) Kc = Ku/2.2 = 4.55/2.2 = 2.07. tau_I = Pu/1.2 = 9.28/1.2 = 7.73 min.\n(e) PI phase adds -arctan(1/(tau_I w)). Total phase = -pi at w = 0.5985 rad/min:\nAt w=0.5985, |L| = 2.068 x sqrt(1+0.2161^2) x 1.8/sqrt(1+7.182^2) = 0.525. GM = 1/0.525 = 1.90.\n(f) Gain crossover: |L| = 1 at w = 0.3235 rad/min (check: 3.722 x 1.0770/4.0087 = 1.000).\nPhase there = -(75.56 + 46.34 + 21.80) = -143.70 deg, so PM = 180 - 143.70 = 36.30 deg.\nFINAL (a): 0.677 rad/min\nFINAL (b): 4.55 dimensionless\nFINAL (c): 9.28 min\nFINAL (d): 2.07 dimensionless, 7.73 min\nFINAL (e): 1.90 ratio\nFINAL (f): 36.30 degrees",
+   "score": 10,
+   "justification": "(a) omega_u = 0.677 rad/min, (b) K_u = 4.55 and (c) P_u = 9.28 min, all correct with the right phase and magnitude conditions. (d) K_c = 2.07, tau_I = 7.73 min, correct. (e) PI-loop phase crossover at 0.5985 rad/min, GM = 1.90 (reference 1.904, 0.2 % off): full points. (f) gain crossover at 0.3235 rad/min, PM = 36.30 deg (reference 36.31), correct.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 1,
+    "d": 1,
+    "e": 2,
+    "f": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P08",
+   "run": 1,
+   "text": "Worked solution\n\nDefinitions: s is the Laplace variable, in min^-1. K_c is the (dimensionless) controller gain. tau_I is the integral time, in min. G_p(s) is the process transfer function and G_c(s) is the controller transfer function, both dimensionless. The valve and measurement transfer functions are both 1 (dimensionless), so the open-loop transfer function is G_c(s) G_p(s).\n\n(a) Maximum gain for stability\n\nThe PI controller with tau_I = 4 min is\n\nG_c(s) = K_c (1 + 1/(4 s)) = K_c (4 s + 1)/(4 s).\n\nThe closed-loop characteristic equation is 1 + G_c(s) G_p(s) = 0:\n\n1 + K_c (4 s + 1) / [4 s (s + 1)(2 s + 1)(5 s + 1)] = 0,\n4 s (s + 1)(2 s + 1)(5 s + 1) + K_c (4 s + 1) = 0.\n\nExpansion of the process denominator:\n\n(2 s + 1)(5 s + 1) = 10 s^2 + 7 s + 1,\n(s + 1)(10 s^2 + 7 s + 1) = 10 s^3 + 17 s^2 + 8 s + 1.\n\nHence the characteristic equation is\n\n40 s^4 + 68 s^3 + 32 s^2 + 4 s + K_c (4 s + 1) = 0,\n40 s^4 + 68 s^3 + 32 s^2 + (4 + 4 K_c) s + K_c = 0.\n\nRouth array:\n\ns^4:   40          32          K_c\ns^3:   68          4 + 4 K_c   0\ns^2:   b1          K_c\ns^1:   c1          0\ns^0:   K_c\n\nwhere the s^2-row first element b1 is\n\nb1 = [68(32) - 40(4 + 4 K_c)] / 68 = (2016 - 160 K_c) / 68,\n\nand the s^1-row first element c1 is\n\nc1 = [b1 (4 + 4 K_c) - 68 K_c] / b1.\n\nFor stability every entry in the first column must be positive. Since K_c > 0, the s^0 entry is positive. The s^2 condition gives b1 > 0, i.e. K_c < 2016/160 = 12.6. The binding condition is c1 > 0, i.e.\n\nb1 (4 + 4 K_c) - 68 K_c > 0.\n\nAt the stability limit c1 = 0:\n\n[(2016 - 160 K_c)/68] (4 + 4 K_c) = 68 K_c\n(2016 - 160 K_c)(4 + 4 K_c) = 4624 K_c\n(63 - 5 K_c)(1 + K_c) = 36.125 K_c\n63 + 58 K_c - 5 K_c^2 = 36.125 K_c\n5 K_c^2 - 21.875 K_c - 63 = 0\nK_c^2 - 4.375 K_c - 12.6 = 0.\n\nTaking the positive root (K_c > 0):\n\nK_c = [4.375 + sqrt(4.375^2 + 4(12.6))] / 2\n    = [4.375 + sqrt(69.54)] / 2\n    = [4.375 + 8.339] / 2\n    = 6.36.\n\nAt this gain b1 = (2016 - 160 x 6.36)/68 = 14.7 > 0, confirming that the s^1 condition, not the s^2 condition, is the one reached first. Hence the closed loop is stable for 0 < K_c < 6.36, and K_c,max = 6.36.\n\n(b) Frequency of sustained oscillation at K_c = K_c,max\n\nAt the stability limit a pair of poles lies on the imaginary axis, given by the auxiliary equation formed from the row above the vanishing row, i.e. the s^2 row:\n\nb1 s^2 + K_c = 0.\n\nWith b1 = 14.69 (dimensionless coefficient, in the units implied by s in min^-1) and K_c = 6.357:\n\ns^2 = -K_c / b1 = -6.357 / 14.69 = -0.4327 min^-2.\n\nThus s = +/- j omega with omega, the oscillation frequency in rad/min, given by\n\nomega = sqrt(0.4327) = 0.658 rad/min.\n\n(c) Steady-state offset with proportional-only control, K_c = 3\n\nFor proportional-only control the closed-loop transfer function between output Y(s) and setpoint Y_sp(s) is\n\nY(s)/Y_sp(s) = K_c G_p(s) / [1 + K_c G_p(s)].\n\nAt steady state s -> 0 and G_p(0) = 1/[(1)(1)(1)] = 1. For a unit step change in setpoint, the final value theorem gives the final output y(infinity):\n\ny(infinity) = K_c G_p(0) / [1 + K_c G_p(0)] x 1 = 3(1)/[1 + 3(1)] = 3/4 = 0.75.\n\nThe steady-state offset, defined as setpoint minus final output, is therefore\n\noffset = 1 - 0.75 = 0.25.\n\nFINAL (a): 6.36 dimensionless\nFINAL (b): 0.658 rad/min\nFINAL (c): 0.25 dimensionless",
+   "score": 10,
+   "justification": "(a) correct characteristic polynomial 40s^4+68s^3+32s^2+(4+4Kc)s+Kc and Routh first column, s^1 condition gives Kc,max = 6.36 (reference 6.357): full points. (b) omega = 0.658 rad/min from the s^2-row auxiliary equation, matches the reference: full points. (c) offset 1 - 3/4 = 0.25, correct: full points.",
+   "parts": {
+    "a": 5,
+    "b": 3,
+    "c": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P09",
+   "run": 1,
+   "text": "(a) Fenske equation:\nN_min = ln[(0.95/0.05)(0.95/0.05)] / ln(2.5)\n= ln(361) / ln(2.5) = 5.889 / 0.9163 = 6.43 stages\n\n(b) Underwood equations, saturated liquid (q = 1):\n2.5(0.40)/(2.5-theta) + 0.60/(1-theta) = 0, theta = Underwood root\n1/(2.5-theta) = 0.60/(theta-1), so theta = 1.5625\nR_min+1 = 2.5(0.95)/(2.5-1.5625) + 0.05/(1-1.5625)\n= 2.533 - 0.089 = 2.444, so R_min = 1.44\n\nFINAL (a): 6.43 stages\nFINAL (b): 1.44 dimensionless",
+   "score": 10,
+   "justification": "(a) N_min = ln(361)/ln(2.5) = 6.43 from the Fenske equation, matches the reference 6.427: full points. (b) Underwood with q = 1 gives theta = 1.5625 and R_min = 1.44 (reference 1.444, 0.3 % off), correct method: full points.",
+   "parts": {
+    "a": 5,
+    "b": 5
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P10",
+   "run": 1,
+   "text": "(a) Minimum water flow\nAcetone in gas in: 100 x 0.020 = 2.00 kmol/h.\nAcetone absorbed (95%): 0.95 x 2.00 = 1.90 kmol/h.\nGas out acetone mole fraction: 0.05 x 0.020 = 0.0010.\nAt minimum flow the liquid out is in equilibrium with gas in:\nx_out = 0.020 / 1.8 = 0.01111.\nBalance: L_min x 0.01111 = 1.90, so L_min = 1.90 / 0.01111 = 171 kmol/h.\n\n(b) Absorption factor\nOperating water flow L = 1.5 x 171 = 256.5 kmol/h.\nA = L / (m G) = 256.5 / (1.8 x 100) = 256.5 / 180 = 1.425.\n\n(c) Number of theoretical stages\nKremser equation, with x_in = 0 for pure water:\nN = ln[ (y_in / y_out)(1 - 1/A) + 1/A ] / ln A\nN = ln[ (0.020 / 0.0010)(1 - 1/1.425) + 1/1.425 ] / ln 1.425\nN = ln[ 20 x 0.2982 + 0.7018 ] / 0.3542 = ln(6.667) / 0.3542\nN = 1.897 / 0.3542 = 5.36.\n\nFINAL (a): 171 kmol/h\nFINAL (b): 1.425 dimensionless\nFINAL (c): 5.36 stages",
+   "score": 10,
+   "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 256.5/180 = 1.425, correct. (c) N = 5.36 from the correct Kremser equation, correct.",
+   "parts": {
+    "a": 3,
+    "b": 3,
+    "c": 4
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P11",
+   "run": 1,
+   "text": "Equilibrium: y = 2.4x/(1 + 1.4x); inverse: x = y/(2.4 - 1.4y).\n(a) D = F(z_F - x_B)/(x_D - x_B) = 100(0.41)/(0.92) = 44.57 kmol/h. B = 55.43 kmol/h.\n(b) q-line: y = [q/(q-1)]x - z_F/(q-1) = -1.5x + 1.125.\nPinch: 2.4x/(1 + 1.4x) = -1.5x + 1.125 gives 2.1x^2 + 2.325x - 1.125 = 0, so x_p = 0.3641, y_p = 0.5788.\nR_min = (x_D - y_p)/(y_p - x_p) = 0.3812/0.2147 = 1.775.\n(c) R = 1.5 R_min = 1.5(1.775) = 2.66.\nRectifying line: y = [R/(R+1)]x + x_D/(R+1) = 0.727x + 0.262.\nFlows: L = RD = 118.68, V = L + D = 163.25, L' = L + qF = 178.68, V' = V - (1 - q)F = 123.25 kmol/h.\nStripping line: y = (L'/V')x - Bx_B/V' = 1.450x - 0.018.\nIntersection: 0.727x + 0.262 = 1.450x - 0.018 gives x_int = 0.387.\n(d) Stepping with x = y/(2.4 - 1.4y) from y_1 = x_D = 0.96, on the rectifying line:\nStage 1: x = 0.909; Stage 2: x = 0.833; Stage 3: x = 0.732; Stage 4: x = 0.617; Stage 5: x = 0.506; Stage 6: x = 0.415.\nStage 7: x = 0.350, the first below x_int = 0.387; switch to the stripping line.\nStage 8: x = 0.285; Stage 9: x = 0.214; Stage 10: x = 0.147; Stage 11: x = 0.0917; Stage 12: x = 0.0513; Stage 13: x = 0.0243.\nStage 13 gives x below x_B = 0.04, so stage 13 is the last stage (the partial reboiler).\nFraction of last stage = (x_12 - x_B)/(x_12 - x_13) = (0.0513 - 0.04)/(0.0513 - 0.0243) = 0.0113/0.0270 = 0.42.\nTotal stages = 12 + 0.42 = 12.42.\n(e) The feed stage is stage 7, whose liquid composition first falls below x_int.\nFINAL (a): 44.57 kmol/h\nFINAL (b): 1.78 dimensionless\nFINAL (c): 2.66 dimensionless\nFINAL (d): 12.42 stages\nFINAL (e): 7 stage",
+   "score": 10,
+   "justification": "(a) D = 44.57 kmol/h, correct. (b) R_min = 1.775 from the q-line/equilibrium pinch (0.3641, 0.5788) and (c) R = 2.66, both correct. (d) correct operating lines (intersection 0.387) and a full stage-by-stage list give 12.42 stages (reference 12.42), correct. (e) liquid first falls below x = 0.387 on stage 7, correct.",
+   "parts": {
+    "a": 1,
+    "b": 2,
+    "c": 1,
+    "d": 4,
+    "e": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P12",
+   "run": 1,
+   "text": "Feed component flows (kmol/h): propane 5, n-butane 35, n-pentane 40, n-hexane 20.\n\n(a) Distillate flow rate\nPropane passes entirely to the distillate: 5 kmol/h.\nn-Butane in distillate: 0.98 x 35 = 34.3 kmol/h.\nn-Pentane in distillate: (1 - 0.97) x 40 = 1.2 kmol/h.\nn-Hexane in distillate: 0 kmol/h.\nD = 5 + 34.3 + 1.2 = 40.5 kmol/h.\nB = 100 - 40.5 = 59.5 kmol/h, with n-butane 0.02 x 35 = 0.7 kmol/h, n-pentane 0.97 x 40 = 38.8 kmol/h, n-hexane 20 kmol/h.\nDistillate mole fractions: propane 5/40.5 = 0.12346, n-butane 34.3/40.5 = 0.84691, n-pentane 1.2/40.5 = 0.02963.\nBottoms mole fractions: n-butane 0.7/59.5 = 0.01176, n-pentane 38.8/59.5 = 0.65210.\n\n(b) Minimum number of theoretical stages (Fenske)\nN_min = ln[(x_LK/x_HK)_D (x_HK/x_LK)_B] / ln(alpha_LK/alpha_HK), with alpha_LK/alpha_HK = 2.0/1.0 = 2.0.\nN_min = ln[(34.3/1.2)(38.8/0.7)] / ln(2.0) = ln(28.583 x 55.429) / 0.69315 = ln(1584.3) / 0.69315 = 7.3679 / 0.69315 = 10.63.\n\n(c) Underwood root theta\nSaturated-liquid feed: q = 1, so sum alpha_i z_i/(alpha_i - theta) = 1 - q = 0:\n0.21/(4.2 - theta) + 0.70/(2.0 - theta) + 0.40/(1.0 - theta) + 0.09/(0.45 - theta) = 0.\nAt theta = 1.35 the sum is -0.0923; at theta = 1.38 the sum is +0.0541. Interpolation gives theta = 1.369, and substitution at theta = 1.3687 gives a sum of about 0.000, confirming the root between alpha_HK = 1.0 and alpha_LK = 2.0.\n\n(d) Minimum reflux ratio (Underwood)\nR_min + 1 = sum alpha_i x_D,i/(alpha_i - theta), with theta = 1.3687:\n= (4.2)(0.12346)/2.8313 + (2.0)(0.84691)/0.6313 + (1.0)(0.02963)/(-0.3687) + 0\n= 0.18314 + 2.68308 - 0.08036 = 2.7859.\nR_min = 2.7859 - 1 = 1.786.\n\n(e) Number of stages at R = 1.3 R_min (Gilliland, Eduljee form)\nR = 1.3 x 1.786 = 2.3216.\nX = (R - R_min)/(R + 1) = (2.3216 - 1.786)/(2.3216 + 1) = 0.53576/3.32162 = 0.16129.\nX^0.5668 = 0.16129^0.5668 = 0.35552.\nY = 0.75(1 - 0.35552) = 0.48336.\nN = (N_min + Y)/(1 - Y) = (10.63 + 0.48336)/(1 - 0.48336) = 11.11336/0.51664 = 21.51.\n\n(f) Kirkbride equation\nlog10(N_R/N_S) = 0.206 log10[(z_HK/z_LK)(x_B,LK/x_D,HK)^2 (B/D)].\nz_HK/z_LK = 0.40/0.35 = 1.14286; x_B,LK/x_D,HK = 0.01176/0.02963 = 0.39706, squared = 0.15766; B/D = 59.5/40.5 = 1.46914.\nProduct = 1.14286 x 0.15766 x 1.46914 = 0.26471.\nlog10(N_R/N_S) = 0.206 x log10(0.26471) = 0.206 x (-0.57733) = -0.11893.\nN_R/N_S = 10^(-0.11893) = 0.760.\n\nFINAL (a): 40.5 kmol/h\nFINAL (b): 10.63 stages\nFINAL (c): 1.369 dimensionless\nFINAL (d): 1.786 dimensionless\nFINAL (e): 21.51 stages\nFINAL (f): 0.760 dimensionless",
+   "score": 10,
+   "justification": "(a) D = 40.5 kmol/h and (b) N_min = 10.63 from the Fenske equation, correct. (c) Underwood root theta = 1.369 and (d) R_min = 1.786, both correct. (e) Gilliland/Eduljee gives N = 21.51 (reference 21.51), correct. (f) Kirkbride gives N_R/N_S = 0.760, correct.",
+   "parts": {
+    "a": 1,
+    "b": 2,
+    "c": 2,
+    "d": 2,
+    "e": 2,
+    "f": 1
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P13",
+   "run": 1,
+   "text": "Working\n\nHeads H are piezometric heads in m; tank surfaces give H_S = 1.0 m, H_T = 14.0 m.\nFor each pipe h = (fL/D + K)V^2/(2g) = S Q^2, V = Q/A, f by Colebrook at Re = rhoVD/mu.\nIterated friction factors and S = (fL/D + K)/(2gA^2) values (S in s^2/m^5):\nSuction: f = 0.0163, loss coefficient in Q_p^2: 199.\nPipe 1: f = 0.0242, S = 21028.\nPipe 2: f = 0.0184, S = 74914.\nPipe 3: f = 0.0260, S = 188674.\nPipe 4: f = 0.0261, S = 76990.\nPipe 5: f = 0.0179, S = 21089.\nPipe 6: f = 0.0170, S = 2945.\n\nContinuity, with Q3 positive from B to C, Q4 = x and Q6 = Q_p - 0.016:\nQ1 = 0.016 + Q3 + Q4, Q5 = Q6 - Q4, Q2 = Q5 - Q3.\nLoop A-B-C: S1 Q1^2 + S3 Q3^2 - S2 Q2^2 = 0.\nLoop B-C-D: S3 Q3^2 + S5 Q5^2 - S4 Q4^2 = 0.\nPump and suction: H_A = 1.0 - 199 Q_p^2 + 80 - 12000 Q_p^2 = 81 - 12199 Q_p^2.\nAlso H_D = 14.0 + S6 Q6^2, and H_A - H_D must equal the network loss, e.g. S1 Q1^2 + S4 Q4^2.\n\nTrial Q_p = 0.0500 gives loop flows Q1 = 0.0321, Q2 = 0.0179, Q3 = 0.00355,\nQ4 = 0.0125, Q5 = 0.0215, Q6 = 0.0340, and a network loss of 33.7 m against\nan available H_A - H_D of 33.1 m. Reducing Q_p raises the available head and\nlowers the network loss; balance is reached at Q_p = 0.0498 m^3/s, with\nQ1 = 0.0320, Q2 = 0.0178, Q3 = 0.0035, Q4 = 0.0124, Q5 = 0.0213, Q6 = 0.0338.\n\n(a) Q_p = 0.0498 m^3/s = 49.8 L/s.\n(b) H_p = 80 - 12000(0.0498)^2 = 80 - 29.76 = 50.24 m.\n(c) Q3 = 0.0035 m^3/s = 3.5 L/s, positive in the assumed sense, from B to C.\n(d) H_C = H_D + S5 Q5^2 = 17.36 + 9.59 = 26.95 m; z_C = 4.0 m, so\np_C = rho g (H_C - z_C) = 998.2 x 9.81 x 22.95 = 224900 Pa = 224.9 kPa.\n(e) P = rho g Q_p H_p / eta = 998.2 x 9.81 x 0.0498 x 50.24 / 0.70 = 35000 W = 35.0 kW.\n\nFINAL (a): 49.8 L/s\nFINAL (b): 50.2 m\nFINAL (c): 3.5 L/s from B to C\nFINAL (d): 224.9 kPa\nFINAL (e): 35.0 kW",
+   "score": 10,
+   "justification": "Loop-equation set-up with Darcy-Weisbach and Colebrook per pipe; the pipe resistances (within 0.5 % of my check) and the converged flows are given (iterations only sketched) and they satisfy continuity and both loop balances. (a) Qp = 49.8 L/s and (b) Hp = 50.24 m, both within 0.1 %: full. (c) 3.5 L/s from B to C (reference 3.507, 0.2 % off), direction correct: full. (d) p_C = 224.9 kPa and (e) 35.0 kW shaft power, both correct.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 3,
+    "d": 2,
+    "e": 1
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P14",
+   "run": 1,
+   "text": "Definitions and notation\n\nLet omega be the angular frequency, in rad/min.\nLet i be the imaginary unit.\nThe dead time is theta = 1.5 min.\nThe process, valve and sensor together, without the controller, are\n\n    G_v(i omega) G_p(i omega) G_m(i omega)\n      = 2.0 exp(-1.5 i omega) /\n        [(1 + 6 i omega)(1 + 2 i omega)(1 + i omega)(1 + 0.5 i omega)]\n\nsince G_v = 1.\n\nFor a first-order factor 1 + i omega T, with T the time constant in min,\nthe magnitude contribution is 1 / sqrt(1 + (omega T)^2) and the phase\ncontribution is -arctan(omega T).\n\nHence, with the phase in radians and continuous (unwrapped),\n\n    phase of G_v G_p G_m\n      = -1.5 omega - arctan(6 omega) - arctan(2 omega)\n        - arctan(omega) - arctan(0.5 omega)              (1)\n\nand\n\n    |G_v G_p G_m|\n      = 2.0 / [ sqrt(1 + 36 omega^2) sqrt(1 + 4 omega^2)\n                sqrt(1 + omega^2) sqrt(1 + 0.25 omega^2) ]   (2)\n\n(a) Ultimate frequency\n\nThe ultimate frequency omega_u is the lowest omega > 0 at which the\nphase in (1) equals -180 degrees, i.e. -pi rad:\n\n    1.5 omega_u + arctan(6 omega_u) + arctan(2 omega_u)\n      + arctan(omega_u) + arctan(0.5 omega_u) = pi        (3)\n\nEvaluating the left-hand side of (3):\n\n    omega = 0.40 rad/min:  sum = 173.5 degrees\n    omega = 0.42 rad/min:  sum = 179.1 degrees\n    omega = 0.423 rad/min: sum = 180.0 degrees\n        (dead time 36.4 degrees; arctan terms 68.5, 40.2, 22.9\n         and 12.0 degrees, totalling 143.6 degrees)\n    omega = 0.43 rad/min:  sum = 181.9 degrees\n\nThe left-hand side is monotonically increasing in omega, so the\nlowest (and here relevant) root is\n\n    omega_u = 0.423 rad/min.\n\n(b) Ultimate gain and ultimate period\n\nAt omega_u the loop with a proportional controller K_c is at the\nstability limit when K_c |G_v G_p G_m(i omega_u)| = 1, so the\nultimate gain K_u is 1 / |G_v G_p G_m(i omega_u)|.\n\nFrom (2) at omega_u = 0.423 rad/min, omega_u^2 = 0.179 min^-2 in the\nsquared-frequency sense, and\n\n    sqrt(1 + 36 omega_u^2) = 2.73\n    sqrt(1 + 4 omega_u^2)   = 1.31\n    sqrt(1 + omega_u^2)     = 1.086\n    sqrt(1 + 0.25 omega_u^2) = 1.022\n\n    product = 2.73 x 1.31 x 1.086 x 1.022 = 3.97\n    |G_v G_p G_m(i omega_u)| = 2.0 / 3.97 = 0.504\n    K_u = 1 / 0.504 = 1.98 (dimensionless)\n\nThe ultimate period is\n\n    P_u = 2 pi / omega_u = 2 pi / 0.423 = 14.8 min.\n\n(c) Ziegler-Nichols PID settings\n\n    K_c   = 0.6 K_u = 0.6 x 1.98 = 1.19 (dimensionless)\n    tau_I = P_u / 2 = 14.8 / 2 = 7.42 min\n    tau_D = P_u / 8 = 14.8 / 8 = 1.86 min\n\nwith tau_I the integral time and tau_D the derivative time, in min.\n\nFor the remainder, the controller is\n\n    G_c(s) = 1.19 (1 + 1 / (7.42 s) + 1.86 s)\n\nso at s = i omega,\n\n    G_c(i omega) = 1.19 [ 1 + i (1.86 omega - 1 / (7.42 omega)) ]\n\nwith controller magnitude factor\nsqrt(1 + (1.86 omega - 1/(7.42 omega))^2) and controller phase\narctan(1.86 omega - 1/(7.42 omega)).\nThe open-loop transfer function is L = G_c G_v G_p G_m, so its phase\nis the controller phase plus the phase in (1), and its magnitude is\n1.19 times the controller magnitude factor times the magnitude in (2).\nAt omega -> 0+ the factor 1/(7.42 i omega) dominates, so the phase of\nL starts at -90 degrees, as stated.\n\n(d) Gain margin\n\nTabulating the phase of L from the expressions above:\n\n    omega = 0.50 rad/min: phase of L = -200.2 + 33.4 = -166.8 degrees\n    omega = 0.55 rad/min: phase of L = -212.3 + 37.8 = -174.5 degrees\n    omega = 0.58 rad/min: phase of L = -219.3 + 40.2 = -179.2 degrees\n    omega = 0.585 rad/min: phase of L = -179.9 degrees\n    omega = 0.60 rad/min: phase of L = -223.9 + 41.7 = -182.3 degrees\n\nHence the first (lowest) phase-crossover frequency is\n\n    omega_pc = 0.586 rad/min.\n\nAt omega_pc = 0.586 rad/min, from (2), omega_pc^2 = 0.343:\n\n    denominator product\n      = sqrt(1 + 36 x 0.343) sqrt(1 + 4 x 0.343)\n        sqrt(1 + 0.343) sqrt(1 + 0.25 x 0.343)\n      = 3.66 x 1.54 x 1.16 x 1.04 = 6.80\n    |G_v G_p G_m| = 2.0 / 6.80 = 0.294\n\nController term: 1.86 x 0.586 - 1/(7.42 x 0.586)\n                = 1.090 - 0.230 = 0.857,\ncontroller magnitude factor = sqrt(1 + 0.857^2) = 1.32.\n\n    |L(i omega_pc)| = 1.19 x 1.32 x 0.294 = 0.461\n\nThe gain margin, as a ratio, is\n\n    GM = 1 / |L(i omega_pc)| = 1 / 0.461 = 2.17.\n\n(e) Phase margin\n\nTabulating |L|:\n\n    omega = 0.28 rad/min: |L| = 1.01\n    omega = 0.284 rad/min: |L| = 1.00\n    omega = 0.30 rad/min: |L| = 0.94\n\nso the (unique) gain-crossover frequency is\n\n    omega_gc = 0.284 rad/min.\n\nPhase at omega_gc = 0.284 rad/min, from (1):\ndead time 0.426 rad = 24.4 degrees;\narctan terms: arctan(1.704) = 59.6 degrees,\narctan(0.568) = 29.6 degrees, arctan(0.284) = 15.8 degrees,\narctan(0.142) = 8.1 degrees; total process-plus-sensor phase\n= -(24.4 + 59.6 + 29.6 + 15.8 + 8.1) = -137.5 degrees.\nController term: 1.86 x 0.284 - 1/(7.42 x 0.284)\n               = 0.527 - 0.474 = 0.053,\ncontroller phase = arctan(0.053) = 3.0 degrees.\nPhase of L = -137.5 + 3.0 = -134.5 degrees.\n\nPhase margin = 180 degrees - 134.5 degrees = 45.5 degrees.\n\n(f) Maximum sensitivity\n\nThe sensitivity function is S(i omega) = 1 / (1 + L(i omega)).\nWriting r = |L(i omega)| and phi = phase of L(i omega),\n\n    |1 + L|^2 = 1 + r^2 + 2 r cos(phi),\n    M_s contribution at each omega = 1 / sqrt(1 + r^2 + 2 r cos(phi)).\n\nEvaluating r and phi from the magnitude and phase expressions above:\n\n    omega (rad/min)    r        phi (degrees)   |S|\n    0.284              1.00     -134.5          1.29\n    0.35               0.81     -144.0          1.70\n    0.40               0.70     -151.5          1.96\n    0.43               0.65     -156.0          2.06\n    0.45               0.62     -159.1          2.10\n    0.47               0.59     -162.2          2.12\n    0.50               0.55     -166.8          2.09\n    0.586              0.46     -180.0          1.86\n\nFor omega -> 0, |L| -> infinity through the integral term, so\n|S| -> 0; for omega -> infinity, |L| -> 0, so |S| -> 1. The tabulated\ninterior maximum is therefore the global maximum: the smallest value\nof |1 + L| occurs near omega = 0.47 rad/min, where\n|1 + L|^2 = 1 + 0.59^2 + 2 x 0.59 x cos(-162.2 degrees)\n         = 1 + 0.350 - 1.127 = 0.223,\n|1 + L| = 0.472, and |S| = 1 / 0.472 = 2.12.\n\n    M_s = 2.12 at omega = 0.47 rad/min.\n\nFinal answers\n\nFINAL (a): 0.423 rad/min\nFINAL (b): 1.98 dimensionless, 14.8 min\nFINAL (c): 1.19 dimensionless, 7.42 min, 1.86 min\nFINAL (d): 2.17 dimensionless, 0.586 rad/min\nFINAL (e): 45.5 degrees, 0.284 rad/min\nFINAL (f): 2.12 dimensionless, 0.47 rad/min",
+   "score": 10,
+   "justification": "(a) omega_u = 0.423 rad/min and (b) K_u = 1.98, P_u = 14.8 min, correct (within 0.4 %). (c) K_c = 1.19, tau_I = 7.42 min, tau_D = 1.86 min, correct. (d) GM = 2.17 at omega_pc = 0.586 rad/min and (e) PM = 45.5 deg at omega_gc = 0.284 rad/min, correct with tabulated phase and magnitude values (a small arithmetic slip in the controller term at omega_pc does not change the result). (f) M_s = 2.12 at 0.47 rad/min from a scan of |1+L|, within 0.3 %: full points.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 1,
+    "d": 2,
+    "e": 2,
+    "f": 1
+   },
+   "errors": {}
+  },
+  {
+   "model": "meta/muse-spark-1.3",
+   "problem": "P15",
+   "run": 1,
+   "text": "Feed mole fractions, from a 100 g basis:\nn1 = 30/78.11 = 0.38407 mol, n2 = 40/92.14 = 0.43412 mol, n3 = 30/106.17 = 0.28257 mol; total = 1.10076 mol.\nz1 = 0.34892, z2 = 0.39438, z3 = 0.25670.\nP = 120 kPa = 120/0.133322 = 900.08 mmHg.\n\n(a) Bubble point: sum of z_i*P_i^sat(T) = P = 900.08 mmHg.\nAt 100 °C: P^sat = (1350.5, 556.3, 198.5) mmHg; weighted sum = 741.6 mmHg.\nAt 110 °C: P^sat = (1756.4, 746.6, 277.2) mmHg; weighted sum = 978.5 mmHg.\nAt 107 °C: P^sat = (1625.9, 684.7, 251.4) mmHg; weighted sum = 901.9 mmHg.\nThe sum decreases by about 24.7 mmHg per °C near 107 °C, so the root is at 107 - 1.8/24.7 = 106.93 °C.\n\n(b) Dew point: sum of z_i/P_i^sat(T) = 1/P = 1.1110e-3 per mmHg.\nAt 120 °C: P^sat = (2249.3, 984.7, 379.8) mmHg; sum = 1.2315e-3 per mmHg.\nAt 130 °C: P^sat = (2840.4, 1278.4, 510.6) mmHg; sum = 0.9340e-3 per mmHg.\nAt 124 °C: P^sat = (2473.2, 1095.1, 428.5) mmHg; sum = 1.1003e-3 per mmHg.\nCorrection with dS/dT = -3.06e-5 per mmHg per °C gives T = 124 - 0.35 = 123.65 °C.\n\n(c) Flash at 112 °C: P^sat = (1847.7, 790.2, 295.8) mmHg, so K = (2.0528, 0.8779, 0.3286).\nRachford-Rice: f(V) = sum of z_i*(K_i-1)/(1+V*(K_i-1)) = 0.\nf(0.30) = +0.01337 and f(0.35) = -0.00716; interpolation and one refinement give V = 0.3326.\n\n(d) y1 = z1*K1/(1+V*(K1-1)) = 0.34892*2.0528/1.3501 = 0.5305.\n\n(e) Half vaporized: f(0.5) = 0, i.e. sum of z_i*(K_i-1)/(K_i+1) = 0.\nThe sum is -0.03503 at 112 °C, +0.00206 at 115 °C and +0.03873 at 118 °C.\nInterpolation between 112 and 115 °C, refined at 114.8 °C where the sum is +0.00001, gives T = 114.80 °C.\n\nFINAL (a): 106.93 °C\nFINAL (b): 123.65 °C\nFINAL (c): 0.3326 dimensionless\nFINAL (d): 0.5305 dimensionless\nFINAL (e): 114.80 °C",
+   "score": 10,
+   "justification": "(a) bubble point 106.93 C (0.006 C off) and (b) dew point 123.65 C (0.004 C off) by Antoine trials and Newton-type correction, correct. (c) V/F = 0.3326 by Rachford-Rice (0.02 % off) and (d) y1 = 0.5305, correct. (e) 114.80 C, 0.03 C below the reference 114.83 C (the stated residual at 114.8 C is slightly off, -0.0003 not +0.00001), within 0.2 C: full points.",
    "parts": {
     "a": 2,
     "b": 2,

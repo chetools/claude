@@ -20,6 +20,11 @@ of `problems/PNN.md`), with nothing added. Each problem was a separate conversat
 - No tools, no code execution, no web access.
 - Reasoning models ran with their default reasoning setting; no effort level was requested.
 - The requests went through OpenRouter, which picks the serving provider. @@N_TRUNCATED@@
+- Exception: Muse Spark 1.3 was not called through OpenRouter. Its replies were produced in the Muse app,
+  one fresh agent per problem, each given only the system message above and the problem statement, with no
+  tools and no code execution (as stated in the file of replies), and were pasted into this project by the
+  user. Its sampling settings are not known, and its cost is shown as $0 because the Muse app did not charge
+  for the run.
 
 ## Which models were run, and the Frontier problems
 
@@ -28,7 +33,9 @@ models over time: small and older models first, then 2024 flagships (GPT-4o, Mis
 the first widely available reasoning models (o3, DeepSeek R1, Gemini 2.5 Pro), late-2025 models (GPT-5,
 GPT-5.2, Claude Sonnet 4.5, Claude Opus 4.5) and 2026 models (Gemini 3.1 Pro, Claude Opus 4.8, Claude
 Opus 5.5). GPT-4 Turbo, o3-mini and o4-mini were planned but OpenAI has retired them, so they could not be
-called. GPT-4 and o1 were left out to stay within the budget.
+called. GPT-4 and o1 were left out to stay within the budget. Muse Spark 1.3 (Meta) was added last, run
+outside OpenRouter (see Sampling settings); its release month is shown as 2026-10, the month it was run, and
+was not checked against an announcement.
 
 Problems P13–P15 ("Frontier") were written after P01–P12 had been graded for the models up to Claude Opus
 4.5, to be much harder than P01–P12 (coupled nonlinear systems solved by hand). They were given only to
@@ -36,6 +43,15 @@ models that scored 10/10 on every one of P01–P12. Their reference solutions we
 independent second solution like the others. They were written once and not changed after any model's
 reply was seen; no model was tried on them before they were fixed. The choice of who gets them depends
 on the P01–P12 grades, so the Frontier scores compare only the models that qualified.
+
+## Difficulty ratings
+
+Each problem's difficulty is the author's estimate for an undergraduate student, set when the problem was
+written (Frontier is a separate tier, described above). P07 and P08 were moved from "Extremely hard" to "Hard"
+after grading: each needs only one scalar root (the phase-crossover frequency in P07) or a closed-form
+stability test (the Routh array in P08), while the other four, P03, P04, P11 and P12, need coupled iterations
+or stage-by-stage calculations. Of those six problems, P07 and P08 also had the two highest mean scores
+across the models. The change moves them between filters and chart groups only; no grade changed.
 
 ## Grading rubric
 
@@ -98,7 +114,8 @@ fixed before any model saw them.
   compared, apart from the FINAL-line check described above.
 - Release dates were collected before the run and not checked against a primary source; parameter
   counts are from the model cards linked above and were not checked further.
-- Which provider served each request, and with which settings, is as reported by OpenRouter.
+- Which provider served each request, and with which settings, is as reported by OpenRouter. For
+  Muse Spark 1.3 nothing is known beyond the replies themselves.
 - The reference answers were checked against an independent second solution for every part (Code tab),
   but not against a textbook answer key.
 

@@ -1,0 +1,11 @@
+{
+ "model": "meta/muse-spark-1.3",
+ "problem": "P15",
+ "run": 1,
+ "served_model": "meta/muse-spark-1.3",
+ "provider": "Muse app (replies pasted by the user)",
+ "text": "Feed mole fractions, from a 100 g basis:\nn1 = 30/78.11 = 0.38407 mol, n2 = 40/92.14 = 0.43412 mol, n3 = 30/106.17 = 0.28257 mol; total = 1.10076 mol.\nz1 = 0.34892, z2 = 0.39438, z3 = 0.25670.\nP = 120 kPa = 120/0.133322 = 900.08 mmHg.\n\n(a) Bubble point: sum of z_i*P_i^sat(T) = P = 900.08 mmHg.\nAt 100 °C: P^sat = (1350.5, 556.3, 198.5) mmHg; weighted sum = 741.6 mmHg.\nAt 110 °C: P^sat = (1756.4, 746.6, 277.2) mmHg; weighted sum = 978.5 mmHg.\nAt 107 °C: P^sat = (1625.9, 684.7, 251.4) mmHg; weighted sum = 901.9 mmHg.\nThe sum decreases by about 24.7 mmHg per °C near 107 °C, so the root is at 107 - 1.8/24.7 = 106.93 °C.\n\n(b) Dew point: sum of z_i/P_i^sat(T) = 1/P = 1.1110e-3 per mmHg.\nAt 120 °C: P^sat = (2249.3, 984.7, 379.8) mmHg; sum = 1.2315e-3 per mmHg.\nAt 130 °C: P^sat = (2840.4, 1278.4, 510.6) mmHg; sum = 0.9340e-3 per mmHg.\nAt 124 °C: P^sat = (2473.2, 1095.1, 428.5) mmHg; sum = 1.1003e-3 per mmHg.\nCorrection with dS/dT = -3.06e-5 per mmHg per °C gives T = 124 - 0.35 = 123.65 °C.\n\n(c) Flash at 112 °C: P^sat = (1847.7, 790.2, 295.8) mmHg, so K = (2.0528, 0.8779, 0.3286).\nRachford-Rice: f(V) = sum of z_i*(K_i-1)/(1+V*(K_i-1)) = 0.\nf(0.30) = +0.01337 and f(0.35) = -0.00716; interpolation and one refinement give V = 0.3326.\n\n(d) y1 = z1*K1/(1+V*(K1-1)) = 0.34892*2.0528/1.3501 = 0.5305.\n\n(e) Half vaporized: f(0.5) = 0, i.e. sum of z_i*(K_i-1)/(K_i+1) = 0.\nThe sum is -0.03503 at 112 °C, +0.00206 at 115 °C and +0.03873 at 118 °C.\nInterpolation between 112 and 115 °C, refined at 114.8 °C where the sum is +0.00001, gives T = 114.80 °C.\n\nFINAL (a): 106.93 °C\nFINAL (b): 123.65 °C\nFINAL (c): 0.3326 dimensionless\nFINAL (d): 0.5305 dimensionless\nFINAL (e): 114.80 °C",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "cost": 0.0
+}

@@ -34,5 +34,17 @@
   },
   "justification": "(a) omega_u = 0.4232 rad/min and (b) K_u = 1.984, P_u = 14.85 min, correct. (c) K_c = 1.190, tau_I = 7.42 min, tau_D = 1.856 min, correct. (d) GM = 2.17 at omega_pc = 0.5854 rad/min and (e) PM = 45.5 deg at omega_gc = 0.2838 rad/min, correct with tabulated phase and magnitude values. (f) M_s = 2.115 at 0.4695 rad/min from a scan of |1+L|^2 and a parabolic fit, matching the reference: full points.",
   "score": 10
+ },
+ "meta/muse-spark-1.3": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 2,
+   "f": 1
+  },
+  "score": 10,
+  "justification": "(a) omega_u = 0.423 rad/min and (b) K_u = 1.98, P_u = 14.8 min, correct (within 0.4 %). (c) K_c = 1.19, tau_I = 7.42 min, tau_D = 1.86 min, correct. (d) GM = 2.17 at omega_pc = 0.586 rad/min and (e) PM = 45.5 deg at omega_gc = 0.284 rad/min, correct with tabulated phase and magnitude values (a small arithmetic slip in the controller term at omega_pc does not change the result). (f) M_s = 2.12 at 0.47 rad/min from a scan of |1+L|, within 0.3 %: full points."
  }
 }

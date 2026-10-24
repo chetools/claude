@@ -31,5 +31,16 @@
   },
   "score": 10,
   "justification": "(a) 106.92 C and (b) 123.65 C by Newton-refined trials, both correct. (c) V/F = 0.3325 by Rachford-Rice, correct. (d) y1 = 0.5305 and (e) 114.83 C, correct."
+ },
+ "meta/muse-spark-1.3": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) bubble point 106.93 C (0.006 C off) and (b) dew point 123.65 C (0.004 C off) by Antoine trials and Newton-type correction, correct. (c) V/F = 0.3326 by Rachford-Rice (0.02 % off) and (d) y1 = 0.5305, correct. (e) 114.80 C, 0.03 C below the reference 114.83 C (the stated residual at 114.8 C is slightly off, -0.0003 not +0.00001), within 0.2 C: full points."
  }
 }

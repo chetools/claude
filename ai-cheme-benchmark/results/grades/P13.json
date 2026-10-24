@@ -31,5 +31,16 @@
   },
   "score": 10.0,
   "justification": "Node-head Newton solution with a table of Re, f and R per pipe, and of converged heads and flows; all values agree with my check of the network. (a) 49.8 L/s and (b) 50.27 m (FINAL 50.3), both within 0.1 %: full. (c) 3.51 L/s from B to C, from sqrt(2.335/189500): correct value and direction, full. (d) 225.0 kPa and (e) 35.0 kW, both within 0.05 %: full."
+ },
+ "meta/muse-spark-1.3": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 3,
+   "d": 2,
+   "e": 1
+  },
+  "score": 10,
+  "justification": "Loop-equation set-up with Darcy-Weisbach and Colebrook per pipe; the pipe resistances (within 0.5 % of my check) and the converged flows are given (iterations only sketched) and they satisfy continuity and both loop balances. (a) Qp = 49.8 L/s and (b) Hp = 50.24 m, both within 0.1 %: full. (c) 3.5 L/s from B to C (reference 3.507, 0.2 % off), direction correct: full. (d) p_C = 224.9 kPa and (e) 35.0 kW shaft power, both correct."
  }
 }

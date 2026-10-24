@@ -11,7 +11,7 @@ import json, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "python"))
-from rubric import POINTS                                    # noqa: E402
+from rubric import FRONTIER, POINTS                                    # noqa: E402
 from run_models import load_problem, raw_path               # noqa: E402
 from error_types import ORDER, TYPES                               # noqa: E402
 
@@ -45,6 +45,11 @@ def main():
             f = raw_path(m["id"], pid, RUN)
             if not f.exists():
                 missing.append(f"{m['id']} {pid} (no reply)")
+                continue
+            if pid in FRONTIER and not all(grades[q].get(m["id"], {}).get("score") == 10
+                                           for q in pids if q not in FRONTIER):
+                # the gate: Frontier problems count only for models with 10/10 on every one of P01-P12
+                missing.append(f"{m['id']} {pid} (reply not used: below 10/10 on P01-P12)")
                 continue
             raw = json.loads(f.read_text())
             g = grades[pid].get(m["id"])

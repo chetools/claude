@@ -248,5 +248,15 @@
   },
   "score": 10,
   "justification": "(a) 17.4 kg/s from the correctly derived isothermal equation (M/(2RT))(p1^2 - p2^2) = G^2[fL/(2D) + ln(p1/p2)] with a shown Colebrook iteration, 0.2 % off: full. (b) Re = 6.72e6 as G D/mu, 0.1 % off: full. (c) f = 0.0132, 0.1 % off: full. (d) 12.3 m/s as G/rho2, 0.2 % off: full."
+ },
+ "meta/muse-spark-1.3": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 2,
+   "d": 2
+  },
+  "score": 10,
+  "justification": "Correct isothermal equation p1^2 - p2^2 = G^2 (RT/M)[fL/D + 2 ln(p1/p2)] solved together with Colebrook. (a) 17.43 kg/s vs 17.43: full points. (b) Re = 6.73e6 vs 6.725e6 (0.07 % off): full points. (c) f = 0.01321 vs 0.01321: full points. (d) v2 = G/rho2 = 12.27 m/s vs 12.27: full points."
  }
 }

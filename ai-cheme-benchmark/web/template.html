@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light">
 <link rel="icon" href="data:,">
 <title>@@TITLE@@</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>@@KATEX_CSS@@</style>
 <style>
 @@BASE_CSS@@
 @@PYGMENTS_CSS@@
@@ -42,7 +42,9 @@
       <h2>Models</h2>
       <div class="tablewrap"><table class="data" id="model-table"></table></div>
       <p class="caption">Mean score is the mean over the selected problems@@RUNS_CAPTION@@, in percent of the maximum
-      score of 10. Frontier problems (off by default) count only for the models that were given them. Cost is for
+      score of 10. Frontier problems (off by default) count only for the models that were given them, so when they
+      are selected the models are not all scored on the same problems; the last column is always the mean over the
+      twelve problems P01–P12 that every model answered, whatever the filters. Cost is for
       the whole benchmark and
       does not depend on the filters.</p>
       <div class="charts">
@@ -52,6 +54,8 @@
         <div class="chart" id="plot-heat"></div>
       </div>
       <p class="caption" id="params-note"></p>
+      <p class="caption">Heatmap: a blank cell under P13–P15 means the model was not given that problem. The
+      Frontier problems went only to models that scored 10/10 on every one of P01–P12.</p>
     </section>
 
     <!-- ============================== PROBLEMS ============================== -->

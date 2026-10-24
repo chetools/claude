@@ -298,5 +298,17 @@
   },
   "score": 10,
   "justification": "(a) D = 40.5 kmol/h and (b) N_min = 10.63, correct. (c) correct feed equation solved by trial and interpolation, theta = 1.3687: full points. (d) R_min = 1.786 and (e) N = 21.51, correct method and values: full points. (f) 0.760, correct: 1."
+ },
+ "meta/muse-spark-1.3": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2,
+   "f": 1
+  },
+  "score": 10,
+  "justification": "(a) D = 40.5 kmol/h and (b) N_min = 10.63 from the Fenske equation, correct. (c) Underwood root theta = 1.369 and (d) R_min = 1.786, both correct. (e) Gilliland/Eduljee gives N = 21.51 (reference 21.51), correct. (f) Kirkbride gives N_R/N_S = 0.760, correct."
  }
 }

@@ -93,6 +93,10 @@
     return fmt1(s.mean) + ' %' + (MULTI ? ' (' + fmt1(s.min) + ' – ' + fmt1(s.max) + ')' : '');
   }
 
+  // like-for-like mean over the problems every model answered (all but Frontier), independent of the filters
+  var CORE = D.problems.filter(function (p) { return p.difficulty !== 'Frontier'; }).map(function (p) { return p.id; });
+  var CORE_ST = stats(CORE);
+
   var dirty = true;
   function update() {
     var pids = selectedProblems(), st = stats(pids);
@@ -135,7 +139,8 @@
   function table(rows, st) {
     var t = document.getElementById('model-table'); t.textContent = '';
     var hr = el('tr');
-    ['Model', 'Vendor', 'Release', 'Cost (USD)', MULTI ? 'Mean score % (min – max of runs)' : 'Mean score %']
+    ['Model', 'Vendor', 'Release', 'Cost (USD)', MULTI ? 'Mean score % (min – max of runs)' : 'Mean score %',
+     'Mean over P01–P12 %']
       .forEach(function (h) { hr.appendChild(el('th', null, h)); });
     var th = el('thead'); th.appendChild(hr); t.appendChild(th);
     var tb = el('tbody');
@@ -146,6 +151,7 @@
       tr.appendChild(el('td', null, m.release_date));
       tr.appendChild(el('td', null, costText(m)));
       tr.appendChild(el('td', { 'class': 'mean' }, meanText(st[m.id])));
+      tr.appendChild(el('td', { 'class': 'core' }, CORE_ST[m.id] ? fmt1(CORE_ST[m.id].mean) + ' %' : '—'));
       tb.appendChild(tr);
     });
     t.appendChild(tb);
@@ -272,6 +278,9 @@
       var same = !!shown && shown.length === want.length && shown.every(function (v, j) { return Math.abs(v - want[j]) < 0.051; });
       check('table matches responses: ' + m.id, same, { shown: shown, recomputed: want });
       var ex = window.EXPECT[m.id];
+      var core = document.querySelector('#model-table tr[data-model="' + m.id + '"] td.core');
+      check('P01–P12 column matches build-time Python: ' + m.id, !!core && !!ex &&
+        Math.abs(Number(core.textContent.match(/-?[0-9.]+/)[0]) - ex.mean) < 0.051, { shown: core && core.textContent, python: ex && ex.mean });
       if (pids.join() === DEFAULT_PIDS.join() && ex) {
         check('table matches build-time Python: ' + m.id,
           !!shown && Math.abs(shown[0] - ex.mean) < 0.051 &&

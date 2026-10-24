@@ -223,5 +223,14 @@
   },
   "score": 10,
   "justification": "(a) Re = 350, matching 350.1: full points. (b) laminar f = 64/Re = 0.183, within 0.2 %: full points. (c) Darcy-Weisbach gives 71.6 kPa, confirmed with Hagen-Poiseuille, matching 71.62 kPa: full points."
+ },
+ "meta/muse-spark-1.3": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) v = 1.194 m/s and Re = 350, within 0.1 % of 350.1: full points. (b) laminar Darcy f = 64/Re = 0.183, 0.1 % off: full points. (c) Darcy-Weisbach with f = 0.1828 gives 71.6 kPa vs 71.6 kPa: full points."
  }
 }

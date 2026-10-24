@@ -273,5 +273,16 @@
   },
   "score": 10,
   "justification": "(a) D = 44.57 kmol/h, correct. (b) R_min = 1.775 from the q-line/equilibrium pinch and (c) R = 2.663, both correct. (d) correct operating lines and a stage-by-stage table give 12.42 stages (reference 12.42), correct. (e) liquid first falls below x = 0.3875 on stage 7, correct."
+ },
+ "meta/muse-spark-1.3": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 4,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) D = 44.57 kmol/h, correct. (b) R_min = 1.775 from the q-line/equilibrium pinch (0.3641, 0.5788) and (c) R = 2.66, both correct. (d) correct operating lines (intersection 0.387) and a full stage-by-stage list give 12.42 stages (reference 12.42), correct. (e) liquid first falls below x = 0.387 on stage 7, correct."
  }
 }

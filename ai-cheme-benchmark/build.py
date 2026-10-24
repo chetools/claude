@@ -81,6 +81,24 @@ def ensure_node_tools():
 MATH_RE = re.compile(r"\$\$(.+?)\$\$|\$(?!\$)(.+?)(?<!\\)\$", re.S)
 
 
+def katex_css(mods):
+    """KaTeX stylesheet with its woff2 fonts embedded as data URIs, so the page renders maths offline."""
+    import base64
+    d = os.path.join(mods, "katex", "dist")
+    css = read_file(os.path.join(d, "katex.min.css"))
+
+    def font(m):
+        path = os.path.join(d, "fonts", m.group(1) + ".woff2")
+        if not os.path.exists(path):
+            fail(f"KaTeX font missing: {path}")
+        with open(path, "rb") as f:
+            return 'src:url(data:font/woff2;base64,' + base64.b64encode(f.read()).decode() + ') format("woff2")'
+    css, n = re.subn(r'src:url\(fonts/([A-Za-z0-9_-]+)\.woff2\) format\("woff2"\)(?:,url\([^)]*\) format\("[a-z]+"\))*', font, css)
+    if n < 10 or "url(fonts/" in css:
+        fail(f"KaTeX CSS: font inlining failed ({n} fonts replaced)")
+    return css
+
+
 def render_katex(items, mods):
     """items: list of (tex, display[, soft]) -> list of HTML strings (one node call)."""
     js = ("const katex=require('katex');let s='';process.stdin.on('data',d=>s+=d);"
@@ -699,6 +717,7 @@ def main():
     parts = {
         "TITLE": TITLE,
         "BASE_CSS": read("web", "base.css"),
+        "KATEX_CSS": katex_css(ensure_node_tools()),
         "PYGMENTS_CSS": HtmlFormatter().get_style_defs(".codehilite"),
         "PLOTLY": read_file(plotly_path),
         "BANNER": banner,
