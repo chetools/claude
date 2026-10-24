@@ -1,0 +1,316 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Summed the three reservoir elevations to get the junction head."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Part missing; no answer given."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Part missing; no answer given."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Part missing; no answer given."
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Fabricated Colebrook form and dimensionally wrong Re and head losses; absurd values."
+  },
+  "b": {
+   "type": "method",
+   "note": "Fabricated Colebrook form and dimensionally wrong Re and head losses; absurd values."
+  },
+  "c": {
+   "type": "method",
+   "note": "Fabricated Colebrook form and dimensionally wrong Re and head losses; absurd values."
+  },
+  "d": {
+   "type": "method",
+   "note": "Fabricated Colebrook form and dimensionally wrong Re and head losses; absurd values."
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Equations written but never solved; no numerical value given."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Equations written but never solved; no numerical value given."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Equations written but never solved; no numerical value given."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Equations written but never solved; no numerical value given."
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "method",
+   "note": "Assumed f and an undetermined velocity, without continuity at the junction."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Flow orders of magnitude off with no supporting working."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Flow orders of magnitude off with no supporting working."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Flow orders of magnitude off with no supporting working."
+  }
+ },
+ "openai/gpt-3.5-turbo": {
+  "a": {
+   "type": "incomplete",
+   "note": "Only symbolic equations (with Q1 = Q2 = Q3), no numerical value given."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Only symbolic equations (with Q1 = Q2 = Q3), no numerical value given."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Only symbolic equations (with Q1 = Q2 = Q3), no numerical value given."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Only symbolic equations (with Q1 = Q2 = Q3), no numerical value given."
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Set-up correct but never solved; stated \"typical\" values far off."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Set-up correct but never solved; stated \"typical\" values far off."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Set-up correct but never solved; stated \"typical\" values far off."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Set-up correct but never solved; stated \"typical\" values far off."
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "incomplete",
+   "note": "No iteration performed; values asserted without working."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "No iteration performed; values asserted without working."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "No iteration performed; values asserted without working."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "No iteration performed; values asserted without working."
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Took junction head equal to the lowest reservoir level."
+  },
+  "b": {
+   "type": "method",
+   "note": "Assumed Q1 = Q2 = Q3 with wrong head difference and area formula."
+  },
+  "c": {
+   "type": "method",
+   "note": "Same wrong working; flow direction also wrong."
+  },
+  "d": {
+   "type": "method",
+   "note": "Same wrong working: Q1 = Q2 = Q3 and wrong head difference."
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Iteration not shown; stated results inconsistent with its own equations."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Iteration not shown; stated results inconsistent with its own equations."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Iteration not shown; stated results inconsistent with its own equations."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Iteration not shown; stated results inconsistent with its own equations."
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "method",
+   "note": "Summed the reservoir elevations to get the junction head."
+  },
+  "b": {
+   "type": "units",
+   "note": "Assumed f and treated the head difference as 170 Pa."
+  },
+  "c": {
+   "type": "units",
+   "note": "Carried from (b): magnitude from the same head-as-pressure working."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Value 1.3 L/s given with no working."
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "a": {
+   "type": "incomplete",
+   "note": "Solution asserted (\"using a solver\") with no iteration shown."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Solution asserted (\"using a solver\") with no iteration shown."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Solution asserted (\"using a solver\") with no iteration shown."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Solution asserted (\"using a solver\") with no iteration shown."
+  }
+ },
+ "microsoft/phi-4": {
+  "a": {
+   "type": "incomplete",
+   "note": "Symbolic set-up only; \"typical\" values given without numerical solution."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Symbolic set-up only; \"typical\" values given without numerical solution."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Symbolic set-up only; \"typical\" values given without numerical solution."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Symbolic set-up only; \"typical\" values given without numerical solution."
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "a": {
+   "type": "incomplete",
+   "note": "Assumed f, never solved the equations; values without supporting working."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Assumed f, never solved the equations; values without supporting working."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Assumed f, never solved the equations; values without supporting working."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Assumed f, never solved the equations; values without supporting working."
+  }
+ },
+ "mistralai/mistral-large": {
+  "b": {
+   "type": "numerical",
+   "note": "Loose rounding in the iterations; 133 instead of 137.8 L/s."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Arithmetic slip: 21.7 L/s where 1 m of head gives about 14.4."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Correct method but loose numerics; 114 instead of 122.8 L/s."
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "a": {
+   "type": "incomplete",
+   "note": "Method described but no iteration shown; flows inconsistent with its head."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Method described but no iteration shown; flows inconsistent with its head."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Method described but no iteration shown; flows inconsistent with its head."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Method described but no iteration shown; flows inconsistent with its head."
+  }
+ },
+ "deepseek/deepseek-r1-0528": {
+  "a": {
+   "type": "incomplete",
+   "note": "Values near reference but stated in prose without equations or working."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Values near reference but stated in prose without equations or working."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Values near reference but stated in prose without equations or working."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Values near reference but stated in prose without equations or working."
+  }
+ },
+ "google/gemini-2.5-pro": {
+  "c": {
+   "type": "numerical",
+   "note": "Flow 15.9 L/s is 6.1% off despite correct method and direction."
+  }
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "a": {
+   "type": "numerical",
+   "note": "Square-root evaluations off by about 3x; false continuity balance accepted at 95 m."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Carried from (a): same square-root slips, 53 instead of 137.8 L/s."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a): working at H_J = 95 m gives flow out of B."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (a): same square-root slips, 62 instead of 122.8 L/s."
+  }
+ },
+ "anthropic/claude-opus-4.5": {
+  "c": {
+   "type": "numerical",
+   "note": "Junction head slightly low, leaving 0.7 m across pipe 2; flow 20% off."
+  }
+ }
+}

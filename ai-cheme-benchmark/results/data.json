@@ -528,15 +528,15 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Reynolds number arithmetic gave 38.33 instead of 350 despite correct formula."
+     "note": "Correct v and Re formula, but arithmetic gives Re 38.33, not 350"
     },
     "b": {
      "type": "interpretation",
-     "note": "Used turbulent Blasius correlation although the flow is laminar."
+     "note": "Used turbulent Blasius correlation for laminar flow: 0.0071 vs 0.183"
     },
     "c": {
      "type": "formula",
-     "note": "Garbled Darcy-Weisbach formula; result inconsistent even with its own f."
+     "note": "Garbled Darcy-Weisbach, divides by D/1000; 0.183 kPa, not own-value consistent"
     }
    }
   },
@@ -556,19 +556,19 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Wrong area formula (pi D^2 instead of pi D^2/4) and rounded velocity."
+     "note": "Area taken as pi D^2 (no /4), V 0.8 m/s: Re 80,080"
     },
     "b": {
      "type": "method",
-     "note": "Read f from a Moody chart instead of solving Colebrook."
+     "note": "Colebrook not solved; f = 0.016 guessed from Moody chart"
     },
     "c": {
      "type": "method",
-     "note": "Head omits the L/D friction term and all minor losses."
+     "note": "Minor losses omitted and L/D missing from h_f: H 12.05 m"
     },
     "d": {
      "type": "method",
-     "note": "Multiplied by efficiency and used only the static lift."
+     "note": "Multiplied by efficiency and used static lift only: 0.16 kW"
     }
    }
   },
@@ -588,19 +588,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Summed the three reservoir elevations to get the junction head."
+     "note": "Junction head taken as sum of reservoir elevations: 290 m"
     },
     "b": {
      "type": "incomplete",
-     "note": "Part missing; no answer given."
+     "note": "Part not answered"
     },
     "c": {
      "type": "incomplete",
-     "note": "Part missing; no answer given."
+     "note": "Part not answered"
     },
     "d": {
      "type": "incomplete",
-     "note": "Part missing; no answer given."
+     "note": "Part not answered"
     }
    }
   },
@@ -620,19 +620,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Density without molar mass, assumed velocity, no flow equation."
+     "note": "No flow equation; assumes velocity, density without molar mass; 0.000284 kg/s."
     },
     "b": {
      "type": "formula",
-     "note": "Reynolds number formula wrong (mu squared, wrong diameter)."
+     "note": "Re expression with mu squared and D = 0.15 m; Re = 106.8."
     },
     "c": {
      "type": "formula",
-     "note": "Truncated Colebrook without the Reynolds term."
+     "note": "Colebrook truncated, Re term dropped; f = 0.0213 vs 0.0132."
     },
     "d": {
-     "type": "method",
-     "note": "Carried from (a): wrong density and mass flow used for velocity."
+     "type": "interpretation",
+     "note": "Uses inlet density (no molar mass) instead of outlet; 0.0157 m/s."
     }
    }
   },
@@ -650,16 +650,16 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Used 2.5/8 as the response and ignored the step size of 4."
+     "type": "interpretation",
+     "note": "Gain taken as 2.5/8 and step of 4 ignored; 0.3125 vs 10."
     },
     "b": {
      "type": "incomplete",
-     "note": "Part missing."
+     "note": "Reply ends after (a); part not answered."
     },
     "c": {
      "type": "incomplete",
-     "note": "Part missing."
+     "note": "Reply ends after (a); part not answered."
     }
    }
   },
@@ -680,19 +680,19 @@
    "errors": {
     "b": {
      "type": "numerical",
-     "note": "Arithmetic slip in exponent and spurious factor 2: 65.9 % instead of 25.4 %."
+     "note": "Right overshoot formula, exponent miscalculated; 65.9 % vs 25.4 %."
     },
     "c": {
      "type": "formula",
-     "note": "Peak time formula missing tau."
+     "note": "t_p = (pi/zeta)/sqrt(1-zeta^2), missing tau; 8.58 vs 10.28 min."
     },
     "d": {
      "type": "formula",
-     "note": "y_max = 1/(1-OS) is a wrong formula."
+     "note": "y_max = 1/(1-OS) is wrong, no gain or step; 2.94."
     },
     "e": {
      "type": "formula",
-     "note": "Divided by overshoot instead of using OS squared."
+     "note": "Divides by overshoot instead of using OS^2; 0.0598 vs 0.0644."
     }
    }
   },
@@ -714,27 +714,27 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Meaningless integral expression, no valid method for omega_u."
+     "note": "Meaningless integral expression gives 0.867 rad/min; no valid phase condition"
     },
     "b": {
      "type": "incomplete",
-     "note": "Part not answered."
+     "note": "Not answered"
     },
     "c": {
      "type": "incomplete",
-     "note": "Part not answered."
+     "note": "Not answered"
     },
     "d": {
      "type": "incomplete",
-     "note": "Part not answered."
+     "note": "Not answered"
     },
     "e": {
      "type": "incomplete",
-     "note": "Part not answered."
+     "note": "Not answered"
     },
     "f": {
      "type": "incomplete",
-     "note": "Part not answered."
+     "note": "Not answered"
     }
    }
   },
@@ -752,16 +752,16 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Wrong characteristic equation, no Kc,max value given."
+     "type": "incomplete",
+     "note": "Wrong characteristic equation written and no K_c,max value given."
     },
     "b": {
      "type": "incomplete",
-     "note": "Not calculated."
+     "note": "Oscillation frequency not calculated"
     },
     "c": {
      "type": "formula",
-     "note": "Offset 1+Kc from wrong final-value expression."
+     "note": "Offset taken as 1 + K_c = 4 instead of 1/(1+K_c) = 0.25"
     }
    }
   },
@@ -779,11 +779,11 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Invented Fenske form giving 1.625 stages."
+     "note": "Wrong Fenske form ln((x_D-x_F)/(1-x_D))/ln(alpha) - 1: 1.625"
     },
     "b": {
-     "type": "interpretation",
-     "note": "Assumed L_min = 1 and D_min = 5 stages without physical basis."
+     "type": "method",
+     "note": "R_min = 0.2 from assumed L_min = 1, D_min = 5; no basis."
     }
    }
   },
@@ -801,16 +801,16 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Invented relation assuming F = 1.5G instead of a pinch balance."
+     "type": "interpretation",
+     "note": "Misread 1.5 factor as F = 1.5G, then invented relation; 0.028 vs 171"
     },
     "b": {
-     "type": "method",
-     "note": "Used a gas mass flow as m instead of the equilibrium slope."
+     "type": "interpretation",
+     "note": "Took m as a gas mass flow, not equilibrium slope 1.8"
     },
     "c": {
-     "type": "formula",
-     "note": "Invented formula instead of the Kremser equation; 18 % off."
+     "type": "method",
+     "note": "Invented stage relation instead of Kremser; 4.38 vs 5.356"
     }
    }
   },
@@ -830,24 +830,24 @@
    },
    "errors": {
     "a": {
-     "type": "formula",
-     "note": "Meaningless relation D = R*F instead of overall balances."
+     "type": "method",
+     "note": "Meaningless D = R*F instead of overall balances; 261.75 vs 44.57"
     },
     "b": {
-     "type": "formula",
-     "note": "Invented formula ignoring the q-line pinch."
+     "type": "method",
+     "note": "Invented R_min = xD/(1-zF), ignores q-line pinch; 1.745"
     },
     "c": {
-     "type": "formula",
-     "note": "Carried from (b): R = 1.5 x own wrong R_min (2.6125)."
+     "type": "method",
+     "note": "Carried from (b): 1.5 x 1.745 (small slip, 2.6125)"
     },
     "d": {
      "type": "incomplete",
-     "note": "Not calculated."
+     "note": "Stage stepping not done"
     },
     "e": {
      "type": "incomplete",
-     "note": "Not calculated."
+     "note": "Feed stage not determined"
     }
    }
   },
@@ -868,27 +868,27 @@
    },
    "errors": {
     "a": {
-     "type": "formula",
-     "note": "Meaningless mole-fraction sum gave D = 115."
+     "type": "method",
+     "note": "Meaningless mole-fraction sum gives D = 115."
     },
     "b": {
-     "type": "formula",
-     "note": "Invented formula gave N_min = 1."
+     "type": "method",
+     "note": "Invented formula; N_min = 1."
     },
     "c": {
-     "type": "formula",
-     "note": "Invented formula gave theta = 0.3125."
+     "type": "method",
+     "note": "Invented formula; theta = 0.3125."
     },
     "d": {
-     "type": "formula",
-     "note": "Invented formula gave R_min = 0.0106."
+     "type": "method",
+     "note": "Invented formula; R_min = 0.0106."
     },
     "e": {
-     "type": "method",
+     "type": "interpretation",
      "note": "Used R = 1.3 instead of 1.3 R_min; N = 2.3."
     },
     "f": {
-     "type": "method",
+     "type": "interpretation",
      "note": "Used volatilities as z and feed fractions as product compositions."
     }
    }
@@ -908,15 +908,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Used flow rate instead of velocity and wrong diameter in Reynolds number."
+     "note": "Used flow rate as velocity (and D = 0.004 m): Re 5600"
     },
     "b": {
      "type": "formula",
-     "note": "Used invented friction factor f = 64/Re^0.5."
+     "note": "Wrong laminar formula f = 64/Re^0.5: 0.0045 vs 0.183"
     },
     "c": {
      "type": "method",
-     "note": "Carried from (a): flow rate used as velocity, with the wrong f."
+     "note": "Flow rate used as velocity, with wrong f: 8.74 kPa"
     }
    }
   },
@@ -936,19 +936,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Computed Reynolds number with flow rate instead of velocity."
+     "note": "Flow rate used in place of velocity: Re 1.99e6"
     },
     "b": {
      "type": "method",
-     "note": "Friction factor from an invented formula, not Colebrook."
+     "note": "Invented friction formula, not Colebrook: f 0.013"
     },
     "c": {
      "type": "method",
-     "note": "Head from a meaningless formula."
+     "note": "Meaningless head formula: H 0.218 m"
     },
     "d": {
-     "type": "method",
-     "note": "Power ignores efficiency and uses the wrong head."
+     "type": "formula",
+     "note": "Efficiency omitted from power formula, on wrong head: 0.057 kW."
     }
    }
   },
@@ -968,19 +968,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Fabricated Colebrook form and dimensionally wrong Re and head losses; absurd values."
+     "note": "Fabricated Colebrook and dimensionally wrong losses: h_J 404.5e6 m"
     },
     "b": {
      "type": "method",
-     "note": "Fabricated Colebrook form and dimensionally wrong Re and head losses; absurd values."
+     "note": "Fabricated equations give Q1 of order 1e7 m3/s"
     },
     "c": {
      "type": "method",
-     "note": "Fabricated Colebrook form and dimensionally wrong Re and head losses; absurd values."
+     "note": "Fabricated equations, absurd Q2, no flow direction given"
     },
     "d": {
      "type": "method",
-     "note": "Fabricated Colebrook form and dimensionally wrong Re and head losses; absurd values."
+     "note": "Fabricated equations give Q3 of order 1e7 m3/s"
     }
    }
   },
@@ -1000,19 +1000,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Meaningless formula for mass flow."
+     "note": "Meaningless flow formula, no isothermal pipe-flow equation; 0.0303 kg/s."
     },
     "b": {
      "type": "formula",
-     "note": "Wrong expression for Reynolds number."
+     "note": "Wrong Reynolds-number expression; Re = 1.36."
     },
     "c": {
      "type": "formula",
-     "note": "Wrong formula for friction factor, not Colebrook."
+     "note": "Non-Colebrook formula for friction factor; f = 0.612."
     },
     "d": {
      "type": "interpretation",
-     "note": "Gave a head in metres instead of the requested velocity."
+     "note": "Gives a head of 4.36 m instead of outlet velocity."
     }
    }
   },
@@ -1031,15 +1031,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Incoherent manipulation of the transfer function."
+     "note": "Incoherent manipulation of the transfer function; 2 vs 10."
     },
     "b": {
-     "type": "formula",
-     "note": "Wrong formula for the response value at the given time."
+     "type": "method",
+     "note": "Incoherent expression with a growing exponential; 5.065 vs 7.135."
     },
     "c": {
      "type": "method",
-     "note": "Wrong set-up, t = -8 ln(0.95)."
+     "note": "Uses t = -8 ln(0.95) instead of -8 ln(0.05); 0.0814 min."
     }
    }
   },
@@ -1060,23 +1060,23 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Wrongly manipulated characteristic equation, gave zeta = 1."
+     "note": "Wrong manipulation of characteristic equation; zeta = 1 vs 0.4."
     },
     "b": {
      "type": "incomplete",
-     "note": "No overshoot value, only an unrelated time constant."
+     "note": "No overshoot value given, only an unrelated time constant."
     },
     "c": {
      "type": "method",
-     "note": "Answer from a wrong method."
+     "note": "No valid peak-time method; 4 min vs 10.28."
     },
     "d": {
      "type": "method",
-     "note": "Answer from a wrong method."
+     "note": "No valid method for maximum output; 2 vs 10.03."
     },
     "e": {
      "type": "method",
-     "note": "Answer from a wrong method."
+     "note": "No valid decay-ratio method; 4 vs 0.0644."
     }
    }
   },
@@ -1097,28 +1097,28 @@
    },
    "errors": {
     "a": {
-     "type": "formula",
-     "note": "Invented formula giving a negative frequency."
+     "type": "method",
+     "note": "Invented formula gives a negative frequency, -0.18 rad/min."
     },
     "b": {
      "type": "formula",
-     "note": "K_u = omega_u/G_p is the wrong formula."
+     "note": "Used K_u = omega_u/G_p instead of 1/|G_p(i omega_u)|"
     },
     "c": {
      "type": "formula",
-     "note": "P_u = 1/omega_u is the wrong formula."
+     "note": "Used P_u = 1/omega_u instead of 2 pi/omega_u"
     },
     "d": {
-     "type": "formula",
-     "note": "Carried from (b): Z-N formulas right but fed wrong K_u and P_u."
+     "type": "method",
+     "note": "Carried from (a)-(c): Z-N formulas right, fed wrong K_u and P_u."
     },
     "e": {
      "type": "method",
-     "note": "Invented formulas for gain margin, giving GM = -0.18."
+     "note": "Invented gain-margin formula, GM = -0.18"
     },
     "f": {
      "type": "method",
-     "note": "Invented formula giving phase margin of 90 degrees."
+     "note": "Invented phase-margin formula, PM = 90 deg"
     }
    }
   },
@@ -1137,15 +1137,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Meaningless characteristic equation, no Routh array."
+     "note": "K_c,max = 1 from meaningless characteristic equation, no Routh array"
     },
     "b": {
      "type": "method",
-     "note": "Omega = 0 from wrong method."
+     "note": "omega = 0 rad/min from no valid method"
     },
     "c": {
-     "type": "formula",
-     "note": "Invented integral formula for offset."
+     "type": "method",
+     "note": "Offset 7 from an invented integral formula."
     }
    }
   },
@@ -1163,11 +1163,11 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "No number of stages given; balance unrelated to Fenske."
+     "note": "No number of stages given; working unrelated to Fenske"
     },
     "b": {
      "type": "method",
-     "note": "4.65 from invented quantities."
+     "note": "R_min = 4.65 from invented quantities"
     }
    }
   },
@@ -1186,15 +1186,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "No valid balance or pinch condition used."
+     "note": "No valid balance or pinch; 1.0 vs 171 kmol/h"
     },
     "b": {
-     "type": "formula",
-     "note": "Meaningless flow ratio instead of A = L/(mG)."
+     "type": "method",
+     "note": "Meaningless flow ratio instead of L/(mG); 0.889"
     },
     "c": {
-     "type": "formula",
-     "note": "Invented relation instead of the Kremser equation."
+     "type": "method",
+     "note": "Invented relation instead of Kremser; 2.0 vs 5.356"
     }
    }
   },
@@ -1214,24 +1214,24 @@
    },
    "errors": {
     "a": {
-     "type": "formula",
-     "note": "Invalid formula zF*xD*F instead of overall balances."
+     "type": "method",
+     "note": "Invalid formula zF*xD*F instead of balances; 44.8"
     },
     "b": {
-     "type": "formula",
-     "note": "Invented formula gave R_min = 180."
+     "type": "method",
+     "note": "Invented formula; R_min = 180 vs 1.775"
     },
     "c": {
-     "type": "formula",
-     "note": "Invented formula gave R = 0.415, not 1.5 R_min."
+     "type": "method",
+     "note": "Invented formula, R = 0.415 not 1.5 R_min"
     },
     "d": {
      "type": "incomplete",
-     "note": "No stage stepping and no usable value."
+     "note": "No stage stepping, no usable value"
     },
     "e": {
      "type": "incomplete",
-     "note": "No stage stepping and no usable value."
+     "note": "No usable feed-stage value"
     }
    }
   },
@@ -1252,28 +1252,28 @@
    },
    "errors": {
     "a": {
-     "type": "formula",
-     "note": "Invented or generic formulas, no numerical values."
+     "type": "incomplete",
+     "note": "No numerical value, only generic or invented formulas."
     },
     "b": {
-     "type": "formula",
-     "note": "Invented or generic formulas, no numerical values."
+     "type": "incomplete",
+     "note": "No numerical value, only generic or invented formulas."
     },
     "c": {
-     "type": "formula",
-     "note": "Invented or generic formulas, no numerical values."
+     "type": "incomplete",
+     "note": "No numerical value, only generic or invented formulas."
     },
     "d": {
-     "type": "formula",
-     "note": "Invented or generic formulas, no numerical values."
+     "type": "incomplete",
+     "note": "No numerical value, only generic or invented formulas."
     },
     "e": {
-     "type": "formula",
-     "note": "Invented or generic formulas, no numerical values."
+     "type": "incomplete",
+     "note": "No numerical value, only generic or invented formulas."
     },
     "f": {
-     "type": "formula",
-     "note": "Invented or generic formulas, no numerical values."
+     "type": "incomplete",
+     "note": "No numerical value, only generic or invented formulas."
     }
    }
   },
@@ -1292,15 +1292,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Garbled Reynolds formula using flow rate and dividing by tube length."
+     "note": "Garbled Re: flow rate as velocity, divided by tube length; 27.9"
     },
     "b": {
-     "type": "formula",
-     "note": "Made-up Blasius form with exponent -5/3 used for laminar flow."
+     "type": "interpretation",
+     "note": "Turbulent Blasius-type form (invented exponent -5/3) applied to laminar flow."
     },
     "c": {
      "type": "method",
-     "note": "Carried from (a): Darcy-Weisbach with flow rate in place of velocity."
+     "note": "Flow rate used in place of velocity in Darcy-Weisbach: 0.15 kPa"
     }
    }
   },
@@ -1320,19 +1320,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Used flow rate in place of velocity in Reynolds number."
+     "note": "Flow rate used in place of velocity: Re 249,800"
     },
     "b": {
      "type": "formula",
-     "note": "Friction factor from a wrong rough-pipe formula, not Colebrook."
+     "note": "Misremembered rough-pipe formula 1/f = -2 log(eps/D)+1.74: 0.0244"
     },
     "c": {
-     "type": "formula",
-     "note": "Head from a dimensionally wrong formula."
+     "type": "method",
+     "note": "Dimensionally wrong head expression (SumK+5.5)(L/D)+dz: 13,110 m."
     },
     "d": {
-     "type": "method",
-     "note": "Multiplied and divided by efficiency so it cancels; wrong value."
+     "type": "formula",
+     "note": "Power formula multiplies and divides by efficiency: 1,117 kW."
     }
    }
   },
@@ -1352,19 +1352,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Equations written but never solved; no numerical value given."
+     "note": "Equations written but never solved; no numerical value"
     },
     "b": {
      "type": "incomplete",
-     "note": "Equations written but never solved; no numerical value given."
+     "note": "Equations written but never solved; no numerical value"
     },
     "c": {
      "type": "incomplete",
-     "note": "Equations written but never solved; no numerical value given."
+     "note": "Equations written but never solved; no numerical value"
     },
     "d": {
      "type": "incomplete",
-     "note": "Equations written but never solved; no numerical value given."
+     "note": "Equations written but never solved; no numerical value"
     }
    }
   },
@@ -1384,19 +1384,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Bernoulli with constant average density and no friction."
+     "note": "Bernoulli with constant density and no friction; 221 kg/s vs 17.43."
     },
     "b": {
      "type": "formula",
-     "note": "Wrong Reynolds formula (viscosity divided by area) and wrong velocity."
+     "note": "Re formula uses mu divided by area, plus wrong velocity; 8.36e6."
     },
     "c": {
      "type": "formula",
-     "note": "Garbled explicit friction factor correlation."
+     "note": "Garbled explicit friction correlation; f = 0.051 vs 0.0132."
     },
     "d": {
      "type": "method",
-     "note": "Energy balance without friction gives absurd velocity."
+     "note": "Frictionless energy balance for outlet velocity; 2110 m/s."
     }
    }
   },
@@ -1414,16 +1414,16 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Wrong gain 2.5/8, step size ignored."
+     "type": "interpretation",
+     "note": "Gain read as 2.5/8 and treated as the final change; 0.3125 vs 10."
     },
     "b": {
      "type": "incomplete",
-     "note": "Correct y(t) derived but never evaluated; final value contradicts it."
+     "note": "Correct y'(t) derived but never evaluated at t = 10."
     },
     "c": {
      "type": "method",
-     "note": "Inconsistent set-up on the wrong gain, with wrong algebra."
+     "note": "Equates 10(1-e^(-t/8)) to 95 % of 0.3125; algebra also wrong."
     }
    }
   },
@@ -1443,24 +1443,24 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Wrong normalisation (omega_n = 1) gives zeta = 0.1333."
+     "type": "formula",
+     "note": "Standard form matched without normalising, omega_n = 1; zeta = 0.1333."
     },
     "b": {
      "type": "formula",
-     "note": "Wrong overshoot formula 1 - exp(-zeta*pi)."
+     "note": "Overshoot as 1 - exp(-zeta pi); 26.45 %."
     },
     "c": {
-     "type": "method",
-     "note": "Invented formula for peak time."
+     "type": "formula",
+     "note": "Misremembered peak time t = (pi - zeta pi)/w; 2.85 min vs 10.28."
     },
     "d": {
      "type": "method",
-     "note": "Invented formula for maximum response."
+     "note": "Invented y' = exp(-zeta pi) x 100 % for the maximum response."
     },
     "e": {
      "type": "method",
-     "note": "Invented formula for decay ratio."
+     "note": "Invented decay-ratio formula; 0.625 vs 0.0644."
     }
    }
   },
@@ -1481,28 +1481,28 @@
    },
    "errors": {
     "a": {
-     "type": "formula",
-     "note": "Only result is K_u = 4.9 from an invalid formula."
+     "type": "incomplete",
+     "note": "Incoherent reply; no frequency given, only a K_u labelled (a)."
     },
     "b": {
-     "type": "incomplete",
-     "note": "Reply incoherent; no valid ultimate gain given."
+     "type": "method",
+     "note": "K_u = 1.8 e = 4.9 from an invalid formula in incoherent text."
     },
     "c": {
      "type": "incomplete",
-     "note": "Reply incoherent; no period given."
+     "note": "No ultimate period given; reply degenerates into incoherent text"
     },
     "d": {
      "type": "incomplete",
-     "note": "Reply incoherent; no tuning given."
+     "note": "No PI settings given; reply degenerates into incoherent text"
     },
     "e": {
      "type": "incomplete",
-     "note": "Reply incoherent; no gain margin given."
+     "note": "No gain margin given"
     },
     "f": {
      "type": "incomplete",
-     "note": "Reply incoherent; no phase margin given."
+     "note": "No phase margin given"
     }
    }
   },
@@ -1521,15 +1521,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Wrong characteristic polynomial and no actual Routh calculation."
+     "note": "Wrong characteristic polynomial and no Routh calculation: 0.0625 vs 6.357"
     },
     "b": {
-     "type": "formula",
-     "note": "Invented formula omega = sqrt(Kc/tauI)."
+     "type": "method",
+     "note": "Invented omega = sqrt(K_c/tau_I) = 0.125 rad/min."
     },
     "c": {
      "type": "formula",
-     "note": "Wrong offset formula (Kc-1)/(1+Kc)."
+     "note": "Wrong offset formula (K_c-1)/(1+K_c) = 0.5 vs 0.25"
     }
    }
   },
@@ -1547,11 +1547,11 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Fenske form omits bottoms term and is mis-evaluated."
+     "note": "Fenske without bottoms term, also mis-evaluated: 2.23 vs 6.43"
     },
     "b": {
-     "type": "formula",
-     "note": "Ratio of invented quantities."
+     "type": "method",
+     "note": "R_min = 4.09 from a ratio of invented quantities."
     }
    }
   },
@@ -1570,15 +1570,15 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Reply looped and was cut off; no value given."
+     "note": "Reply loops and is cut off; no value given"
     },
     "b": {
      "type": "incomplete",
-     "note": "Reply looped and was cut off; no value given."
+     "note": "Reply loops and is cut off; no value given"
     },
     "c": {
      "type": "incomplete",
-     "note": "Reply looped and was cut off; no value given."
+     "note": "Reply loops and is cut off; no value given"
     }
    }
   },
@@ -1598,24 +1598,24 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Took the vaporized feed fraction as D instead of overall balances."
+     "type": "interpretation",
+     "note": "Took D as vaporized feed fraction, 40 vs 44.57"
     },
     "b": {
-     "type": "formula",
-     "note": "Invented formula gave 1.287 instead of 1.775."
+     "type": "method",
+     "note": "Invented formula; R_min = 1.287 vs 1.775"
     },
     "c": {
-     "type": "formula",
-     "note": "Carried from (b): R = 1.5 x own wrong R_min (1.287)."
+     "type": "method",
+     "note": "Carried from (b): R = 1.5 x 1.287 = 1.929"
     },
     "d": {
      "type": "incomplete",
-     "note": "Nine stages asserted without any stepping."
+     "note": "9 stages asserted without stepping"
     },
     "e": {
      "type": "incomplete",
-     "note": "Feed stage 5 asserted without any stepping."
+     "note": "Feed stage 5 asserted without stepping"
     }
    }
   },
@@ -1636,28 +1636,28 @@
    },
    "errors": {
     "a": {
-     "type": "formula",
-     "note": "Wrong formula gave D = 1995.5."
+     "type": "method",
+     "note": "Invented balance including alpha term; D = 1995.5."
     },
     "b": {
-     "type": "formula",
-     "note": "Wrong formula gave N_min = 1."
+     "type": "method",
+     "note": "Invented ln-ratio of volatilities; N_min = 1."
     },
     "c": {
-     "type": "formula",
-     "note": "Wrong formula gave theta = 2."
+     "type": "method",
+     "note": "Invented expression, not the feed equation; theta = 2."
     },
     "d": {
-     "type": "formula",
-     "note": "Wrong formula gave R_min = 1."
+     "type": "method",
+     "note": "Invented formula; R_min = 1."
     },
     "e": {
      "type": "numerical",
-     "note": "Gilliland set-up right; X^0.5668 and solve for N botched (3.16)."
+     "note": "Own inputs; 0.1304^0.5668 taken as 0.0405, N = 3.16"
     },
     "f": {
      "type": "incomplete",
-     "note": "Reply cut off in a loop; no result."
+     "note": "Reply cut off in runaway loop, no result"
     }
    }
   },
@@ -1675,16 +1675,16 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Wrong cross-section area formula (pi D)^2 gave wrong velocity; Re inconsistent too."
+     "type": "formula",
+     "note": "Area taken as (pi D)^2, so v = 0.028 m/s; Re 849.6."
     },
     "b": {
-     "type": "method",
-     "note": "Carried from (a): laminar 64/Re correctly applied to its own wrong Re."
+     "type": "formula",
+     "note": "Carried from (a): 64/Re correct on own wrong Re, 0.0755."
     },
     "c": {
      "type": "numerical",
-     "note": "Darcy-Weisbach set up correctly but 13.6 kPa does not follow from own values."
+     "note": "Darcy-Weisbach right, but 13.6 kPa does not follow (own values ~0.016)"
     }
    }
   },
@@ -1704,19 +1704,19 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Correct formula but velocity miscomputed as 1.59 instead of 3.18 m/s."
+     "note": "V = Q/A evaluated as 1.59 instead of 3.18 m/s: Re 1.49e5"
     },
     "b": {
      "type": "numerical",
-     "note": "Colebrook set up correctly but stated f is not its solution."
+     "note": "Colebrook set up, not solved: 0.022 vs 0.0192 at own Re"
     },
     "c": {
      "type": "numerical",
-     "note": "Correct energy balance but arithmetic slips in friction loss."
+     "note": "Energy balance right; h_f arithmetic wrong (4.25 m from own values)"
     },
     "d": {
      "type": "numerical",
-     "note": "Correct formula but arithmetic slip; 5.5 kW instead of 8.4 kW."
+     "note": "rho g Q H/eta right, arithmetic gives 5.5 instead of 8.4 kW"
     }
    }
   },
@@ -1736,19 +1736,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Assumed f and an undetermined velocity, without continuity at the junction."
+     "note": "No continuity at J; assumed f, unknown velocity: h_J 119.8 m"
     },
     "b": {
-     "type": "incomplete",
-     "note": "Flow orders of magnitude off with no supporting working."
+     "type": "method",
+     "note": "No continuity at J; Q1 from 0.2 m head, garbled: 0.016 L/s."
     },
     "c": {
      "type": "incomplete",
-     "note": "Flow orders of magnitude off with no supporting working."
+     "note": "Velocity asserted with no working: 0.009 L/s vs 15.0"
     },
     "d": {
      "type": "incomplete",
-     "note": "Flow orders of magnitude off with no supporting working."
+     "note": "Velocity asserted with no working: 0.025 L/s vs 122.8"
     }
    }
   },
@@ -1768,19 +1768,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Working never reaches numbers; final values stated without calculation."
+     "note": "FINAL value stated without supporting calculation; 12.2 kg/s."
     },
     "b": {
      "type": "incomplete",
-     "note": "Working never reaches numbers; final values stated without calculation."
+     "note": "FINAL value stated without supporting calculation; Re = 1.23e6."
     },
     "c": {
      "type": "incomplete",
-     "note": "Working never reaches numbers; final values stated without calculation."
+     "note": "FINAL value stated without supporting calculation; f = 0.0182."
     },
     "d": {
      "type": "incomplete",
-     "note": "Working never reaches numbers; final values stated without calculation."
+     "note": "FINAL value stated without supporting calculation; 28.3 m/s."
     }
    }
   },
@@ -1798,16 +1798,16 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Wrong gain 2.5/8, step size ignored."
+     "type": "interpretation",
+     "note": "Steady-state gain read as 2.5/8 instead of 2.5; 1.25 vs 10."
     },
     "b": {
      "type": "numerical",
-     "note": "Correct expression 10 - 10e^(-1.25) evaluated as 9.94 instead of 7.135."
+     "note": "Correct 10 - 10e^(-1.25) evaluated as 9.94 instead of 7.135."
     },
     "c": {
      "type": "method",
-     "note": "Inconsistent set-up on the wrong gain, with wrong algebra."
+     "note": "Equates 95 % of 1.25 to 10 - 10e^(-t/8); inconsistent set-up."
     }
    }
   },
@@ -1828,23 +1828,23 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Wrong formula b/(2a) for zeta."
+     "note": "zeta = b/(2a) instead of normalised matching; 0.144 vs 0.4."
     },
     "b": {
      "type": "numerical",
-     "note": "Right formula, but miscalculated even for its own wrong zeta."
+     "note": "Right formula, miscalculated: own zeta gives 63.3 %, reports 21.3 %."
     },
     "c": {
      "type": "formula",
-     "note": "Peak time omits sqrt(1-zeta^2) and is miscalculated."
+     "note": "t_p = pi/omega_n omits sqrt(1-zeta^2); 3.14 min."
     },
     "d": {
      "type": "formula",
-     "note": "Omits the gain and final value."
+     "note": "y_peak = OS x step, omits gain and final value; 0.426."
     },
     "e": {
      "type": "formula",
-     "note": "Used DR = OS instead of OS squared."
+     "note": "Decay ratio taken as OS instead of OS^2; 0.177."
     }
    }
   },
@@ -1866,27 +1866,27 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Correct phase equation but stated root 0.49 is 28% off."
+     "note": "Correct phase equation but root 0.49 instead of 0.677 rad/min"
     },
     "b": {
      "type": "numerical",
-     "note": "Correct K_u formula but 1.63 matches neither reference nor own omega_u."
+     "note": "Correct 1/|G_p| but 1.63 matches neither own omega nor 4.55"
     },
     "c": {
      "type": "formula",
-     "note": "P_u = 1/omega_u instead of 2 pi/omega_u."
+     "note": "Used P_u = 1/omega_u instead of 2 pi/omega_u"
     },
     "d": {
      "type": "formula",
-     "note": "Carried from (c): correct Z-N formulas applied to wrong P_u."
+     "note": "Carried from (a)-(c): correct Z-N formulas applied to wrong P_u."
     },
     "e": {
      "type": "method",
-     "note": "GM given without phase-crossover calculation."
+     "note": "GM 1.67 stated without finding the PI loop phase crossover"
     },
     "f": {
      "type": "method",
-     "note": "Wrong PI phase and PM taken at phase crossover."
+     "note": "PM taken at phase crossover, PI phase wrong; 10.5 vs 36.3 deg"
     }
    }
   },
@@ -1905,15 +1905,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Characteristic equation dropped PI zero; incorrect Routh array."
+     "note": "PI zero dropped from characteristic equation, wrong Routh array: K_c,max 20"
     },
     "b": {
      "type": "method",
-     "note": "No valid derivation of crossover frequency."
+     "note": "omega = 2.53 rad/min with no valid derivation"
     },
     "c": {
      "type": "formula",
-     "note": "Final value theorem applied with a spurious s."
+     "note": "Final value theorem with spurious s: offset 3/10 vs 0.25"
     }
    }
   },
@@ -1931,11 +1931,11 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Garbled Fenske form with inconsistent arithmetic, 10% low."
+     "note": "Garbled Fenske form with inconsistent arithmetic: 5.76 vs 6.43"
     },
     "b": {
      "type": "method",
-     "note": "Invented Underwood formula unrelated to the feed pinch."
+     "note": "Invented Underwood formula ignoring feed pinch: 2.43 vs 1.44"
     }
    }
   },
@@ -1953,16 +1953,16 @@
    },
    "errors": {
     "a": {
-     "type": "formula",
-     "note": "Invented formula gave 12.175 instead of 171."
+     "type": "method",
+     "note": "Invented formula for minimum flow; 12.175 vs 171 kmol/h"
     },
     "b": {
      "type": "numerical",
-     "note": "Divided wrongly: 18.26/180 is 0.101, so value inconsistent with its own L."
+     "note": "18.26/180 evaluated as 10.15 instead of 0.101"
     },
     "c": {
-     "type": "formula",
-     "note": "Used a formula that is not the Kremser equation."
+     "type": "method",
+     "note": "Formula is not Kremser; 0.1475 vs 5.356"
     }
    }
   },
@@ -1983,23 +1983,23 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Wrong balance gave D = 100 instead of 44.57."
+     "note": "Wrong balance gives D = 100 vs 44.57"
     },
     "b": {
-     "type": "formula",
-     "note": "Invented formula gave 11.67 instead of 1.775."
+     "type": "method",
+     "note": "Invented formula; R_min = 11.67 vs 1.775"
     },
     "c": {
-     "type": "formula",
-     "note": "Carried from (b): R = 1.5 x own wrong R_min (11.67)."
+     "type": "method",
+     "note": "Carried from (b): R = 1.5 x 11.67 = 17.505"
     },
     "d": {
-     "type": "formula",
-     "note": "Misapplied Fenske/Underwood-type formulas instead of stage stepping."
+     "type": "method",
+     "note": "Fenske/Underwood-type formulas instead of stepping; 7.33 vs 12.42"
     },
     "e": {
      "type": "incomplete",
-     "note": "Stage 4 guessed without working."
+     "note": "Feed stage 4 guessed without working"
     }
    }
   },
@@ -2021,27 +2021,27 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Omitted the 5 kmol/h of propane from the balance."
+     "note": "Balance omits 5 kmol/h propane, butane as 34.6; D = 35.8"
     },
     "b": {
      "type": "formula",
-     "note": "Wrong Fenske form gave N_min = 7.2."
+     "note": "Wrong Fenske form with 1 + log10; N_min = 7.2"
     },
     "c": {
      "type": "formula",
-     "note": "Wrong feed equation gave theta = 0.63."
+     "note": "Wrong feed equation; theta = 0.63"
     },
     "d": {
-     "type": "formula",
-     "note": "Invented formula gave R_min = 1.7."
+     "type": "method",
+     "note": "Invented R_min = theta D/(B - D); 1.7."
     },
     "e": {
      "type": "formula",
-     "note": "Eduljee form misapplied; 0.5668 used as a factor."
+     "note": "Eduljee misapplied (0.5668 as factor), N = Y/(1-Y) + N_min"
     },
     "f": {
-     "type": "method",
-     "note": "Wrong inputs gave 0.53."
+     "type": "interpretation",
+     "note": "Wrong inputs (z_HK = 0.05, 0.03/0.05, B = 92.2); 0.53."
     }
    }
   },
@@ -2060,15 +2060,15 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Only formulas listed, no value; Reynolds formula also used Q for velocity."
+     "note": "Only formulas listed; no numerical value given"
     },
     "b": {
      "type": "incomplete",
-     "note": "Only formulas listed, no numerical value given."
+     "note": "Only formulas listed; no numerical value given"
     },
     "c": {
      "type": "incomplete",
-     "note": "Only formulas listed, no numerical value given."
+     "note": "Only formulas listed; no numerical value given"
     }
    }
   },
@@ -2088,19 +2088,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Used flow rate instead of velocity in Reynolds number."
+     "note": "Flow rate used in place of velocity: Re 24,950"
     },
     "b": {
      "type": "incomplete",
-     "note": "No iteration shown; f is not the Colebrook solution."
+     "note": "No Colebrook iteration shown; f 0.0205 fits neither Re"
     },
     "c": {
-     "type": "method",
-     "note": "Head omits minor losses and shows no working."
+     "type": "incomplete",
+     "note": "H 12.757 m with no working; minor losses omitted."
     },
     "d": {
      "type": "numerical",
-     "note": "Correct formula but large arithmetic slip; 412 kW instead of 4.34 kW."
+     "note": "rho g Q H/eta right, but 412.10 instead of 4.34 kW"
     }
    }
   },
@@ -2120,19 +2120,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Only symbolic equations (with Q1 = Q2 = Q3), no numerical value given."
+     "note": "Symbolic equations only (wrong Q1=Q2=Q3); no numerical value"
     },
     "b": {
      "type": "incomplete",
-     "note": "Only symbolic equations (with Q1 = Q2 = Q3), no numerical value given."
+     "note": "Symbolic equations only (wrong Q1=Q2=Q3); no numerical value"
     },
     "c": {
      "type": "incomplete",
-     "note": "Only symbolic equations (with Q1 = Q2 = Q3), no numerical value given."
+     "note": "Symbolic equations only (wrong Q1=Q2=Q3); no numerical value"
     },
     "d": {
      "type": "incomplete",
-     "note": "Only symbolic equations (with Q1 = Q2 = Q3), no numerical value given."
+     "note": "Symbolic equations only (wrong Q1=Q2=Q3); no numerical value"
     }
    }
   },
@@ -2152,19 +2152,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Only general formulas listed; no values substituted, no numerical answer."
+     "note": "Only general formulas listed; no numerical answer given."
     },
     "b": {
      "type": "incomplete",
-     "note": "Only general formulas listed; no values substituted, no numerical answer."
+     "note": "Only general formulas listed; no numerical answer given."
     },
     "c": {
      "type": "incomplete",
-     "note": "Only general formulas listed; no values substituted, no numerical answer."
+     "note": "Only general formulas listed; no numerical answer given."
     },
     "d": {
      "type": "incomplete",
-     "note": "Only general formulas listed; no values substituted, no numerical answer."
+     "note": "Only general formulas listed; no numerical answer given."
     }
    }
   },
@@ -2182,16 +2182,16 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Wrong partial-fraction decomposition."
+     "type": "numerical",
+     "note": "Partial fractions wrong (5/s - 2.5/(8s+1)); final value 5 vs 10."
     },
     "b": {
-     "type": "method",
-     "note": "Wrong y(t) from the bad decomposition, and evaluated wrongly even so."
+     "type": "numerical",
+     "note": "Wrong y' = 5 - 2.5e^(-t/8), also misevaluated: 4.063 vs 7.135."
     },
     "c": {
      "type": "numerical",
-     "note": "Equation solved wrongly; -8 ln 0.05 miscomputed as 28.897."
+     "note": "Solves 4.75 = 5 - 2.5e^(-t/8) wrongly, ln misevaluated; 28.9 min."
     }
    }
   },
@@ -2211,16 +2211,16 @@
    },
    "errors": {
     "c": {
-     "type": "numerical",
-     "note": "Used omega_n = 3 instead of 1/3 rad/min; peak time 1.145 min."
+     "type": "formula",
+     "note": "omega_n = sqrt(9) = 3 instead of 1/3 rad/min; t_p = 1.145 min."
     },
     "d": {
      "type": "formula",
-     "note": "y_max = 2*OS ignores gain and final value."
+     "note": "y_max = 2 x OS, ignores gain and final value; 0.509 vs 10.03."
     },
     "e": {
      "type": "formula",
-     "note": "Used DR = OS instead of OS squared."
+     "note": "Decay ratio taken as OS instead of OS^2; 0.253 vs 0.0644."
     }
    }
   },
@@ -2241,28 +2241,28 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Ignored the lag phase, so omega_u = pi/2.5 is wrong."
+     "type": "formula",
+     "note": "Phase equation omits the lag term: omega_u = pi/2.5 = 1.257."
     },
     "b": {
      "type": "formula",
-     "note": "Used K_u = |G_p| instead of 1/|G_p|."
+     "note": "Took K_u = |G_p| = 0.177 instead of 1/|G_p|"
     },
     "c": {
-     "type": "method",
-     "note": "Carried from (a): P_u correct for its own wrong omega_u."
+     "type": "formula",
+     "note": "Carried from (a): P_u = 5.01 min from omega_u = 1.257."
     },
     "d": {
      "type": "formula",
-     "note": "Carried from (b): tuning correct for its own wrong K_u."
+     "note": "Carried from (a),(b): K_c = 0.0805, tau_I = 4.18 min"
     },
     "e": {
      "type": "formula",
-     "note": "GM = 1/|1+GcGp| is a wrong formula."
+     "note": "Wrong GM formula 1/|1+GcGp|: 0.278 vs 1.90"
     },
     "f": {
      "type": "incomplete",
-     "note": "PM of 44.3 degrees given without working."
+     "note": "PM = 44.3 deg stated with no working"
     }
    }
   },
@@ -2281,15 +2281,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Extra 1/s in controller transfer function; nonsensical Routh array."
+     "note": "Extra 1/s in controller and nonsensical Routh array: K_c,max = 0"
     },
     "b": {
      "type": "method",
-     "note": "Carried from (a): zero frequency from wrong Kc,max."
+     "note": "omega = 0 rad/min with no valid method"
     },
     "c": {
      "type": "formula",
-     "note": "Extra 1/s in P controller; offset wrong."
+     "note": "Extra 1/s in P controller gives offset -3/10 vs 0.25"
     }
    }
   },
@@ -2307,11 +2307,11 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Wrong Fenske form mixing z_F into the ratio."
+     "note": "Wrong Fenske form with z_F in the ratio: 3.8 vs 6.43"
     },
     "b": {
-     "type": "formula",
-     "note": "R_min = (N_min - 1)/N_min is not a valid relation."
+     "type": "method",
+     "note": "Invalid relation R_min = (N_min - 1)/N_min = 0.737."
     }
    }
   },
@@ -2329,16 +2329,16 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Treated the 0.95 recovery as an outlet mole fraction; divided by zero."
+     "type": "interpretation",
+     "note": "Treated 0.95 recovery as outlet mole fraction; got -93"
     },
     "b": {
      "type": "incomplete",
-     "note": "No numerical value given."
+     "note": "No numerical value for A given"
     },
     "c": {
      "type": "incomplete",
-     "note": "No numerical value given; stated formula is not Kremser."
+     "note": "No numerical value given; stated formula not Kremser"
     }
    }
   },
@@ -2359,23 +2359,23 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Inconsistent balances gave D = 60 instead of 44.57."
+     "note": "Inconsistent balances give D = 60 vs 44.57"
     },
     "b": {
-     "type": "formula",
-     "note": "Invented formula gave 58.06 instead of 1.775."
+     "type": "method",
+     "note": "Invented formula; R_min = 58.06 vs 1.775"
     },
     "c": {
-     "type": "formula",
-     "note": "Carried from (b): R = 1.5 x own wrong R_min (58.06)."
+     "type": "method",
+     "note": "Carried from (b): R = 1.5 x 58.06 = 87.10"
     },
     "d": {
-     "type": "formula",
-     "note": "Fenske minimum-stage formula with wrong argument instead of stepping."
+     "type": "method",
+     "note": "Fenske minimum-stage formula instead of stepping; 2.94"
     },
     "e": {
      "type": "incomplete",
-     "note": "Stage 2 given without working."
+     "note": "Feed stage 2 given without working"
     }
    }
   },
@@ -2397,27 +2397,27 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Symbolic set-up only, no numbers; expressions wrong."
+     "note": "Only symbolic set-up, no numerical value"
     },
     "b": {
      "type": "incomplete",
-     "note": "Symbolic set-up only, no numbers; expressions wrong."
+     "note": "Only symbolic set-up, no numerical value"
     },
     "c": {
      "type": "incomplete",
-     "note": "Symbolic set-up only, no numbers; expressions wrong."
+     "note": "Only symbolic set-up, no numerical value"
     },
     "d": {
      "type": "incomplete",
-     "note": "Symbolic set-up only, no numbers; expressions wrong."
+     "note": "Only symbolic set-up, no numerical value"
     },
     "e": {
      "type": "incomplete",
-     "note": "Symbolic set-up only, no numbers; expressions wrong."
+     "note": "Only symbolic set-up, no numerical value"
     },
     "f": {
      "type": "incomplete",
-     "note": "Symbolic set-up only, no numbers; expressions wrong."
+     "note": "Only symbolic set-up, no numerical value"
     }
    }
   },
@@ -2436,7 +2436,7 @@
    "errors": {
     "c": {
      "type": "numerical",
-     "note": "Correct Darcy-Weisbach set-up but arithmetic gave 59.24 kPa instead of about 71.1."
+     "note": "Darcy-Weisbach right, arithmetic gives 59.24 instead of ~71.1 kPa"
     }
    }
   },
@@ -2456,19 +2456,19 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Area slip (0.0785 instead of 0.00785 m2) made velocity ten times too small."
+     "note": "Area slip 0.0785 instead of 0.00785 m2, V tenfold low: Re 31,772"
     },
     "b": {
      "type": "numerical",
-     "note": "Colebrook iteration failed to converge; assumed f = 0.02 instead."
+     "note": "Colebrook iteration abandoned; guess f = 0.02 kept (0.0244 at own Re)"
     },
     "c": {
      "type": "numerical",
-     "note": "Carried from (a), (b): correct energy balance on wrong velocity and f."
+     "note": "Carried from (a),(b): energy balance right on own V and f, 12.18 m"
     },
     "d": {
      "type": "numerical",
-     "note": "Carried from (c): correct formula applied to its own wrong head."
+     "note": "Carried from (c): power formula right on own H, 4.145 kW"
     }
    }
   },
@@ -2488,19 +2488,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Set-up correct but never solved; stated \"typical\" values far off."
+     "note": "Equations never solved; 'typical' value 90 m asserted"
     },
     "b": {
      "type": "incomplete",
-     "note": "Set-up correct but never solved; stated \"typical\" values far off."
+     "note": "Equations never solved; 'typical' value 20 L/s asserted"
     },
     "c": {
      "type": "incomplete",
-     "note": "Set-up correct but never solved; stated \"typical\" values far off."
+     "note": "Equations never solved; 'typical' value 10 L/s, no direction asserted"
     },
     "d": {
      "type": "incomplete",
-     "note": "Set-up correct but never solved; stated \"typical\" values far off."
+     "note": "Equations never solved; 'typical' value 10 L/s asserted"
     }
    }
   },
@@ -2519,20 +2519,20 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Incorrect isothermal flow equation; iteration described but never performed."
+     "type": "incomplete",
+     "note": "Iteration never performed; FINAL 63.45 kg/s has no working."
     },
     "b": {
      "type": "incomplete",
-     "note": "No supporting working shown; final value stated alone."
+     "note": "Iteration never performed; FINAL 1.54e6 has no working."
     },
     "c": {
      "type": "incomplete",
-     "note": "No supporting working shown; final value stated alone."
+     "note": "Iteration never performed; FINAL 0.0168 has no working."
     },
     "d": {
      "type": "incomplete",
-     "note": "No supporting working shown; final value stated alone."
+     "note": "Iteration never performed; FINAL 23.1 m/s has no working."
     }
    }
   },
@@ -2551,11 +2551,11 @@
    "errors": {
     "b": {
      "type": "numerical",
-     "note": "Wrong partial-fraction result, y = 10 - 1.25e^(-t/8)."
+     "note": "Partial-fraction slip gives y' = 10 - 1.25e^(-t/8); 9.642 vs 7.135."
     },
     "c": {
      "type": "numerical",
-     "note": "Carried from (b): solved correctly from its own wrong expression."
+     "note": "Carried from (b): right 95 % set-up on wrong y'(t); 7.33 min."
     }
    }
   },
@@ -2593,7 +2593,7 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Used approximation pi/(2 theta), ignoring lag phase; 7% off."
+     "note": "Replaced solving phase equation by approximation pi/(2 theta) = 0.628"
     },
     "b": {
      "type": "method",
@@ -2601,19 +2601,19 @@
     },
     "c": {
      "type": "method",
-     "note": "Carried from (a): P_u from approximate omega_u."
+     "note": "Carried from (a): P_u = 10 min from omega_u = 0.628"
     },
     "d": {
      "type": "method",
-     "note": "Carried from (b): tuning from wrong K_u and P_u."
+     "note": "Carried from (a),(b): K_c = 1.212, tau_I = 8.33 min"
     },
     "e": {
      "type": "incomplete",
-     "note": "Gain margin not calculated."
+     "note": "Gain margin not calculated"
     },
     "f": {
      "type": "incomplete",
-     "note": "Phase margin not calculated."
+     "note": "Phase margin not calculated"
     }
    }
   },
@@ -2631,12 +2631,12 @@
    },
    "errors": {
     "a": {
-     "type": "numerical",
-     "note": "Wrong expansion of characteristic polynomial; no Kc,max value."
+     "type": "incomplete",
+     "note": "Polynomial expanded wrongly and no K_c,max value given."
     },
     "b": {
      "type": "incomplete",
-     "note": "Not calculated."
+     "note": "Oscillation frequency not calculated"
     }
    }
   },
@@ -2654,7 +2654,7 @@
    "errors": {
     "b": {
      "type": "method",
-     "note": "Invented shortcut formula that ignores the feed pinch."
+     "note": "Invented shortcut (x_D/x_B - alpha)/(alpha-1) = 11, ignores feed pinch"
     }
    }
   },
@@ -2673,7 +2673,7 @@
    "errors": {
     "c": {
      "type": "formula",
-     "note": "Wrong form of the Kremser equation; final value has no supporting working."
+     "note": "Wrong Kremser form gives log(0.05)/log(1.426); FINAL 4.966 unsupported"
     }
    }
   },
@@ -2693,20 +2693,20 @@
    },
    "errors": {
     "b": {
-     "type": "formula",
-     "note": "Used saturated-liquid Underwood formula, ignoring q = 0.6 and the pinch."
+     "type": "interpretation",
+     "note": "Assumed saturated-liquid feed (q = 1), ignoring q = 0.6; 1.40"
     },
     "c": {
-     "type": "formula",
-     "note": "Carried from (b): R = 1.5 x own wrong R_min (1.40)."
+     "type": "interpretation",
+     "note": "Carried from (b): R = 1.5 x 1.40 = 2.1"
     },
     "d": {
      "type": "incomplete",
-     "note": "Not calculated."
+     "note": "Stage stepping not done"
     },
     "e": {
      "type": "incomplete",
-     "note": "Not calculated."
+     "note": "Feed stage not determined"
     }
    }
   },
@@ -2727,28 +2727,28 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Omitted the 1.2 kmol/h of n-pentane in the distillate."
+     "type": "interpretation",
+     "note": "Assumed no n-pentane in distillate; D = 39.3 vs 40.5."
     },
     "b": {
-     "type": "method",
-     "note": "Fenske used light-key recoveries only; wrong set-up."
+     "type": "formula",
+     "note": "Fenske with LK recoveries 0.98/0.02 only; N_min = 5.82."
     },
     "c": {
      "type": "incomplete",
-     "note": "Not computed."
+     "note": "Theta not computed"
     },
     "d": {
      "type": "incomplete",
-     "note": "Not computed."
+     "note": "R_min not computed"
     },
     "e": {
      "type": "incomplete",
-     "note": "Not computed."
+     "note": "N not computed"
     },
     "f": {
-     "type": "method",
-     "note": "Set x_B,LK/x_D,HK to 0.02/0.02; wrong inputs."
+     "type": "interpretation",
+     "note": "Used 0.02/0.02 recoveries as x_B,LK/x_D,HK; 1.13."
     }
    }
   },
@@ -2767,15 +2767,15 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Reynolds number arithmetic gave 2885 instead of 350 despite correct formula."
+     "note": "Correct v and Re formula, but arithmetic gives 2885 instead of 350"
     },
     "b": {
-     "type": "interpretation",
-     "note": "Used turbulent Blasius correlation for laminar flow."
+     "type": "numerical",
+     "note": "Blasius on own Re 2885 miscomputed: 0.0250 (formula gives 0.043)"
     },
     "c": {
      "type": "formula",
-     "note": "Dropped density from Darcy-Weisbach and used the wrong f."
+     "note": "Density dropped from Darcy-Weisbach, plus wrong f: 0.011 kPa"
     }
    }
   },
@@ -2795,7 +2795,7 @@
    "errors": {
     "b": {
      "type": "formula",
-     "note": "Used Swamee-Jain approximation instead of Colebrook, with a slip; 2.8% off."
+     "note": "Swamee-Jain used instead of required Colebrook, Re^0.9 slip: 0.0174"
     }
    }
   },
@@ -2815,19 +2815,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "No iteration performed; values asserted without working."
+     "note": "No iteration performed; 94.5 m asserted without working"
     },
     "b": {
      "type": "incomplete",
-     "note": "No iteration performed; values asserted without working."
+     "note": "No iteration performed; 23.5 L/s asserted without working"
     },
     "c": {
      "type": "incomplete",
-     "note": "No iteration performed; values asserted without working."
+     "note": "No iteration performed; 5.5 L/s into B asserted without working"
     },
     "d": {
      "type": "incomplete",
-     "note": "No iteration performed; values asserted without working."
+     "note": "No iteration performed; 11.0 L/s asserted without working"
     }
    }
   },
@@ -2847,19 +2847,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Orifice-type formula without friction."
+     "note": "Orifice-type formula without friction; 2.446 kg/s vs 17.43."
     },
     "b": {
      "type": "numerical",
-     "note": "Velocity and Re miscomputed; arithmetic contradicts its own numbers."
+     "note": "Velocity and Re arithmetic contradict own numbers; Re = 32107."
     },
     "c": {
      "type": "numerical",
-     "note": "Friction factor does not match Colebrook at its own Reynolds number."
+     "note": "Claimed iteration gives 0.01946; own Re implies about 0.0235."
     },
     "d": {
      "type": "interpretation",
-     "note": "Used inlet density and an inconsistent velocity."
+     "note": "Uses inlet density for outlet velocity, with inconsistent velocity; 34.57 m/s."
     }
    }
   },
@@ -2894,11 +2894,11 @@
    "errors": {
     "d": {
      "type": "formula",
-     "note": "y_max = 2*OS omits gain and final value."
+     "note": "y_max = 2 x OS, omits gain and final value; 0.506 vs 10.03."
     },
     "e": {
      "type": "formula",
-     "note": "Claimed DR = zeta instead of OS squared."
+     "note": "Claims decay ratio equals zeta = 0.4, not OS^2 = 0.0644."
     }
    }
   },
@@ -2920,27 +2920,27 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Lag phase written with wrong sign, giving 0.213 rad/min."
+     "note": "Lag phase written with wrong sign (+atan 12w): 0.213 rad/min"
     },
     "b": {
      "type": "numerical",
-     "note": "Correct K_u formula but arithmetic slip, 0.610 instead of 1.52."
+     "note": "Arithmetic slip: K_u 0.610 instead of 1.52 for own omega_u"
     },
     "c": {
      "type": "formula",
-     "note": "Carried from (a): P_u from wrong omega_u."
+     "note": "Carried from (a): P_u = 29.6 min"
     },
     "d": {
-     "type": "numerical",
-     "note": "Carried from (b): tuning from wrong K_u and P_u."
+     "type": "formula",
+     "note": "Carried from (a)-(c): K_c = 0.277, tau_I = 24.7 min."
     },
     "e": {
      "type": "method",
-     "note": "GM evaluated without the PI controller."
+     "note": "GM = 0.944 evaluated without the PI controller"
     },
     "f": {
      "type": "method",
-     "note": "PM taken at the wrong frequency, giving 0 degrees."
+     "note": "PM = 0 deg evaluated at the wrong frequency"
     }
    }
   },
@@ -2959,11 +2959,11 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Characteristic equation dropped factor s, treating Kc/(4s) as constant."
+     "note": "Characteristic equation drops factor s (K_c/(4s) as constant): 50.4"
     },
     "b": {
      "type": "method",
-     "note": "Unsupported approximation gave 2.06 rad/min."
+     "note": "omega = 2.06 rad/min from an unsupported approximation"
     }
    }
   },
@@ -2981,11 +2981,11 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Invented formula using z_F, with the sign dropped."
+     "note": "Wrong Fenske form log((z_F-x_B)/(x_D-x_B))/log(alpha): 1.03"
     },
     "b": {
      "type": "method",
-     "note": "Invented formula, not the pinch-based minimum reflux."
+     "note": "Invented formula (alpha x_D - x_B)/(x_D - alpha x_B) = 2.82"
     }
    }
   },
@@ -3004,7 +3004,7 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Put pinch at the lean end and balanced on all acetone entering."
+     "note": "Lean-end pinch and balance omitting outlet acetone; 2400 vs 171"
     },
     "b": {
      "type": "method",
@@ -3012,7 +3012,7 @@
     },
     "c": {
      "type": "formula",
-     "note": "Used ln(19)/ln(30), which is not the Kremser equation."
+     "note": "Wrong Kremser form ln(19)/ln(30); 0.865 vs 5.356"
     }
    }
   },
@@ -3033,23 +3033,23 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Wrongly replaced x_D by x_D/alpha in the balance."
+     "note": "Replaced x_D by y_D = x_D/alpha in the balance; D = 93.18"
     },
     "b": {
-     "type": "formula",
-     "note": "Invented formula gave 1.025 instead of 1.775."
+     "type": "method",
+     "note": "Invented formula; R_min = 1.025 vs 1.775"
     },
     "c": {
-     "type": "formula",
-     "note": "Carried from (b): R = 1.5 x own wrong R_min (1.025)."
+     "type": "method",
+     "note": "Carried from (b): R = 1.5 x 1.025 = 1.5375"
     },
     "d": {
      "type": "incomplete",
-     "note": "Nine stages assumed without stepping."
+     "note": "9.0 stages assumed without stepping"
     },
     "e": {
      "type": "incomplete",
-     "note": "Feed stage 5 assumed without stepping."
+     "note": "Feed stage 5 assumed without stepping"
     }
    }
   },
@@ -3070,28 +3070,28 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Set n-pentane in the distillate to zero."
+     "type": "interpretation",
+     "note": "Assumed no n-pentane in distillate; D = 39.3 vs 40.5."
     },
     "b": {
-     "type": "method",
-     "note": "Wrong or no working gave N_min = 3.4."
+     "type": "incomplete",
+     "note": "N_min = 3.4 asserted; shown expression does not give it."
     },
     "c": {
-     "type": "method",
-     "note": "Wrong or no working; theta = 2.97 is outside the key range."
+     "type": "incomplete",
+     "note": "Theta = 2.97 asserted, outside key range, no valid working."
     },
     "d": {
-     "type": "method",
-     "note": "Wrong or no working gave R_min = 1.5."
+     "type": "incomplete",
+     "note": "R_min approx 1.5 stated without calculation."
     },
     "e": {
-     "type": "method",
-     "note": "Wrong or no working gave N = 5.6."
+     "type": "incomplete",
+     "note": "N approx 5.6 stated without calculation."
     },
     "f": {
      "type": "incomplete",
-     "note": "Value matches but the shown expression is garbled."
+     "note": "0.76 matches but garbled expression does not give it"
     }
    }
   },
@@ -3110,15 +3110,15 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Bare final value with no working; wrong."
+     "note": "Bare value 3300 with no working"
     },
     "b": {
      "type": "incomplete",
-     "note": "Bare final value with no working; wrong."
+     "note": "Bare value 0.021 with no working"
     },
     "c": {
      "type": "incomplete",
-     "note": "Bare final value with no working; wrong."
+     "note": "Bare value 24.75 kPa with no working"
     }
    }
   },
@@ -3138,19 +3138,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Bare final value with no working; wrong."
+     "note": "Bare value Re 2.506e4 with no working"
     },
     "b": {
      "type": "incomplete",
-     "note": "Bare final value with no working; wrong."
+     "note": "Bare value f 0.0198 with no working"
     },
     "c": {
      "type": "incomplete",
-     "note": "Bare final value with no working; wrong."
+     "note": "Bare value H 13.27 with no working"
     },
     "d": {
      "type": "incomplete",
-     "note": "Bare final value with no working or unit; wrong."
+     "note": "Bare value 11.56, no unit with no working"
     }
    }
   },
@@ -3170,19 +3170,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Took junction head equal to the lowest reservoir level."
+     "note": "Junction head taken as lowest reservoir level (70 m working, 100 FINAL)"
     },
     "b": {
      "type": "method",
-     "note": "Assumed Q1 = Q2 = Q3 with wrong head difference and area formula."
+     "note": "Assumed Q1=Q2=Q3 with -50 m head in every pipe: 2.5 L/s"
     },
     "c": {
      "type": "method",
-     "note": "Same wrong working; flow direction also wrong."
+     "note": "Same wrong set-up: 2.087 L/s, out of B (wrong direction)"
     },
     "d": {
      "type": "method",
-     "note": "Same wrong working: Q1 = Q2 = Q3 and wrong head difference."
+     "note": "Same wrong set-up and wrong area formula: 1.256 L/s"
     }
    }
   },
@@ -3202,19 +3202,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Only final values given, no working."
+     "note": "Only FINAL value, no working; 312.4 kg/s."
     },
     "b": {
      "type": "incomplete",
-     "note": "Only final values given, no working."
+     "note": "Only FINAL value, no working; Re = 17788."
     },
     "c": {
      "type": "incomplete",
-     "note": "Only final values given, no working."
+     "note": "Only FINAL value, no working; f = 0.0196."
     },
     "d": {
      "type": "incomplete",
-     "note": "Only final values given, no working."
+     "note": "Only FINAL value, no working; 63.1 m/s."
     }
    }
   },
@@ -3233,15 +3233,15 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Only final values given, no working."
+     "note": "Only FINAL value, no working; 0.625 vs 10."
     },
     "b": {
      "type": "incomplete",
-     "note": "Only final values given, no working."
+     "note": "Only FINAL value, no working; 0.6244 vs 7.135."
     },
     "c": {
      "type": "incomplete",
-     "note": "Only final values given, no working."
+     "note": "Only FINAL value, no working; 13.9 vs 23.97 min."
     }
    }
   },
@@ -3262,23 +3262,23 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Wrong coefficient matching (omega_n^2 = 4) gives zeta = 0.067."
+     "note": "Standard-form matching with omega_n^2 = 4 from numerator; zeta = 0.067."
     },
     "b": {
      "type": "numerical",
-     "note": "Right formula, but miscalculated even for its own wrong zeta."
+     "note": "Right formula, miscalculated: own zeta gives 81 %, reports 52.8 %."
     },
     "c": {
      "type": "formula",
-     "note": "Carried from (a): peak time correct for its own wrong zeta."
+     "note": "Carried from (a): pi/omega_d right with its omega_n = 2; 1.57 min."
     },
     "d": {
      "type": "formula",
-     "note": "Wrong formula without the gain."
+     "note": "y_max = 1 + 2 OS, no gain; 2.056 vs 10.03."
     },
     "e": {
      "type": "method",
-     "note": "Claimed the decay ratio is always 1."
+     "note": "Claims the decay ratio of a second-order system is always 1."
     }
    }
   },
@@ -3300,27 +3300,27 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Final value only, no working, far from reference."
+     "note": "omega_u = 2.5 rad/min given with no working"
     },
     "b": {
      "type": "incomplete",
-     "note": "Final value only, no working, far from reference."
+     "note": "K_u = 1.8 given with no working"
     },
     "c": {
      "type": "incomplete",
-     "note": "Final value only, no working, far from reference."
+     "note": "P_u = 1.44 min given with no working"
     },
     "d": {
      "type": "incomplete",
-     "note": "Final value only, no working, far from reference."
+     "note": "K_c = 0.818, tau_I = 1.2 min given with no working"
     },
     "e": {
      "type": "incomplete",
-     "note": "Final value only, no working, far from reference."
+     "note": "GM = 3.5 given with no working"
     },
     "f": {
      "type": "incomplete",
-     "note": "Final value only, no working, far from reference."
+     "note": "PM = 45 deg given with no working"
     }
    }
   },
@@ -3339,15 +3339,15 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Kc,max = 1.25 with no working."
+     "note": "K_c,max = 1.25 given with no working"
     },
     "b": {
      "type": "incomplete",
-     "note": "0.48 rad/min with no working."
+     "note": "omega = 0.48 rad/min given with no working"
     },
     "c": {
      "type": "incomplete",
-     "note": "Offset 0.2 with no working."
+     "note": "Offset 0.2 given with no working"
     }
    }
   },
@@ -3364,12 +3364,12 @@
    },
    "errors": {
     "a": {
-     "type": "formula",
-     "note": "Invented equation, then an unexplained 3 stages."
+     "type": "method",
+     "note": "Invented equation gives 0.33, then an unexplained 3 stages."
     },
     "b": {
-     "type": "formula",
-     "note": "Wrong formula (x_D - x_B)/(z_F - x_D), value negative."
+     "type": "method",
+     "note": "Invented formula (x_D-x_B)/(z_F-x_D); value actually negative, not 1.64."
     }
    }
   },
@@ -3388,15 +3388,15 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Final value only, no working; wrong."
+     "note": "Final value only, no working; 10.56 vs 171"
     },
     "b": {
      "type": "incomplete",
-     "note": "Final value only, no working; wrong."
+     "note": "Final value only, no working; 2.11"
     },
     "c": {
      "type": "incomplete",
-     "note": "Final value only, no working; 11 % off."
+     "note": "Final value only, no working; 4.79 vs 5.356"
     }
    }
   },
@@ -3417,23 +3417,23 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Final value only, no working; wrong."
+     "note": "Final value only, no working shown"
     },
     "b": {
      "type": "incomplete",
-     "note": "Final value only, no working; wrong."
+     "note": "Final value only, no working shown"
     },
     "c": {
      "type": "incomplete",
-     "note": "Final value only, no working; wrong."
+     "note": "Final value only, no working shown"
     },
     "d": {
      "type": "incomplete",
-     "note": "Final value only, no working; wrong."
+     "note": "Final value only, no working shown"
     },
     "e": {
      "type": "incomplete",
-     "note": "Final value only, no working; wrong."
+     "note": "Final value only, no working shown"
     }
    }
   },
@@ -3455,27 +3455,27 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Final value only, no working; far from reference."
+     "note": "Final value only, no working shown"
     },
     "b": {
      "type": "incomplete",
-     "note": "Final value only, no working; far from reference."
+     "note": "Final value only, no working shown"
     },
     "c": {
      "type": "incomplete",
-     "note": "Final value only, no working; far from reference."
+     "note": "Final value only, no working shown"
     },
     "d": {
      "type": "incomplete",
-     "note": "Final value only, no working; far from reference."
+     "note": "Final value only, no working shown"
     },
     "e": {
      "type": "incomplete",
-     "note": "Final value only, no working; far from reference."
+     "note": "Final value only, no working shown"
     },
     "f": {
      "type": "incomplete",
-     "note": "Final value only, no working; far from reference."
+     "note": "Final value only, no working shown"
     }
    }
   },
@@ -3494,15 +3494,15 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Reynolds number arithmetic gave 3466.7 instead of 350 despite correct formula."
+     "note": "Correct v and Re formula, but arithmetic gives 3466.7 instead of 350"
     },
     "b": {
-     "type": "interpretation",
-     "note": "Declared flow turbulent and used a Fanning-type Blasius correlation."
+     "type": "formula",
+     "note": "Fanning Blasius 0.079 Re^-0.25 used for Darcy f: 0.030"
     },
     "c": {
-     "type": "interpretation",
-     "note": "Carried from (b): Darcy-Weisbach correct but applied to the turbulent-flow f."
+     "type": "formula",
+     "note": "Carried from (b): Darcy-Weisbach right on own f, 11.74 kPa"
     }
    }
   },
@@ -3522,15 +3522,15 @@
    "errors": {
     "b": {
      "type": "numerical",
-     "note": "Colebrook set up but stated f = 0.0208 is not the solution."
+     "note": "Colebrook one trial only; stated f 0.0208 is not solution (0.0179)"
     },
     "c": {
      "type": "numerical",
-     "note": "Carried from (b): correct energy balance using the wrong f."
+     "note": "Carried from (b): energy balance right on own f, 31.10 m"
     },
     "d": {
      "type": "numerical",
-     "note": "Carried from (c): correct formula on its own head, small arithmetic slip."
+     "note": "Carried from (c): power right on own H (small slip), 10.25 kW"
     }
    }
   },
@@ -3550,19 +3550,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Iteration not shown; stated results inconsistent with its own equations."
+     "note": "Set-up right, iteration not shown; 85.2 m inconsistent with equations"
     },
     "b": {
      "type": "incomplete",
-     "note": "Iteration not shown; stated results inconsistent with its own equations."
+     "note": "Set-up right, iteration not shown; 47.3 L/s inconsistent with equations"
     },
     "c": {
      "type": "incomplete",
-     "note": "Iteration not shown; stated results inconsistent with its own equations."
+     "note": "Set-up right, iteration not shown; 18.5 L/s out of B inconsistent with equations"
     },
     "d": {
      "type": "incomplete",
-     "note": "Iteration not shown; stated results inconsistent with its own equations."
+     "note": "Set-up right, iteration not shown; 28.8 L/s inconsistent with equations"
     }
    }
   },
@@ -3582,19 +3582,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Incompressible Darcy-Weisbach with average density, plus algebra slip and unconverged f."
+     "note": "Incompressible Darcy-Weisbach with average density, unconverged f = 0.02; 0.525 kg/s."
     },
     "b": {
      "type": "formula",
-     "note": "Mixed inlet and average densities instead of using G D/mu."
+     "note": "Re mixes inlet density with average-density velocity, not G D/mu."
     },
     "c": {
      "type": "numerical",
-     "note": "Friction factor does not match Colebrook at its own Reynolds number."
+     "note": "Colebrook claimed solved as 0.018; its own Re gives 0.0135."
     },
     "d": {
      "type": "numerical",
-     "note": "Factor-10 arithmetic error in velocity."
+     "note": "Factor-10 arithmetic: 0.525/(20.0*0.0707) = 0.37, not 3.69 m/s."
     }
    }
   },
@@ -3629,19 +3629,19 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Matched 2*zeta*omega_n = 2.4 without normalising; zeta = 1.2."
+     "note": "Matched 2 zeta omega_n = 2.4 without normalising; zeta = 1.2."
     },
     "b": {
      "type": "formula",
-     "note": "Carried from (a): 0 % overshoot follows from its overdamped zeta."
+     "note": "Carried from (a): 0 % overshoot follows from overdamped zeta = 1.2."
     },
     "c": {
      "type": "interpretation",
-     "note": "Gave a settling-type time instead of the peak time."
+     "note": "Gives settling-type time 4/(zeta omega_n) instead of peak time; 3.33 min."
     },
     "d": {
      "type": "formula",
-     "note": "Carried from (a): y_max = K*M consistent with overdamped zeta."
+     "note": "Carried from (a): y_max = K M = 8 follows from overdamped zeta."
     },
     "e": {
      "type": "formula",
@@ -3667,27 +3667,27 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Correct phase equation but stated root 0.88 is 30% off."
+     "note": "Correct phase equation but root 0.88 instead of 0.677 rad/min"
     },
     "b": {
      "type": "numerical",
-     "note": "Carried from (a): K_u correct for its own wrong omega_u."
+     "note": "Carried from (a): K_u = 5.9 from omega_u = 0.88"
     },
     "c": {
      "type": "numerical",
-     "note": "Carried from (a): P_u correct for its own wrong omega_u."
+     "note": "Carried from (a): P_u = 7.14 min"
     },
     "d": {
      "type": "numerical",
-     "note": "Carried from (a): tuning correct for its own wrong K_u, P_u."
+     "note": "Carried from (a): K_c = 2.68, tau_I = 5.95 min"
     },
     "e": {
      "type": "method",
-     "note": "GM = 1/K_c is a wrong method."
+     "note": "Took GM = 1/K_c = 0.373 instead of phase-crossover calculation"
     },
     "f": {
      "type": "method",
-     "note": "Invented phase-margin formula giving 46.2 degrees."
+     "note": "Invented PM formula gives 46.2 deg vs 36.3"
     }
    }
   },
@@ -3705,16 +3705,16 @@
    },
    "errors": {
     "a": {
-     "type": "numerical",
-     "note": "Process polynomial expanded wrongly; only s^2 row checked."
+     "type": "method",
+     "note": "Only s^2 row checked, s^1 condition missed; expansion also wrong: 1.4."
     },
     "b": {
-     "type": "numerical",
-     "note": "Carried from (a): omega from polynomial inconsistent with own (a)."
+     "type": "method",
+     "note": "omega = 0.5 from inconsistent polynomial; real-part equation unsatisfied."
     },
     "c": {
      "type": "formula",
-     "note": "Used velocity error constant instead of position constant."
+     "note": "Velocity error constant used instead of position constant: offset 1"
     }
    }
   },
@@ -3732,11 +3732,11 @@
    "errors": {
     "a": {
      "type": "interpretation",
-     "note": "Correct Fenske value 6.426, but added 1 for reboiler wrongly."
+     "note": "Added 1 for reboiler already counted by Fenske: 7.426 vs 6.43"
     },
     "b": {
      "type": "method",
-     "note": "Invented formula ignoring the feed pinch."
+     "note": "Invented formula (alpha-1)z_F/(alpha z_F - x_D) = 12 vs 1.44"
     }
    }
   },
@@ -3755,15 +3755,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Used L_min = mG, ignoring the 95 % recovery."
+     "note": "L_min = mG tangent rule ignores 95 % recovery; 180 vs 171"
     },
     "b": {
      "type": "method",
-     "note": "Carried from (a): correct A = L/(mG) applied to its own wrong L."
+     "note": "Carried from (a): A = 270/180 = 1.5 from wrong L"
     },
     "c": {
-     "type": "formula",
-     "note": "Used a formula that is not the Kremser equation."
+     "type": "method",
+     "note": "Invented log-ratio formula, not Kremser; 0.708 vs 5.356"
     }
    }
   },
@@ -3783,20 +3783,20 @@
    },
    "errors": {
     "b": {
-     "type": "formula",
-     "note": "Invented formula ignoring the q-line pinch gave 0.4475."
+     "type": "method",
+     "note": "Invented formula ignoring q-line pinch; R_min = 0.4475"
     },
     "c": {
-     "type": "formula",
-     "note": "Carried from (b): R = 1.5 x own wrong R_min (0.4475)."
+     "type": "method",
+     "note": "Carried from (b): R = 1.5 x 0.4475 = 0.671"
     },
     "d": {
      "type": "incomplete",
-     "note": "Result stated after calculations not shown; q-line used as stripping line."
+     "note": "15.6 stages from calculations not shown"
     },
     "e": {
      "type": "incomplete",
-     "note": "Stage 7 matches but has no supporting working."
+     "note": "Stage 7 stated without shown stepping"
     }
    }
   },
@@ -3817,28 +3817,28 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Treated recoveries as mole fractions."
+     "type": "interpretation",
+     "note": "Treated recoveries as mole fractions; D = 34.89."
     },
     "b": {
-     "type": "method",
-     "note": "Wrong Fenske set-up gave 3.95."
+     "type": "formula",
+     "note": "Wrong Fenske set-up; HK ratio inverted; N_min = 3.95 vs 10.63."
     },
     "c": {
      "type": "formula",
-     "note": "Feed equation without alpha in the numerator."
+     "note": "Feed equation without alpha in numerator; theta = 1.2"
     },
     "d": {
-     "type": "formula",
-     "note": "Invented formula gave R_min = 145.6."
+     "type": "method",
+     "note": "Invented formula; R_min = 145.6."
     },
     "e": {
      "type": "numerical",
-     "note": "0.229^0.5668 miscomputed (0.476 vs 0.434); N = 7.16 vs 7.59."
+     "note": "Own inputs; 0.229^0.5668 as 0.476 not 0.434, N = 7.16"
     },
     "f": {
-     "type": "method",
-     "note": "Used recoveries 0.02 and 0.03 as x_B,LK and x_D,HK."
+     "type": "interpretation",
+     "note": "Carried from (a): recoveries 0.02, 0.03 used as x_B,LK, x_D,HK; 0.988."
     }
    }
   },
@@ -3857,15 +3857,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Used volumetric flow rate in place of velocity in Reynolds number."
+     "note": "Volumetric flow rate used as velocity: Re 4.40"
     },
     "b": {
      "type": "method",
-     "note": "Carried from (a): 64/Re correctly applied to its own wrong Re."
+     "note": "Carried from (a): 64/Re right on own Re 4.40, f 14.55"
     },
     "c": {
      "type": "method",
-     "note": "Flow rate used as velocity again, plus a bogus J/m3 to kPa conversion."
+     "note": "Flow rate again used as velocity, bogus J/m3-to-kPa step: 89.44 kPa"
     }
    }
   },
@@ -3885,19 +3885,19 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Working used V = 31.83 m/s, ten times too large."
+     "note": "V computed 31.83 instead of 3.18 m/s in working; Re stated right"
     },
     "b": {
      "type": "numerical",
-     "note": "Colebrook iterations miscomputed; f 22% off."
+     "note": "Colebrook iterations miscomputed: f 0.0218 vs 0.0179"
     },
     "c": {
      "type": "method",
-     "note": "Head omits minor losses and uses the wrong velocity."
+     "note": "Minor losses omitted and tenfold velocity used: H 783.4 m"
     },
     "d": {
      "type": "formula",
-     "note": "Power formula omits g in rho g Q H / eta."
+     "note": "g omitted from rho g Q H/eta: 27.67 kW"
     }
    }
   },
@@ -3917,19 +3917,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Summed the reservoir elevations to get the junction head."
+     "note": "Junction head taken as sum of reservoir elevations: 290 m"
     },
     "b": {
-     "type": "units",
-     "note": "Assumed f and treated the head difference as 170 Pa."
+     "type": "method",
+     "note": "Assumed f, no continuity, 170 m head used as 170 Pa: 7.0 L/s."
     },
     "c": {
-     "type": "units",
-     "note": "Carried from (b): magnitude from the same head-as-pressure working."
+     "type": "method",
+     "note": "Same wrong working, reused pipe-1 head and constants: 1.3 L/s."
     },
     "d": {
      "type": "incomplete",
-     "note": "Value 1.3 L/s given with no working."
+     "note": "Value 1.3 L/s given with no working"
     }
    }
   },
@@ -3949,19 +3949,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Mass flow as density times pipe volume, density missing molar mass."
+     "note": "Mass flow as density times pipe volume; 3223 kg/s."
     },
     "b": {
-     "type": "method",
-     "note": "Carried from (a): Reynolds number built on the wrong mass flow."
+     "type": "numerical",
+     "note": "Re arithmetic off: own numbers give 1.23e9, not 1.33e8."
     },
     "c": {
      "type": "numerical",
-     "note": "Botched Colebrook iteration, friction factor asserted."
+     "note": "Botched Colebrook iteration, then asserts f = 0.028 vs 0.0132."
     },
     "d": {
      "type": "method",
-     "note": "Incompressible Darcy-Weisbach with the wrong density."
+     "note": "Incompressible Darcy-Weisbach with wrong density; 7.94 m/s."
     }
    }
   },
@@ -3980,15 +3980,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Gain given without multiplying by the step size of 4."
+     "note": "Final change given as the gain without multiplying by the step of 4."
     },
     "b": {
      "type": "method",
-     "note": "Closed-loop formula mixing s and t."
+     "note": "Closed-loop formula mixing s and t; -3.22 vs 7.135."
     },
     "c": {
      "type": "method",
-     "note": "Wrong method; model itself says the result is wrong."
+     "note": "Incoherent s/t manipulation; 0.11 min vs 23.97."
     }
    }
   },
@@ -4008,24 +4008,24 @@
    },
    "errors": {
     "a": {
-     "type": "formula",
-     "note": "Invented formula gives zeta = 1.56."
+     "type": "method",
+     "note": "Invented formula for zeta; 1.56 vs 0.4."
     },
     "b": {
-     "type": "formula",
-     "note": "Invented overshoot approximation and wrong final value."
+     "type": "method",
+     "note": "Invented overshoot approximation, closed-loop final value; 12.5 %."
     },
     "c": {
      "type": "method",
-     "note": "No valid method for peak time."
+     "note": "No valid peak-time method; 4.33 min vs 10.28."
     },
     "d": {
      "type": "method",
-     "note": "No valid method for maximum response."
+     "note": "No valid method for maximum output; 0.8 vs 10.03."
     },
     "e": {
      "type": "method",
-     "note": "No valid method; guessed second peak."
+     "note": "Guessed second peak, no valid method; 0.28 vs 0.0644."
     }
    }
   },
@@ -4047,27 +4047,27 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Converted 1/2.5 rad/s to 24 rad/min; wrong method."
+     "note": "omega_u = 1/theta (1/2.5 rad/s) then 24 rad/min; no phase condition"
     },
     "b": {
      "type": "formula",
-     "note": "Used K_u = |G_p| instead of 1/|G_p|."
+     "note": "Took K_u = |G_p| = 0.0057 instead of 1/|G_p|"
     },
     "c": {
      "type": "formula",
-     "note": "P_u = 1/omega_u is the wrong formula."
+     "note": "Used P_u = 1/omega_u instead of 2 pi/omega_u"
     },
     "d": {
-     "type": "formula",
-     "note": "Carried from (b): tuning correct for its own wrong K_u."
+     "type": "method",
+     "note": "Carried from (a)-(c): K_c = 0.0026, tau_I = 0.0348 min."
     },
     "e": {
      "type": "incomplete",
-     "note": "GM = 4 is a guess without valid working."
+     "note": "GM = 4 guessed without valid working"
     },
     "f": {
      "type": "incomplete",
-     "note": "PM = 4 degrees is a guess without valid working."
+     "note": "PM = 4 deg guessed without valid working"
     }
    }
   },
@@ -4086,15 +4086,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Treated open-loop poles as closed-loop roots, giving infinity."
+     "note": "Open-loop poles treated as closed-loop roots: K_c,max infinite"
     },
     "b": {
      "type": "method",
-     "note": "No valid method for crossover frequency."
+     "note": "omega = 0.0625 rad/min with no valid method"
     },
     "c": {
-     "type": "formula",
-     "note": "Invented formula gave offset 180."
+     "type": "method",
+     "note": "Offset 180 from an invented formula."
     }
    }
   },
@@ -4112,11 +4112,11 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Wrong Fenske form using z_F/z_D and x_B/x_D."
+     "note": "Wrong Fenske form using z_F/z_D and x_B/x_D: 1 vs 6.43"
     },
     "b": {
      "type": "method",
-     "note": "Invented formula, not pinch-based."
+     "note": "R_min = 2.0 from an invented formula"
     }
    }
   },
@@ -4134,16 +4134,16 @@
    },
    "errors": {
     "a": {
-     "type": "formula",
-     "note": "Invented formula W = G*x_e instead of a pinch balance."
+     "type": "method",
+     "note": "Invented formula W = G*x_e; 5.4 vs 171 kmol/h"
     },
     "b": {
      "type": "method",
-     "note": "Gave a mass-transfer rate instead of the absorption factor."
+     "note": "Invented A = J/G relation gave a mass-transfer rate 0.082"
     },
     "c": {
-     "type": "formula",
-     "note": "Invented equation with assumed coefficient, not Kremser."
+     "type": "method",
+     "note": "Invented equation with assumed coefficient, not Kremser; 2"
     }
    }
   },
@@ -4163,24 +4163,24 @@
    },
    "errors": {
     "a": {
-     "type": "formula",
-     "note": "Invented 'Fenske' formula gave D = 2.2."
+     "type": "method",
+     "note": "Invented 'Fenske' formula for D; 2.2 vs 44.57"
     },
     "b": {
-     "type": "formula",
-     "note": "Invented formula gave 0.691 instead of 1.775."
+     "type": "method",
+     "note": "Invented formula; R_min = 0.691 vs 1.775"
     },
     "c": {
-     "type": "formula",
-     "note": "Carried from (b): R = 1.5 x own wrong R_min (0.691)."
+     "type": "method",
+     "note": "Carried from (b): R = 1.5 x 0.691 = 1.0365"
     },
     "d": {
-     "type": "formula",
-     "note": "Made-up estimate with assumed compositions instead of stepping."
+     "type": "method",
+     "note": "Made-up estimate with assumed compositions, no stepping; 14"
     },
     "e": {
-     "type": "formula",
-     "note": "Feed stage 4 from an invented correlation."
+     "type": "method",
+     "note": "Feed stage 4 from an invented correlation"
     }
    }
   },
@@ -4202,27 +4202,27 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Counted only the butane in the distillate."
+     "note": "Counted only butane in distillate; D = 34"
     },
     "b": {
-     "type": "formula",
-     "note": "Invented formula with volatilities used as compositions."
+     "type": "interpretation",
+     "note": "Volatilities used as compositions in invented formula; N_min = 2.15."
     },
     "c": {
-     "type": "formula",
-     "note": "Invented formula with volatilities used as compositions."
+     "type": "interpretation",
+     "note": "Volatilities used as compositions in invented formula; theta = 1.1547."
     },
     "d": {
-     "type": "formula",
-     "note": "Invented formula with volatilities used as compositions."
+     "type": "interpretation",
+     "note": "Volatilities used as compositions in invented formula; R_min = 5.00."
     },
     "e": {
-     "type": "method",
-     "note": "Negative X and R = 1.3 used instead of 1.3 R_min."
+     "type": "interpretation",
+     "note": "Used R = 1.3 instead of 1.3 R_min; negative X."
     },
     "f": {
-     "type": "method",
-     "note": "Wrong inputs gave 1.02."
+     "type": "interpretation",
+     "note": "Volatilities as z, feed fractions as product compositions; 1.02."
     }
    }
   },
@@ -4241,11 +4241,11 @@
    "errors": {
     "b": {
      "type": "interpretation",
-     "note": "Used turbulent Blasius correlation for laminar flow and miscomputed it."
+     "note": "Turbulent Blasius used at Re 351 (laminar), also miscomputed: 0.001"
     },
     "c": {
      "type": "formula",
-     "note": "Wrong f and an extra division by 2 in Darcy-Weisbach."
+     "note": "Extra division by 2 in Darcy-Weisbach, plus wrong f: 0.19 kPa"
     }
    }
   },
@@ -4264,12 +4264,12 @@
    },
    "errors": {
     "b": {
-     "type": "numerical",
-     "note": "Iterated Colebrook with eps/D ten times too large; never converged; 2.3% off."
+     "type": "units",
+     "note": "eps/D = 0.0046, mm not converted correctly to m; iteration unconverged."
     },
     "d": {
-     "type": "numerical",
-     "note": "Correct method but result 2.05% off, just outside tolerance."
+     "type": "units",
+     "note": "Carried from (b): power right on own H; 9.56 kW is 2.05 % off."
     }
    }
   },
@@ -4289,19 +4289,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Solution asserted (\"using a solver\") with no iteration shown."
+     "note": "'Using a solver', no iteration shown; 78.5 m asserted"
     },
     "b": {
      "type": "incomplete",
-     "note": "Solution asserted (\"using a solver\") with no iteration shown."
+     "note": "'Using a solver', no iteration shown; 39.2 L/s asserted"
     },
     "c": {
      "type": "incomplete",
-     "note": "Solution asserted (\"using a solver\") with no iteration shown."
+     "note": "'Using a solver', no iteration shown; 25.8 L/s into B asserted"
     },
     "d": {
      "type": "incomplete",
-     "note": "Solution asserted (\"using a solver\") with no iteration shown."
+     "note": "'Using a solver', no iteration shown; 13.4 L/s asserted"
     }
    }
   },
@@ -4321,19 +4321,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Darcy-Weisbach with spurious viscous term, inconsistent density, no acceleration term."
+     "note": "Invented viscous term, no acceleration term, wrong density; 19.15 kg/s."
     },
     "b": {
      "type": "numerical",
-     "note": "Re contradicts its own numbers."
+     "note": "Re contradicts own numbers (7.4e6), reports 464435."
     },
     "c": {
      "type": "numerical",
-     "note": "Friction factor does not match Colebrook at its own Reynolds number."
+     "note": "f = 0.0163 does not satisfy Colebrook at own Re (0.0151)."
     },
     "d": {
-     "type": "method",
-     "note": "Assumed constant velocity along the pipe."
+     "type": "interpretation",
+     "note": "Assumes velocity constant along compressible pipe; 15.49 m/s."
     }
    }
   },
@@ -4368,23 +4368,23 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Wrong matching (omega_n^2 = 4/9, unnormalised 2.4); zeta = 0.9."
+     "note": "Matching with omega_n^2 = 4/9 and unnormalised 2.4; zeta = 0.9."
     },
     "b": {
      "type": "numerical",
-     "note": "Right formula, but miscalculated even for its own wrong zeta."
+     "note": "Right formula, miscalculated: own zeta gives 0.15 %, reports 0.19 %."
     },
     "c": {
      "type": "formula",
-     "note": "Carried from (a): peak time correct for its own wrong zeta."
+     "note": "Carried from (a): pi/omega_d right with its zeta = 0.9; 10.8 min."
     },
     "d": {
      "type": "formula",
-     "note": "y_ss = M/K instead of K*M."
+     "note": "Final value as M/K = 0.5 instead of K M = 8."
     },
     "e": {
      "type": "formula",
-     "note": "Used DR = OS instead of OS squared."
+     "note": "Decay ratio taken as OS instead of OS^2."
     }
    }
   },
@@ -4406,27 +4406,27 @@
    "errors": {
     "a": {
      "type": "units",
-     "note": "Dead-time term 2.5w evaluated in degrees, giving 36 rad/min."
+     "note": "Dead-time phase 2.5w evaluated in degrees, not radians: 36 rad/min"
     },
     "b": {
      "type": "units",
-     "note": "Carried from (a): K_u correct for its own wrong omega_u."
+     "note": "Carried from (a): K_u = 240 at omega_u = 36"
     },
     "c": {
      "type": "units",
-     "note": "Carried from (a): P_u correct for its own wrong omega_u."
+     "note": "Carried from (a): P_u = 0.175 min"
     },
     "d": {
      "type": "units",
-     "note": "Carried from (b): tuning correct for its own wrong K_u."
+     "note": "Carried from (a): K_c = 109.1, tau_I = 0.146 min"
     },
     "e": {
      "type": "method",
-     "note": "GM at process phase crossover; PI term mis-written."
+     "note": "GM at process phase crossover, not PI loop; PI term mis-written"
     },
     "f": {
      "type": "method",
-     "note": "Carried from (e): PM evaluated at same wrong frequency."
+     "note": "PM evaluated at the same wrong frequency: 10.8 vs 36.3 deg"
     }
    }
   },
@@ -4445,15 +4445,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Correct polynomial but limit taken from b1 = 0 instead of c1 = 0."
+     "note": "Limit taken from b1 = 0 instead of s^1 entry c1 = 0: 12.6"
     },
     "b": {
      "type": "method",
-     "note": "First-order auxiliary equation with real root; wrong method."
+     "note": "First-order auxiliary equation with a real root: 0.232 rad/min"
     },
     "c": {
      "type": "formula",
-     "note": "Offset as 1/T(0) - 1 instead of 1 - T(0)."
+     "note": "Offset 1/T(0) - 1 = 1/3 instead of 1 - T(0) = 0.25"
     }
    }
   },
@@ -4471,11 +4471,11 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Fenske form leaves out the heavy-component terms."
+     "note": "Fenske without heavy-component terms: 3.21 vs 6.43"
     },
     "b": {
      "type": "method",
-     "note": "Invented formula (alpha+1)/(2 alpha-1), not pinch-based."
+     "note": "Invented formula (alpha+1)/(2 alpha - 1) = 0.875"
     }
    }
   },
@@ -4494,15 +4494,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Put the pinch at the lean end instead of the rich end."
+     "note": "Pinch placed at lean end (x = y_out/1.8); 3422 vs 171"
     },
     "b": {
-     "type": "method",
-     "note": "Took the operating-line slope L/G as m instead of equilibrium slope 1.8."
+     "type": "interpretation",
+     "note": "Took m as operating slope L/G instead of 1.8; A = 1"
     },
     "c": {
-     "type": "formula",
-     "note": "Used formulas that are not the Kremser equation."
+     "type": "method",
+     "note": "Improvised non-Kremser formulas; 1.9 vs 5.356"
     }
    }
   },
@@ -4522,20 +4522,20 @@
    },
    "errors": {
     "b": {
-     "type": "formula",
-     "note": "Invented formula gave 0.329 instead of 1.775."
+     "type": "method",
+     "note": "Invented formula; R_min = 0.329 vs 1.775"
     },
     "c": {
-     "type": "formula",
-     "note": "Carried from (b): R = 1.5 x own wrong R_min (0.329)."
+     "type": "method",
+     "note": "Carried from (b): R = 1.5 x 0.3291 = 0.494"
     },
     "d": {
-     "type": "method",
-     "note": "Wrong stripping line and unsupported graphical estimate."
+     "type": "incomplete",
+     "note": "No stepping; 8.2 from unsupported 'graphical' estimate"
     },
     "e": {
-     "type": "method",
-     "note": "Carried from (d): stage 9 from a wrong stripping line."
+     "type": "incomplete",
+     "note": "Feed stage 9 from unsupported estimate, no stepping"
     }
    }
   },
@@ -4557,27 +4557,27 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "D = 40 asserted without a supporting balance."
+     "note": "D = 40 asserted without a supporting balance"
     },
     "b": {
-     "type": "method",
-     "note": "No valid working; its own Fenske attempts gave negative values."
+     "type": "incomplete",
+     "note": "N_min = 6 asserted; own Fenske attempts give negative values."
     },
     "c": {
      "type": "method",
-     "note": "theta = 0.414 without a valid method."
+     "note": "Invented theta = (alpha-1)/alpha style relation; 0.414"
     },
     "d": {
-     "type": "method",
-     "note": "R_min = 0.5 without a valid method."
+     "type": "incomplete",
+     "note": "R_min = 0.5 chosen after undefined results, no calculation."
     },
     "e": {
      "type": "numerical",
-     "note": "Gilliland set-up right; X^0.5668 miscomputed, N = 12.96 vs 14.81."
+     "note": "Own inputs; 0.0909^0.5668 as 0.335 not 0.257, N = 12.96"
     },
     "f": {
-     "type": "method",
-     "note": "Used recoveries 0.02 and 0.03 as mole fractions."
+     "type": "interpretation",
+     "note": "Used recoveries 0.02, 0.03 as mole fractions; 0.948."
     }
    }
   },
@@ -4626,19 +4626,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Symbolic set-up only; \"typical\" values given without numerical solution."
+     "note": "Symbolic set-up only; 'typical' value 92.5 m declared"
     },
     "b": {
      "type": "incomplete",
-     "note": "Symbolic set-up only; \"typical\" values given without numerical solution."
+     "note": "Symbolic set-up only; 'typical' value 150.0 L/s declared"
     },
     "c": {
      "type": "incomplete",
-     "note": "Symbolic set-up only; \"typical\" values given without numerical solution."
+     "note": "Symbolic set-up only; 'typical' value 50.0 L/s out of B declared"
     },
     "d": {
      "type": "incomplete",
-     "note": "Symbolic set-up only; \"typical\" values given without numerical solution."
+     "note": "Symbolic set-up only; 'typical' value 100.0 L/s declared"
     }
    }
   },
@@ -4658,19 +4658,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Invented formula for mass flow."
+     "note": "Invented mass-flow formula; 269.5 kg/s vs 17.43."
     },
     "b": {
      "type": "method",
-     "note": "Carried from (a): Reynolds number correct for its own wrong mass flow."
+     "note": "Carried from (a): G D/mu right but uses 269.5 kg/s."
     },
     "c": {
      "type": "numerical",
-     "note": "Friction factor asserted, does not match Colebrook at its own Re."
+     "note": "Iteration not shown; asserts f = 0.018, own Re gives 0.0130."
     },
     "d": {
      "type": "method",
-     "note": "Carried from (a): velocity correct for its own wrong mass flow."
+     "note": "Carried from (a): mdot/(rho2 A) right but uses 269.5 kg/s."
     }
    }
   },
@@ -4689,11 +4689,11 @@
    "errors": {
     "b": {
      "type": "formula",
-     "note": "Wrong inverse transform: 80e^(-t/8) instead of 10e^(-t/8)."
+     "note": "Inverse of 80/(8s+1) taken as 80e^(-t/8), not 10e^(-t/8)."
     },
     "c": {
      "type": "formula",
-     "note": "Carried from (b): solved correctly from its own wrong expression."
+     "note": "Carried from (b): right 95 % set-up on wrong y'(t); 40.60 min."
     }
    }
   },
@@ -4714,11 +4714,11 @@
    "errors": {
     "d": {
      "type": "formula",
-     "note": "y_max = M(1+OS) omits the gain K = 4."
+     "note": "y_max = M(1+OS) omits gain K = 4; 2.506 vs 10.03."
     },
     "e": {
      "type": "numerical",
-     "note": "Exponent miscalculated (-3.45 instead of -2.74)."
+     "note": "Right formula, exponent -3.45 instead of -2.74; 0.0316 vs 0.0644."
     }
    }
   },
@@ -4740,27 +4740,27 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Correct phase equation but stated root 0.196 is 71% off."
+     "note": "Correct phase equation but root 0.196 instead of 0.677 rad/min"
     },
     "b": {
      "type": "numerical",
-     "note": "Correct K_u formula with a small slip, 1.361 vs 1.42."
+     "note": "Slip in 1/|G_p|: 1.361 instead of 1.42 for own omega_u"
     },
     "c": {
      "type": "numerical",
-     "note": "Carried from (a): P_u from wrong omega_u."
+     "note": "Carried from (a): P_u = 32.05 min"
     },
     "d": {
      "type": "numerical",
-     "note": "Carried from (b): tuning from wrong K_u and P_u."
+     "note": "Carried from (a),(b): K_c = 0.619, tau_I = 26.71 min"
     },
     "e": {
      "type": "method",
-     "note": "GM = 1 taken by assumption."
+     "note": "GM = 1 assumed instead of calculated at the phase crossover"
     },
     "f": {
      "type": "method",
-     "note": "Wrong PI phase and wrong frequency, giving 54.5 degrees."
+     "note": "Wrong PI phase and frequency give PM 54.5 vs 36.3 deg"
     }
    }
   },
@@ -4779,11 +4779,11 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Polynomial expanded wrongly; s^1 Routh entry has wrong sign."
+     "note": "Expansion slips (52s^3, 28s^2, (4+K_c)s) and sign error: 1.075"
     },
     "b": {
-     "type": "numerical",
-     "note": "Carried from (a): auxiliary equation built from wrong rows."
+     "type": "method",
+     "note": "Auxiliary equation built from the wrong Routh rows: 0.312."
     }
    }
   },
@@ -4800,8 +4800,8 @@
    },
    "errors": {
     "b": {
-     "type": "method",
-     "note": "Underwood root outside volatility interval; wrong R_min expression."
+     "type": "formula",
+     "note": "Underwood root 0.269 outside 1-2.5 and wrong R_min expression: 0.562."
     }
    }
   },
@@ -4820,15 +4820,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Pinch put at the lean end; y_out also miscomputed as 0.0001."
+     "note": "Lean-end pinch, and y_out miscomputed as 0.0001; 35820 kmol/h"
     },
     "b": {
-     "type": "method",
-     "note": "Took the acetone absorption rate as the equilibrium slope m."
+     "type": "interpretation",
+     "note": "Took m as acetone absorption rate, not equilibrium slope; 270"
     },
     "c": {
-     "type": "formula",
-     "note": "Invented formula, made positive by taking the absolute value."
+     "type": "method",
+     "note": "Invented formula, made positive by absolute value; 2.686"
     }
    }
   },
@@ -4849,19 +4849,19 @@
    "errors": {
     "b": {
      "type": "formula",
-     "note": "Misapplied Underwood formula gave 22.97."
+     "note": "Misapplied Underwood formula; R_min = 22.97 vs 1.775"
     },
     "c": {
      "type": "formula",
-     "note": "Carried from (b): R = 1.5 x own wrong R_min (22.97)."
+     "note": "Carried from (b): R = 1.5 x 22.97 = 34.46"
     },
     "d": {
      "type": "incomplete",
-     "note": "Stages explicitly assumed without any stepping."
+     "note": "15.2 stages explicitly assumed, no stepping"
     },
     "e": {
      "type": "incomplete",
-     "note": "Stage 7 matches but is assumed with no working."
+     "note": "Stage 7 assumed without stepping"
     }
    }
   },
@@ -4882,24 +4882,24 @@
    },
    "errors": {
     "b": {
-     "type": "method",
-     "note": "Inverted Fenske ratio with wrong bottoms fractions and a sign flip."
+     "type": "interpretation",
+     "note": "x_B,LK = 0.03 (recovery) as fraction, x_B,HK = 2.16; N_min = 11."
     },
     "c": {
      "type": "formula",
-     "note": "Feed equation without alpha in the numerator."
+     "note": "Feed equation without alpha in numerator; theta = 1.23"
     },
     "d": {
      "type": "incomplete",
-     "note": "R_min = 1.5 simply assumed after a negative result."
+     "note": "R_min = 1.5 simply assumed after a negative result"
     },
     "e": {
      "type": "numerical",
-     "note": "0.1525^0.5668 miscomputed (0.575 vs 0.344); N = 16.62 vs 22.6."
+     "note": "Own inputs; 0.1525^0.5668 as 0.575 not 0.344, N = 16.62"
     },
     "f": {
-     "type": "method",
-     "note": "Used x_B,LK = 0.03 instead of 0.0118."
+     "type": "interpretation",
+     "note": "Carried from (b): x_B,LK = 0.03 reused instead of 0.0118; 1.119."
     }
    }
   },
@@ -4918,15 +4918,15 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Reynolds number arithmetic gave 3507.55 instead of 350 despite correct formula."
+     "note": "Correct v and Re formula, but arithmetic gives 3507.55 instead of 350"
     },
     "b": {
-     "type": "interpretation",
-     "note": "Assumed turbulent flow and used the Blasius correlation."
+     "type": "numerical",
+     "note": "Blasius on own Re 3508 miscomputed: 0.0285 (formula gives 0.041)"
     },
     "c": {
-     "type": "interpretation",
-     "note": "Carried from (b): Darcy-Weisbach correct but applied to the turbulent-flow f."
+     "type": "numerical",
+     "note": "Carried from (b): Darcy-Weisbach right on own f, 11.2 kPa"
     }
    }
   },
@@ -4961,19 +4961,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Assumed f, never solved the equations; values without supporting working."
+     "note": "Equations never solved; 95.3 m has no supporting working"
     },
     "b": {
      "type": "incomplete",
-     "note": "Assumed f, never solved the equations; values without supporting working."
+     "note": "Equations never solved; 45.2 L/s has no supporting working"
     },
     "c": {
      "type": "incomplete",
-     "note": "Assumed f, never solved the equations; values without supporting working."
+     "note": "Equations never solved; 51.3 L/s out of B has no supporting working"
     },
     "d": {
      "type": "incomplete",
-     "note": "Assumed f, never solved the equations; values without supporting working."
+     "note": "Equations never solved; 25.0 L/s has no supporting working"
     }
    }
   },
@@ -4993,19 +4993,19 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Garbled flow equation, solution not shown, value twice the reference."
+     "note": "Garbled isothermal flow equation, solution not shown; 34.9 vs 17.43 kg/s."
     },
     "b": {
      "type": "numerical",
-     "note": "Factor-10 arithmetic error in Reynolds number."
+     "note": "Factor-10 slip: own m D/(mu A) gives 1.35e7, not 1.35e6."
     },
     "c": {
      "type": "numerical",
-     "note": "Friction factor asserted, does not match Colebrook at its own Re."
+     "note": "Asserts f = 0.018; Colebrook at own Re gives about 0.0139."
     },
     "d": {
      "type": "method",
-     "note": "Carried from (a): velocity correct for its own wrong mass flow."
+     "note": "Carried from (a): mdot/(rho2 A) right but uses 34.9 kg/s."
     }
    }
   },
@@ -5024,11 +5024,11 @@
    "errors": {
     "b": {
      "type": "numerical",
-     "note": "Wrong partial-fraction result, y = 10 - 1.25e^(-t/8)."
+     "note": "Partial-fraction slip gives y' = 10 - 1.25e^(-t/8); 9.642 vs 7.135."
     },
     "c": {
      "type": "numerical",
-     "note": "Carried from (b): solved correctly from its own wrong expression."
+     "note": "Carried from (b): right 95 % set-up on wrong y'(t); 7.33 min."
     }
    }
   },
@@ -5049,15 +5049,15 @@
    "errors": {
     "b": {
      "type": "numerical",
-     "note": "Evaluated pi*0.4 as 0.693, giving 46.9 % overshoot."
+     "note": "pi x 0.4 evaluated as 0.693; overshoot 46.9 % vs 25.4 %."
     },
     "d": {
      "type": "numerical",
-     "note": "Carried from (b): correct method applied to its own wrong overshoot."
+     "note": "Carried from (b): K M (1+OS) right but uses 46.9 %; 11.75."
     },
     "e": {
      "type": "formula",
-     "note": "Used DR = OS instead of OS squared."
+     "note": "Decay ratio taken as OS instead of OS^2; 0.469 vs 0.0644."
     }
    }
   },
@@ -5078,28 +5078,28 @@
    },
    "errors": {
     "a": {
-     "type": "numerical",
-     "note": "Correct phase equation solved with atan(x)=x at 12w=2.6; root wrong."
+     "type": "method",
+     "note": "Phase equation solved with atan(x) = x at x = 2.6: 0.217."
     },
     "b": {
      "type": "numerical",
-     "note": "Correct K_u formula with small arithmetic slip, 1.534 vs 1.548."
+     "note": "Small slip: K_u 1.534 instead of 1.548 for own omega_u"
     },
     "c": {
-     "type": "numerical",
-     "note": "Carried from (a): P_u from wrong omega_u."
+     "type": "method",
+     "note": "Carried from (a): P_u = 28.98 min."
     },
     "d": {
-     "type": "numerical",
-     "note": "Carried from (b): tuning from slightly wrong K_u and P_u."
+     "type": "method",
+     "note": "Carried from (a)-(c): K_c = 0.697, tau_I = 24.15 min."
     },
     "e": {
      "type": "method",
-     "note": "GM = 2 from incoherent approximations, no valid calculation."
+     "note": "GM = 2 from incoherent approximations, no valid calculation"
     },
     "f": {
      "type": "method",
-     "note": "PM = 147 degrees from incoherent approximations, no valid calculation."
+     "note": "PM = 147 deg from incoherent approximations, no valid calculation"
     }
    }
   },
@@ -5117,16 +5117,16 @@
    },
    "errors": {
     "a": {
-     "type": "numerical",
-     "note": "Process polynomial wrongly expanded (13s for 8s); no Routh calculation."
+     "type": "incomplete",
+     "note": "K_c,max = 2.38 with garbled equation and no Routh calculation."
     },
     "b": {
      "type": "incomplete",
-     "note": "0.90 rad/min with no supporting working."
+     "note": "omega = 0.90 rad/min with no supporting working"
     },
     "c": {
      "type": "incomplete",
-     "note": "Offset 16.67 % with no working."
+     "note": "Offset 16.67 % given with no working"
     }
    }
   },
@@ -5144,7 +5144,7 @@
    "errors": {
     "b": {
      "type": "method",
-     "note": "Invented formula that ignores the feed pinch."
+     "note": "Invented formula ignoring feed pinch gives R_min = 31 vs 1.44"
     }
    }
   },
@@ -5163,7 +5163,7 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Balanced on all acetone entering instead of the 1.9 kmol/h absorbed."
+     "note": "Balance G*y_in = L*x omits outlet acetone; 180.18 vs 171"
     },
     "b": {
      "type": "method",
@@ -5171,7 +5171,7 @@
     },
     "c": {
      "type": "formula",
-     "note": "Garbled Kremser form; final value has no supporting working."
+     "note": "Garbled Kremser form gives 0.073; FINAL 5.07 unsupported"
     }
    }
   },
@@ -5191,20 +5191,20 @@
    },
    "errors": {
     "b": {
-     "type": "formula",
-     "note": "Invented formula ignoring the q-line pinch gave 1.244."
+     "type": "method",
+     "note": "Invented (xD - zF)/(zF - xB), ignores pinch; 1.244"
     },
     "c": {
-     "type": "formula",
-     "note": "Carried from (b): R = 1.5 x own wrong R_min (1.244)."
+     "type": "method",
+     "note": "Carried from (b): R = 1.5 x 1.244 = 1.866"
     },
     "d": {
      "type": "incomplete",
-     "note": "About 4 stages guessed without stepping."
+     "note": "About 4 stages guessed without stepping"
     },
     "e": {
      "type": "incomplete",
-     "note": "Stage 2 guessed without stepping."
+     "note": "Stage 2 guessed without stepping"
     }
    }
   },
@@ -5226,23 +5226,23 @@
    "errors": {
     "b": {
      "type": "incomplete",
-     "note": "Reply degenerates into garbled text; no usable values."
+     "note": "Reply degenerates into garbled text, no usable value"
     },
     "c": {
      "type": "incomplete",
-     "note": "Reply degenerates into garbled text; no usable values."
+     "note": "Reply degenerates into garbled text, no usable value"
     },
     "d": {
      "type": "incomplete",
-     "note": "Reply degenerates into garbled text; no usable values."
+     "note": "Reply degenerates into garbled text, no usable value"
     },
     "e": {
      "type": "incomplete",
-     "note": "Reply degenerates into garbled text; no usable values."
+     "note": "Reply degenerates into garbled text, no usable value"
     },
     "f": {
      "type": "incomplete",
-     "note": "Reply degenerates into garbled text; no usable values."
+     "note": "Reply degenerates into garbled text, no usable value"
     }
    }
   },
@@ -5276,15 +5276,15 @@
    "errors": {
     "b": {
      "type": "numerical",
-     "note": "Colebrook term 2.51/(Re sqrt f) evaluated ten times too large; f 24% off."
+     "note": "2.51/(Re sqrt f) evaluated tenfold too large: f 0.0223"
     },
     "c": {
      "type": "numerical",
-     "note": "Carried from (b): correct energy balance using the wrong f."
+     "note": "Carried from (b): energy balance right on own f, 32.1 m"
     },
     "d": {
      "type": "numerical",
-     "note": "Carried from (c): correct formula applied to its own head."
+     "note": "Carried from (c): power right on own H, 10.9 kW"
     }
    }
   },
@@ -5304,15 +5304,15 @@
    "errors": {
     "b": {
      "type": "numerical",
-     "note": "Loose rounding in the iterations; 133 instead of 137.8 L/s."
+     "note": "Loose rounding in iterations: 133 vs 137.8 L/s"
     },
     "c": {
      "type": "numerical",
-     "note": "Arithmetic slip: 21.7 L/s where 1 m of head gives about 14.4."
+     "note": "Q2 from 1 m head miscomputed: 21.7 vs ~14.4 L/s"
     },
     "d": {
      "type": "numerical",
-     "note": "Correct method but loose numerics; 114 instead of 122.8 L/s."
+     "note": "Loose numerics in iterations: 114 vs 122.8 L/s"
     }
    }
   },
@@ -5332,15 +5332,15 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Darcy f used with 4fL/D, acceleration term dropped, factor-1000 slip."
+     "note": "4fL/D with Darcy f, plus factor-1000 slip; 196.3 vs 17.43 kg/s."
     },
     "b": {
      "type": "numerical",
-     "note": "Factor-10 arithmetic error in Reynolds number."
+     "note": "Factor-10 slip: own 4 mdot/(pi D mu) gives 7.57e7, not 7.57e6."
     },
     "d": {
      "type": "formula",
-     "note": "Carried from (a): velocity correct for its own wrong mass flow."
+     "note": "Carried from (a): mdot/(rho2 A) right but uses 196.3 kg/s."
     }
    }
   },
@@ -5375,23 +5375,23 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Matched unnormalised coefficient 2.4, plus garbled division; zeta = 0.6."
+     "note": "Unnormalised 2 zeta omega_n = 2.4, garbled division; zeta = 0.6."
     },
     "b": {
      "type": "formula",
-     "note": "Carried from (a): right formula applied to its own wrong zeta."
+     "note": "Carried from (a): right formula with zeta = 0.6; 9.48 %."
     },
     "c": {
      "type": "formula",
-     "note": "Carried from (a): right formula applied to its own wrong zeta."
+     "note": "Carried from (a): right formula with zeta = 0.6; 11.78 min."
     },
     "d": {
-     "type": "interpretation",
-     "note": "Used wrong gain K = 36 instead of 4."
+     "type": "formula",
+     "note": "Gain K = 36 from unnormalised standard-form matching (true 4); 78.83 vs 10.03."
     },
     "e": {
      "type": "formula",
-     "note": "Carried from (a): right formula applied to its own wrong zeta."
+     "note": "Carried from (a): OS^2 right with zeta = 0.6; 0.009."
     }
    }
   },
@@ -5413,11 +5413,11 @@
    "errors": {
     "e": {
      "type": "method",
-     "note": "GM evaluated at process ultimate frequency, not PI-loop phase crossover."
+     "note": "GM at process ultimate frequency, not PI loop phase crossover: 2.16"
     },
     "f": {
      "type": "formula",
-     "note": "Gain crossover right but PI phase added with wrong sign."
+     "note": "PI phase added with wrong sign: PM 81.1 vs 36.3 deg"
     }
    }
   },
@@ -5436,11 +5436,11 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Wrong characteristic equation; Kc multiplied the whole process polynomial."
+     "note": "K_c multiplied (4s+1) by whole process polynomial; 6.24 coincidental"
     },
     "b": {
      "type": "method",
-     "note": "Carried from (a): auxiliary equation of wrong polynomial."
+     "note": "Carried from (a): auxiliary equation of wrong polynomial, 0.164 rad/min"
     }
    }
   },
@@ -5487,12 +5487,12 @@
    },
    "errors": {
     "d": {
-     "type": "numerical",
-     "note": "Stepping botched and abandoned; unsupported 10.3 stages."
+     "type": "incomplete",
+     "note": "Stepping botched and abandoned; 10.3 unsupported vs 12.42"
     },
     "e": {
      "type": "incomplete",
-     "note": "Stage 5 claimed from stepping that is not shown."
+     "note": "Stage 5 claimed from stepping not shown"
     }
    }
   },
@@ -5514,15 +5514,15 @@
    "errors": {
     "c": {
      "type": "numerical",
-     "note": "Trial-and-error stopped at theta = 1.35 instead of 1.369."
+     "note": "Trial-and-error stopped at theta = 1.35 (residual -0.09) vs 1.369"
     },
     "d": {
      "type": "numerical",
-     "note": "Carried from (c): R_min = 1.70 from the theta slip."
+     "note": "Carried from (c): R_min = 1.70 from theta slip"
     },
     "e": {
      "type": "numerical",
-     "note": "X^0.5668 miscomputed (0.3356 vs 0.3527); N = 22.18."
+     "note": "X^0.5668 as 0.3356 not 0.3527; N = 22.18"
     }
    }
   },
@@ -5541,11 +5541,11 @@
    "errors": {
     "b": {
      "type": "formula",
-     "note": "Used Fanning laminar formula 16/Re although the Darcy factor was asked."
+     "note": "Fanning laminar 16/Re used as Darcy factor: 0.0457 vs 0.183"
     },
     "c": {
      "type": "formula",
-     "note": "Carried from (b): Darcy-Weisbach correct but applied to the Fanning factor."
+     "note": "Carried from (b): Darcy-Weisbach right on own f, 17.93 kPa"
     }
    }
   },
@@ -5564,8 +5564,8 @@
    },
    "errors": {
     "b": {
-     "type": "incomplete",
-     "note": "f stated as Colebrook solution without shown iteration; 3.3% off."
+     "type": "numerical",
+     "note": "Colebrook value 0.0185 stated without iteration, 3.3 % off 0.0179."
     },
     "c": {
      "type": "formula",
@@ -5593,19 +5593,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Method described but no iteration shown; flows inconsistent with its head."
+     "note": "Method described, no iteration shown; 100.2 m asserted"
     },
     "b": {
      "type": "incomplete",
-     "note": "Method described but no iteration shown; flows inconsistent with its head."
+     "note": "Method described, no iteration shown; 50.7 L/s asserted"
     },
     "c": {
      "type": "incomplete",
-     "note": "Method described but no iteration shown; flows inconsistent with its head."
+     "note": "Method described, no iteration shown; 1.7 L/s out of B asserted"
     },
     "d": {
      "type": "incomplete",
-     "note": "Method described but no iteration shown; flows inconsistent with its head."
+     "note": "Method described, no iteration shown; 49.0 L/s asserted"
     }
    }
   },
@@ -5625,19 +5625,19 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Dimensionally wrong equation: L instead of L/D, no acceleration term."
+     "note": "Dimensionally wrong equation: L not L/D, LHS over P1; 2.91 kg/s."
     },
     "b": {
      "type": "numerical",
-     "note": "Re taken from first-iteration flow, not the final mass flow."
+     "note": "Re from first-iteration flow 2.60 kg/s, not final 2.91."
     },
     "c": {
      "type": "numerical",
-     "note": "Friction factor does not match Colebrook at its own Reynolds number."
+     "note": "f = 0.016 does not satisfy Colebrook at own Re (0.0141)."
     },
     "d": {
      "type": "formula",
-     "note": "Carried from (a): velocity correct for its own wrong mass flow."
+     "note": "Carried from (a): mdot/(rho2 A) right but uses 2.91 kg/s."
     }
    }
   },
@@ -5672,7 +5672,7 @@
    "errors": {
     "c": {
      "type": "numerical",
-     "note": "omega_d miscalculated as 0.277 instead of 0.3055; peak time 10 % off."
+     "note": "omega_d miscalculated 0.277 instead of 0.3055; 11.34 vs 10.28 min."
     }
    }
   },
@@ -5694,27 +5694,27 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Correct phase equation but stated root 0.425 is 37% off."
+     "note": "Correct phase equation but root 0.425 instead of 0.677 rad/min"
     },
     "b": {
-     "type": "method",
-     "note": "Dead time wrongly treated as reducing magnitude."
+     "type": "formula",
+     "note": "Dead time wrongly reduces magnitude (factor e^-2.5w): K_u 8.77 vs 4.55."
     },
     "c": {
      "type": "numerical",
-     "note": "Carried from (a): P_u from wrong omega_u."
+     "note": "Carried from (a): P_u = 14.8 min"
     },
     "d": {
-     "type": "method",
-     "note": "Carried from (b): tuning from wrong K_u and P_u."
+     "type": "formula",
+     "note": "Carried from (b): K_c = 3.99, tau_I = 12.3 min."
     },
     "e": {
      "type": "incomplete",
-     "note": "GM = 2.0 stated without calculation."
+     "note": "GM = 2.0 stated without any calculation"
     },
     "f": {
      "type": "incomplete",
-     "note": "PM = 45 degrees stated without calculation."
+     "note": "PM = 45 deg stated without any calculation"
     }
    }
   },
@@ -5732,12 +5732,12 @@
    },
    "errors": {
     "a": {
-     "type": "numerical",
-     "note": "Process polynomial expanded wrongly; only s^2 row checked."
+     "type": "method",
+     "note": "Only s^2 row checked, s^1 condition missed; expansion also wrong: 0.7."
     },
     "b": {
      "type": "method",
-     "note": "Used imaginary part only; real-part equation not satisfied."
+     "note": "Used imaginary part only; real-part equation not satisfied: 0.316"
     }
    }
   },
@@ -5769,7 +5769,7 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Balanced on all acetone entering instead of the 95 % absorbed."
+     "note": "Balance G*y_in = L*x omits outlet acetone; 180 vs 171"
     },
     "b": {
      "type": "method",
@@ -5777,7 +5777,7 @@
     },
     "c": {
      "type": "formula",
-     "note": "Used ln(y_in/y_out)/ln A - 1, not the Kremser equation."
+     "note": "Wrong Kremser form ln(y_in/y_out)/ln A - 1; 6.4"
     }
    }
   },
@@ -5798,19 +5798,19 @@
    "errors": {
     "b": {
      "type": "incomplete",
-     "note": "R_min = 1.2 assumed after abandoned attempts, no calculation."
+     "note": "R_min = 1.2 assumed after abandoned attempts, no calculation"
     },
     "c": {
      "type": "incomplete",
-     "note": "Carried from (b): R = 1.5 x own wrong R_min (1.2)."
+     "note": "Carried from (b): R = 1.5 x 1.2 = 1.8"
     },
     "d": {
      "type": "incomplete",
-     "note": "8.5 stages supposed without stepping."
+     "note": "8.5 stages supposed without stepping"
     },
     "e": {
      "type": "incomplete",
-     "note": "Stage 4 supposed without stepping."
+     "note": "Stage 4 supposed without stepping"
     }
    }
   },
@@ -5831,24 +5831,24 @@
    },
    "errors": {
     "a": {
-     "type": "method",
-     "note": "Omitted the 1.2 kmol/h of n-pentane in the distillate."
+     "type": "interpretation",
+     "note": "Assumed no n-pentane in distillate; D = 39.3 vs 40.5."
     },
     "c": {
      "type": "numerical",
-     "note": "Root 1.47 does not satisfy the feed equation; reference 1.369."
+     "note": "Root 1.47 does not satisfy the feed equation (1.369)"
     },
     "d": {
-     "type": "method",
-     "note": "Used component flows D_i instead of mole fractions x_D,i."
+     "type": "interpretation",
+     "note": "Used component flows D_i instead of x_D,i; R_min = 131.9."
     },
     "e": {
      "type": "numerical",
-     "note": "Y miscomputed (0.535 vs 0.425); N = 20.4 vs 19.1."
+     "note": "Own inputs; Y as 0.535 not 0.425, N = 20.4"
     },
     "f": {
-     "type": "method",
-     "note": "Used component flows 0.7 and 1.2 instead of mole fractions."
+     "type": "interpretation",
+     "note": "Used component flows 0.7, 1.2 instead of mole fractions; 0.908."
     }
    }
   },
@@ -5986,7 +5986,7 @@
    "errors": {
     "b": {
      "type": "formula",
-     "note": "Underwood root equation set to sum = 1 instead of 1 - q."
+     "note": "Underwood root equation set to 1 instead of 1-q = 0: 7.76"
     }
    }
   },
@@ -6020,12 +6020,12 @@
    },
    "errors": {
     "d": {
-     "type": "formula",
-     "note": "Stripping line wrong: V' = V + (1-q)F instead of V - (1-q)F."
+     "type": "incomplete",
+     "note": "No stepping shown; also V' = V + (1-q)F, slope 0.878"
     },
     "e": {
      "type": "incomplete",
-     "note": "Stage 5 given without shown stepping."
+     "note": "Stage 5 claimed without shown stepping"
     }
    }
   },
@@ -6046,16 +6046,16 @@
    },
    "errors": {
     "c": {
-     "type": "method",
-     "note": "Solved feed equation without alpha in the numerator; theta = 1.786."
+     "type": "formula",
+     "note": "Feed equation without alpha in numerator; theta = 1.786 vs 1.369."
     },
     "d": {
-     "type": "method",
-     "note": "Carried from (c): correct Underwood formula with its own wrong theta."
+     "type": "formula",
+     "note": "Carried from (c): R_min = 7.10 from wrong theta."
     },
     "e": {
-     "type": "method",
-     "note": "Carried from (c): correct Gilliland solve from its own R_min."
+     "type": "formula",
+     "note": "Carried from (d): N = 19.8 from wrong R_min."
     }
    }
   },
@@ -6104,19 +6104,19 @@
    "errors": {
     "a": {
      "type": "incomplete",
-     "note": "Values near reference but stated in prose without equations or working."
+     "note": "Value 101.1 m stated in prose with no equations or working"
     },
     "b": {
      "type": "incomplete",
-     "note": "Values near reference but stated in prose without equations or working."
+     "note": "Value 138 L/s stated in prose with no equations or working"
     },
     "c": {
      "type": "incomplete",
-     "note": "Values near reference but stated in prose without equations or working."
+     "note": "Value 14.9 L/s into B stated in prose with no equations or working"
     },
     "d": {
      "type": "incomplete",
-     "note": "Values near reference but stated in prose without equations or working."
+     "note": "Value 123 L/s stated in prose with no equations or working"
     }
    }
   },
@@ -6240,7 +6240,7 @@
    "errors": {
     "d": {
      "type": "numerical",
-     "note": "Counted x_D as liquid of stage 1, adding one stage (13.42)."
+     "note": "Counted x_D as stage-1 liquid, adding one stage; 13.42"
     },
     "e": {
      "type": "numerical",
@@ -6310,7 +6310,7 @@
    "errors": {
     "c": {
      "type": "numerical",
-     "note": "Flow 15.9 L/s is 6.1% off despite correct method and direction."
+     "note": "Q2 miscomputed at own 1.1 m head: 15.9 vs ~15.1 L/s"
     }
    }
   },
@@ -6451,7 +6451,7 @@
    "errors": {
     "e": {
      "type": "numerical",
-     "note": "X^0.5668 miscomputed (0.4006 vs 0.3555); N = 20.13 vs 21.51."
+     "note": "X^0.5668 as 0.4006 not 0.3555; N = 20.13 vs 21.51"
     }
    }
   },
@@ -6515,15 +6515,15 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Friction term doubled (4fL/D with Darcy f); mass flow about half."
+     "note": "Friction term doubled (4fL/D with Darcy f); 8.66 vs 17.43 kg/s."
     },
     "b": {
      "type": "formula",
-     "note": "Carried from (a): Reynolds number correct for its own wrong mass flux."
+     "note": "Carried from (a): G D/mu right but uses halved mass flux."
     },
     "d": {
      "type": "formula",
-     "note": "Carried from (a): velocity correct for its own wrong mass flux."
+     "note": "Carried from (a): G Rs T/p2 right but uses halved mass flux."
     }
    }
   },
@@ -6616,15 +6616,15 @@
    "errors": {
     "a": {
      "type": "method",
-     "note": "Used L_min = mG, ignoring the 95 % recovery."
+     "note": "Claimed L_min = mG regardless of recovery; 180 vs 171"
     },
     "b": {
      "type": "method",
-     "note": "Carried from (a): correct A = L/(mG) applied to its own wrong L."
+     "note": "Carried from (a): A = 270/180 = 1.5 from wrong L"
     },
     "c": {
      "type": "formula",
-     "note": "Used y_out/y_in = (1/A)^N, not the Kremser equation."
+     "note": "Used y_out/y_in = (1/A)^N, not Kremser; 7.389 vs 5.356"
     }
    }
   },
@@ -6661,16 +6661,16 @@
    },
    "errors": {
     "c": {
-     "type": "method",
-     "note": "Solved feed equation without alpha in the numerator; theta = 1.5843."
+     "type": "formula",
+     "note": "Feed equation without alpha in numerator; theta = 1.5843 vs 1.369."
     },
     "d": {
-     "type": "method",
-     "note": "Carried from (c): correct Underwood formula with its own wrong theta."
+     "type": "formula",
+     "note": "Carried from (c): R_min = 3.222 from wrong theta."
     },
     "e": {
-     "type": "method",
-     "note": "Carried from (c): correct Gilliland solve from its own R_min."
+     "type": "formula",
+     "note": "Carried from (d): N = 20.57 from wrong R_min."
     }
    }
   },
@@ -6704,15 +6704,15 @@
    "errors": {
     "b": {
      "type": "numerical",
-     "note": "Colebrook term 2.51/(Re sqrt f) evaluated about 30 times too large."
+     "note": "2.51/(Re sqrt f) evaluated ~30 times too large: f 0.0346"
     },
     "c": {
      "type": "numerical",
-     "note": "Carried from (b): correct energy balance using the wrong f."
+     "note": "Carried from (b): energy balance right on own f, 41.7 m"
     },
     "d": {
      "type": "numerical",
-     "note": "Carried from (c): correct formula applied to its own head."
+     "note": "Carried from (c): power right on own H, 14.2 kW"
     }
    }
   },
@@ -6732,19 +6732,19 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Square-root evaluations off by about 3x; false continuity balance accepted at 95 m."
+     "note": "Q square roots ~3x too small, false continuity at H_J 95 m"
     },
     "b": {
      "type": "numerical",
-     "note": "Carried from (a): same square-root slips, 53 instead of 137.8 L/s."
+     "note": "Same wrong square-root evaluation: Q1 53 vs 137.8 L/s"
     },
     "c": {
      "type": "numerical",
-     "note": "Carried from (a): working at H_J = 95 m gives flow out of B."
+     "note": "Carried from (a): H_J 95 m means flow out of B; FINAL says into"
     },
     "d": {
      "type": "numerical",
-     "note": "Carried from (a): same square-root slips, 62 instead of 122.8 L/s."
+     "note": "Same wrong square-root evaluation: Q3 62 vs 122.8 L/s"
     }
    }
   },
@@ -6764,19 +6764,19 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Dimensionally inconsistent flow equation (4fL/(M D^2), average-pressure mixing)."
+     "note": "Dimensionally inconsistent flow equation (4fL/(M D^2)); 4.52 vs 17.43 kg/s."
     },
     "b": {
      "type": "formula",
-     "note": "Carried from (a): Reynolds number correct for its own wrong mass flux."
+     "note": "Carried from (a): G D/mu right but uses wrong mass flux."
     },
     "c": {
      "type": "numerical",
-     "note": "Friction factor 9.7 % off Colebrook at its own Reynolds number."
+     "note": "f = 0.0145 does not satisfy Colebrook at own Re (0.0137)."
     },
     "d": {
      "type": "numerical",
-     "note": "Factor-10 arithmetic error in velocity."
+     "note": "Factor-10 arithmetic: own formula and numbers give 3.18, not 31.9 m/s."
     }
    }
   },
@@ -6828,27 +6828,27 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Accepted 1.01 rad/min although own phase check gave 4.01, not pi."
+     "note": "Accepted root 1.01 rad/min although own check gave 4.01, not pi"
     },
     "b": {
      "type": "numerical",
-     "note": "Carried from (a): K_u from wrong omega_u."
+     "note": "Carried from (a): K_u = 6.76"
     },
     "c": {
      "type": "numerical",
-     "note": "Carried from (a): P_u from wrong omega_u."
+     "note": "Carried from (a): P_u = 6.22 min"
     },
     "d": {
      "type": "numerical",
-     "note": "Carried from (b): tuning from wrong K_u and P_u."
+     "note": "Carried from (a): K_c = 3.07, tau_I = 5.18 min"
     },
     "e": {
      "type": "numerical",
-     "note": "Assumed omega_pc instead of solving; PI magnitude factor miscomputed."
+     "note": "omega_pc 0.89 assumed not solved, PI magnitude miscomputed: GM 1.62"
     },
     "f": {
      "type": "incomplete",
-     "note": "PM at assumed gain crossover, no calculation."
+     "note": "PM 31.5 deg at an assumed gain crossover, no calculation"
     }
    }
   },
@@ -6910,11 +6910,11 @@
    "errors": {
     "d": {
      "type": "numerical",
-     "note": "Every equilibrium inversion wrong (x = 0.8276 for y = 0.96); final value guessed."
+     "note": "Equilibrium inversions wrong (x = 0.8276 for y = 0.96, not 0.909)"
     },
     "e": {
      "type": "numerical",
-     "note": "Carried from (d): stage 4 follows from the wrong stepping."
+     "note": "Carried from (d): wrong stepping gives stage 4 not 7"
     }
    }
   },
@@ -6965,15 +6965,15 @@
    "errors": {
     "b": {
      "type": "numerical",
-     "note": "Colebrook term 2.51/(Re sqrt f) evaluated about 50 times too small."
+     "note": "2.51/(Re sqrt f) evaluated ~50 times too small: f 0.0164"
     },
     "c": {
      "type": "numerical",
-     "note": "Carried from (b): correct energy balance using the wrong f."
+     "note": "Carried from (b): energy balance right on own f, 27.5 m"
     },
     "d": {
      "type": "numerical",
-     "note": "Carried from (c): correct formula applied to its own head, about 4% off."
+     "note": "Carried from (c): power right on own H, 9.36 kW"
     }
    }
   },
@@ -6993,7 +6993,7 @@
    "errors": {
     "c": {
      "type": "numerical",
-     "note": "Junction head slightly low, leaving 0.7 m across pipe 2; flow 20% off."
+     "note": "Slightly low H_J leaves 0.7 m on pipe 2: 12 vs 15.0 L/s"
     }
    }
   },
@@ -7013,15 +7013,15 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Friction term doubled in integrated equation; result 29 % low."
+     "note": "Friction term doubled relative to 2 ln(p1/p2); 12.3 vs 17.43 kg/s."
     },
     "b": {
      "type": "formula",
-     "note": "Carried from (a): Reynolds number correct for its own wrong mass flux."
+     "note": "Carried from (a): G D/mu right but uses low mass flux."
     },
     "d": {
      "type": "formula",
-     "note": "Carried from (a): velocity correct for its own wrong mass flux."
+     "note": "Carried from (a): G/rho2 right but uses low mass flux."
     }
    }
   },
@@ -7073,11 +7073,11 @@
    "errors": {
     "e": {
      "type": "numerical",
-     "note": "Correct method but root 0.52 off (0.599), so GM 1.63."
+     "note": "Phase-crossover root 0.52 instead of 0.599 rad/min: GM 1.63 vs 1.90"
     },
     "f": {
      "type": "numerical",
-     "note": "Correct method but omega_gc 0.36 instead of 0.324, so PM 31.6."
+     "note": "Gain crossover 0.36 instead of 0.324 rad/min: PM 31.6 vs 36.3"
     }
    }
   },
@@ -7096,11 +7096,11 @@
    "errors": {
     "a": {
      "type": "numerical",
-     "note": "Algebra slip: 1156Kc term subtracted twice, giving Kc,max 2.4."
+     "note": "Algebra slip: 1156K_c term subtracted twice, K_c,max 2.4 vs 6.357"
     },
     "b": {
      "type": "numerical",
-     "note": "Carried from (a): correct method applied to wrong Kc,max."
+     "note": "Carried from (a): omega = 0.316 rad/min at K_c = 2.4"
     }
    }
   },
@@ -7148,7 +7148,7 @@
    "errors": {
     "d": {
      "type": "numerical",
-     "note": "Invalid stage table; liquid compositions fall far too fast."
+     "note": "Stage table values inconsistent with equilibrium; 7.71 vs 12.42"
     },
     "e": {
      "type": "numerical",
@@ -7233,7 +7233,7 @@
    "errors": {
     "a": {
      "type": "formula",
-     "note": "Acceleration term has the wrong sign in the derived equation."
+     "note": "Acceleration term with wrong sign (- ln instead of + ln); value 17.4 right."
     }
    }
   },
@@ -7312,7 +7312,7 @@
    "errors": {
     "b": {
      "type": "formula",
-     "note": "Underwood root equation set to sum = 1 instead of 1 - q."
+     "note": "Underwood root equation set to 1 instead of 1-q = 0: 7.79"
     }
    }
   },
@@ -7363,16 +7363,16 @@
    },
    "errors": {
     "c": {
-     "type": "method",
-     "note": "Solved feed equation without alpha in the numerator; theta = 1.7862."
+     "type": "formula",
+     "note": "Feed equation without alpha in numerator; theta = 1.7862 vs 1.369."
     },
     "d": {
-     "type": "method",
-     "note": "Carried from (c): correct Underwood formula with its own wrong theta."
+     "type": "formula",
+     "note": "Carried from (c): R_min = 7.10 from wrong theta."
     },
     "e": {
-     "type": "method",
-     "note": "Carried from (c): correct Gilliland solve from its own R_min."
+     "type": "formula",
+     "note": "Carried from (d): N = 19.84 from wrong R_min."
     }
    }
   },
@@ -7606,7 +7606,7 @@
    "errors": {
     "b": {
      "type": "numerical",
-     "note": "Toluene vapour pressure evaluated wrong at dew point; result 2.5 C off."
+     "note": "Toluene Psat (121.19 C) miscomputed, 1279 not 1017 mmHg; dew point 2.5 C high"
     }
    }
   },
@@ -7824,11 +7824,11 @@
    "errors": {
     "e": {
      "type": "numerical",
-     "note": "Correct method but coarse interpolation left PM and gain-crossover frequency slightly off."
+     "note": "Coarse interpolation: PM 45.0 deg (1.1 % low), omega_gc 0.288 (1.5 % high)"
     },
     "f": {
      "type": "method",
-     "note": "Took a single-frequency estimate of M_s instead of searching for the |S| maximum."
+     "note": "Single guessed point at 0.35 rad/min, no frequency search for the maximum"
     }
    }
   },

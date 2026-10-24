@@ -1,84 +1,84 @@
 {
  "meta-llama/llama-3.2-3b-instruct": {
   "a": {
-   "type": "method",
-   "note": "Invented relation assuming F = 1.5G instead of a pinch balance."
+   "type": "interpretation",
+   "note": "Misread 1.5 factor as F = 1.5G, then invented relation; 0.028 vs 171"
   },
   "b": {
-   "type": "method",
-   "note": "Used a gas mass flow as m instead of the equilibrium slope."
+   "type": "interpretation",
+   "note": "Took m as a gas mass flow, not equilibrium slope 1.8"
   },
   "c": {
-   "type": "formula",
-   "note": "Invented formula instead of the Kremser equation; 18 % off."
+   "type": "method",
+   "note": "Invented stage relation instead of Kremser; 4.38 vs 5.356"
   }
  },
  "meta-llama/llama-3.2-1b-instruct": {
   "a": {
    "type": "method",
-   "note": "No valid balance or pinch condition used."
+   "note": "No valid balance or pinch; 1.0 vs 171 kmol/h"
   },
   "b": {
-   "type": "formula",
-   "note": "Meaningless flow ratio instead of A = L/(mG)."
+   "type": "method",
+   "note": "Meaningless flow ratio instead of L/(mG); 0.889"
   },
   "c": {
-   "type": "formula",
-   "note": "Invented relation instead of the Kremser equation."
+   "type": "method",
+   "note": "Invented relation instead of Kremser; 2.0 vs 5.356"
   }
  },
  "meta-llama/llama-3.1-8b-instruct": {
   "a": {
    "type": "incomplete",
-   "note": "Reply looped and was cut off; no value given."
+   "note": "Reply loops and is cut off; no value given"
   },
   "b": {
    "type": "incomplete",
-   "note": "Reply looped and was cut off; no value given."
+   "note": "Reply loops and is cut off; no value given"
   },
   "c": {
    "type": "incomplete",
-   "note": "Reply looped and was cut off; no value given."
+   "note": "Reply loops and is cut off; no value given"
   }
  },
  "mistralai/mistral-nemo": {
   "a": {
-   "type": "formula",
-   "note": "Invented formula gave 12.175 instead of 171."
+   "type": "method",
+   "note": "Invented formula for minimum flow; 12.175 vs 171 kmol/h"
   },
   "b": {
    "type": "numerical",
-   "note": "Divided wrongly: 18.26/180 is 0.101, so value inconsistent with its own L."
+   "note": "18.26/180 evaluated as 10.15 instead of 0.101"
   },
   "c": {
-   "type": "formula",
-   "note": "Used a formula that is not the Kremser equation."
+   "type": "method",
+   "note": "Formula is not Kremser; 0.1475 vs 5.356"
   }
  },
  "openai/gpt-3.5-turbo": {
   "a": {
-   "type": "method",
-   "note": "Treated the 0.95 recovery as an outlet mole fraction; divided by zero."
+   "type": "interpretation",
+   "note": "Treated 0.95 recovery as outlet mole fraction; got -93"
   },
   "b": {
    "type": "incomplete",
-   "note": "No numerical value given."
+   "note": "No numerical value for A given"
   },
   "c": {
    "type": "incomplete",
-   "note": "No numerical value given; stated formula is not Kremser."
+   "note": "No numerical value given; stated formula not Kremser"
   }
  },
  "meta-llama/llama-3.3-70b-instruct": {
   "c": {
    "type": "formula",
-   "note": "Wrong form of the Kremser equation; final value has no supporting working."
+   "note": "Wrong Kremser form gives log(0.05)/log(1.426); FINAL 4.966 unsupported"
   }
  },
  "openai/gpt-4o-mini": {
   "a": {
    "type": "method",
-   "note": "Put pinch at the lean end and balanced on all acetone entering."
+   "note": "Lean-end pinch and balance omitting outlet acetone; 2400 vs 171"
   },
   "b": {
    "type": "method",
@@ -86,83 +86,83 @@
   },
   "c": {
    "type": "formula",
-   "note": "Used ln(19)/ln(30), which is not the Kremser equation."
+   "note": "Wrong Kremser form ln(19)/ln(30); 0.865 vs 5.356"
   }
  },
  "qwen/qwen-2.5-7b-instruct": {
   "a": {
    "type": "incomplete",
-   "note": "Final value only, no working; wrong."
+   "note": "Final value only, no working; 10.56 vs 171"
   },
   "b": {
    "type": "incomplete",
-   "note": "Final value only, no working; wrong."
+   "note": "Final value only, no working; 2.11"
   },
   "c": {
    "type": "incomplete",
-   "note": "Final value only, no working; 11 % off."
+   "note": "Final value only, no working; 4.79 vs 5.356"
   }
  },
  "qwen/qwen-2.5-72b-instruct": {
   "a": {
    "type": "method",
-   "note": "Used L_min = mG, ignoring the 95 % recovery."
+   "note": "L_min = mG tangent rule ignores 95 % recovery; 180 vs 171"
   },
   "b": {
    "type": "method",
-   "note": "Carried from (a): correct A = L/(mG) applied to its own wrong L."
+   "note": "Carried from (a): A = 270/180 = 1.5 from wrong L"
   },
   "c": {
-   "type": "formula",
-   "note": "Used a formula that is not the Kremser equation."
+   "type": "method",
+   "note": "Invented log-ratio formula, not Kremser; 0.708 vs 5.356"
   }
  },
  "google/gemma-3-4b-it": {
   "a": {
-   "type": "formula",
-   "note": "Invented formula W = G*x_e instead of a pinch balance."
+   "type": "method",
+   "note": "Invented formula W = G*x_e; 5.4 vs 171 kmol/h"
   },
   "b": {
    "type": "method",
-   "note": "Gave a mass-transfer rate instead of the absorption factor."
+   "note": "Invented A = J/G relation gave a mass-transfer rate 0.082"
   },
   "c": {
-   "type": "formula",
-   "note": "Invented equation with assumed coefficient, not Kremser."
+   "type": "method",
+   "note": "Invented equation with assumed coefficient, not Kremser; 2"
   }
  },
  "google/gemma-3-27b-it": {
   "a": {
    "type": "method",
-   "note": "Put the pinch at the lean end instead of the rich end."
+   "note": "Pinch placed at lean end (x = y_out/1.8); 3422 vs 171"
   },
   "b": {
-   "type": "method",
-   "note": "Took the operating-line slope L/G as m instead of equilibrium slope 1.8."
+   "type": "interpretation",
+   "note": "Took m as operating slope L/G instead of 1.8; A = 1"
   },
   "c": {
-   "type": "formula",
-   "note": "Used formulas that are not the Kremser equation."
+   "type": "method",
+   "note": "Improvised non-Kremser formulas; 1.9 vs 5.356"
   }
  },
  "microsoft/phi-4": {
   "a": {
    "type": "method",
-   "note": "Pinch put at the lean end; y_out also miscomputed as 0.0001."
+   "note": "Lean-end pinch, and y_out miscomputed as 0.0001; 35820 kmol/h"
   },
   "b": {
-   "type": "method",
-   "note": "Took the acetone absorption rate as the equilibrium slope m."
+   "type": "interpretation",
+   "note": "Took m as acetone absorption rate, not equilibrium slope; 270"
   },
   "c": {
-   "type": "formula",
-   "note": "Invented formula, made positive by taking the absolute value."
+   "type": "method",
+   "note": "Invented formula, made positive by absolute value; 2.686"
   }
  },
  "openai/gpt-4o-2024-05-13": {
   "a": {
    "type": "method",
-   "note": "Balanced on all acetone entering instead of the 1.9 kmol/h absorbed."
+   "note": "Balance G*y_in = L*x omits outlet acetone; 180.18 vs 171"
   },
   "b": {
    "type": "method",
@@ -170,13 +170,13 @@
   },
   "c": {
    "type": "formula",
-   "note": "Garbled Kremser form; final value has no supporting working."
+   "note": "Garbled Kremser form gives 0.073; FINAL 5.07 unsupported"
   }
  },
  "deepseek/deepseek-chat": {
   "a": {
    "type": "method",
-   "note": "Balanced on all acetone entering instead of the 95 % absorbed."
+   "note": "Balance G*y_in = L*x omits outlet acetone; 180 vs 171"
   },
   "b": {
    "type": "method",
@@ -184,21 +184,21 @@
   },
   "c": {
    "type": "formula",
-   "note": "Used ln(y_in/y_out)/ln A - 1, not the Kremser equation."
+   "note": "Wrong Kremser form ln(y_in/y_out)/ln A - 1; 6.4"
   }
  },
  "openai/gpt-5": {
   "a": {
    "type": "method",
-   "note": "Used L_min = mG, ignoring the 95 % recovery."
+   "note": "Claimed L_min = mG regardless of recovery; 180 vs 171"
   },
   "b": {
    "type": "method",
-   "note": "Carried from (a): correct A = L/(mG) applied to its own wrong L."
+   "note": "Carried from (a): A = 270/180 = 1.5 from wrong L"
   },
   "c": {
    "type": "formula",
-   "note": "Used y_out/y_in = (1/A)^N, not the Kremser equation."
+   "note": "Used y_out/y_in = (1/A)^N, not Kremser; 7.389 vs 5.356"
   }
  }
 }

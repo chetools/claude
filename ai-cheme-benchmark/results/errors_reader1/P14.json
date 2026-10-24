@@ -1,0 +1,12 @@
+{
+ "anthropic/claude-opus-4.8": {
+  "e": {
+   "type": "numerical",
+   "note": "Correct method but coarse interpolation left PM and gain-crossover frequency slightly off."
+  },
+  "f": {
+   "type": "method",
+   "note": "Took a single-frequency estimate of M_s instead of searching for the |S| maximum."
+  }
+ }
+}

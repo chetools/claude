@@ -1,416 +1,416 @@
 {
  "meta-llama/llama-3.2-3b-instruct": {
   "a": {
-   "type": "formula",
-   "note": "Meaningless mole-fraction sum gave D = 115."
+   "type": "method",
+   "note": "Meaningless mole-fraction sum gives D = 115."
   },
   "b": {
-   "type": "formula",
-   "note": "Invented formula gave N_min = 1."
+   "type": "method",
+   "note": "Invented formula; N_min = 1."
   },
   "c": {
-   "type": "formula",
-   "note": "Invented formula gave theta = 0.3125."
+   "type": "method",
+   "note": "Invented formula; theta = 0.3125."
   },
   "d": {
-   "type": "formula",
-   "note": "Invented formula gave R_min = 0.0106."
+   "type": "method",
+   "note": "Invented formula; R_min = 0.0106."
   },
   "e": {
-   "type": "method",
+   "type": "interpretation",
    "note": "Used R = 1.3 instead of 1.3 R_min; N = 2.3."
   },
   "f": {
-   "type": "method",
+   "type": "interpretation",
    "note": "Used volatilities as z and feed fractions as product compositions."
   }
  },
  "meta-llama/llama-3.2-1b-instruct": {
   "a": {
-   "type": "formula",
-   "note": "Invented or generic formulas, no numerical values."
+   "type": "incomplete",
+   "note": "No numerical value, only generic or invented formulas."
   },
   "b": {
-   "type": "formula",
-   "note": "Invented or generic formulas, no numerical values."
+   "type": "incomplete",
+   "note": "No numerical value, only generic or invented formulas."
   },
   "c": {
-   "type": "formula",
-   "note": "Invented or generic formulas, no numerical values."
+   "type": "incomplete",
+   "note": "No numerical value, only generic or invented formulas."
   },
   "d": {
-   "type": "formula",
-   "note": "Invented or generic formulas, no numerical values."
+   "type": "incomplete",
+   "note": "No numerical value, only generic or invented formulas."
   },
   "e": {
-   "type": "formula",
-   "note": "Invented or generic formulas, no numerical values."
+   "type": "incomplete",
+   "note": "No numerical value, only generic or invented formulas."
   },
   "f": {
-   "type": "formula",
-   "note": "Invented or generic formulas, no numerical values."
+   "type": "incomplete",
+   "note": "No numerical value, only generic or invented formulas."
   }
  },
  "meta-llama/llama-3.1-8b-instruct": {
   "a": {
-   "type": "formula",
-   "note": "Wrong formula gave D = 1995.5."
+   "type": "method",
+   "note": "Invented balance including alpha term; D = 1995.5."
   },
   "b": {
-   "type": "formula",
-   "note": "Wrong formula gave N_min = 1."
+   "type": "method",
+   "note": "Invented ln-ratio of volatilities; N_min = 1."
   },
   "c": {
-   "type": "formula",
-   "note": "Wrong formula gave theta = 2."
+   "type": "method",
+   "note": "Invented expression, not the feed equation; theta = 2."
   },
   "d": {
-   "type": "formula",
-   "note": "Wrong formula gave R_min = 1."
+   "type": "method",
+   "note": "Invented formula; R_min = 1."
   },
   "e": {
    "type": "numerical",
-   "note": "Gilliland set-up right; X^0.5668 and solve for N botched (3.16)."
+   "note": "Own inputs; 0.1304^0.5668 taken as 0.0405, N = 3.16"
   },
   "f": {
    "type": "incomplete",
-   "note": "Reply cut off in a loop; no result."
+   "note": "Reply cut off in runaway loop, no result"
   }
  },
  "mistralai/mistral-nemo": {
   "a": {
    "type": "method",
-   "note": "Omitted the 5 kmol/h of propane from the balance."
+   "note": "Balance omits 5 kmol/h propane, butane as 34.6; D = 35.8"
   },
   "b": {
    "type": "formula",
-   "note": "Wrong Fenske form gave N_min = 7.2."
+   "note": "Wrong Fenske form with 1 + log10; N_min = 7.2"
   },
   "c": {
    "type": "formula",
-   "note": "Wrong feed equation gave theta = 0.63."
+   "note": "Wrong feed equation; theta = 0.63"
   },
   "d": {
-   "type": "formula",
-   "note": "Invented formula gave R_min = 1.7."
+   "type": "method",
+   "note": "Invented R_min = theta D/(B - D); 1.7."
   },
   "e": {
    "type": "formula",
-   "note": "Eduljee form misapplied; 0.5668 used as a factor."
+   "note": "Eduljee misapplied (0.5668 as factor), N = Y/(1-Y) + N_min"
   },
   "f": {
-   "type": "method",
-   "note": "Wrong inputs gave 0.53."
+   "type": "interpretation",
+   "note": "Wrong inputs (z_HK = 0.05, 0.03/0.05, B = 92.2); 0.53."
   }
  },
  "openai/gpt-3.5-turbo": {
   "a": {
    "type": "incomplete",
-   "note": "Symbolic set-up only, no numbers; expressions wrong."
+   "note": "Only symbolic set-up, no numerical value"
   },
   "b": {
    "type": "incomplete",
-   "note": "Symbolic set-up only, no numbers; expressions wrong."
+   "note": "Only symbolic set-up, no numerical value"
   },
   "c": {
    "type": "incomplete",
-   "note": "Symbolic set-up only, no numbers; expressions wrong."
+   "note": "Only symbolic set-up, no numerical value"
   },
   "d": {
    "type": "incomplete",
-   "note": "Symbolic set-up only, no numbers; expressions wrong."
+   "note": "Only symbolic set-up, no numerical value"
   },
   "e": {
    "type": "incomplete",
-   "note": "Symbolic set-up only, no numbers; expressions wrong."
+   "note": "Only symbolic set-up, no numerical value"
   },
   "f": {
    "type": "incomplete",
-   "note": "Symbolic set-up only, no numbers; expressions wrong."
+   "note": "Only symbolic set-up, no numerical value"
   }
  },
  "meta-llama/llama-3.3-70b-instruct": {
   "a": {
-   "type": "method",
-   "note": "Omitted the 1.2 kmol/h of n-pentane in the distillate."
+   "type": "interpretation",
+   "note": "Assumed no n-pentane in distillate; D = 39.3 vs 40.5."
   },
   "b": {
-   "type": "method",
-   "note": "Fenske used light-key recoveries only; wrong set-up."
+   "type": "formula",
+   "note": "Fenske with LK recoveries 0.98/0.02 only; N_min = 5.82."
   },
   "c": {
    "type": "incomplete",
-   "note": "Not computed."
+   "note": "Theta not computed"
   },
   "d": {
    "type": "incomplete",
-   "note": "Not computed."
+   "note": "R_min not computed"
   },
   "e": {
    "type": "incomplete",
-   "note": "Not computed."
+   "note": "N not computed"
   },
   "f": {
-   "type": "method",
-   "note": "Set x_B,LK/x_D,HK to 0.02/0.02; wrong inputs."
+   "type": "interpretation",
+   "note": "Used 0.02/0.02 recoveries as x_B,LK/x_D,HK; 1.13."
   }
  },
  "openai/gpt-4o-mini": {
   "a": {
-   "type": "method",
-   "note": "Set n-pentane in the distillate to zero."
+   "type": "interpretation",
+   "note": "Assumed no n-pentane in distillate; D = 39.3 vs 40.5."
   },
   "b": {
-   "type": "method",
-   "note": "Wrong or no working gave N_min = 3.4."
+   "type": "incomplete",
+   "note": "N_min = 3.4 asserted; shown expression does not give it."
   },
   "c": {
-   "type": "method",
-   "note": "Wrong or no working; theta = 2.97 is outside the key range."
+   "type": "incomplete",
+   "note": "Theta = 2.97 asserted, outside key range, no valid working."
   },
   "d": {
-   "type": "method",
-   "note": "Wrong or no working gave R_min = 1.5."
+   "type": "incomplete",
+   "note": "R_min approx 1.5 stated without calculation."
   },
   "e": {
-   "type": "method",
-   "note": "Wrong or no working gave N = 5.6."
+   "type": "incomplete",
+   "note": "N approx 5.6 stated without calculation."
   },
   "f": {
    "type": "incomplete",
-   "note": "Value matches but the shown expression is garbled."
+   "note": "0.76 matches but garbled expression does not give it"
   }
  },
  "qwen/qwen-2.5-7b-instruct": {
   "a": {
    "type": "incomplete",
-   "note": "Final value only, no working; far from reference."
+   "note": "Final value only, no working shown"
   },
   "b": {
    "type": "incomplete",
-   "note": "Final value only, no working; far from reference."
+   "note": "Final value only, no working shown"
   },
   "c": {
    "type": "incomplete",
-   "note": "Final value only, no working; far from reference."
+   "note": "Final value only, no working shown"
   },
   "d": {
    "type": "incomplete",
-   "note": "Final value only, no working; far from reference."
+   "note": "Final value only, no working shown"
   },
   "e": {
    "type": "incomplete",
-   "note": "Final value only, no working; far from reference."
+   "note": "Final value only, no working shown"
   },
   "f": {
    "type": "incomplete",
-   "note": "Final value only, no working; far from reference."
+   "note": "Final value only, no working shown"
   }
  },
  "qwen/qwen-2.5-72b-instruct": {
   "a": {
-   "type": "method",
-   "note": "Treated recoveries as mole fractions."
+   "type": "interpretation",
+   "note": "Treated recoveries as mole fractions; D = 34.89."
   },
   "b": {
-   "type": "method",
-   "note": "Wrong Fenske set-up gave 3.95."
+   "type": "formula",
+   "note": "Wrong Fenske set-up; HK ratio inverted; N_min = 3.95 vs 10.63."
   },
   "c": {
    "type": "formula",
-   "note": "Feed equation without alpha in the numerator."
+   "note": "Feed equation without alpha in numerator; theta = 1.2"
   },
   "d": {
-   "type": "formula",
-   "note": "Invented formula gave R_min = 145.6."
+   "type": "method",
+   "note": "Invented formula; R_min = 145.6."
   },
   "e": {
    "type": "numerical",
-   "note": "0.229^0.5668 miscomputed (0.476 vs 0.434); N = 7.16 vs 7.59."
+   "note": "Own inputs; 0.229^0.5668 as 0.476 not 0.434, N = 7.16"
   },
   "f": {
-   "type": "method",
-   "note": "Used recoveries 0.02 and 0.03 as x_B,LK and x_D,HK."
+   "type": "interpretation",
+   "note": "Carried from (a): recoveries 0.02, 0.03 used as x_B,LK, x_D,HK; 0.988."
   }
  },
  "google/gemma-3-4b-it": {
   "a": {
    "type": "method",
-   "note": "Counted only the butane in the distillate."
+   "note": "Counted only butane in distillate; D = 34"
   },
   "b": {
-   "type": "formula",
-   "note": "Invented formula with volatilities used as compositions."
+   "type": "interpretation",
+   "note": "Volatilities used as compositions in invented formula; N_min = 2.15."
   },
   "c": {
-   "type": "formula",
-   "note": "Invented formula with volatilities used as compositions."
+   "type": "interpretation",
+   "note": "Volatilities used as compositions in invented formula; theta = 1.1547."
   },
   "d": {
-   "type": "formula",
-   "note": "Invented formula with volatilities used as compositions."
+   "type": "interpretation",
+   "note": "Volatilities used as compositions in invented formula; R_min = 5.00."
   },
   "e": {
-   "type": "method",
-   "note": "Negative X and R = 1.3 used instead of 1.3 R_min."
+   "type": "interpretation",
+   "note": "Used R = 1.3 instead of 1.3 R_min; negative X."
   },
   "f": {
-   "type": "method",
-   "note": "Wrong inputs gave 1.02."
+   "type": "interpretation",
+   "note": "Volatilities as z, feed fractions as product compositions; 1.02."
   }
  },
  "google/gemma-3-27b-it": {
   "a": {
    "type": "incomplete",
-   "note": "D = 40 asserted without a supporting balance."
+   "note": "D = 40 asserted without a supporting balance"
   },
   "b": {
-   "type": "method",
-   "note": "No valid working; its own Fenske attempts gave negative values."
+   "type": "incomplete",
+   "note": "N_min = 6 asserted; own Fenske attempts give negative values."
   },
   "c": {
    "type": "method",
-   "note": "theta = 0.414 without a valid method."
+   "note": "Invented theta = (alpha-1)/alpha style relation; 0.414"
   },
   "d": {
-   "type": "method",
-   "note": "R_min = 0.5 without a valid method."
+   "type": "incomplete",
+   "note": "R_min = 0.5 chosen after undefined results, no calculation."
   },
   "e": {
    "type": "numerical",
-   "note": "Gilliland set-up right; X^0.5668 miscomputed, N = 12.96 vs 14.81."
+   "note": "Own inputs; 0.0909^0.5668 as 0.335 not 0.257, N = 12.96"
   },
   "f": {
-   "type": "method",
-   "note": "Used recoveries 0.02 and 0.03 as mole fractions."
+   "type": "interpretation",
+   "note": "Used recoveries 0.02, 0.03 as mole fractions; 0.948."
   }
  },
  "microsoft/phi-4": {
   "b": {
-   "type": "method",
-   "note": "Inverted Fenske ratio with wrong bottoms fractions and a sign flip."
+   "type": "interpretation",
+   "note": "x_B,LK = 0.03 (recovery) as fraction, x_B,HK = 2.16; N_min = 11."
   },
   "c": {
    "type": "formula",
-   "note": "Feed equation without alpha in the numerator."
+   "note": "Feed equation without alpha in numerator; theta = 1.23"
   },
   "d": {
    "type": "incomplete",
-   "note": "R_min = 1.5 simply assumed after a negative result."
+   "note": "R_min = 1.5 simply assumed after a negative result"
   },
   "e": {
    "type": "numerical",
-   "note": "0.1525^0.5668 miscomputed (0.575 vs 0.344); N = 16.62 vs 22.6."
+   "note": "Own inputs; 0.1525^0.5668 as 0.575 not 0.344, N = 16.62"
   },
   "f": {
-   "type": "method",
-   "note": "Used x_B,LK = 0.03 instead of 0.0118."
+   "type": "interpretation",
+   "note": "Carried from (b): x_B,LK = 0.03 reused instead of 0.0118; 1.119."
   }
  },
  "openai/gpt-4o-2024-05-13": {
   "b": {
    "type": "incomplete",
-   "note": "Reply degenerates into garbled text; no usable values."
+   "note": "Reply degenerates into garbled text, no usable value"
   },
   "c": {
    "type": "incomplete",
-   "note": "Reply degenerates into garbled text; no usable values."
+   "note": "Reply degenerates into garbled text, no usable value"
   },
   "d": {
    "type": "incomplete",
-   "note": "Reply degenerates into garbled text; no usable values."
+   "note": "Reply degenerates into garbled text, no usable value"
   },
   "e": {
    "type": "incomplete",
-   "note": "Reply degenerates into garbled text; no usable values."
+   "note": "Reply degenerates into garbled text, no usable value"
   },
   "f": {
    "type": "incomplete",
-   "note": "Reply degenerates into garbled text; no usable values."
+   "note": "Reply degenerates into garbled text, no usable value"
   }
  },
  "mistralai/mistral-large": {
   "c": {
    "type": "numerical",
-   "note": "Trial-and-error stopped at theta = 1.35 instead of 1.369."
+   "note": "Trial-and-error stopped at theta = 1.35 (residual -0.09) vs 1.369"
   },
   "d": {
    "type": "numerical",
-   "note": "Carried from (c): R_min = 1.70 from the theta slip."
+   "note": "Carried from (c): R_min = 1.70 from theta slip"
   },
   "e": {
    "type": "numerical",
-   "note": "X^0.5668 miscomputed (0.3356 vs 0.3527); N = 22.18."
+   "note": "X^0.5668 as 0.3356 not 0.3527; N = 22.18"
   }
  },
  "deepseek/deepseek-chat": {
   "a": {
-   "type": "method",
-   "note": "Omitted the 1.2 kmol/h of n-pentane in the distillate."
+   "type": "interpretation",
+   "note": "Assumed no n-pentane in distillate; D = 39.3 vs 40.5."
   },
   "c": {
    "type": "numerical",
-   "note": "Root 1.47 does not satisfy the feed equation; reference 1.369."
+   "note": "Root 1.47 does not satisfy the feed equation (1.369)"
   },
   "d": {
-   "type": "method",
-   "note": "Used component flows D_i instead of mole fractions x_D,i."
+   "type": "interpretation",
+   "note": "Used component flows D_i instead of x_D,i; R_min = 131.9."
   },
   "e": {
    "type": "numerical",
-   "note": "Y miscomputed (0.535 vs 0.425); N = 20.4 vs 19.1."
+   "note": "Own inputs; Y as 0.535 not 0.425, N = 20.4"
   },
   "f": {
-   "type": "method",
-   "note": "Used component flows 0.7 and 1.2 instead of mole fractions."
+   "type": "interpretation",
+   "note": "Used component flows 0.7, 1.2 instead of mole fractions; 0.908."
   }
  },
  "openai/o3": {
   "c": {
-   "type": "method",
-   "note": "Solved feed equation without alpha in the numerator; theta = 1.786."
+   "type": "formula",
+   "note": "Feed equation without alpha in numerator; theta = 1.786 vs 1.369."
   },
   "d": {
-   "type": "method",
-   "note": "Carried from (c): correct Underwood formula with its own wrong theta."
+   "type": "formula",
+   "note": "Carried from (c): R_min = 7.10 from wrong theta."
   },
   "e": {
-   "type": "method",
-   "note": "Carried from (c): correct Gilliland solve from its own R_min."
+   "type": "formula",
+   "note": "Carried from (d): N = 19.8 from wrong R_min."
   }
  },
  "google/gemini-2.5-pro": {
   "e": {
    "type": "numerical",
-   "note": "X^0.5668 miscomputed (0.4006 vs 0.3555); N = 20.13 vs 21.51."
+   "note": "X^0.5668 as 0.4006 not 0.3555; N = 20.13 vs 21.51"
   }
  },
  "openai/gpt-5": {
   "c": {
-   "type": "method",
-   "note": "Solved feed equation without alpha in the numerator; theta = 1.5843."
+   "type": "formula",
+   "note": "Feed equation without alpha in numerator; theta = 1.5843 vs 1.369."
   },
   "d": {
-   "type": "method",
-   "note": "Carried from (c): correct Underwood formula with its own wrong theta."
+   "type": "formula",
+   "note": "Carried from (c): R_min = 3.222 from wrong theta."
   },
   "e": {
-   "type": "method",
-   "note": "Carried from (c): correct Gilliland solve from its own R_min."
+   "type": "formula",
+   "note": "Carried from (d): N = 20.57 from wrong R_min."
   }
  },
  "openai/gpt-5.2": {
   "c": {
-   "type": "method",
-   "note": "Solved feed equation without alpha in the numerator; theta = 1.7862."
+   "type": "formula",
+   "note": "Feed equation without alpha in numerator; theta = 1.7862 vs 1.369."
   },
   "d": {
-   "type": "method",
-   "note": "Carried from (c): correct Underwood formula with its own wrong theta."
+   "type": "formula",
+   "note": "Carried from (c): R_min = 7.10 from wrong theta."
   },
   "e": {
-   "type": "method",
-   "note": "Carried from (c): correct Gilliland solve from its own R_min."
+   "type": "formula",
+   "note": "Carried from (d): N = 19.84 from wrong R_min."
   }
  }
 }

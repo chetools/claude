@@ -1,0 +1,316 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Junction head taken as sum of reservoir elevations: 290 m"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Part not answered"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Part not answered"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Part not answered"
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Fabricated Colebrook and dimensionally wrong losses: h_J 404.5e6 m"
+  },
+  "b": {
+   "type": "method",
+   "note": "Fabricated equations give Q1 of order 1e7 m3/s"
+  },
+  "c": {
+   "type": "method",
+   "note": "Fabricated equations, absurd Q2, no flow direction given"
+  },
+  "d": {
+   "type": "method",
+   "note": "Fabricated equations give Q3 of order 1e7 m3/s"
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Equations written but never solved; no numerical value"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Equations written but never solved; no numerical value"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Equations written but never solved; no numerical value"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Equations written but never solved; no numerical value"
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "method",
+   "note": "No continuity at J; assumed f, unknown velocity: h_J 119.8 m"
+  },
+  "b": {
+   "type": "method",
+   "note": "No continuity at J; Q1 from 0.2 m head, garbled: 0.016 L/s"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Velocity asserted with no working: 0.009 L/s vs 15.0"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Velocity asserted with no working: 0.025 L/s vs 122.8"
+  }
+ },
+ "openai/gpt-3.5-turbo": {
+  "a": {
+   "type": "incomplete",
+   "note": "Symbolic equations only (wrong Q1=Q2=Q3); no numerical value"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Symbolic equations only (wrong Q1=Q2=Q3); no numerical value"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Symbolic equations only (wrong Q1=Q2=Q3); no numerical value"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Symbolic equations only (wrong Q1=Q2=Q3); no numerical value"
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Equations never solved; 'typical' value 90 m asserted"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Equations never solved; 'typical' value 20 L/s asserted"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Equations never solved; 'typical' value 10 L/s, no direction asserted"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Equations never solved; 'typical' value 10 L/s asserted"
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "incomplete",
+   "note": "No iteration performed; 94.5 m asserted without working"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "No iteration performed; 23.5 L/s asserted without working"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "No iteration performed; 5.5 L/s into B asserted without working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "No iteration performed; 11.0 L/s asserted without working"
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Junction head taken as lowest reservoir level (70 m working, 100 FINAL)"
+  },
+  "b": {
+   "type": "method",
+   "note": "Assumed Q1=Q2=Q3 with -50 m head in every pipe: 2.5 L/s"
+  },
+  "c": {
+   "type": "method",
+   "note": "Same wrong set-up: 2.087 L/s, out of B (wrong direction)"
+  },
+  "d": {
+   "type": "method",
+   "note": "Same wrong set-up and wrong area formula: 1.256 L/s"
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Set-up right, iteration not shown; 85.2 m inconsistent with equations"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Set-up right, iteration not shown; 47.3 L/s inconsistent with equations"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Set-up right, iteration not shown; 18.5 L/s out of B inconsistent with equations"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Set-up right, iteration not shown; 28.8 L/s inconsistent with equations"
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "method",
+   "note": "Junction head taken as sum of reservoir elevations: 290 m"
+  },
+  "b": {
+   "type": "method",
+   "note": "Assumed f, no continuity, 170 m head used as 170 Pa: 7.0 L/s"
+  },
+  "c": {
+   "type": "method",
+   "note": "Same wrong working, reused pipe-1 head: 1.3 L/s (direction happens right)"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Value 1.3 L/s given with no working"
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "a": {
+   "type": "incomplete",
+   "note": "'Using a solver', no iteration shown; 78.5 m asserted"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "'Using a solver', no iteration shown; 39.2 L/s asserted"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "'Using a solver', no iteration shown; 25.8 L/s into B asserted"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "'Using a solver', no iteration shown; 13.4 L/s asserted"
+  }
+ },
+ "microsoft/phi-4": {
+  "a": {
+   "type": "incomplete",
+   "note": "Symbolic set-up only; 'typical' value 92.5 m declared"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Symbolic set-up only; 'typical' value 150.0 L/s declared"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Symbolic set-up only; 'typical' value 50.0 L/s out of B declared"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Symbolic set-up only; 'typical' value 100.0 L/s declared"
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "a": {
+   "type": "incomplete",
+   "note": "Equations never solved; 95.3 m has no supporting working"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Equations never solved; 45.2 L/s has no supporting working"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Equations never solved; 51.3 L/s out of B has no supporting working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Equations never solved; 25.0 L/s has no supporting working"
+  }
+ },
+ "mistralai/mistral-large": {
+  "b": {
+   "type": "numerical",
+   "note": "Loose rounding in iterations: 133 vs 137.8 L/s"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Q2 from 1 m head miscomputed: 21.7 vs ~14.4 L/s"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Loose numerics in iterations: 114 vs 122.8 L/s"
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "a": {
+   "type": "incomplete",
+   "note": "Method described, no iteration shown; 100.2 m asserted"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Method described, no iteration shown; 50.7 L/s asserted"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Method described, no iteration shown; 1.7 L/s out of B asserted"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Method described, no iteration shown; 49.0 L/s asserted"
+  }
+ },
+ "deepseek/deepseek-r1-0528": {
+  "a": {
+   "type": "incomplete",
+   "note": "Value 101.1 m stated in prose with no equations or working"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Value 138 L/s stated in prose with no equations or working"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Value 14.9 L/s into B stated in prose with no equations or working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Value 123 L/s stated in prose with no equations or working"
+  }
+ },
+ "google/gemini-2.5-pro": {
+  "c": {
+   "type": "numerical",
+   "note": "Q2 miscomputed at own 1.1 m head: 15.9 vs ~15.1 L/s"
+  }
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "a": {
+   "type": "numerical",
+   "note": "Q square roots ~3x too small, false continuity at H_J 95 m"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Same wrong square-root evaluation: Q1 53 vs 137.8 L/s"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a): H_J 95 m means flow out of B; FINAL says into"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Same wrong square-root evaluation: Q3 62 vs 122.8 L/s"
+  }
+ },
+ "anthropic/claude-opus-4.5": {
+  "c": {
+   "type": "numerical",
+   "note": "Slightly low H_J leaves 0.7 m on pipe 2: 12 vs 15.0 L/s"
+  }
+ }
+}

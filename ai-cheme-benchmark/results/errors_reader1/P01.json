@@ -1,0 +1,168 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "numerical",
+   "note": "Reynolds number arithmetic gave 38.33 instead of 350 despite correct formula."
+  },
+  "b": {
+   "type": "interpretation",
+   "note": "Used turbulent Blasius correlation although the flow is laminar."
+  },
+  "c": {
+   "type": "formula",
+   "note": "Garbled Darcy-Weisbach formula; result inconsistent even with its own f."
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Used flow rate instead of velocity and wrong diameter in Reynolds number."
+  },
+  "b": {
+   "type": "formula",
+   "note": "Used invented friction factor f = 64/Re^0.5."
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (a): flow rate used as velocity, with the wrong f."
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Garbled Reynolds formula using flow rate and dividing by tube length."
+  },
+  "b": {
+   "type": "formula",
+   "note": "Made-up Blasius form with exponent -5/3 used for laminar flow."
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (a): Darcy-Weisbach with flow rate in place of velocity."
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "method",
+   "note": "Wrong cross-section area formula (pi D)^2 gave wrong velocity; Re inconsistent too."
+  },
+  "b": {
+   "type": "method",
+   "note": "Carried from (a): laminar 64/Re correctly applied to its own wrong Re."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Darcy-Weisbach set up correctly but 13.6 kPa does not follow from own values."
+  }
+ },
+ "openai/gpt-3.5-turbo": {
+  "a": {
+   "type": "incomplete",
+   "note": "Only formulas listed, no value; Reynolds formula also used Q for velocity."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Only formulas listed, no numerical value given."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Only formulas listed, no numerical value given."
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "c": {
+   "type": "numerical",
+   "note": "Correct Darcy-Weisbach set-up but arithmetic gave 59.24 kPa instead of about 71.1."
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "numerical",
+   "note": "Reynolds number arithmetic gave 2885 instead of 350 despite correct formula."
+  },
+  "b": {
+   "type": "interpretation",
+   "note": "Used turbulent Blasius correlation for laminar flow."
+  },
+  "c": {
+   "type": "formula",
+   "note": "Dropped density from Darcy-Weisbach and used the wrong f."
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Bare final value with no working; wrong."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare final value with no working; wrong."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Bare final value with no working; wrong."
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "a": {
+   "type": "numerical",
+   "note": "Reynolds number arithmetic gave 3466.7 instead of 350 despite correct formula."
+  },
+  "b": {
+   "type": "interpretation",
+   "note": "Declared flow turbulent and used a Fanning-type Blasius correlation."
+  },
+  "c": {
+   "type": "interpretation",
+   "note": "Carried from (b): Darcy-Weisbach correct but applied to the turbulent-flow f."
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "method",
+   "note": "Used volumetric flow rate in place of velocity in Reynolds number."
+  },
+  "b": {
+   "type": "method",
+   "note": "Carried from (a): 64/Re correctly applied to its own wrong Re."
+  },
+  "c": {
+   "type": "method",
+   "note": "Flow rate used as velocity again, plus a bogus J/m3 to kPa conversion."
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "b": {
+   "type": "interpretation",
+   "note": "Used turbulent Blasius correlation for laminar flow and miscomputed it."
+  },
+  "c": {
+   "type": "formula",
+   "note": "Wrong f and an extra division by 2 in Darcy-Weisbach."
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "a": {
+   "type": "numerical",
+   "note": "Reynolds number arithmetic gave 3507.55 instead of 350 despite correct formula."
+  },
+  "b": {
+   "type": "interpretation",
+   "note": "Assumed turbulent flow and used the Blasius correlation."
+  },
+  "c": {
+   "type": "interpretation",
+   "note": "Carried from (b): Darcy-Weisbach correct but applied to the turbulent-flow f."
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "b": {
+   "type": "formula",
+   "note": "Used Fanning laminar formula 16/Re although the Darcy factor was asked."
+  },
+  "c": {
+   "type": "formula",
+   "note": "Carried from (b): Darcy-Weisbach correct but applied to the Fanning factor."
+  }
+ }
+}

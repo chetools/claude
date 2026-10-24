@@ -1,0 +1,132 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "formula",
+   "note": "Wrong Fenske form ln((x_D-x_F)/(1-x_D))/ln(alpha) - 1: 1.625"
+  },
+  "b": {
+   "type": "method",
+   "note": "R_min = 0.2 from assumed L_min = 1, D_min = 5; no basis"
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "No number of stages given; working unrelated to Fenske"
+  },
+  "b": {
+   "type": "method",
+   "note": "R_min = 4.65 from invented quantities"
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "formula",
+   "note": "Fenske without bottoms term, also mis-evaluated: 2.23 vs 6.43"
+  },
+  "b": {
+   "type": "method",
+   "note": "R_min = 4.09 from a ratio of invented quantities"
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "formula",
+   "note": "Garbled Fenske form with inconsistent arithmetic: 5.76 vs 6.43"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented Underwood formula ignoring feed pinch: 2.43 vs 1.44"
+  }
+ },
+ "openai/gpt-3.5-turbo": {
+  "a": {
+   "type": "formula",
+   "note": "Wrong Fenske form with z_F in the ratio: 3.8 vs 6.43"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invalid relation R_min = (N_min - 1)/N_min = 0.737"
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "b": {
+   "type": "method",
+   "note": "Invented shortcut (x_D/x_B - alpha)/(alpha-1) = 11, ignores feed pinch"
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "formula",
+   "note": "Wrong Fenske form log((z_F-x_B)/(x_D-x_B))/log(alpha): 1.03"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula (alpha x_D - x_B)/(x_D - alpha x_B) = 2.82"
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Invented equation gives 0.33, then unexplained 3 stages"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula (x_D-x_B)/(z_F-x_D); value actually negative, not 1.64"
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "a": {
+   "type": "interpretation",
+   "note": "Added 1 for reboiler already counted by Fenske: 7.426 vs 6.43"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula (alpha-1)z_F/(alpha z_F - x_D) = 12 vs 1.44"
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "formula",
+   "note": "Wrong Fenske form using z_F/z_D and x_B/x_D: 1 vs 6.43"
+  },
+  "b": {
+   "type": "method",
+   "note": "R_min = 2.0 from an invented formula"
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "a": {
+   "type": "formula",
+   "note": "Fenske without heavy-component terms: 3.21 vs 6.43"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula (alpha+1)/(2 alpha - 1) = 0.875"
+  }
+ },
+ "microsoft/phi-4": {
+  "b": {
+   "type": "formula",
+   "note": "Underwood root 0.269 outside 1-2.5 and wrong R_min expression: 0.562"
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "b": {
+   "type": "method",
+   "note": "Invented formula ignoring feed pinch gives R_min = 31 vs 1.44"
+  }
+ },
+ "openai/o3": {
+  "b": {
+   "type": "formula",
+   "note": "Underwood root equation set to 1 instead of 1-q = 0: 7.76"
+  }
+ },
+ "openai/gpt-5.2": {
+  "b": {
+   "type": "formula",
+   "note": "Underwood root equation set to 1 instead of 1-q = 0: 7.79"
+  }
+ }
+}

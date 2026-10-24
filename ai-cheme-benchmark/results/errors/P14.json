@@ -2,11 +2,11 @@
  "anthropic/claude-opus-4.8": {
   "e": {
    "type": "numerical",
-   "note": "Correct method but coarse interpolation left PM and gain-crossover frequency slightly off."
+   "note": "Coarse interpolation: PM 45.0 deg (1.1 % low), omega_gc 0.288 (1.5 % high)"
   },
   "f": {
    "type": "method",
-   "note": "Took a single-frequency estimate of M_s instead of searching for the |S| maximum."
+   "note": "Single guessed point at 0.35 rad/min, no frequency search for the maximum"
   }
  }
 }

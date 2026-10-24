@@ -13,7 +13,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "python"))
 from rubric import POINTS                                    # noqa: E402
 from run_models import load_problem, raw_path               # noqa: E402
-from error_types import TYPES                               # noqa: E402
+from error_types import ORDER, TYPES                               # noqa: E402
 
 RUN = 1
 
@@ -68,6 +68,12 @@ def main():
                                                                 else "error label on a full-marks part"))
                 if k in lab and (lab[k].get("type") not in TYPES or not lab[k].get("note")):
                     errors.append(f"{m['id']} {pid} ({k}): bad error label {lab[k]!r}")
+            for k, e in lab.items():          # a carried part has the type of the part(s) it was carried from
+                c = re.match(r"Carried from \(([a-f])\)(?:\s*(?:-|–|and|,)\s*\(([a-f])\))?", e.get("note", ""))
+                if c:
+                    src = [lab[x]["type"] for x in c.groups() if x and x in lab]
+                    if src and e["type"] != min(src, key=ORDER.index):
+                        errors.append(f"{m['id']} {pid} ({k}): carried type {e['type']} != source type(s) {src}")
             if set(lab) - set(POINTS[pid]):
                 errors.append(f"{m['id']} {pid}: error labels for unknown parts {sorted(set(lab) - set(POINTS[pid]))}")
             text = raw["text"]

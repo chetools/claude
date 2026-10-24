@@ -2,319 +2,319 @@
  "meta-llama/llama-3.2-3b-instruct": {
   "a": {
    "type": "method",
-   "note": "Density without molar mass, assumed velocity, no flow equation."
+   "note": "No flow equation; assumes velocity, density without molar mass; 0.000284 kg/s."
   },
   "b": {
    "type": "formula",
-   "note": "Reynolds number formula wrong (mu squared, wrong diameter)."
+   "note": "Re expression with mu squared and D = 0.15 m; Re = 106.8."
   },
   "c": {
    "type": "formula",
-   "note": "Truncated Colebrook without the Reynolds term."
+   "note": "Colebrook truncated, Re term dropped; f = 0.0213 vs 0.0132."
   },
   "d": {
-   "type": "method",
-   "note": "Carried from (a): wrong density and mass flow used for velocity."
+   "type": "interpretation",
+   "note": "Uses inlet density (no molar mass) instead of outlet; 0.0157 m/s."
   }
  },
  "meta-llama/llama-3.2-1b-instruct": {
   "a": {
    "type": "method",
-   "note": "Meaningless formula for mass flow."
+   "note": "Meaningless flow formula, no isothermal pipe-flow equation; 0.0303 kg/s."
   },
   "b": {
    "type": "formula",
-   "note": "Wrong expression for Reynolds number."
+   "note": "Wrong Reynolds-number expression; Re = 1.36."
   },
   "c": {
    "type": "formula",
-   "note": "Wrong formula for friction factor, not Colebrook."
+   "note": "Non-Colebrook formula for friction factor; f = 0.612."
   },
   "d": {
    "type": "interpretation",
-   "note": "Gave a head in metres instead of the requested velocity."
+   "note": "Gives a head of 4.36 m instead of outlet velocity."
   }
  },
  "meta-llama/llama-3.1-8b-instruct": {
   "a": {
    "type": "method",
-   "note": "Bernoulli with constant average density and no friction."
+   "note": "Bernoulli with constant density and no friction; 221 kg/s vs 17.43."
   },
   "b": {
    "type": "formula",
-   "note": "Wrong Reynolds formula (viscosity divided by area) and wrong velocity."
+   "note": "Re formula uses mu divided by area, plus wrong velocity; 8.36e6."
   },
   "c": {
    "type": "formula",
-   "note": "Garbled explicit friction factor correlation."
+   "note": "Garbled explicit friction correlation; f = 0.051 vs 0.0132."
   },
   "d": {
    "type": "method",
-   "note": "Energy balance without friction gives absurd velocity."
+   "note": "Frictionless energy balance for outlet velocity; 2110 m/s."
   }
  },
  "mistralai/mistral-nemo": {
   "a": {
    "type": "incomplete",
-   "note": "Working never reaches numbers; final values stated without calculation."
+   "note": "FINAL value stated without supporting calculation; 12.2 kg/s."
   },
   "b": {
    "type": "incomplete",
-   "note": "Working never reaches numbers; final values stated without calculation."
+   "note": "FINAL value stated without supporting calculation; Re = 1.23e6."
   },
   "c": {
    "type": "incomplete",
-   "note": "Working never reaches numbers; final values stated without calculation."
+   "note": "FINAL value stated without supporting calculation; f = 0.0182."
   },
   "d": {
    "type": "incomplete",
-   "note": "Working never reaches numbers; final values stated without calculation."
+   "note": "FINAL value stated without supporting calculation; 28.3 m/s."
   }
  },
  "openai/gpt-3.5-turbo": {
   "a": {
    "type": "incomplete",
-   "note": "Only general formulas listed; no values substituted, no numerical answer."
+   "note": "Only general formulas listed; no numerical answer given."
   },
   "b": {
    "type": "incomplete",
-   "note": "Only general formulas listed; no values substituted, no numerical answer."
+   "note": "Only general formulas listed; no numerical answer given."
   },
   "c": {
    "type": "incomplete",
-   "note": "Only general formulas listed; no values substituted, no numerical answer."
+   "note": "Only general formulas listed; no numerical answer given."
   },
   "d": {
    "type": "incomplete",
-   "note": "Only general formulas listed; no values substituted, no numerical answer."
+   "note": "Only general formulas listed; no numerical answer given."
   }
  },
  "meta-llama/llama-3.3-70b-instruct": {
   "a": {
-   "type": "method",
-   "note": "Incorrect isothermal flow equation; iteration described but never performed."
+   "type": "incomplete",
+   "note": "Iteration never performed; FINAL 63.45 kg/s has no working."
   },
   "b": {
    "type": "incomplete",
-   "note": "No supporting working shown; final value stated alone."
+   "note": "Iteration never performed; FINAL 1.54e6 has no working."
   },
   "c": {
    "type": "incomplete",
-   "note": "No supporting working shown; final value stated alone."
+   "note": "Iteration never performed; FINAL 0.0168 has no working."
   },
   "d": {
    "type": "incomplete",
-   "note": "No supporting working shown; final value stated alone."
+   "note": "Iteration never performed; FINAL 23.1 m/s has no working."
   }
  },
  "openai/gpt-4o-mini": {
   "a": {
    "type": "method",
-   "note": "Orifice-type formula without friction."
+   "note": "Orifice-type formula without friction; 2.446 kg/s vs 17.43."
   },
   "b": {
    "type": "numerical",
-   "note": "Velocity and Re miscomputed; arithmetic contradicts its own numbers."
+   "note": "Velocity and Re arithmetic contradict own numbers; Re = 32107."
   },
   "c": {
    "type": "numerical",
-   "note": "Friction factor does not match Colebrook at its own Reynolds number."
+   "note": "Claimed iteration gives 0.01946; own Re implies about 0.0235."
   },
   "d": {
    "type": "interpretation",
-   "note": "Used inlet density and an inconsistent velocity."
+   "note": "Uses inlet density for outlet velocity, with inconsistent velocity; 34.57 m/s."
   }
  },
  "qwen/qwen-2.5-7b-instruct": {
   "a": {
    "type": "incomplete",
-   "note": "Only final values given, no working."
+   "note": "Only FINAL value, no working; 312.4 kg/s."
   },
   "b": {
    "type": "incomplete",
-   "note": "Only final values given, no working."
+   "note": "Only FINAL value, no working; Re = 17788."
   },
   "c": {
    "type": "incomplete",
-   "note": "Only final values given, no working."
+   "note": "Only FINAL value, no working; f = 0.0196."
   },
   "d": {
    "type": "incomplete",
-   "note": "Only final values given, no working."
+   "note": "Only FINAL value, no working; 63.1 m/s."
   }
  },
  "qwen/qwen-2.5-72b-instruct": {
   "a": {
    "type": "method",
-   "note": "Incompressible Darcy-Weisbach with average density, plus algebra slip and unconverged f."
+   "note": "Incompressible Darcy-Weisbach with average density, unconverged f = 0.02; 0.525 kg/s."
   },
   "b": {
    "type": "formula",
-   "note": "Mixed inlet and average densities instead of using G D/mu."
+   "note": "Re mixes inlet density with average-density velocity, not G D/mu."
   },
   "c": {
    "type": "numerical",
-   "note": "Friction factor does not match Colebrook at its own Reynolds number."
+   "note": "Colebrook claimed solved as 0.018; its own Re gives 0.0135."
   },
   "d": {
    "type": "numerical",
-   "note": "Factor-10 arithmetic error in velocity."
+   "note": "Factor-10 arithmetic: 0.525/(20.0*0.0707) = 0.37, not 3.69 m/s."
   }
  },
  "google/gemma-3-4b-it": {
   "a": {
    "type": "method",
-   "note": "Mass flow as density times pipe volume, density missing molar mass."
+   "note": "Mass flow as density times pipe volume; 3223 kg/s."
   },
   "b": {
-   "type": "method",
-   "note": "Carried from (a): Reynolds number built on the wrong mass flow."
+   "type": "numerical",
+   "note": "Re arithmetic off: own numbers give 1.23e9, not 1.33e8."
   },
   "c": {
    "type": "numerical",
-   "note": "Botched Colebrook iteration, friction factor asserted."
+   "note": "Botched Colebrook iteration, then asserts f = 0.028 vs 0.0132."
   },
   "d": {
    "type": "method",
-   "note": "Incompressible Darcy-Weisbach with the wrong density."
+   "note": "Incompressible Darcy-Weisbach with wrong density; 7.94 m/s."
   }
  },
  "google/gemma-3-27b-it": {
   "a": {
    "type": "method",
-   "note": "Darcy-Weisbach with spurious viscous term, inconsistent density, no acceleration term."
+   "note": "Invented viscous term, no acceleration term, wrong density; 19.15 kg/s."
   },
   "b": {
    "type": "numerical",
-   "note": "Re contradicts its own numbers."
+   "note": "Re contradicts own numbers (7.4e6), reports 464435."
   },
   "c": {
    "type": "numerical",
-   "note": "Friction factor does not match Colebrook at its own Reynolds number."
+   "note": "f = 0.0163 does not satisfy Colebrook at own Re (0.0151)."
   },
   "d": {
-   "type": "method",
-   "note": "Assumed constant velocity along the pipe."
+   "type": "interpretation",
+   "note": "Assumes velocity constant along compressible pipe; 15.49 m/s."
   }
  },
  "microsoft/phi-4": {
   "a": {
    "type": "method",
-   "note": "Invented formula for mass flow."
+   "note": "Invented mass-flow formula; 269.5 kg/s vs 17.43."
   },
   "b": {
    "type": "method",
-   "note": "Carried from (a): Reynolds number correct for its own wrong mass flow."
+   "note": "Carried from (a): G D/mu right but uses 269.5 kg/s."
   },
   "c": {
    "type": "numerical",
-   "note": "Friction factor asserted, does not match Colebrook at its own Re."
+   "note": "Iteration not shown; asserts f = 0.018, own Re gives 0.0130."
   },
   "d": {
    "type": "method",
-   "note": "Carried from (a): velocity correct for its own wrong mass flow."
+   "note": "Carried from (a): mdot/(rho2 A) right but uses 269.5 kg/s."
   }
  },
  "openai/gpt-4o-2024-05-13": {
   "a": {
    "type": "method",
-   "note": "Garbled flow equation, solution not shown, value twice the reference."
+   "note": "Garbled isothermal flow equation, solution not shown; 34.9 vs 17.43 kg/s."
   },
   "b": {
    "type": "numerical",
-   "note": "Factor-10 arithmetic error in Reynolds number."
+   "note": "Factor-10 slip: own m D/(mu A) gives 1.35e7, not 1.35e6."
   },
   "c": {
    "type": "numerical",
-   "note": "Friction factor asserted, does not match Colebrook at its own Re."
+   "note": "Asserts f = 0.018; Colebrook at own Re gives about 0.0139."
   },
   "d": {
    "type": "method",
-   "note": "Carried from (a): velocity correct for its own wrong mass flow."
+   "note": "Carried from (a): mdot/(rho2 A) right but uses 34.9 kg/s."
   }
  },
  "mistralai/mistral-large": {
   "a": {
    "type": "formula",
-   "note": "Darcy f used with 4fL/D, acceleration term dropped, factor-1000 slip."
+   "note": "4fL/D with Darcy f, plus factor-1000 slip; 196.3 vs 17.43 kg/s."
   },
   "b": {
    "type": "numerical",
-   "note": "Factor-10 arithmetic error in Reynolds number."
+   "note": "Factor-10 slip: own 4 mdot/(pi D mu) gives 7.57e7, not 7.57e6."
   },
   "d": {
    "type": "formula",
-   "note": "Carried from (a): velocity correct for its own wrong mass flow."
+   "note": "Carried from (a): mdot/(rho2 A) right but uses 196.3 kg/s."
   }
  },
  "deepseek/deepseek-chat": {
   "a": {
    "type": "formula",
-   "note": "Dimensionally wrong equation: L instead of L/D, no acceleration term."
+   "note": "Dimensionally wrong equation: L not L/D, LHS over P1; 2.91 kg/s."
   },
   "b": {
    "type": "numerical",
-   "note": "Re taken from first-iteration flow, not the final mass flow."
+   "note": "Re from first-iteration flow 2.60 kg/s, not final 2.91."
   },
   "c": {
    "type": "numerical",
-   "note": "Friction factor does not match Colebrook at its own Reynolds number."
+   "note": "f = 0.016 does not satisfy Colebrook at own Re (0.0141)."
   },
   "d": {
    "type": "formula",
-   "note": "Carried from (a): velocity correct for its own wrong mass flow."
+   "note": "Carried from (a): mdot/(rho2 A) right but uses 2.91 kg/s."
   }
  },
  "openai/gpt-5": {
   "a": {
    "type": "formula",
-   "note": "Friction term doubled (4fL/D with Darcy f); mass flow about half."
+   "note": "Friction term doubled (4fL/D with Darcy f); 8.66 vs 17.43 kg/s."
   },
   "b": {
    "type": "formula",
-   "note": "Carried from (a): Reynolds number correct for its own wrong mass flux."
+   "note": "Carried from (a): G D/mu right but uses halved mass flux."
   },
   "d": {
    "type": "formula",
-   "note": "Carried from (a): velocity correct for its own wrong mass flux."
+   "note": "Carried from (a): G Rs T/p2 right but uses halved mass flux."
   }
  },
  "anthropic/claude-sonnet-4.5": {
   "a": {
    "type": "formula",
-   "note": "Dimensionally inconsistent flow equation (4fL/(M D^2), average-pressure mixing)."
+   "note": "Dimensionally inconsistent flow equation (4fL/(M D^2)); 4.52 vs 17.43 kg/s."
   },
   "b": {
    "type": "formula",
-   "note": "Carried from (a): Reynolds number correct for its own wrong mass flux."
+   "note": "Carried from (a): G D/mu right but uses wrong mass flux."
   },
   "c": {
    "type": "numerical",
-   "note": "Friction factor 9.7 % off Colebrook at its own Reynolds number."
+   "note": "f = 0.0145 does not satisfy Colebrook at own Re (0.0137)."
   },
   "d": {
    "type": "numerical",
-   "note": "Factor-10 arithmetic error in velocity."
+   "note": "Factor-10 arithmetic: own formula and numbers give 3.18, not 31.9 m/s."
   }
  },
  "anthropic/claude-opus-4.5": {
   "a": {
    "type": "formula",
-   "note": "Friction term doubled in integrated equation; result 29 % low."
+   "note": "Friction term doubled relative to 2 ln(p1/p2); 12.3 vs 17.43 kg/s."
   },
   "b": {
    "type": "formula",
-   "note": "Carried from (a): Reynolds number correct for its own wrong mass flux."
+   "note": "Carried from (a): G D/mu right but uses low mass flux."
   },
   "d": {
    "type": "formula",
-   "note": "Carried from (a): velocity correct for its own wrong mass flux."
+   "note": "Carried from (a): G/rho2 right but uses low mass flux."
   }
  },
  "openai/gpt-5.2": {
   "a": {
    "type": "formula",
-   "note": "Acceleration term has the wrong sign in the derived equation."
+   "note": "Acceleration term with wrong sign (- ln instead of + ln); value 17.4 right."
   }
  }
 }

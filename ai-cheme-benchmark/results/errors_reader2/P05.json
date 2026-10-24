@@ -1,0 +1,130 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "interpretation",
+   "note": "Gain taken as 2.5/8 and step of 4 ignored; 0.3125 vs 10."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Reply ends after (a); part not answered."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Reply ends after (a); part not answered."
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Incoherent manipulation of the transfer function; 2 vs 10."
+  },
+  "b": {
+   "type": "method",
+   "note": "Incoherent expression, growing exponential; 5.065 vs 7.135."
+  },
+  "c": {
+   "type": "method",
+   "note": "Uses t = -8 ln(0.95) instead of -8 ln(0.05); 0.0814 min."
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "interpretation",
+   "note": "Gain read as 2.5/8 and step of 4 ignored; 0.3125 vs 10."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Correct y'(t) derived but never evaluated at t = 10."
+  },
+  "c": {
+   "type": "method",
+   "note": "Equates 10(1-e^(-t/8)) to 95 % of 0.3125; algebra also wrong."
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "interpretation",
+   "note": "Steady-state gain read as 2.5/8 instead of 2.5; 1.25 vs 10."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Correct 10 - 10e^(-1.25) evaluated as 9.94 instead of 7.135."
+  },
+  "c": {
+   "type": "method",
+   "note": "Equates 95 % of 1.25 to 10 - 10e^(-t/8); inconsistent set-up."
+  }
+ },
+ "openai/gpt-3.5-turbo": {
+  "a": {
+   "type": "numerical",
+   "note": "Partial fractions wrong (5/s - 2.5/(8s+1)); final value 5 vs 10."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Wrong y' = 5 - 2.5e^(-t/8), also misevaluated: 4.063 vs 7.135."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Solves 4.75 = 5 - 2.5e^(-t/8) wrongly, ln misevaluated; 28.9 min."
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "b": {
+   "type": "numerical",
+   "note": "Partial-fraction slip gives y' = 10 - 1.25e^(-t/8); 9.642 vs 7.135."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): right 95 % set-up on wrong y'(t); 7.33 min."
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Only FINAL value, no working; 0.625 vs 10."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Only FINAL value, no working; 0.6244 vs 7.135."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Only FINAL value, no working; 13.9 vs 23.97 min."
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "interpretation",
+   "note": "Gain 2.5 not multiplied by the step of 4; 2.5 vs 10."
+  },
+  "b": {
+   "type": "method",
+   "note": "Closed-loop formula mixing s and t; -3.22 vs 7.135."
+  },
+  "c": {
+   "type": "method",
+   "note": "Incoherent s/t manipulation; 0.11 min vs 23.97."
+  }
+ },
+ "microsoft/phi-4": {
+  "b": {
+   "type": "formula",
+   "note": "Inverse of 80/(8s+1) taken as 80e^(-t/8), not 10e^(-t/8)."
+  },
+  "c": {
+   "type": "formula",
+   "note": "Carried from (b): right 95 % set-up on wrong y'(t); 40.60 min."
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "b": {
+   "type": "numerical",
+   "note": "Partial-fraction slip gives y' = 10 - 1.25e^(-t/8); 9.642 vs 7.135."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): right 95 % set-up on wrong y'(t); 7.33 min."
+  }
+ }
+}

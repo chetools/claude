@@ -241,6 +241,15 @@
     window.scrollTo(0, 0);
   });
 
+  /* Grid cells link to a reply (or to one part's note inside it): open the reply before the browser jumps. */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a.ejump');
+    if (!a) return;
+    var t = document.getElementById(a.getAttribute('href').slice(1));
+    var d = t && (t.tagName === 'DETAILS' ? t : t.closest('details'));
+    if (d) d.open = true;
+  });
+
   /* ------------------------------------------------------------ self-test */
   /* Recompute the per-model means straight from the responses (a separate, loop-only code path) and compare
      with (1) what the table shows and (2) the numbers the build computed in Python. */
@@ -272,6 +281,19 @@
     var graded = document.querySelectorAll('#metrics .metric')[3];
     check('responses-graded card', !!graded && graded.querySelector('.m-value').textContent === String(
       D.responses.filter(function (r) { return pids.indexOf(r.problem) >= 0; }).length), null);
+    /* Where-points-were-lost grids: parts add up to the score, and every lost part has the same note in the reply. */
+    var grids = document.querySelectorAll('.egrid tbody tr'), gridOk = true, gridInfo = [];
+    [].forEach.call(grids, function (tr) {
+      var sum = 0;
+      [].forEach.call(tr.querySelectorAll('td.ecell'), function (td) {
+        sum += Number(td.querySelector('.got').textContent.split('/')[0]);
+        var t = td.getAttribute('data-type'), li = document.getElementById(tr.getAttribute('data-resp') + '-' + td.getAttribute('data-part'));
+        var lost = !td.classList.contains('e-ok');
+        if (lost !== !!li || (li && li.getAttribute('data-type') !== t)) { gridOk = false; gridInfo.push(tr.getAttribute('data-resp') + ' ' + td.getAttribute('data-part')); }
+      });
+      if (Math.abs(sum - Number(tr.querySelector('.tot').textContent)) > 1e-9) { gridOk = false; gridInfo.push(tr.getAttribute('data-resp') + ' sum'); }
+    });
+    check('error grids: parts sum to the score and match the notes in the replies (' + grids.length + ' rows)', gridOk && grids.length > 0, gridInfo.slice(0, 5));
     check('model output was not executed as HTML', window.PWNED === undefined && !document.querySelector('.prob script'), null);
     window.SELFTEST = { pass: ok, details: details };
     var pill = el('div', { 'class': ok ? 'note' : 'err', id: 'selftest-result' },

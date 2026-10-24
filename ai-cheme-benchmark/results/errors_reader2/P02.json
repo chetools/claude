@@ -1,0 +1,232 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "formula",
+   "note": "Area taken as pi D^2 (no /4), V 0.8 m/s: Re 80,080"
+  },
+  "b": {
+   "type": "method",
+   "note": "Colebrook not solved; f = 0.016 guessed from Moody chart"
+  },
+  "c": {
+   "type": "method",
+   "note": "Minor losses omitted and L/D missing from h_f: H 12.05 m"
+  },
+  "d": {
+   "type": "method",
+   "note": "Multiplied by efficiency and used static lift only: 0.16 kW"
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Flow rate used in place of velocity: Re 1.99e6"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented friction formula, not Colebrook: f 0.013"
+  },
+  "c": {
+   "type": "method",
+   "note": "Meaningless head formula: H 0.218 m"
+  },
+  "d": {
+   "type": "formula",
+   "note": "Efficiency omitted from power formula, on wrong head: 0.057 kW"
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Flow rate used in place of velocity: Re 249,800"
+  },
+  "b": {
+   "type": "formula",
+   "note": "Misremembered rough-pipe formula 1/f = -2 log(eps/D)+1.74: 0.0244"
+  },
+  "c": {
+   "type": "method",
+   "note": "Dimensionally wrong head expression (SumK+5.5)(L/D)+dz: 13,110 m"
+  },
+  "d": {
+   "type": "formula",
+   "note": "Power formula multiplies and divides by efficiency: 1,117 kW"
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "numerical",
+   "note": "V = Q/A evaluated as 1.59 instead of 3.18 m/s: Re 1.49e5"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Colebrook set up, not solved: 0.022 vs 0.0192 at own Re"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Energy balance right; h_f arithmetic wrong (4.25 m from own values)"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "rho g Q H/eta right, arithmetic gives 5.5 instead of 8.4 kW"
+  }
+ },
+ "openai/gpt-3.5-turbo": {
+  "a": {
+   "type": "method",
+   "note": "Flow rate used in place of velocity: Re 24,950"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "No Colebrook iteration shown; f 0.0205 fits neither Re"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "H 12.757 m with no working; minor losses omitted"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "rho g Q H/eta right, but 412.10 instead of 4.34 kW"
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "a": {
+   "type": "numerical",
+   "note": "Area slip 0.0785 instead of 0.00785 m2, V tenfold low: Re 31,772"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Colebrook iteration abandoned; guess f = 0.02 kept (0.0244 at own Re)"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a),(b): energy balance right on own V and f, 12.18 m"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): power formula right on own H, 4.145 kW"
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "b": {
+   "type": "formula",
+   "note": "Swamee-Jain used instead of required Colebrook, Re^0.9 slip: 0.0174"
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Bare value Re 2.506e4 with no working"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare value f 0.0198 with no working"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Bare value H 13.27 with no working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare value 11.56, no unit with no working"
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "b": {
+   "type": "numerical",
+   "note": "Colebrook one trial only; stated f 0.0208 is not solution (0.0179)"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): energy balance right on own f, 31.10 m"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): power right on own H (small slip), 10.25 kW"
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "numerical",
+   "note": "V computed 31.83 instead of 3.18 m/s in working; Re stated right"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Colebrook iterations miscomputed: f 0.0218 vs 0.0179"
+  },
+  "c": {
+   "type": "method",
+   "note": "Minor losses omitted and tenfold velocity used: H 783.4 m"
+  },
+  "d": {
+   "type": "formula",
+   "note": "g omitted from rho g Q H/eta: 27.67 kW"
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "b": {
+   "type": "units",
+   "note": "eps/D = 0.0046, mm not converted to m; iteration unconverged; f 0.0175"
+  },
+  "d": {
+   "type": "units",
+   "note": "Carried from (b): power right on own H; 9.56 kW is 2.05 % off"
+  }
+ },
+ "mistralai/mistral-large": {
+  "b": {
+   "type": "numerical",
+   "note": "2.51/(Re sqrt f) evaluated tenfold too large: f 0.0223"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): energy balance right on own f, 32.1 m"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): power right on own H, 10.9 kW"
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "b": {
+   "type": "numerical",
+   "note": "Colebrook value 0.0185 stated without iteration, 3.3 % off 0.0179"
+  },
+  "c": {
+   "type": "interpretation",
+   "note": "Extra exit velocity head (SumK includes exit), sum miscomputed: 20.6 m"
+  },
+  "d": {
+   "type": "interpretation",
+   "note": "Carried from (c): power formula right on own H, 7.0 kW"
+  }
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "b": {
+   "type": "numerical",
+   "note": "2.51/(Re sqrt f) evaluated ~30 times too large: f 0.0346"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): energy balance right on own f, 41.7 m"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): power right on own H, 14.2 kW"
+  }
+ },
+ "anthropic/claude-opus-4.5": {
+  "b": {
+   "type": "numerical",
+   "note": "2.51/(Re sqrt f) evaluated ~50 times too small: f 0.0164"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): energy balance right on own f, 27.5 m"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): power right on own H, 9.36 kW"
+  }
+ }
+}

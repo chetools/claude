@@ -1,202 +1,202 @@
 {
  "meta-llama/llama-3.2-3b-instruct": {
   "a": {
-   "type": "method",
-   "note": "Wrong characteristic equation, no Kc,max value given."
+   "type": "incomplete",
+   "note": "Wrong characteristic equation written and no K_c,max value given."
   },
   "b": {
    "type": "incomplete",
-   "note": "Not calculated."
+   "note": "Oscillation frequency not calculated"
   },
   "c": {
    "type": "formula",
-   "note": "Offset 1+Kc from wrong final-value expression."
+   "note": "Offset taken as 1 + K_c = 4 instead of 1/(1+K_c) = 0.25"
   }
  },
  "meta-llama/llama-3.2-1b-instruct": {
   "a": {
    "type": "method",
-   "note": "Meaningless characteristic equation, no Routh array."
+   "note": "K_c,max = 1 from meaningless characteristic equation, no Routh array"
   },
   "b": {
    "type": "method",
-   "note": "Omega = 0 from wrong method."
+   "note": "omega = 0 rad/min from no valid method"
   },
   "c": {
-   "type": "formula",
-   "note": "Invented integral formula for offset."
+   "type": "method",
+   "note": "Offset 7 from an invented integral formula."
   }
  },
  "meta-llama/llama-3.1-8b-instruct": {
   "a": {
    "type": "method",
-   "note": "Wrong characteristic polynomial and no actual Routh calculation."
+   "note": "Wrong characteristic polynomial and no Routh calculation: 0.0625 vs 6.357"
   },
   "b": {
-   "type": "formula",
-   "note": "Invented formula omega = sqrt(Kc/tauI)."
+   "type": "method",
+   "note": "Invented omega = sqrt(K_c/tau_I) = 0.125 rad/min."
   },
   "c": {
    "type": "formula",
-   "note": "Wrong offset formula (Kc-1)/(1+Kc)."
+   "note": "Wrong offset formula (K_c-1)/(1+K_c) = 0.5 vs 0.25"
   }
  },
  "mistralai/mistral-nemo": {
   "a": {
    "type": "method",
-   "note": "Characteristic equation dropped PI zero; incorrect Routh array."
+   "note": "PI zero dropped from characteristic equation, wrong Routh array: K_c,max 20"
   },
   "b": {
    "type": "method",
-   "note": "No valid derivation of crossover frequency."
+   "note": "omega = 2.53 rad/min with no valid derivation"
   },
   "c": {
    "type": "formula",
-   "note": "Final value theorem applied with a spurious s."
+   "note": "Final value theorem with spurious s: offset 3/10 vs 0.25"
   }
  },
  "openai/gpt-3.5-turbo": {
   "a": {
    "type": "method",
-   "note": "Extra 1/s in controller transfer function; nonsensical Routh array."
+   "note": "Extra 1/s in controller and nonsensical Routh array: K_c,max = 0"
   },
   "b": {
    "type": "method",
-   "note": "Carried from (a): zero frequency from wrong Kc,max."
+   "note": "omega = 0 rad/min with no valid method"
   },
   "c": {
    "type": "formula",
-   "note": "Extra 1/s in P controller; offset wrong."
+   "note": "Extra 1/s in P controller gives offset -3/10 vs 0.25"
   }
  },
  "meta-llama/llama-3.3-70b-instruct": {
   "a": {
-   "type": "numerical",
-   "note": "Wrong expansion of characteristic polynomial; no Kc,max value."
+   "type": "incomplete",
+   "note": "Polynomial expanded wrongly and no K_c,max value given."
   },
   "b": {
    "type": "incomplete",
-   "note": "Not calculated."
+   "note": "Oscillation frequency not calculated"
   }
  },
  "openai/gpt-4o-mini": {
   "a": {
    "type": "method",
-   "note": "Characteristic equation dropped factor s, treating Kc/(4s) as constant."
+   "note": "Characteristic equation drops factor s (K_c/(4s) as constant): 50.4"
   },
   "b": {
    "type": "method",
-   "note": "Unsupported approximation gave 2.06 rad/min."
+   "note": "omega = 2.06 rad/min from an unsupported approximation"
   }
  },
  "qwen/qwen-2.5-7b-instruct": {
   "a": {
    "type": "incomplete",
-   "note": "Kc,max = 1.25 with no working."
+   "note": "K_c,max = 1.25 given with no working"
   },
   "b": {
    "type": "incomplete",
-   "note": "0.48 rad/min with no working."
+   "note": "omega = 0.48 rad/min given with no working"
   },
   "c": {
    "type": "incomplete",
-   "note": "Offset 0.2 with no working."
+   "note": "Offset 0.2 given with no working"
   }
  },
  "qwen/qwen-2.5-72b-instruct": {
   "a": {
-   "type": "numerical",
-   "note": "Process polynomial expanded wrongly; only s^2 row checked."
+   "type": "method",
+   "note": "Only s^2 row checked, s^1 condition missed; expansion also wrong: 1.4."
   },
   "b": {
-   "type": "numerical",
-   "note": "Carried from (a): omega from polynomial inconsistent with own (a)."
+   "type": "method",
+   "note": "omega = 0.5 from inconsistent polynomial; real-part equation unsatisfied."
   },
   "c": {
    "type": "formula",
-   "note": "Used velocity error constant instead of position constant."
+   "note": "Velocity error constant used instead of position constant: offset 1"
   }
  },
  "google/gemma-3-4b-it": {
   "a": {
    "type": "method",
-   "note": "Treated open-loop poles as closed-loop roots, giving infinity."
+   "note": "Open-loop poles treated as closed-loop roots: K_c,max infinite"
   },
   "b": {
    "type": "method",
-   "note": "No valid method for crossover frequency."
+   "note": "omega = 0.0625 rad/min with no valid method"
   },
   "c": {
-   "type": "formula",
-   "note": "Invented formula gave offset 180."
+   "type": "method",
+   "note": "Offset 180 from an invented formula."
   }
  },
  "google/gemma-3-27b-it": {
   "a": {
    "type": "method",
-   "note": "Correct polynomial but limit taken from b1 = 0 instead of c1 = 0."
+   "note": "Limit taken from b1 = 0 instead of s^1 entry c1 = 0: 12.6"
   },
   "b": {
    "type": "method",
-   "note": "First-order auxiliary equation with real root; wrong method."
+   "note": "First-order auxiliary equation with a real root: 0.232 rad/min"
   },
   "c": {
    "type": "formula",
-   "note": "Offset as 1/T(0) - 1 instead of 1 - T(0)."
+   "note": "Offset 1/T(0) - 1 = 1/3 instead of 1 - T(0) = 0.25"
   }
  },
  "microsoft/phi-4": {
   "a": {
    "type": "numerical",
-   "note": "Polynomial expanded wrongly; s^1 Routh entry has wrong sign."
+   "note": "Expansion slips (52s^3, 28s^2, (4+K_c)s) and sign error: 1.075"
   },
   "b": {
-   "type": "numerical",
-   "note": "Carried from (a): auxiliary equation built from wrong rows."
+   "type": "method",
+   "note": "Auxiliary equation built from the wrong Routh rows: 0.312."
   }
  },
  "openai/gpt-4o-2024-05-13": {
   "a": {
-   "type": "numerical",
-   "note": "Process polynomial wrongly expanded (13s for 8s); no Routh calculation."
+   "type": "incomplete",
+   "note": "K_c,max = 2.38 with garbled equation and no Routh calculation."
   },
   "b": {
    "type": "incomplete",
-   "note": "0.90 rad/min with no supporting working."
+   "note": "omega = 0.90 rad/min with no supporting working"
   },
   "c": {
    "type": "incomplete",
-   "note": "Offset 16.67 % with no working."
+   "note": "Offset 16.67 % given with no working"
   }
  },
  "mistralai/mistral-large": {
   "a": {
    "type": "method",
-   "note": "Wrong characteristic equation; Kc multiplied the whole process polynomial."
+   "note": "K_c multiplied (4s+1) by whole process polynomial; 6.24 coincidental"
   },
   "b": {
    "type": "method",
-   "note": "Carried from (a): auxiliary equation of wrong polynomial."
+   "note": "Carried from (a): auxiliary equation of wrong polynomial, 0.164 rad/min"
   }
  },
  "deepseek/deepseek-chat": {
   "a": {
-   "type": "numerical",
-   "note": "Process polynomial expanded wrongly; only s^2 row checked."
+   "type": "method",
+   "note": "Only s^2 row checked, s^1 condition missed; expansion also wrong: 0.7."
   },
   "b": {
    "type": "method",
-   "note": "Used imaginary part only; real-part equation not satisfied."
+   "note": "Used imaginary part only; real-part equation not satisfied: 0.316"
   }
  },
  "anthropic/claude-opus-4.5": {
   "a": {
    "type": "numerical",
-   "note": "Algebra slip: 1156Kc term subtracted twice, giving Kc,max 2.4."
+   "note": "Algebra slip: 1156K_c term subtracted twice, K_c,max 2.4 vs 6.357"
   },
   "b": {
    "type": "numerical",
-   "note": "Carried from (a): correct method applied to wrong Kc,max."
+   "note": "Carried from (a): omega = 0.316 rad/min at K_c = 2.4"
   }
  }
 }

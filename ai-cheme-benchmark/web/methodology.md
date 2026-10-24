@@ -105,10 +105,15 @@ fixed before any model saw them.
 
 ## Types of mistakes
 
-Every part that lost points has one label for the main cause of the loss, assigned after grading by reading the
-grader's justification for that part (the labels are in `results/errors/`, one file per problem). A part that only
-repeats an earlier wrong value carries the type of the original mistake. The labels are one reader's judgement of the
-justification text, not a second grading: they were checked only for consistency with the part scores (a label exists
-exactly when points were lost) and have not been audited by a second reader.
+Every part that lost points has one label for the main cause of the loss, shown in the grid under each problem and
+next to each reply. Labels were assigned after grading, from the grader's justification for that part (and the reply
+itself where the justification was not enough); they do not change any score. A part that only repeats an earlier
+wrong value carries the type of the original mistake, and its note starts "Carried from".
 
 @@ERROR_TYPES@@
+
+When more than one type could fit, these rules decide, in this order (the first that fits wins):
+
+@@ERROR_RULES@@
+
+@@ERROR_AGREEMENT@@

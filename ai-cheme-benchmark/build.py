@@ -39,7 +39,7 @@ SOL = os.path.join(PYDIR, "solutions")
 TOOLS = os.path.join(ROOT, ".buildtools")
 DIST = os.path.join(ROOT, "dist")
 sys.path.insert(0, PYDIR)
-from error_types import TYPES                                # noqa: E402
+from error_types import TYPES, RULES                                # noqa: E402
 from rubric import POINTS                                    # noqa: E402
 
 TITLE = "AI models on ChemE problems"
@@ -412,6 +412,11 @@ def num(x):
     return f"{x:g}"
 
 
+def resp_id(pid, mid):
+    """Anchor of one model's reply to one problem; grid cells link to it (and to its per-part notes)."""
+    return f"r-{pid}-" + re.sub(r"[^a-z0-9]+", "-", mid.lower()).strip("-")
+
+
 def error_legend():
     items = "".join(f'<li><span class="etag e-{k}">{esc(ERR_SHORT[k])}</span> <strong>{esc(v[0])}</strong>: {esc(v[1])}</li>'
                     for k, v in TYPES.items())
@@ -428,6 +433,7 @@ def error_grid(p, models, by_pr):
         if not rs:
             continue
         r = rs[0]
+        rid = resp_id(p["id"], m["id"])
         parts, errs = r.get("parts") or {}, r.get("errors") or {}
         cells = []
         for k, mx in pts.items():
@@ -436,26 +442,31 @@ def error_grid(p, models, by_pr):
                 cells.append("<td>–</td>")
             elif k in errs:
                 e = errs[k]
-                cells.append(f'<td class="ecell e-{e["type"]}" title="{esc(TYPES[e["type"]][0])}: {esc(e["note"])}">'
-                             f'{esc(ERR_SHORT[e["type"]])}<span class="got">{num(got)}/{num(mx)}</span></td>')
+                cells.append(f'<td class="ecell e-{e["type"]}" data-part="{esc(k)}" data-type="{e["type"]}">'
+                             f'<a class="ejump" href="#{rid}-{esc(k)}" title="{esc(TYPES[e["type"]][0])}: {esc(e["note"])}">'
+                             f'{esc(ERR_SHORT[e["type"]])}<span class="got">{num(got)}/{num(mx)}</span></a></td>')
             else:
-                cells.append(f'<td class="ecell e-ok" title="full marks">✓<span class="got">{num(got)}/{num(mx)}</span></td>')
-        body.append(f'<tr><th scope="row">{esc(m["name"])}</th>{"".join(cells)}<td class="tot">{num(r["score"])}</td></tr>')
+                cells.append(f'<td class="ecell e-ok" data-part="{esc(k)}"><a class="ejump" href="#{rid}" title="full marks">'
+                             f'✓<span class="got">{num(got)}/{num(mx)}</span></a></td>')
+        body.append(f'<tr data-resp="{rid}"><th scope="row"><a class="ejump" href="#{rid}">{esc(m["name"])}</a></th>'
+                    f'{"".join(cells)}<td class="tot">{num(r["score"])}</td></tr>')
     if not body:
         return ""
     return ('<div class="label">Where points were lost</div>'
             '<div class="tablewrap"><table class="egrid"><thead><tr><th>Model</th>' + head + '<th>Score</th></tr></thead>'
             '<tbody>' + "".join(body) + '</tbody></table></div>'
             '<p class="caption">Each cell is one part of the problem: a tick for full marks, otherwise the type of the main '
-            'mistake with points earned / available. Hover over a cell, or open the model\'s reply below, for the note. '
+            'mistake with points earned / available. Hover over a cell for the note, or click it to open the '
+            'model\'s reply at that note. '
             'A part that only repeats an earlier wrong value carries the type of the original mistake.</p>')
 
 
-def error_chips(r):
+def error_chips(r, rid):
     errs = r.get("errors") or {}
     if not errs:
         return ""
-    lis = "".join(f'<li><span class="etag e-{e["type"]}">({esc(k)}) {esc(ERR_SHORT[e["type"]])}</span> {esc(e["note"])}</li>'
+    lis = "".join(f'<li id="{rid}-{esc(k)}" data-part="{esc(k)}" data-type="{e["type"]}">'
+                  f'<span class="etag e-{e["type"]}">({esc(k)}) {esc(ERR_SHORT[e["type"]])}</span> {esc(e["note"])}</li>'
                   for k, e in sorted(errs.items()))
     return f'<ul class="elist">{lis}</ul>'
 
@@ -508,13 +519,13 @@ def problems_html(data, ref, batch, models):
             label = f"mean {avg:.1f} / 10 (runs: {scores})" if N_RUNS > 1 else f"score {avg:g} / 10"
             kinds = sorted({e["type"] for e in (rs[0].get("errors") or {}).values()})
             tags = "".join(f'<span class="etag e-{k}">{esc(ERR_SHORT[k])}</span>' for k in kinds)
-            out.append(f'<details class="resp"><summary>{esc(m["name"])} {tags}<span class="mean">{esc(label)}</span></summary>')
+            out.append(f'<details class="resp" id="{resp_id(p["id"], m["id"])}"><summary>{esc(m["name"])} {tags}<span class="mean">{esc(label)}</span></summary>')
             for r in rs:
                 head = f'Run {r["run"]}<span class="score-pill">score {r["score"]:g} / 10</span>' if N_RUNS > 1 else "Response"
                 out.append(f'<h4>{head}</h4>'
                            f'<div class="resp-body">{response_html(r["text"], batch)}</div>'
                            f'<p class="just"><strong>Grader:</strong> {esc(r["justification"])}</p>'
-                           + error_chips(r))
+                           + error_chips(r, resp_id(p["id"], m["id"])))
             out.append("</details>")
         out.append("</section>")
         blocks.append("\n".join(out))
@@ -556,6 +567,45 @@ def error_types_md(rs):
     return "\n".join(f"- **{v[0]}** ({n[k]} labelled parts): {v[1]}." for k, v in TYPES.items())
 
 
+def error_agreement_md(rs):
+    """Agreement of the two independent labelling passes (results/errors_reader1, _reader2) and how the final labels
+    in results/errors relate to them. Computed here so the numbers on the page cannot go stale."""
+    def load(d):
+        out = {}
+        for p in sorted(POINTS):
+            f = os.path.join(ROOT, "results", d, f"{p}.json")
+            if not os.path.exists(f):
+                fail(f"results/{d}/{p}.json missing")
+            for mid, parts in json.loads(read_file(f)).items():
+                for k, e in parts.items():
+                    out[(mid, p, k)] = e["type"]
+        return out
+    r1, r2 = load("errors_reader1"), load("errors_reader2")
+    final = {(r["model"], r["problem"], k): e["type"] for r in rs for k, e in (r.get("errors") or {}).items()}
+    if set(r1) != set(final) or set(r2) != set(final):
+        fail("the two labelling passes and results/errors do not cover the same lost parts")
+    n = len(final)
+    agree = sum(r1[k] == r2[k] for k in final)
+    # Cohen's kappa: agreement corrected for what two readers with these type frequencies would reach by chance
+    pe = sum((sum(v == t for v in r1.values()) / n) * (sum(v == t for v in r2.values()) / n) for t in TYPES)
+    kappa = (agree / n - pe) / (1 - pe)
+    same1 = sum(final[k] == r1[k] for k in final if r1[k] != r2[k])
+    same2 = sum(final[k] == r2[k] for k in final if r1[k] != r2[k])
+    other = (n - agree) - sum(final[k] in (r1[k], r2[k]) for k in final if r1[k] != r2[k])
+    if any(final[k] != r1[k] for k in final if r1[k] == r2[k]):
+        fail("a final label differs from a type both readers agreed on")
+    return (f"Two readers labelled the {n} lost parts independently, the second without seeing the first's labels "
+            f"(the first worked from the type definitions alone, the second also from the rules above). They chose the same type for {agree} of {n} parts "
+            f"({100 * agree / n:.0f} %; Cohen's kappa {kappa:.2f}). The {n - agree} parts where they differed were "
+            f"settled by a third reader, who re-read the justification and the reply against the rules: {same1} "
+            f"took the first reader's type, {same2} the second's" + (f" and {other} a third type" if other else "") + ". "
+            "For five of them (P01 (b) and (c), where a model's own wrong Reynolds number from (a) was turbulent, so a "
+            "turbulent correlation was consistent with it) the third reader's call was changed back to the second "
+            "reader's on review. "
+            "The labels are judgements about the reply, not measurements; the readers were AI models (Claude), "
+            "not human graders.")
+
+
 def fill_methodology(md, data):
     """Fill the @@NAME@@ numbers of web/methodology.md from the data, so they cannot go stale.
     Every grade-check flag must be listed, with the reason it was kept, in tests/reviewed_flags.json."""
@@ -595,6 +645,8 @@ def fill_methodology(md, data):
                    + ", ".join(f"`{a}`" for a in absent) + ".") if absent else "",
         "MODEL_SOURCES": "\n".join(sources),
         "ERROR_TYPES": error_types_md(rs),
+        "ERROR_RULES": "\n".join(f"{i}. {t}" for i, t in enumerate(RULES, 1)),
+        "ERROR_AGREEMENT": error_agreement_md(rs),
     }
     def sub(m):
         if m.group(1) not in vals:

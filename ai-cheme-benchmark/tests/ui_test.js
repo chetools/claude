@@ -36,6 +36,17 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) failure
         ok(await page.evaluate(() => document.querySelectorAll('#toc-prob a').length === window.DATA.problems.length), `${label}: one problem TOC entry per problem`);
         ok(await page.evaluate(() => document.querySelectorAll('.prob details.resp').length === new Set(window.DATA.responses.map(r => r.model + '/' + r.problem)).size), `${label}: one response block per model and problem`);
         ok(await page.evaluate(() => document.querySelectorAll('.prob .katex').length > 0), `${label}: math rendered`);
+        ok(await page.evaluate(() => document.querySelectorAll('.prob .egrid').length === window.DATA.problems.length), `${label}: one error grid per problem`);
+        // click a lost-points cell: the reply opens and its note for that part is the target
+        const jumped = await page.evaluate(() => {
+          const a = document.querySelector('.egrid td.ecell:not(.e-ok) a.ejump');
+          a.scrollIntoView(); a.click();
+          const li = document.getElementById(a.getAttribute('href').slice(1));
+          return li.closest('details').open && location.hash === a.getAttribute('href');
+        });
+        ok(jumped, `${label}: clicking a grid cell opens the reply at that part's note`);
+        await page.waitForTimeout(300);
+        await page.screenshot({ path: path.join(SHOTS, `${label}-error-jump.png`), fullPage: false });
       }
       if (tab === 'panel-code') {
         ok(await page.evaluate(() => document.querySelectorAll('#toc-code a').length >= 14), `${label}: code TOC entries`);

@@ -139,6 +139,7 @@ details.resp pre{background:#fafbfc;border:1px solid var(--card-border);border-r
   .main{margin-left:0;padding:1rem 16px 3rem}
   .charts{grid-template-columns:minmax(0,1fr)}
   .tabs{flex-wrap:wrap}
+  details.resp>summary .mean{float:none;display:block;margin-left:1rem}   /* score on its own line under the tags */
   .chart{max-width:100%;overflow-x:auto}
   .theory-layout,.theory-layout.wide{grid-template-columns:minmax(0,1fr)}
   .toc-box{position:static;max-height:50vh;border-right:none;border-bottom:1px solid var(--card-border);
@@ -172,3 +173,9 @@ h2,h3,h4{scroll-margin-top:3.6rem}
 .e-units{background:#e3effa;color:#1b4f82}
 .e-incomplete{background:#e9e9ee;color:#43465a}
 .e-interpretation{background:#efe3f8;color:#5a2b7e}
+.egrid a.ejump{color:inherit;text-decoration:none;display:block}
+.egrid td.ecell a.ejump:hover{text-decoration:underline}
+.egrid th[scope=row]{position:sticky;left:0;background:#fff;z-index:1}   /* model names stay visible when the grid scrolls */
+.egrid thead th:first-child{position:sticky;left:0;z-index:2}
+details.resp,.elist li{scroll-margin-top:3.6rem}
+.elist li:target{outline:2px solid var(--st-red);outline-offset:2px;border-radius:.3rem}

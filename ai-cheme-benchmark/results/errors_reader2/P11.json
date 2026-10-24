@@ -1,0 +1,336 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Meaningless D = R*F instead of overall balances; 261.75 vs 44.57"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented R_min = xD/(1-zF), ignores q-line pinch; 1.745"
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (b): 1.5 x 1.745 (small slip, 2.6125)"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Stage stepping not done"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Feed stage not determined"
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Invalid formula zF*xD*F instead of balances; 44.8"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula; R_min = 180 vs 1.775"
+  },
+  "c": {
+   "type": "method",
+   "note": "Invented formula, R = 0.415 not 1.5 R_min"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "No stage stepping, no usable value"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "No usable feed-stage value"
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "interpretation",
+   "note": "Took D as vaporized feed fraction, 40 vs 44.57"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula; R_min = 1.287 vs 1.775"
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (b): R = 1.5 x 1.287 = 1.929"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "9 stages asserted without stepping"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Feed stage 5 asserted without stepping"
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "method",
+   "note": "Wrong balance gives D = 100 vs 44.57"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula; R_min = 11.67 vs 1.775"
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (b): R = 1.5 x 11.67 = 17.505"
+  },
+  "d": {
+   "type": "method",
+   "note": "Fenske/Underwood-type formulas instead of stepping; 7.33 vs 12.42"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Feed stage 4 guessed without working"
+  }
+ },
+ "openai/gpt-3.5-turbo": {
+  "a": {
+   "type": "method",
+   "note": "Inconsistent balances give D = 60 vs 44.57"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula; R_min = 58.06 vs 1.775"
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (b): R = 1.5 x 58.06 = 87.10"
+  },
+  "d": {
+   "type": "method",
+   "note": "Fenske minimum-stage formula instead of stepping; 2.94"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Feed stage 2 given without working"
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "b": {
+   "type": "interpretation",
+   "note": "Assumed saturated-liquid feed (q = 1), ignoring q = 0.6; 1.40"
+  },
+  "c": {
+   "type": "interpretation",
+   "note": "Carried from (b): R = 1.5 x 1.40 = 2.1"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Stage stepping not done"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Feed stage not determined"
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "formula",
+   "note": "Replaced x_D by x_D/alpha in balance; D = 93.18"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula; R_min = 1.025 vs 1.775"
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (b): R = 1.5 x 1.025 = 1.5375"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "9.0 stages assumed without stepping"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Feed stage 5 assumed without stepping"
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Final value only, no working shown"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Final value only, no working shown"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Final value only, no working shown"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Final value only, no working shown"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Final value only, no working shown"
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "b": {
+   "type": "method",
+   "note": "Invented formula ignoring q-line pinch; R_min = 0.4475"
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (b): R = 1.5 x 0.4475 = 0.671"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "15.6 stages from calculations not shown"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Stage 7 stated without shown stepping"
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "method",
+   "note": "Invented 'Fenske' formula for D; 2.2 vs 44.57"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula; R_min = 0.691 vs 1.775"
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (b): R = 1.5 x 0.691 = 1.0365"
+  },
+  "d": {
+   "type": "method",
+   "note": "Made-up estimate with assumed compositions, no stepping; 14"
+  },
+  "e": {
+   "type": "method",
+   "note": "Feed stage 4 from an invented correlation"
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "b": {
+   "type": "method",
+   "note": "Invented formula; R_min = 0.329 vs 1.775"
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (b): R = 1.5 x 0.3291 = 0.494"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "No stepping; 8.2 from unsupported 'graphical' estimate, wrong stripping line"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Feed stage 9 from unsupported estimate, no stepping"
+  }
+ },
+ "microsoft/phi-4": {
+  "b": {
+   "type": "formula",
+   "note": "Misapplied Underwood formula; R_min = 22.97 vs 1.775"
+  },
+  "c": {
+   "type": "formula",
+   "note": "Carried from (b): R = 1.5 x 22.97 = 34.46"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "15.2 stages explicitly assumed, no stepping"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Stage 7 assumed without stepping"
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "b": {
+   "type": "method",
+   "note": "Invented (xD - zF)/(zF - xB), ignores pinch; 1.244"
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (b): R = 1.5 x 1.244 = 1.866"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "About 4 stages guessed without stepping"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Stage 2 guessed without stepping"
+  }
+ },
+ "mistralai/mistral-large": {
+  "d": {
+   "type": "incomplete",
+   "note": "Stepping botched and abandoned; 10.3 unsupported vs 12.42"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Stage 5 claimed from stepping not shown"
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "b": {
+   "type": "incomplete",
+   "note": "R_min = 1.2 assumed after abandoned attempts, no calculation"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Carried from (b): R = 1.5 x 1.2 = 1.8"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "8.5 stages supposed without stepping"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Stage 4 supposed without stepping"
+  }
+ },
+ "openai/o3": {
+  "d": {
+   "type": "incomplete",
+   "note": "No stepping shown; also V' = V + (1-q)F, slope 0.878"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Stage 5 claimed without shown stepping"
+  }
+ },
+ "deepseek/deepseek-r1-0528": {
+  "d": {
+   "type": "interpretation",
+   "note": "Counted x_D as stage-1 liquid, adding one stage; 13.42"
+  },
+  "e": {
+   "type": "interpretation",
+   "note": "Carried from (d): same offset gives stage 8 not 7"
+  }
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "d": {
+   "type": "numerical",
+   "note": "Equilibrium inversions wrong (x = 0.8276 for y = 0.96, not 0.909)"
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Carried from (d): wrong stepping gives stage 4 not 7"
+  }
+ },
+ "anthropic/claude-opus-4.5": {
+  "d": {
+   "type": "method",
+   "note": "Invalid stage table inconsistent with equilibrium; 7.71 vs 12.42"
+  },
+  "e": {
+   "type": "method",
+   "note": "Carried from (d): invalid table gives stage 4 not 7"
+  }
+ }
+}
