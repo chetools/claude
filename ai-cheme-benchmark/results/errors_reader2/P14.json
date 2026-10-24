@@ -8,5 +8,437 @@
    "type": "method",
    "note": "Single guessed point at 0.35 rad/min, no frequency search for the maximum"
   }
+ },
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "ω_u = 1.5 rad/min stated with no phase calculation (reference 0.423)"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "K_u = 1.5 unsupported; P_u taken as 2π·ω_u, not 2π/ω_u"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Carried from (b): ZN applied correctly to wrong K_u, P_u"
+  },
+  "d": {
+   "type": "method",
+   "note": "Invented GM = K_u/|G_m(1.5)| = 3.61 instead of 1/|L(iω_pc)|"
+  },
+  "e": {
+   "type": "method",
+   "note": "PM = 180° − (−90°) = 270° with no |L| = 1 crossover search"
+  },
+  "f": {
+   "type": "method",
+   "note": "M_s = 0.4167 reuses |G_m|; no evaluation of |1/(1+L)|"
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Meaningless phase argument gives ω_u = π rad/min (reference 0.423)"
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented K_u = 1/ω_u = 1/π; P_u = 2 from wrong ω_u"
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (b): ZN applied correctly to K_u = 1/π, P_u = 2"
+  },
+  "d": {
+   "type": "interpretation",
+   "note": "Treats L as 1/(1+G_c) and reports phases, no gain margin"
+  },
+  "e": {
+   "type": "interpretation",
+   "note": "Reports a phase of 90° as phase margin at ω = 1"
+  },
+  "f": {
+   "type": "interpretation",
+   "note": "Reports a phase angle (90°) as M_s instead of |1/(1+L)|"
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "ω_u = 3.57 rad/min given with no calculation (reference 0.423)"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "K_u = 3.44, P_u = 3.55 min unsupported; P_u ≠ 2π/ω_u"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Carried from (b): ZN applied correctly to unsupported K_u, P_u"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "GM = 3.13 at 5.91 rad/min given with no working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "PM = 55° at 3.57 rad/min given with no working"
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "M_s = 1.16e-5 given with no working (reference 2.12)"
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "incomplete",
+   "note": "ω_u = 1.5 rad/min asserted without solving the phase equation"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "K_u = 0.25 unsupported; P_u taken as 1/ω_u = 4.17 min"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Carried from (b): ZN applied correctly to wrong K_u, P_u"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "GM = 1.6 at 1.25 rad/min asserted with no calculation"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "PM = 35.3° at 1.41 rad/min asserted with no calculation"
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "M_s = 1.6 at 1.25 rad/min asserted with no calculation"
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Phase equation set up but never solved; 0.664 vs 0.423 rad/min"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "K_u = 2.41 unsupported (1/|G| at 0.664 is 4.32)"
+  },
+  "c": {
+   "type": "formula",
+   "note": "τ_D = 0.591 min is P_u/16, not P_u/8"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "GM = 2.06 at 0.664 rad/min is a bare value, no working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "PM = 43.9° at 0.234 rad/min is a bare value, no working"
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "M_s = 1.53 at 1.32 rad/min is a bare value, no working"
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "incomplete",
+   "note": "ω_u = 0.5 not solved; lag angles also wrong (arctan(ω/6))"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "K_u = 1.5 stated without evaluating |G(iω_u)|"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Carried from (b): ZN applied correctly to K_u = 1.5, P_u = 4π"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Only ω_pc = 0.75 given, no gain margin, no working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "PM = 40° with no ω_gc and no calculation"
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "M_s = 4 at 1 rad/min given with no calculation"
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Bare FINAL ω_u = 1.5708 rad/min, no working (reference 0.423)"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare FINAL K_u = 2.0, P_u = 1.0 min, no working"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "ZN values given as bare FINAL lines with no working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare FINAL GM = 1.5 at 1.5708 rad/min, no working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Bare FINAL PM = 45° at 1.5708 rad/min, no working"
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "Bare FINAL M_s = 1.5 at 1.5708 rad/min, no working"
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Takes dead time as constant −180°, drops −1.5ω; ω_u = 0.72"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Uses wrong ω_u, and (6·0.72)² taken as 31.1 not 18.7"
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (a): ZN applied correctly to K_u = 6.45, P_u = 8.73"
+  },
+  "d": {
+   "type": "method",
+   "note": "Takes ω_pc = ω_u, ignoring the PID phase; GM = 21.7"
+  },
+  "e": {
+   "type": "method",
+   "note": "PM = 102° ignores dead time and controller in L"
+  },
+  "f": {
+   "type": "method",
+   "note": "Assumes |1+L| = 1+|L|, giving impossible M_s = 0.5"
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "incomplete",
+   "note": "ω_u = 1.5 rad/min guessed, no phase calculation (reference 0.423)"
+  },
+  "b": {
+   "type": "method",
+   "note": "K_u = 1/3 from high-frequency limit with assumed K_c = 1"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Carried from (a) and (b): ZN applied to guessed P_u, wrong K_u"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "ω_pc = 3.78 guessed and no gain margin value given"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "ω_gc = 1.8 and PM = 30° are guesses, no calculation"
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "M_s = 1.2 at 1.8 rad/min guessed, no calculation"
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "a": {
+   "type": "numerical",
+   "note": "Denominator polynomial misexpanded and reversed in script; ω_u = 1.44"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "K_u = 3.54 not 1/|G| at its own 1.44 (28.6)"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a) and (b): ZN applied to wrong K_u, P_u"
+  },
+  "d": {
+   "type": "formula",
+   "note": "PID coded as (τ_D s²+s+1/τ_I)/s²; GM 1.28 at 1.64"
+  },
+  "e": {
+   "type": "formula",
+   "note": "Same wrong PID transfer function; ω_gc = 0.43 vs 0.284"
+  },
+  "f": {
+   "type": "formula",
+   "note": "Same wrong PID transfer function; impossible M_s = 0.43"
+  }
+ },
+ "microsoft/phi-4": {
+  "a": {
+   "type": "incomplete",
+   "note": "Phase equation set up but not solved; 0.5 vs 0.423 rad/min"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Carried from (a): K_u, P_u = 4π min evaluated at unsolved ω_u = 0.5"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Carried from (a): ZN applied correctly to K_u = 2.5, P_u = 4π"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "GM = 1.67 at 0.3 rad/min stated with no working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "PM = 30° at 0.4 rad/min stated with no working"
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "M_s = 1.2 at 0.35 rad/min stated with no working"
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "a": {
+   "type": "incomplete",
+   "note": "ω_u = 0.5 asserted unsolved; lag phases also added with + sign"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "|G(0.5i)| computed as 0.18 instead of 0.388; K_u = 5.56"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Carried from (a) and (b): ZN applied to K_u = 5.56, P_u = 12.57"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "GM = 1.0 at 0.5 rad/min with no evaluation of |L|"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "PM = 120° at 0.2 rad/min stated with no working"
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "M_s = 2.0 near 0.5 rad/min stated with no working"
+  }
+ },
+ "mistralai/mistral-large": {
+  "e": {
+   "type": "numerical",
+   "note": "Slip summing phase terms: PM 45.03° vs 45.47° at correct ω_gc"
+  },
+  "f": {
+   "type": "method",
+   "note": "No search over ω; only compares ω_pc and ω_gc, M_s = 1.86"
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "a": {
+   "type": "incomplete",
+   "note": "Correct phase equation but 0.779 rad/min given without solving (ref 0.423)"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "|G| = 0.297 is not the magnitude at 0.779 (0.166)"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Carried from (a) and (b): ZN applied to K_u = 3.37, P_u = 8.06"
+  },
+  "d": {
+   "type": "formula",
+   "note": "PID phase taken as −atan(1/τ_Iω)+atan(τ_Dω); GM 1.58"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "ω_gc = 0.511 and PM = 45.6° stated with no working"
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "M_s = 1.34 at 0.421 rad/min stated with no working"
+  }
+ },
+ "openai/o3": {
+  "a": {
+   "type": "incomplete",
+   "note": "Only a FINAL value 0.422 rad/min, no working shown"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Only FINAL K_u = 1.98, P_u = 14.9 min, no working"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Only FINAL ZN settings given, no working shown"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Only FINAL GM = 2.18 at 0.59 rad/min, no working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Only FINAL PM = 45° at 0.284 rad/min, no working"
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "Only FINAL M_s = 2.1 at 0.48 rad/min, no working"
+  }
+ },
+ "deepseek/deepseek-r1-0528": {
+  "f": {
+   "type": "incomplete",
+   "note": "Maximum sensitivity M_s and its frequency not calculated"
+  }
+ },
+ "openai/gpt-5": {
+  "f": {
+   "type": "numerical",
+   "note": "Scan slip: |L(0.45i)| 0.637 not 0.618; M_s 2.14 at 0.45"
+  }
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "a": {
+   "type": "numerical",
+   "note": "Bracketing contradicts own table; ω_u = 0.537 vs 0.423 rad/min"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Wrong ω_u, and dropped +1 terms: |G| 0.361 instead of 0.344"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a) and (b): ZN applied to K_u = 2.77, P_u = 11.70"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "|G(0.585i)| = 0.334 asserted without working (true 0.295); GM 1.58"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "ω_gc = 0.455 and PM = 57° from unshown search"
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "M_s = 1.45 at 0.50 rad/min from unshown optimisation"
+  }
+ },
+ "anthropic/claude-opus-4.5": {
+  "d": {
+   "type": "formula",
+   "note": "Phase equation adds extra −90° to PID phase; ω_pc 0.68 vs 0.585"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "PM = 43° at 0.40 rad/min with no supporting working"
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "M_s = 1.8 at 0.55 rad/min with no search or working"
+  }
+ },
+ "openai/gpt-5.2": {
+  "f": {
+   "type": "numerical",
+   "note": "Frequency of M_s peak 0.46 rad/min, 2 % below 0.4665"
+  }
  }
 }

@@ -160,3 +160,4 @@ h2,h3,h4{scroll-margin-top:3.6rem}
 .egrid thead th:first-child{position:sticky;left:0;z-index:2}
 details.resp,.elist li{scroll-margin-top:3.6rem}
 .elist li:target{outline:2px solid var(--st-red);outline-offset:2px;border-radius:.3rem}
+#problem-table td:nth-child(-n+3),#problem-table th:nth-child(-n+3){text-align:left}

@@ -8,5 +8,437 @@
    "type": "method",
    "note": "Took a single-frequency estimate of M_s instead of searching for the |S| maximum."
   }
+ },
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Guessed omega_u = 1.5 with no phase calculation."
+  },
+  "b": {
+   "type": "formula",
+   "note": "Used P_u = 1.5*2*pi instead of 2*pi/omega_u; K_u unsupported."
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (a): Ziegler-Nichols settings built on guessed ultimate gain and period."
+  },
+  "d": {
+   "type": "formula",
+   "note": "Gain margin from a wrong formula."
+  },
+  "e": {
+   "type": "formula",
+   "note": "Phase margin of 270 deg from a wrong formula."
+  },
+  "f": {
+   "type": "method",
+   "note": "M_s = 0.4167 from wrong approach, below 1."
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "omega_u = pi from a meaningless phase argument."
+  },
+  "b": {
+   "type": "formula",
+   "note": "K_u = 1/pi is a wrong formula; P_u follows wrong omega_u."
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (a): settings built on wrong omega_u and K_u."
+  },
+  "d": {
+   "type": "interpretation",
+   "note": "Confused L with the sensitivity; reported phases instead of gain margin."
+  },
+  "e": {
+   "type": "interpretation",
+   "note": "Reported a phase at omega = 1 instead of the phase margin."
+  },
+  "f": {
+   "type": "interpretation",
+   "note": "Gave 90 deg phase as M_s instead of peak sensitivity."
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "omega_u = 3.57 asserted without solving the phase condition."
+  },
+  "b": {
+   "type": "method",
+   "note": "K_u and P_u unsupported; P_u not 2*pi/omega_u."
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (a): settings from unsupported ultimate gain and period."
+  },
+  "d": {
+   "type": "method",
+   "note": "Gain margin 3.13 given without supporting calculation."
+  },
+  "e": {
+   "type": "method",
+   "note": "Phase margin 55 deg at wrong frequency, unsupported."
+  },
+  "f": {
+   "type": "method",
+   "note": "M_s = 1.16e-5 unsupported and impossible."
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "method",
+   "note": "omega_u = 1.5 asserted without calculation."
+  },
+  "b": {
+   "type": "formula",
+   "note": "P_u taken as 1/omega_u; K_u unsupported."
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (a): settings from unsupported ultimate gain and period."
+  },
+  "d": {
+   "type": "method",
+   "note": "Gain margin 1.6 at wrong frequency, unsupported."
+  },
+  "e": {
+   "type": "method",
+   "note": "Phase margin 35.3 deg unsupported and wrong."
+  },
+  "f": {
+   "type": "method",
+   "note": "M_s = 1.6 unsupported, taken at gain-margin frequency."
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "a": {
+   "type": "numerical",
+   "note": "Phase equation right but root 0.664 not solved, 57% off."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "K_u = 2.41 unsupported; inconsistent with its own omega_u."
+  },
+  "c": {
+   "type": "formula",
+   "note": "Derivative time taken as P_u/16 instead of P_u/8."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare gain margin value, no working, wrong frequency."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Bare phase margin value, no working, crossover far off."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "Bare M_s value, no working, frequency far off."
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "formula",
+   "note": "Lag angles written arctan(omega/6) instead of arctan(6 omega); phase unsolved."
+  },
+  "b": {
+   "type": "method",
+   "note": "K_u = 1.5 unsupported."
+  },
+  "c": {
+   "type": "formula",
+   "note": "Carried from (a): settings built on wrong omega_u and K_u."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Gave 0.75 with no gain margin."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Phase margin 40 deg with no crossover frequency or working."
+  },
+  "f": {
+   "type": "method",
+   "note": "M_s = 4 at 1 rad/min unsupported and wrong."
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Bare omega_u = 1.5708 with no working; wrong."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare K_u and P_u, no working; P_u not 2*pi/omega_u."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Settings match own (b) but no working shown."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare GM = 1.5 at 1.5708, unsupported."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Bare PM = 45 deg, unsupported and wrong."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "Bare M_s = 1.5, unsupported and wrong."
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Treated dead time as constant -180 deg, dropping the -1.5*omega term."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Squared (6*0.72) as 31.1 instead of 18.7, giving K_u wrong."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): settings built on slipped K_u and wrong omega_u."
+  },
+  "d": {
+   "type": "method",
+   "note": "Took omega_pc = omega_u, ignoring controller phase."
+  },
+  "e": {
+   "type": "method",
+   "note": "Phase margin ignored dead time and controller."
+  },
+  "f": {
+   "type": "method",
+   "note": "Assumed |1+L| = 1+|L|, giving M_s = 0.5."
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "method",
+   "note": "Guessed omega_u = 1.5 with no calculation."
+  },
+  "b": {
+   "type": "method",
+   "note": "K_u = 1/3 from high-frequency limit with assumed K_c = 1."
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (a): settings built on guessed omega_u and wrong K_u."
+  },
+  "d": {
+   "type": "method",
+   "note": "Gave omega_pc = 3.78 as a guess, no gain margin value."
+  },
+  "e": {
+   "type": "method",
+   "note": "Guessed omega_gc and a PM of 30 deg."
+  },
+  "f": {
+   "type": "method",
+   "note": "M_s = 1.2 at 1.8 rad/min is a guess."
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "a": {
+   "type": "formula",
+   "note": "Script used reversed denominator coefficients, giving omega_u = 1.44."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "K_u = 3.54 is not 1/|G| at its own omega_u."
+  },
+  "c": {
+   "type": "formula",
+   "note": "Carried from (a): settings built on wrong omega_u and K_u."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Gain margin 1.28 at wrong frequency 1.64."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Crossover frequency 52% off, so PM wrong."
+  },
+  "f": {
+   "type": "numerical",
+   "note": "M_s = 0.43, impossible below 1, at wrong frequency."
+  }
+ },
+ "microsoft/phi-4": {
+  "a": {
+   "type": "numerical",
+   "note": "Phase equation right but omega_u = 0.5 not solved, 18% off."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Carried from (a): right formulas, K_u 2.5 and P_u from wrong omega_u."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a): settings built on wrong omega_u."
+  },
+  "d": {
+   "type": "method",
+   "note": "omega_pc = 0.3 below omega_u, impossible; GM unsupported."
+  },
+  "e": {
+   "type": "method",
+   "note": "PM 30 deg at 0.4 unsupported and wrong."
+  },
+  "f": {
+   "type": "method",
+   "note": "M_s = 1.2 at 0.35 unsupported and wrong."
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "a": {
+   "type": "method",
+   "note": "omega_u = 0.5 asserted without solving the phase equation."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Miscalculated |G(0.5)| as 0.18 instead of 0.388, giving wrong K_u."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a): settings built on wrong omega_u and K_u."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "GM = 1.0 with no supporting working."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "PM = 120 deg at 0.2 with no working."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "M_s = 2.0 at 0.5 with no working."
+  }
+ },
+ "mistralai/mistral-large": {
+  "e": {
+   "type": "numerical",
+   "note": "Small slip summing phase terms, PM 1.1% low."
+  },
+  "f": {
+   "type": "method",
+   "note": "Compared omega_pc and omega_gc only, no frequency search for M_s."
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "a": {
+   "type": "numerical",
+   "note": "omega_u = 0.779 with no working; phase there is -261 deg."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Stated |G| = 0.297 is wrong at its own omega_u; K_u wrong."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a): settings built on wrong omega_u and K_u."
+  },
+  "d": {
+   "type": "formula",
+   "note": "Controller phase as sum of separate arctangents, wrong formula."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "omega_gc 80% off with no working."
+  },
+  "f": {
+   "type": "numerical",
+   "note": "M_s = 1.34 is 37% off, unsupported."
+  }
+ },
+ "openai/o3": {
+  "a": {
+   "type": "incomplete",
+   "note": "Bare final value, no working shown."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare final values, no working shown."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Bare final values, no working shown."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare final value, no working shown."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Bare final value, no working shown."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "Bare final value, no working shown."
+  }
+ },
+ "deepseek/deepseek-r1-0528": {
+  "f": {
+   "type": "incomplete",
+   "note": "M_s not calculated."
+  }
+ },
+ "openai/gpt-5": {
+  "f": {
+   "type": "numerical",
+   "note": "Coarse frequency scan: M_s 1.2% and frequency 4.1% off."
+  }
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "a": {
+   "type": "numerical",
+   "note": "omega_u = 0.537 contradicts its own phase table, 27% off."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Dropped the +1 terms in |G|, giving K_u 2.77."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a): settings built on wrong omega_u and K_u."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Unsupported |G(0.585)| = 0.334 instead of 0.295; GM 27% off."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "PM 57 deg at 0.455 with no working, far off."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "M_s = 1.45 with no working, far off."
+  }
+ },
+ "anthropic/claude-opus-4.5": {
+  "d": {
+   "type": "formula",
+   "note": "Added an extra -90 deg to PID phase; omega_pc 16% off."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "PM 43 deg at 0.40 with no working; crossover 41% off."
+  },
+  "f": {
+   "type": "method",
+   "note": "M_s = 1.8 at 0.55 with no frequency search."
+  }
+ },
+ "openai/gpt-5.2": {
+  "f": {
+   "type": "numerical",
+   "note": "M_s right but its frequency 0.46 is 2% low."
+  }
  }
 }

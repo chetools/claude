@@ -595,8 +595,10 @@ def error_agreement_md(rs):
                 for k, e in parts.items():
                     out[(mid, p, k)] = e["type"]
         return out
-    r1, r2 = load("errors_reader1"), load("errors_reader2")
     final = {(r["model"], r["problem"], k): e["type"] for r in rs for k, e in (r.get("errors") or {}).items()}
+    shown = {r["model"] for r in rs}   # models left out of the page (results/model_meta.json "excluded") are not counted
+    r1 = {k: v for k, v in load("errors_reader1").items() if k[0] in shown}
+    r2 = {k: v for k, v in load("errors_reader2").items() if k[0] in shown}
     if set(r1) != set(final) or set(r2) != set(final):
         fail("the two labelling passes and results/errors do not cover the same lost parts")
     n = len(final)

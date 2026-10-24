@@ -4,5 +4,389 @@
    "type": "numerical",
    "note": "Toluene vapour pressure evaluated wrong at dew point; result 2.5 C off."
   }
+ },
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Not answered; says it needs numerical calculation"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Not answered; says it needs numerical calculation"
+  },
+  "c": {
+   "type": "method",
+   "note": "Summed x_i as V/F instead of solving Rachford-Rice flash"
+  },
+  "d": {
+   "type": "interpretation",
+   "note": "Gave toluene fraction instead of benzene vapour fraction"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Not answered; says it needs numerical calculation"
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Flipped-sign Antoine, partial pressures above total, pure-component temperatures"
+  },
+  "b": {
+   "type": "method",
+   "note": "Flipped-sign Antoine, pure-component temperature instead of dew point"
+  },
+  "c": {
+   "type": "method",
+   "note": "Gave a temperature instead of V/F; no flash calculation"
+  },
+  "d": {
+   "type": "method",
+   "note": "Invented ratio instead of vapour composition from equilibrium"
+  },
+  "e": {
+   "type": "method",
+   "note": "Invented ratio; no bubble/dew-based temperature solution"
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Wrong liquid mole fraction formula x=w/(P/Psat); no calculation"
+  },
+  "b": {
+   "type": "method",
+   "note": "Wrong formula; result below its own bubble point"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Generic outline only; no numerical working for V/F"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Generic outline only; no working for vapour fraction"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Generic outline only; no working for temperature"
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "units",
+   "note": "Pressure converted as 120*0.133 giving 16 mmHg; temperature asserted"
+  },
+  "b": {
+   "type": "units",
+   "note": "Pressure wrongly converted to 16 mmHg; 112 C asserted"
+  },
+  "c": {
+   "type": "method",
+   "note": "V/F from sum y_i/K_i instead of Rachford-Rice"
+  },
+  "d": {
+   "type": "method",
+   "note": "Used y1 = x1/K1 instead of flash vapour composition"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Temperature asserted without supporting working"
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Method outlined only; no numerical working supports the value"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Method outlined only; no numerical working supports the value"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Method outlined only; no numerical working supports the value"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Method outlined only; no numerical working supports the value"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Method outlined only; no numerical working supports the value"
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "interpretation",
+   "note": "Used mass fractions as mole fractions; no vapour pressures evaluated"
+  },
+  "b": {
+   "type": "interpretation",
+   "note": "Used mass fractions as mole fractions; dew point below bubble point"
+  },
+  "c": {
+   "type": "method",
+   "note": "Invented formula for V/F instead of Rachford-Rice"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Value given without working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Temperature asserted without working"
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "units",
+   "note": "Pressure converted to 16 mmHg; mass fractions used directly; algebra error"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "112 C asserted without working"
+  },
+  "c": {
+   "type": "method",
+   "note": "V/F from summing y_i, giving 1.0000"
+  },
+  "d": {
+   "type": "method",
+   "note": "Used a liquid-phase formula for vapour composition"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Temperature asserted without working"
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Dew point solved with the bubble-point equation"
+  },
+  "b": {
+   "type": "method",
+   "note": "Dew point solved with the bubble-point equation"
+  },
+  "c": {
+   "type": "method",
+   "note": "Non-Rachford-Rice V/F formula; benzene vapour pressure 760 not 1848 mmHg"
+  },
+  "d": {
+   "type": "method",
+   "note": "Vapour composition from wrong flash formulation"
+  },
+  "e": {
+   "type": "method",
+   "note": "Temperature from sum z_i K_i = 0.5, wrong condition"
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "units",
+   "note": "Pressure converted to 16 mmHg; guessed temperature, single-component vapour pressures"
+  },
+  "b": {
+   "type": "units",
+   "note": "Pressure converted to 16 mmHg; guessed temperature, single-component vapour pressures"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "V/F = 0.8 assumed without calculation"
+  },
+  "d": {
+   "type": "method",
+   "note": "Vapour fraction from inconsistent formulas"
+  },
+  "e": {
+   "type": "method",
+   "note": "Invented iteration gave 26 C"
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "a": {
+   "type": "units",
+   "note": "Pressure taken as 16 mmHg; Antoine-inverted temperatures used as vapour pressures"
+  },
+  "b": {
+   "type": "units",
+   "note": "Pressure taken as 16 mmHg; Antoine-inverted temperatures used as vapour pressures"
+  },
+  "c": {
+   "type": "method",
+   "note": "Wrong quadratic for V/F instead of Rachford-Rice"
+  },
+  "d": {
+   "type": "units",
+   "note": "Vapour fraction built on 16 mmHg pressure and wrong feed fractions"
+  },
+  "e": {
+   "type": "units",
+   "note": "Temperature built on 16 mmHg pressure and wrong feed fractions"
+  }
+ },
+ "microsoft/phi-4": {
+  "a": {
+   "type": "incomplete",
+   "note": "No numerical working for the bubble point"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "No numerical working for the dew point"
+  },
+  "c": {
+   "type": "method",
+   "note": "Rachford-Rice equation written incorrectly; feed fractions as w*M/sum"
+  },
+  "d": {
+   "type": "method",
+   "note": "Wrong formula for vapour fraction; unsupported value"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "No numerical working for the temperature"
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "a": {
+   "type": "incomplete",
+   "note": "Wrong z1 (0.426) and no actual calculation shown"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "No calculation; dew point below its own bubble point"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "V/F stated without calculation"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Vapour fraction stated without calculation"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Temperature stated without calculation"
+  }
+ },
+ "mistralai/mistral-large": {
+  "a": {
+   "type": "numerical",
+   "note": "Vapour pressures evaluated wrongly in trial and error; 1.0 C off"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Wrong vapour pressures in dew-point trial; 1.85 C off"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Rachford-Rice set up correctly but K-values wrong; 61% off"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): V/F error propagated into y1"
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Wrong vapour pressures in iteration; 1.67 C off"
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "a": {
+   "type": "incomplete",
+   "note": "Wrong z1 (0.370) and only stated result, no calculation"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Only stated result, no calculation; 10.5 C off"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "V/F stated without calculation"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Vapour fraction stated without calculation"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Temperature stated without calculation"
+  }
+ },
+ "openai/o3": {
+  "a": {
+   "type": "incomplete",
+   "note": "Final value given with no supporting working"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Final value given with no supporting working"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Final value given with no supporting working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Final value given with no supporting working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Final value given with no supporting working"
+  }
+ },
+ "google/gemini-2.5-pro": {
+  "b": {
+   "type": "numerical",
+   "note": "K-values slightly wrong at 124 C (K1 2.7193 not 2.7478); 0.35 C off"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Wrong K-values at 112 C (K1 2.096 not 2.053); V/F 10% off"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): V/F error propagated into y1"
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Small slips in iteration; 0.34 C off"
+  }
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "a": {
+   "type": "numerical",
+   "note": "Antoine vapour pressures evaluated wrongly; 1.5 C off"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Wrong vapour pressures; dew point below own bubble point"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Wrong K-values and arithmetic slips in Rachford-Rice; 129% off"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): V/F error propagated into y1"
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Wrong vapour pressures in iteration; 6.8 C off"
+  }
+ },
+ "anthropic/claude-opus-4.5": {
+  "a": {
+   "type": "numerical",
+   "note": "Slips in vapour pressures; 0.43 C off"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Benzene vapour pressure 1793.5 not 1847.6 mmHg at 112 C; 7.4% off"
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Iteration slips, detail not shown; 0.52 C off"
+  }
  }
 }

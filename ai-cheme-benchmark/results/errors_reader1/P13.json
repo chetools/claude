@@ -1,1 +1,412 @@
-{}
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Generic steps only; 0.012 L/s unsupported, far from reference."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "3.21 m stated with no working or pump-curve use."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "0.008 L/s given with no calculation."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "45.3 kPa unsupported, no head calculation."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "12.5 kW unsupported, no power calculation."
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Degenerate looping text; no answer ever stated."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Degenerate looping text; no answer ever stated."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Degenerate looping text; no answer ever stated."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Degenerate looping text; no answer ever stated."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Degenerate looping text; no answer ever stated."
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "interpretation",
+   "note": "Took 16 L/s withdrawal at B as the pump flow; no network solution."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Arithmetic slip: 79.8 m instead of 76.9 m on own flow."
+  },
+  "c": {
+   "type": "method",
+   "note": "2.03 L/s from an assumed 0.5 m head drop, not solved."
+  },
+  "d": {
+   "type": "method",
+   "note": "Used assumed H_C = 0.5 m, giving negative pressure."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "2.87 kW inconsistent with own flow and head (17.9 kW)."
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "method",
+   "note": "Guessed friction factors; all pipes carry pump flow, losses summed as series."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "23.8 m is not the pump curve at its own flow."
+  },
+  "c": {
+   "type": "method",
+   "note": "22.6 L/s C to B: wrong value and direction from series model."
+  },
+  "d": {
+   "type": "method",
+   "note": "257.6 kPa from the invalid series head-loss model."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "10.1 kW inconsistent with own flow and head (11.0 kW)."
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Set Q_p = Q_6, ignoring the 16 L/s withdrawal; wrong loop equations."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Arithmetic error: pump curve gives 50.0 m, not 68.0 m."
+  },
+  "c": {
+   "type": "method",
+   "note": "10.5 L/s B to C, three times too large, from wrong set-up."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "81.3 kPa from unsupported H_C = 12.33 m, no working."
+  },
+  "e": {
+   "type": "method",
+   "note": "Carried from (a): wrong set-up gave wrong flow and head into power."
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "interpretation",
+   "note": "Took 16 L/s withdrawal at B as the pump flow."
+  },
+  "b": {
+   "type": "units",
+   "note": "Evaluated pump curve with 0.016 L/s instead of 16 L/s."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "No numerical answer given for (c)."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "No numerical answer given for (d)."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "No numerical answer given for (e)."
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Bare 12.8 L/s with no working; far from reference."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare 64.0 m with no working."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Direction C to B given, no magnitude, no working."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare -15.7 kPa with no working."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Bare 19.6 kW with no working."
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Node energy balances wrong; 50 L/s unsupported by any solution."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Arithmetic error: pump curve gives 50 m, not 77 m."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "20 L/s B to C unsupported and wrong."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "100 kPa unsupported, no head calculation shown."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "5.27 kW arithmetic error; own flow and head give 53.9 kW."
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "interpretation",
+   "note": "Took 16 L/s withdrawal as pump flow, with nonsensical velocities."
+  },
+  "b": {
+   "type": "interpretation",
+   "note": "Carried from (a): pump curve right at withdrawal-as-pump-flow value."
+  },
+  "c": {
+   "type": "interpretation",
+   "note": "16 L/s B to C; reused the withdrawal as branch flow."
+  },
+  "d": {
+   "type": "method",
+   "note": "Took head at C as elevation plus tiny loss."
+  },
+  "e": {
+   "type": "method",
+   "note": "Multiplied hydraulic power by efficiency instead of dividing."
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "a": {
+   "type": "method",
+   "note": "Set Q_p = Q1 with wrong loop and suction equations; no iteration shown."
+  },
+  "b": {
+   "type": "method",
+   "note": "Carried from (a): pump curve right but at wrong flow."
+  },
+  "c": {
+   "type": "method",
+   "note": "7.1 L/s B to C, wrong magnitude from wrong set-up."
+  },
+  "d": {
+   "type": "method",
+   "note": "Took H_C equal to elevation z_C."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "2.45 kW arithmetic error; own flow and head give 25.6 kW."
+  }
+ },
+ "microsoft/phi-4": {
+  "a": {
+   "type": "method",
+   "note": "Generic Hardy Cross outline, wrong continuity at C and loop equations."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "38.0 m does not follow from own flow (76.1 m)."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "4.0 L/s B to C unsupported, no working."
+  },
+  "d": {
+   "type": "method",
+   "note": "39.4 kPa wrong; no valid head calculation at C."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "6.7 kW inconsistent with own flow and head (9.6 kW)."
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "a": {
+   "type": "incomplete",
+   "note": "28 L/s asserted after an unshown iterative scan."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Carried from (a): pump curve right but at unsupported flow."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "12 L/s B to C asserted with no working."
+  },
+  "d": {
+   "type": "method",
+   "note": "Took head at C equal to the pump head."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Carried from (a): formula right on own values; small slip too."
+  }
+ },
+ "mistralai/mistral-large": {
+  "a": {
+   "type": "numerical",
+   "note": "Guessed flow sets never balanced; 42 L/s accepted with unshown losses."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Carried from (a): pump curve right but at non-converged flow."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "1.0 L/s B to C unsupported by any solved balance."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "376 kPa from unsupported H_C = 42.41 m."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Carried from (a): power formula right on non-converged flow and head."
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "a": {
+   "type": "incomplete",
+   "note": "Skipped the solution and assumed typical values; 32 L/s unsupported."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Carried from (a): pump curve right but at assumed flow."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "4.0 L/s B to C with no supporting working."
+  },
+  "d": {
+   "type": "interpretation",
+   "note": "Assumed H_C = 60 m instead of computing it."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Carried from (a): power formula right on assumed flow and head."
+  }
+ },
+ "openai/o3": {
+  "a": {
+   "type": "incomplete",
+   "note": "Final value only; no supporting working shown."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Final value only; no supporting working shown."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Final value only; no supporting working shown."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Final value only; no supporting working shown."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Final value only; no supporting working shown."
+  }
+ },
+ "google/gemini-2.5-pro": {
+  "a": {
+   "type": "incomplete",
+   "note": "Single guess of 50 L/s; no converged solution supports it."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "4.0 L/s is the guessed split, not solved."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Carried from (a): head at C from unbalanced guessed split."
+  }
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "a": {
+   "type": "incomplete",
+   "note": "Converged flows asserted without head-loss working; 38.5 L/s off."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Carried from (a): pump curve right but at unsupported flow."
+  },
+  "c": {
+   "type": "interpretation",
+   "note": "4.5 L/s given C to B; reference direction is B to C."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "498 kPa from unsupported H_C = 54.8 m."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Carried from (a): power formula right on unsupported flow and head."
+  }
+ },
+ "anthropic/claude-opus-4.5": {
+  "a": {
+   "type": "incomplete",
+   "note": "Flows asserted without working; fail own continuity check at C."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Carried from (a): pump curve right but at unsupported flow."
+  },
+  "c": {
+   "type": "interpretation",
+   "note": "2.4 L/s given C to B; reference direction is B to C."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "411 kPa from asserted suction and pipe-2 losses."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Carried from (a): power formula right on unsupported flow and head."
+  }
+ },
+ "deepseek/deepseek-r1-0528": {
+  "a": {
+   "type": "incomplete",
+   "note": "Bare 46.0 L/s; no equations solved, no losses or iterations."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare 54.5 m with no working."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "3.5 L/s B to C correct-looking but bare, no working."
+  },
+  "d": {
+   "type": "interpretation",
+   "note": "Fixed H_B at 8.0 m, the elevation of B."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "36.2 kW inconsistent with own flow and head (35.1 kW)."
+  }
+ }
+}

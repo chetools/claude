@@ -4,5 +4,389 @@
    "type": "numerical",
    "note": "Toluene Psat (121.19 C) miscomputed, 1279 not 1017 mmHg; dew point 2.5 C high"
   }
+ },
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Not answered; says bubble point needs numerical calculation."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Not answered; says dew point needs numerical calculation."
+  },
+  "c": {
+   "type": "method",
+   "note": "V/F = 0.982 from summing x_i, no flash (Rachford-Rice) calculation."
+  },
+  "d": {
+   "type": "interpretation",
+   "note": "Gives toluene vapour fraction 0.405 instead of benzene y1."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Not answered; says flash temperature needs numerical calculation."
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Pure benzene temperature 120.67 C from invented partial pressure, not bubble point."
+  },
+  "b": {
+   "type": "method",
+   "note": "Pure toluene temperature 124.34 C, not a mixture dew-point calculation."
+  },
+  "c": {
+   "type": "interpretation",
+   "note": "Answers a temperature (127.31 C) instead of the vapour fraction V/F."
+  },
+  "d": {
+   "type": "interpretation",
+   "note": "Gives a V/F ratio 0.245 instead of the benzene vapour mole fraction."
+  },
+  "e": {
+   "type": "interpretation",
+   "note": "Gives a ratio 0.245 instead of a flash temperature."
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "112.1 C stated with no numerical working (reference 106.92 C)."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "111.8 C stated with no working, below its own bubble point."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "V/F = 0.2309 stated with no numerical working."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "y1 = 0.2321 stated with no working (reference 0.5305)."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "111.9 C stated with no working (reference 114.83 C)."
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "incomplete",
+   "note": "Bubble point 112 C claimed without solving the bubble-point equation."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Dew point 112 C claimed without solving the dew-point equation."
+  },
+  "c": {
+   "type": "method",
+   "note": "V/F = 0.607 from sum y_i/K_i, not a Rachford-Rice flash."
+  },
+  "d": {
+   "type": "method",
+   "note": "Used y1 = x1/K1 on feed fractions instead of flash vapour composition"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "110.5 C asserted with no flash calculation."
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "104.14 C stated with only a method outline, no numbers."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "146.85 C stated with no numerical working (reference 123.65 C)."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "V/F = 0.6121 stated with no numerical working."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "y1 = 0.4215 stated with no numerical working."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "117.38 C stated with no numerical working."
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "incomplete",
+   "note": "90.2 C asserted; no vapour pressures ever evaluated."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "77.3 C asserted with no evaluated vapour pressures, below bubble point."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "V/F = 0.6605 from an invented formula, no numbers shown."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "y1 = 0.4932 stated without any numerical working."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "95.2 C asserted with no flash iteration shown."
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Pure-benzene Antoine inversion at 16 mmHg, not a mixture bubble point."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "112.00 C asserted after 'solving simultaneously', no actual working."
+  },
+  "c": {
+   "type": "method",
+   "note": "V/F = 1.0000 from summing y_i, no flash balance."
+  },
+  "d": {
+   "type": "method",
+   "note": "Invented formula computes a liquid fraction 0.3289, not y1."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "102.40 C asserted with no supporting flash calculation."
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "a": {
+   "type": "numerical",
+   "note": "Correct bubble equation, but z wrong (0.2924) and solve gives 77.54 C."
+  },
+  "b": {
+   "type": "method",
+   "note": "Dew point solved with bubble-point equation sum y_i Psat = P."
+  },
+  "c": {
+   "type": "method",
+   "note": "Invented closed-form V/F instead of Rachford-Rice; Psat1 760 mmHg also wrong."
+  },
+  "d": {
+   "type": "formula",
+   "note": "y1 denominator uses 1 + sum z_i(K_i-1) instead of 1 + V/F(K1-1)."
+  },
+  "e": {
+   "type": "method",
+   "note": "Solves sum z_i K_i = 0.5 instead of Rachford-Rice with V/F = 0.5."
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "method",
+   "note": "Takes highest single-component vapour pressure at guessed T; gives 25 C."
+  },
+  "b": {
+   "type": "method",
+   "note": "Takes lowest single-component vapour pressure at guessed T; gives 20 C."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "V/F = 0.8 assumed without any flash calculation."
+  },
+  "d": {
+   "type": "method",
+   "note": "Inconsistent invented formulas with P as 16 mmHg give y1 = 0.723."
+  },
+  "e": {
+   "type": "method",
+   "note": "Invented iteration with halved feed as liquid gives 26 C."
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "a": {
+   "type": "method",
+   "note": "Antoine-inverted temperatures used as vapour pressures; gives 146.02 C."
+  },
+  "b": {
+   "type": "method",
+   "note": "Bubble-type sum with temperatures as pressures used for dew point; 174.88 C."
+  },
+  "c": {
+   "type": "method",
+   "note": "Invented quadratic for V/F, not Rachford-Rice; gives 0.3176."
+  },
+  "d": {
+   "type": "method",
+   "note": "Invented y1 formula with wrong z and K gives 0.0723."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "155.67 C from 'a solver' with no iterations or working shown."
+  }
+ },
+ "microsoft/phi-4": {
+  "a": {
+   "type": "incomplete",
+   "note": "91.34 C stated with no numerical working (15.6 C off)."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "111.89 C stated with no numerical working (11.8 C off)."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "V/F = 0.4325 stated with no numerical working."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "y1 = 0.5543 stated without supporting working."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "105.76 C stated with no numerical working (9.1 C off)."
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "a": {
+   "type": "incomplete",
+   "note": "110.1 C stated with no actual calculation."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "107.5 C stated without calculation, below its own bubble point."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "V/F = 0.45 stated with no actual calculation."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "y1 = 0.6925 stated with no actual calculation."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "105.0 C stated with no actual calculation."
+  }
+ },
+ "mistralai/mistral-large": {
+  "a": {
+   "type": "numerical",
+   "note": "Antoine values misevaluated (benzene 1624 vs 1584 mmHg at 106 C); 105.91 C."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Antoine values misevaluated in dew-point trials; 121.80 C, 1.85 C off."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Psat misevaluated (benzene 1689 vs 1847.6 mmHg); V/F = 0.130."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): wrong K-values and V/F = 0.13 give y1 = 0.5878."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Antoine values misevaluated in flash trials; 116.50 C, 1.67 C off."
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "a": {
+   "type": "incomplete",
+   "note": "104.5 C stated with no calculations shown."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "113.2 C stated with no calculations shown."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "V/F = 0.4852 stated with no calculations shown."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "y1 = 0.4706 stated with no calculations shown."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "110.3 C stated with no calculations shown."
+  }
+ },
+ "openai/o3": {
+  "a": {
+   "type": "incomplete",
+   "note": "Final value 107.1 C only, no working shown."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Final value 123.8 C only, no working shown."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Final value 0.3215 only, no working shown."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Final value 0.5329 only, no working shown."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Final value 114.9 C only, no working shown."
+  }
+ },
+ "google/gemini-2.5-pro": {
+  "b": {
+   "type": "numerical",
+   "note": "K-value slips (K1 2.7193 vs 2.7478 at 124 C); dew point 124.00 C."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "K-value slips at 112 C (K1 2.0961 vs 2.0528); V/F = 0.3665."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): wrong K-values and V/F give y1 = 0.5218."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Vapour-pressure slips leave flash temperature 114.49 C, 0.34 C off."
+  }
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "a": {
+   "type": "numerical",
+   "note": "Antoine values misevaluated (o-xylene 247 vs 198.5 mmHg at 100 C); 108.4 C."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Failed dew-point iteration: 111.8 C claimed, below its 115 C trial."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Wrong K-values (o-xylene 364.4 vs 295.8 mmHg) and slips; V/F = 0.76."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): V/F = 0.76 and wrong K1 give y1 = 0.4039."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Misevaluated K-values give flash temperature 108.0 C, 6.8 C off."
+  }
+ },
+ "anthropic/claude-opus-4.5": {
+  "a": {
+   "type": "numerical",
+   "note": "Vapour-pressure slips leave bubble point 107.35 C, 0.43 C off."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Benzene Psat 1793.5 vs 1847.6 mmHg at 112 C; V/F = 0.3078."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Iteration lands at 115.35 C, 0.52 C off."
+  }
  }
 }

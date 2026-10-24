@@ -1,1 +1,412 @@
-{}
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Generic steps only; bare 0.012 L/s with no network solved"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare 3.21 m with no working; not even the pump curve"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Bare 0.008 L/s from B to C with no working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare 45.3 kPa with no working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Bare 12.5 kW with no working"
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Degenerate looping reply; no answer given for this part"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Degenerate looping reply; no answer given for this part"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Degenerate looping reply; no answer given for this part"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Degenerate looping reply; no answer given for this part"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Degenerate looping reply; no answer given for this part"
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Bare Qp = 16.0 L/s, the B withdrawal; no network solution"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "12000*0.016^2 taken as 0.192; own Qp gives 76.93 m, not 79.81"
+  },
+  "c": {
+   "type": "method",
+   "note": "Assumes pipe-3 head drop 0.5 m and f = 0.026; no network solved"
+  },
+  "d": {
+   "type": "method",
+   "note": "Uses its assumed 0.5 m head drop as H_C, giving negative pressure"
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Right formula but arithmetic gives 2.87 kW; own values give 17.9 kW"
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "method",
+   "note": "Full Qp in every pipe, losses summed in series, efficiency in head balance"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Pump curve at 33 L/s gives 66.9 m, not 23.8 m"
+  },
+  "c": {
+   "type": "method",
+   "note": "Pipe flows back-solved circularly; wrong B continuity gives 22.6 L/s C to B"
+  },
+  "d": {
+   "type": "method",
+   "note": "H_C = Hp - series loss + z_C; p taken as rho*g*H_C"
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Hydraulic power computed as 7.1 kW; own values give 7.7 (11.0 shaft)"
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Claims 50.0 L/s 'after solving'; no solution shown, Qp = Q6 set-up"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "80 - 12000*0.05^2 is 50.0 m, not 68.0 m"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Bare 10.5 L/s from B to C; no solution shown"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "H_C = 12.33 m stated with no working"
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Carried from (b): right formula with Hp = 68.0 m gives 47.4 kW"
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "interpretation",
+   "note": "Takes the 16 L/s withdrawal at B as the pump flow"
+  },
+  "b": {
+   "type": "units",
+   "note": "Uses Qp = 0.016 L/s (1.6e-5 m3/s) instead of 0.016 m3/s"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "No numerical answer for pipe-3 flow"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "No numerical answer for pressure at C"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "No numerical answer for shaft power"
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Bare 12.8 L/s with no working"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare 64.0 m with no working"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Only a direction (C to B), no magnitude or working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare -15.7 kPa with no working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Bare 19.6 kW with no working"
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Claims 50 L/s 'after solving' wrong node balances; no solution shown"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "80 - 12000*0.05^2 written as 80 - 3 = 77 m; correct 50 m"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Bare 20 L/s from B to C; no solution shown"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare 100 kPa; p_A and h_f2 never evaluated"
+  },
+  "e": {
+   "type": "numerical",
+   "note": "rho g Qp Hp evaluated as 3.69 kW; own values give 37.7 kW"
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "interpretation",
+   "note": "Takes the 16 L/s withdrawal at B as the pump flow"
+  },
+  "b": {
+   "type": "interpretation",
+   "note": "Carried from (a): pump curve right at Qp = 16 L/s, 76.93 m"
+  },
+  "c": {
+   "type": "method",
+   "note": "Assumes every pipe carries the full 16 L/s in series"
+  },
+  "d": {
+   "type": "method",
+   "note": "Takes H_C = z_C plus a tiny pipe-3 loss; no network heads"
+  },
+  "e": {
+   "type": "formula",
+   "note": "Multiplies hydraulic power by efficiency 0.7 instead of dividing"
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "a": {
+   "type": "incomplete",
+   "note": "Claims 25.3 L/s from unshown iterations on a wrong set-up"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Carried from (a): pump curve right at Qp = 25.3 L/s, 72.3 m"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Bare 7.1 L/s from B to C from unshown iterations"
+  },
+  "d": {
+   "type": "method",
+   "note": "Takes H_C = z_C = 4 m, ignoring the pump and losses"
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Hydraulic power computed as 1712 W; own values give 17.9 kW"
+  }
+ },
+ "microsoft/phi-4": {
+  "a": {
+   "type": "incomplete",
+   "note": "Generic Hardy Cross outline; bare 18.0 L/s with no numbers worked"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare 38.0 m with no working; pump curve at 18 L/s gives 76.1 m"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Bare 4.0 L/s from B to C with no working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare 39.4 kPa with no working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Bare 6.7 kW with no working"
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "a": {
+   "type": "incomplete",
+   "note": "Asserts 28 L/s after an unshown 'iterative scan'"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Carried from (a): pump curve right at Qp = 28 L/s, 70.6 m"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Bare 12 L/s from B to C with no working"
+  },
+  "d": {
+   "type": "method",
+   "note": "Takes H_C equal to the pump head 70.6 m, ignoring losses"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Carried from (a): right formula on own Qp, Hp (small slip)"
+  }
+ },
+ "mistralai/mistral-large": {
+  "a": {
+   "type": "numerical",
+   "note": "Iteration never balances; accepts 42 L/s with unshown, inconsistent losses"
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Carried from (a): pump curve right at Qp = 42 L/s, 58.8 m"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "1.0 L/s is an unbalanced guessed split from the failed iteration"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "H_C = 42.41 m from asserted losses of the unbalanced split"
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Carried from (a): right formula on own Qp and Hp, 34.5 kW"
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "a": {
+   "type": "incomplete",
+   "note": "Skips the solution and assumes 'typical' Qp = 32 L/s"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Carried from (a): pump curve right at Qp = 32 L/s, 67.7 m"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Assumed 4.0 L/s from B to C with no working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Assumes H_C = 60 m with no working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Carried from (a): right formula on own Qp and Hp, 30.4 kW"
+  }
+ },
+ "openai/o3": {
+  "a": {
+   "type": "incomplete",
+   "note": "Bare 50 L/s with no working"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare 50 m with no working"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Bare 3.6 L/s from B to C with no working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare 2.1e2 kPa with no working, 6.6 % off"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Bare 35 kW with no working"
+  }
+ },
+ "google/gemini-2.5-pro": {
+  "a": {
+   "type": "numerical",
+   "note": "Single guess Qp = 50 L/s accepted with unbalanced paths (26.8 vs 41.6 m)"
+  },
+  "c": {
+   "type": "numerical",
+   "note": "4.0 L/s is the guessed split, never balanced; reference 3.51"
+  },
+  "d": {
+   "type": "numerical",
+   "note": "H_C = 20.89 m from the unbalanced guessed split; 165 vs 225 kPa"
+  }
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "a": {
+   "type": "incomplete",
+   "note": "Converged flows asserted with no head-loss working; 38.5 L/s"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Carried from (a): pump curve right at Qp = 38.5 L/s, 62.2 m"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Asserted 4.5 L/s from C to B, wrong direction, no working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "H_C = 54.8 m stated without computing pipe-2 or suction losses"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Carried from (a): right formula on own Qp and Hp, 33.5 kW"
+  }
+ },
+ "anthropic/claude-opus-4.5": {
+  "a": {
+   "type": "incomplete",
+   "note": "Flows asserted without working, failing continuity at C; 35.0 L/s"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Carried from (a): pump curve right at Qp = 35 L/s, 65.3 m"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Asserted 2.4 L/s from C to B, wrong direction, no working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "H_C = 46.0 m from asserted suction and pipe-2 losses"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Carried from (a): right formula on own Qp and Hp, 31.9 kW"
+  }
+ },
+ "deepseek/deepseek-r1-0528": {
+  "a": {
+   "type": "incomplete",
+   "note": "Names Hardy Cross only; bare 46.0 L/s with no working"
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare 54.5 m with no working"
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Bare 3.5 L/s from B to C with no supporting working"
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare H_C = 5.3 m, 11.0 kPa; no working"
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Bare 36.2 kW with no working"
+  }
+ }
+}

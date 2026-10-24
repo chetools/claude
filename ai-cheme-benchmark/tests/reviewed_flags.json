@@ -7,5 +7,17 @@
  "deepseek/deepseek-r1-0528 P03 (b)": "As for (a): stated in prose without any working.",
  "deepseek/deepseek-r1-0528 P03 (c)": "As for (a): stated in prose without any working.",
  "deepseek/deepseek-r1-0528 P03 (d)": "As for (a): stated in prose without any working.",
- "anthropic/claude-haiku-5.5 P11 (e)": "stage 7 matches the reference, but the reply switches lines at the minimum-reflux pinch (x = 0.364) on a wrong stripping line instead of at the operating-line intersection (0.3875); the match is a coincidence of a wrong method, graded 0 like the other P11 (e) answers without a sound method"
+ "anthropic/claude-haiku-5.5 P11 (e)": "stage 7 matches the reference, but the reply switches lines at the minimum-reflux pinch (x = 0.364) on a wrong stripping line instead of at the operating-line intersection (0.3875); the match is a coincidence of a wrong method, graded 0 like the other P11 (e) answers without a sound method",
+ "meta-llama/llama-3.3-70b-instruct P13 (a)": "Qp = 50 L/s is stated without any network solution, from a wrong set-up (the stated pump head does not follow from it): a value without supporting working.",
+ "qwen/qwen-2.5-72b-instruct P13 (a)": "Qp = 50 L/s is stated without any network solution, from a wrong set-up (the stated pump head does not follow from it): a value without supporting working.",
+ "mistralai/mistral-large P15 (a)": "The bubble point is 1.01 °C from the reference; temperatures in P15 (a) need 0.2 °C (half points up to 1 °C), so the 1 % check does not apply: 0.",
+ "deepseek/deepseek-r1-0528 P13 (c)": "Q3 = 3.5 L/s from B to C is stated after naming the Hardy Cross method, with no friction factors, losses or iterations shown: a value without supporting working.",
+ "openai/o3 P13 (a)": "The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11).",
+ "openai/o3 P13 (b)": "The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11).",
+ "openai/o3 P13 (e)": "The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11).",
+ "openai/o3 P14 (a)": "The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11).",
+ "openai/o3 P15 (a)": "The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11).",
+ "openai/o3 P15 (b)": "The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11).",
+ "openai/o3 P15 (d)": "The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11).",
+ "openai/o3 P15 (e)": "The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11)."
 }
