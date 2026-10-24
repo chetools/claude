@@ -1,138 +1,17 @@
 [
  {
   "key": "1",
-  "authors": "National Center for Biotechnology Information (compiled from HSDB, NTP, NIOSH, ACGIH, IARC and Kirk-Othmer entries)",
-  "year": 2026,
-  "title": "PubChem Compound Summary for CID 241, Benzene",
-  "container": "PubChem, U.S. National Library of Medicine, National Institutes of Health",
-  "url": "https://pubchem.ncbi.nlm.nih.gov/compound/241",
-  "verified_by": "agency page",
-  "verified_fact": "Methods of Manufacturing: 'Benzene is produced from the hydrodemethylation of toluene under catalytic or thermal conditions. The main catalytic hydrodealkylation processes are Hydeal and DETOL. Two widely used thermal processes are HDA and THD. These processes contribute 25-30% of the world's total benzene supply.' Catalytic: 'usually supported chromium or molybdenum oxides, platinum or platinum oxides, on silica or alumina. The operating temperatures range from 500 to 595 C and pressures are usually 4-6 MPa (40-60 atm). The reaction is highly exothermic and the temperature is controlled by injection of quench hydrogen at several places along the reaction. Conversions per pass typically reach 90% and selectivity to benzene is often >95%. The catalytic process occurs at lower temperatures and offers higher selectivities but requires frequent regeneration of the catalyst.' 'Worldwide, ~30% of commercial benzene is produced by catalytic reforming'; 'Approximately 30-35% of benzene produced worldwide is derived from pyrolysis gasoline'; transalkylation/disproportionation 'Economic feasibility ... depends on the relative prices of benzene, toluene, and xylene ... In recent years, xylene and benzene prices have generally been higher than toluene prices so transalkylation is presently an attractive alternative to hydrodealkylation.' (undated text). U.S. Production (EPA CDR, via HSDB): 2023: 15,000,000,000 - <20,000,000,000 lb; 2022: 10,000,000,000 - <15,000,000,000 lb; 2021 and 2020: 15,000,000,000 - <20,000,000,000 lb. IARC: Group 1, carcinogenic to humans (Vol 100F, 2012; Vol 120, 2018). OSHA 1910.1028: TWA 1 ppm, STEL 5 ppm. ACGIH TLV: 0.5 ppm TWA, 2.5 ppm STEL, skin, A1 confirmed human carcinogen. Flammable limits 1.2% (LEL) to 7.8% (UEL) by volume; flash point below 0 F; boiling point 80.08 C. Environmental: 'Benzene enters the environment from production, storage, transport, venting, and combustion of gasoline'.",
-  "accessed": "2026-10-24"
- },
- {
-  "key": "2",
-  "authors": "National Center for Biotechnology Information",
-  "year": 2026,
-  "title": "PubChem Compound Summary for CID 783, Hydrogen",
-  "container": "PubChem, U.S. National Library of Medicine, National Institutes of Health",
-  "url": "https://pubchem.ncbi.nlm.nih.gov/compound/783",
-  "verified_by": "agency page",
-  "verified_fact": "Flammable Limits: 'Lower: 4.0%; upper: 75% (% by vol)'; autoignition temperature 560 C (also 500 C listed in the record); 'Simple asphyxiant'.",
-  "accessed": "2026-10-24"
- },
- {
-  "key": "3",
-  "authors": "National Center for Biotechnology Information",
-  "year": 2026,
-  "title": "PubChem Compound Summary for CID 1140, Toluene",
-  "container": "PubChem, U.S. National Library of Medicine, National Institutes of Health",
-  "url": "https://pubchem.ncbi.nlm.nih.gov/compound/1140",
-  "verified_by": "agency page",
-  "verified_fact": "'Lower flammable limit: 1.1% by volume; Upper flammable limit: 7.1% by volume'; flash point 4.4 C (40 F); Class IB flammable liquid; 'Catalytic reforming of petroleum steams accounts for 87% of total toluene production. An additional 9% is separated from pyrolysis gasoline' (undated text).",
-  "accessed": "2026-10-24"
- },
- {
-  "key": "4",
-  "authors": "National Center for Biotechnology Information",
-  "year": 2026,
-  "title": "PubChem Compound Summary for CID 297, Methane",
-  "container": "PubChem, U.S. National Library of Medicine, National Institutes of Health",
-  "url": "https://pubchem.ncbi.nlm.nih.gov/compound/297",
-  "verified_by": "agency page",
-  "verified_fact": "'Lower flammable limit: 5.3% by volume; Upper flammable limit: 14.0% by volume.'",
-  "accessed": "2026-10-24"
- },
- {
-  "key": "5",
-  "authors": "National Center for Biotechnology Information",
-  "year": 2026,
-  "title": "PubChem Compound Summary for CID 7095, Biphenyl",
-  "container": "PubChem, U.S. National Library of Medicine, National Institutes of Health",
-  "url": "https://pubchem.ncbi.nlm.nih.gov/compound/7095",
-  "verified_by": "agency page",
-  "verified_fact": "Boiling point 256.1 C (489 F, 760 mmHg); flash point 180 F; 'Biphenyl appears as a clear colorless liquid'.",
-  "accessed": "2026-10-24"
- },
- {
-  "key": "6",
-  "authors": "U.S. Department of Labor, Occupational Safety and Health Administration",
-  "year": "current CFR text (accessed 2026)",
-  "title": "29 CFR 1910.1028, Benzene",
-  "container": "Code of Federal Regulations, Title 29 (text read at Cornell Law School Legal Information Institute reproduction, since osha.gov returned HTTP 403)",
-  "url": "https://www.law.cornell.edu/cfr/text/29/1910.1028",
-  "verified_by": "agency page",
-  "verified_fact": "(c) Permissible exposure limits: TWA 'one part of benzene per million parts of air (1 ppm) as an 8-hour time-weighted average'; STEL 'five (5) ppm as averaged over any 15 minute period'.",
-  "accessed": "2026-10-24"
- },
- {
-  "key": "7",
-  "authors": "U.S. Chemical Safety and Hazard Investigation Board",
-  "year": 2016,
-  "title": "CSB Safety Alert: Preventing High Temperature Hydrogen Attack (HTHA)",
-  "container": "U.S. Chemical Safety and Hazard Investigation Board",
-  "url": "https://www.csb.gov/assets/1/20/Safety_Alert_HTHA_Final.pdf",
-  "verified_by": "agency page",
-  "verified_fact": "HTHA 'severely cracked and weakened the carbon steel heat exchanger over time, leading to a rupture' (Tesoro Anacortes). 'American Petroleum Institute (API) Recommended Practice (RP) 941, Steels for Hydrogen Service at Elevated Temperatures and Pressures in Petroleum Refineries and the Petrochemical Plants. The standard uses Nelson Curves to predict the operating conditions where HTHA can occur in different types of steels.' 'the 2016 edition of API RP 941 reports 13 new failures below the carbon steel Nelson curve.' The CSB concluded inspection should not be relied on alone to control HTHA.",
-  "accessed": "2026-10-24"
- },
- {
-  "key": "8",
   "authors": "de Araujo, Antonio C.B.; Govatsmark, Marius; Skogestad, Sigurd",
   "year": 2007,
   "title": "Application of plantwide control to the HDA process. I - steady-state optimization and self-optimizing control",
   "container": "Control Engineering Practice 15(10), Elsevier",
   "doi": "10.1016/j.conengprac.2006.10.014",
   "verified_by": "crossref",
-  "verified_fact": "Bibliographic record confirmed in Crossref (authors, 2007, title, journal). Facts read in the authors' submitted manuscript (https://skoge.folk.ntnu.no/publications/2007/araujo_hda_part1_cep/old-submitted/HDASubmission.pdf, preprint dated 30 Oct 2006): HDA process 'first presented in a contest which the American Institute of Chemical Engineers arranged' (McKetta, 1977); 'Douglas (1988) used another version of the HDA process to demonstrate a steady-state procedure for flowsheet design'; reactions 'Toluene + H2 -> Benzene + Methane' and '2 Benzene <-> Diphenyl + H2'; adiabatic plug-flow reactor; effluent 'quenched by a portion of the recycle separator liquid flow to prevent coking'; purge 'to avoid accumulation of methane within the process'; toluene column separates unreacted toluene from diphenyl and recycles it; constraints: H2/(benzene+toluene+diphenyl) >= 5 'to prevent coking', reactor inlet pressure <= 500 psia, reactor outlet T <= 1300 F, quencher outlet T <= 1150 F, reactor inlet T >= 1150 F; fresh gas 97% hydrogen / 3% methane; Table 7 'Economic data for the HDA process based on Douglas (1988)': benzene 9.04 $/lbmol, toluene 6.04 $/lbmol, fresh gas 1.32 $/lbmol, fuel 4.00e-6 $/Btu; 8150 h/y; by-products purge, stabilizer distillate and toluene-column bottoms sold as fuel; Wolff (1994) 'concluded that the HDA process is controllable provided the instability of the heat-integrated reactor is resolved'; Aspen model stream table: reactor inlet 1201.2 F and outlet 1277.2 F at 500 psi, fresh toluene 300 lbmol/h, benzene product 268 lbmol/h, diphenyl bottoms 8 lbmol/h. Basis year of prices not stated in the paper.",
+  "verified_fact": "Bibliographic record confirmed in Crossref (authors, 2007, title, journal). Facts read in the authors' submitted manuscript (https://skoge.folk.ntnu.no/publications/2007/araujo_hda_part1_cep/old-submitted/HDASubmission.pdf, preprint dated 30 Oct 2006): HDA process 'first presented in a contest which the American Institute of Chemical Engineers arranged' (McKetta, 1977); 'Douglas (1988) used another version of the HDA process to demonstrate a steady-state procedure for flowsheet design'; reactions 'Toluene + H2 -> Benzene + Methane' and '2 Benzene <-> Diphenyl + H2'; adiabatic plug-flow reactor; effluent 'quenched by a portion of the recycle separator liquid flow to prevent coking'; purge 'to avoid accumulation of methane within the process'; toluene column separates unreacted toluene from diphenyl and recycles it; constraints: H2/(benzene+toluene+diphenyl) >= 5 'to prevent coking', reactor inlet pressure <= 500 psia, reactor outlet T <= 1300 F, quencher outlet T <= 1150 F, reactor inlet T >= 1150 F; fresh gas 97% hydrogen / 3% methane; Table 7 'Economic data for the HDA process based on Douglas (1988)': benzene 9.04 $/lbmol, toluene 6.04 $/lbmol, fresh gas 1.32 $/lbmol, fuel 4.00e-6 $/Btu; 8150 h/y; by-products purge, stabilizer distillate and toluene-column bottoms sold as fuel; Wolff (1994) 'concluded that the HDA process is controllable provided the instability of the heat-integrated reactor is resolved'; Aspen model stream table: reactor inlet 1201.2 F and outlet 1277.2 F at 500 psi, fresh toluene 300 lbmol/h, benzene product 268 lbmol/h, diphenyl bottoms 8 lbmol/h. Basis year of prices not stated in the paper. Further facts read in the same manuscript: distillate specification, benzene mole fraction of at least 0.9997; separator temperature limited to 95-105 F; steam price 2.50e-6 $/Btu; the feed is heated against the reactor effluent (feed-effluent heat exchange); objective function, economic potential (product and by-product fuel value minus feed, fuel, cooling water, power and steam costs); nominal optimum profit 4,693.4 k$/year at fresh toluene 300 lbmol/h; the HDA process 'has been exhaustively studied' for design, controllability and control structure selection.",
   "accessed": "2026-10-24"
  },
  {
-  "key": "9",
-  "authors": "Douglas, James M.",
-  "year": 1988,
-  "title": "Conceptual Design of Chemical Processes",
-  "container": "McGraw-Hill, New York",
-  "url": "https://openlibrary.org/isbn/9780070177628",
-  "verified_by": "publisher page",
-  "verified_fact": "Bibliographic record only (Open Library record OL2391922M: title, author, McGraw-Hill, 1988, ISBN 9780070177628, 601 pages); also listed in Crossref as the subject of a 1989 review (10.1002/jctb.280460308). The book was not read; its HDA role is stated through [8].",
-  "accessed": "2026-10-24"
- },
- {
-  "key": "10",
-  "authors": "Douglas, J. M.",
-  "year": 1985,
-  "title": "A hierarchical decision procedure for process synthesis",
-  "container": "AIChE Journal 31(3), 353-362",
-  "doi": "10.1002/aic.690310302",
-  "verified_by": "crossref",
-  "verified_fact": "Crossref record (authors, year, title, journal, volume, pages) and abstract: 'A new procedure for synthesizing process flow sheets and base-case designs has been developed. The procedure is evolutionary in nature and proceeds through a hierarchy of decision levels, where more fine structure is added to the flow sheet at each decision level.'",
-  "accessed": "2026-10-24"
- },
- {
-  "key": "11",
-  "authors": "Turton, Richard; Bailie, Richard C.; Whiting, Wallace B.; Shaeiwitz, Joseph A.; Bhattacharya, Debangsu",
-  "year": 2012,
-  "title": "Analysis, Synthesis, and Design of Chemical Processes, 4th ed.",
-  "container": "Prentice Hall",
-  "url": "https://openlibrary.org/isbn/9780132618120",
-  "verified_by": "publisher page",
-  "verified_fact": "Bibliographic record only (Open Library record OL25330780M: title, Prentice Hall, 2012, 4th ed., ISBN 9780132618120). The book was not read; its use of a toluene HDA flowsheet is reported through [12].",
-  "accessed": "2026-10-24"
- },
- {
-  "key": "12",
-  "authors": "Indian Institute of Technology Bombay, FOSSEE DWSIM flowsheeting project (student submission)",
-  "year": "n.d.",
-  "title": "Production of Benzene via the hydrodealkylation of Toluene (DWSIM project document)",
-  "container": "FOSSEE, IIT Bombay",
-  "url": "https://dwsim.fossee.in/flowsheeting-project/download/project-file/47",
-  "verified_by": "publisher page",
-  "verified_fact": "Document states: 'Reaction Conditions: 600-650 deg C, 20 to 60 bar. Catalysis: Chromia on porous carrier'; flowsheet with heater, furnace, packed bed catalytic reactor, phase separators, recycle of hydrogen with a fuel-gas purge, and a distillation column; 'The data given in Turton et al, 2013 was used as the basis'; reference 'Analysis, Synthesis and Design of Chemical Processes (Fourth Edition) ... (Chapter 1)'. Student document; used only to report the attribution to Turton et al.",
-  "accessed": "2026-10-24"
- },
- {
-  "key": "13",
+  "key": "2",
   "authors": "University of Edinburgh, School of Engineering (course notes, Whole Process Control)",
   "year": "n.d.",
   "title": "Whole Process Control - Example 2 - HDA Process",
@@ -143,7 +22,84 @@
   "accessed": "2026-10-24"
  },
  {
-  "key": "14",
+  "key": "3",
+  "authors": "Douglas, James M.",
+  "year": 1988,
+  "title": "Conceptual Design of Chemical Processes",
+  "container": "McGraw-Hill, New York",
+  "url": "https://openlibrary.org/isbn/9780070177628",
+  "verified_by": "publisher page",
+  "verified_fact": "Bibliographic record only (Open Library record OL2391922M: title, author, McGraw-Hill, 1988, ISBN 9780070177628, 601 pages); also listed in Crossref as the subject of a 1989 review (10.1002/jctb.280460308). The book was not read; its HDA role is stated through [8].",
+  "accessed": "2026-10-24"
+ },
+ {
+  "key": "4",
+  "authors": "Douglas, J. M.",
+  "year": 1985,
+  "title": "A hierarchical decision procedure for process synthesis",
+  "container": "AIChE Journal 31(3), 353-362",
+  "doi": "10.1002/aic.690310302",
+  "verified_by": "crossref",
+  "verified_fact": "Crossref record (authors, year, title, journal, volume, pages) and abstract: 'A new procedure for synthesizing process flow sheets and base-case designs has been developed. The procedure is evolutionary in nature and proceeds through a hierarchy of decision levels, where more fine structure is added to the flow sheet at each decision level.' Supports only the existence and abstract of the 1985 hierarchical decision procedure for process synthesis; it is not a source for the HDA flowsheet of Douglas (1988).",
+  "accessed": "2026-10-24"
+ },
+ {
+  "key": "5",
+  "authors": "Indian Institute of Technology Bombay, FOSSEE DWSIM flowsheeting project (student submission)",
+  "year": "n.d.",
+  "title": "Production of Benzene via the hydrodealkylation of Toluene (DWSIM project document)",
+  "container": "FOSSEE, IIT Bombay",
+  "url": "https://dwsim.fossee.in/flowsheeting-project/download/project-file/47",
+  "verified_by": "publisher page",
+  "verified_fact": "Document states: 'Reaction Conditions: 600-650 deg C, 20 to 60 bar. Catalysis: Chromia on porous carrier'; flowsheet with heater, furnace, packed bed catalytic reactor, phase separators, recycle of hydrogen with a fuel-gas purge, and a distillation column; 'The data given in Turton et al, 2013 was used as the basis'; reference 'Analysis, Synthesis and Design of Chemical Processes (Fourth Edition) ... (Chapter 1)'. Student document; used only to report the attribution to Turton et al.",
+  "accessed": "2026-10-24"
+ },
+ {
+  "key": "6",
+  "authors": "Turton, Richard; Bailie, Richard C.; Whiting, Wallace B.; Shaeiwitz, Joseph A.; Bhattacharya, Debangsu",
+  "year": 2012,
+  "title": "Analysis, Synthesis, and Design of Chemical Processes, 4th ed.",
+  "container": "Prentice Hall",
+  "url": "https://openlibrary.org/isbn/9780132618120",
+  "verified_by": "publisher page",
+  "verified_fact": "Bibliographic record only (Open Library record OL25330780M: title, Prentice Hall, 2012, 4th ed., ISBN 9780132618120). The book was not read; its use of a toluene HDA flowsheet is reported through [12].",
+  "accessed": "2026-10-24"
+ },
+ {
+  "key": "7",
+  "authors": "National Center for Biotechnology Information (compiled from HSDB, NTP, NIOSH, ACGIH, IARC and Kirk-Othmer entries)",
+  "year": 2026,
+  "title": "PubChem Compound Summary for CID 241, Benzene",
+  "container": "PubChem, U.S. National Library of Medicine, National Institutes of Health",
+  "url": "https://pubchem.ncbi.nlm.nih.gov/compound/241",
+  "verified_by": "agency page",
+  "verified_fact": "Methods of Manufacturing: 'Benzene is produced from the hydrodemethylation of toluene under catalytic or thermal conditions. The main catalytic hydrodealkylation processes are Hydeal and DETOL. Two widely used thermal processes are HDA and THD. These processes contribute 25-30% of the world's total benzene supply.' Catalytic: 'usually supported chromium or molybdenum oxides, platinum or platinum oxides, on silica or alumina. The operating temperatures range from 500 to 595 C and pressures are usually 4-6 MPa (40-60 atm). The reaction is highly exothermic and the temperature is controlled by injection of quench hydrogen at several places along the reaction. Conversions per pass typically reach 90% and selectivity to benzene is often >95%. The catalytic process occurs at lower temperatures and offers higher selectivities but requires frequent regeneration of the catalyst.' 'Worldwide, ~30% of commercial benzene is produced by catalytic reforming'; 'Approximately 30-35% of benzene produced worldwide is derived from pyrolysis gasoline'; transalkylation/disproportionation 'Economic feasibility ... depends on the relative prices of benzene, toluene, and xylene ... In recent years, xylene and benzene prices have generally been higher than toluene prices so transalkylation is presently an attractive alternative to hydrodealkylation.' (undated text). U.S. Production (EPA CDR, via HSDB): 2023: 15,000,000,000 - <20,000,000,000 lb; 2022: 10,000,000,000 - <15,000,000,000 lb; 2021 and 2020: 15,000,000,000 - <20,000,000,000 lb. IARC: Group 1, carcinogenic to humans (Vol 100F, 2012; Vol 120, 2018). OSHA 1910.1028: TWA 1 ppm, STEL 5 ppm. ACGIH TLV: 0.5 ppm TWA, 2.5 ppm STEL, skin, A1 confirmed human carcinogen. Flammable limits 1.2% (LEL) to 7.8% (UEL) by volume; flash point below 0 F; boiling point 80.08 C. Environmental: 'Benzene enters the environment from production, storage, transport, venting, and combustion of gasoline'.",
+  "accessed": "2026-10-24"
+ },
+ {
+  "key": "8",
+  "authors": "National Center for Biotechnology Information",
+  "year": 2026,
+  "title": "PubChem Compound Summary for CID 7095, Biphenyl",
+  "container": "PubChem, U.S. National Library of Medicine, National Institutes of Health",
+  "url": "https://pubchem.ncbi.nlm.nih.gov/compound/7095",
+  "verified_by": "agency page",
+  "verified_fact": "Boiling point 256.1 C (489 F, 760 mmHg); flash point 180 F; 'Biphenyl appears as a clear colorless liquid'.",
+  "accessed": "2026-10-24"
+ },
+ {
+  "key": "9",
+  "authors": "Meng, Qinglei; Yan, Jiang; Wu, Ruizhi; Liu, Huizhen; Sun, Yang; Wu, NingNing; Xiang, Junfeng; Zheng, Lirong; Zhang, Jing; Han, Buxing",
+  "year": 2021,
+  "title": "Sustainable production of benzene from lignin",
+  "container": "Nature Communications 12, 4534",
+  "doi": "10.1038/s41467-021-24780-8",
+  "verified_by": "crossref",
+  "verified_fact": "Crossref record confirmed (authors, 2021, title, journal). Introduction: 'benzene is an indispensable commodity in chemical industry with world production of more than 61 million metric tons in 2019' (the authors cite Statista; secondary statement).",
+  "accessed": "2026-10-24"
+ },
+ {
+  "key": "10",
   "authors": "Clariant",
   "year": 2026,
   "title": "Detol (selective dehydrogenation and dealkylation catalyst for conversion of toluene to benzene)",
@@ -154,7 +110,7 @@
   "accessed": "2026-10-24"
  },
  {
-  "key": "15",
+  "key": "11",
   "authors": "Axens",
   "year": 2026,
   "title": "Benzene production (Hydrodealkylation, HDA)",
@@ -165,14 +121,58 @@
   "accessed": "2026-10-24"
  },
  {
+  "key": "12",
+  "authors": "U.S. Department of Labor, Occupational Safety and Health Administration",
+  "year": "current CFR text (accessed 2026)",
+  "title": "29 CFR 1910.1028, Benzene",
+  "container": "Code of Federal Regulations, Title 29 (text read at Cornell Law School Legal Information Institute reproduction, since osha.gov returned HTTP 403)",
+  "url": "https://www.law.cornell.edu/cfr/text/29/1910.1028",
+  "verified_by": "agency page",
+  "verified_fact": "(c) Permissible exposure limits: TWA 'one part of benzene per million parts of air (1 ppm) as an 8-hour time-weighted average'; STEL 'five (5) ppm as averaged over any 15 minute period'.",
+  "accessed": "2026-10-24"
+ },
+ {
+  "key": "13",
+  "authors": "National Center for Biotechnology Information",
+  "year": 2026,
+  "title": "PubChem Compound Summary for CID 783, Hydrogen",
+  "container": "PubChem, U.S. National Library of Medicine, National Institutes of Health",
+  "url": "https://pubchem.ncbi.nlm.nih.gov/compound/783",
+  "verified_by": "agency page",
+  "verified_fact": "Flammable Limits: 'Lower: 4.0%; upper: 75% (% by vol)'; autoignition temperature 560 C (also 500 C listed in the record); 'Simple asphyxiant'.",
+  "accessed": "2026-10-24"
+ },
+ {
+  "key": "14",
+  "authors": "National Center for Biotechnology Information",
+  "year": 2026,
+  "title": "PubChem Compound Summary for CID 297, Methane",
+  "container": "PubChem, U.S. National Library of Medicine, National Institutes of Health",
+  "url": "https://pubchem.ncbi.nlm.nih.gov/compound/297",
+  "verified_by": "agency page",
+  "verified_fact": "'Lower flammable limit: 5.3% by volume; Upper flammable limit: 14.0% by volume.'",
+  "accessed": "2026-10-24"
+ },
+ {
+  "key": "15",
+  "authors": "National Center for Biotechnology Information",
+  "year": 2026,
+  "title": "PubChem Compound Summary for CID 1140, Toluene",
+  "container": "PubChem, U.S. National Library of Medicine, National Institutes of Health",
+  "url": "https://pubchem.ncbi.nlm.nih.gov/compound/1140",
+  "verified_by": "agency page",
+  "verified_fact": "'Lower flammable limit: 1.1% by volume; Upper flammable limit: 7.1% by volume'; flash point 4.4 C (40 F); Class IB flammable liquid; 'Catalytic reforming of petroleum steams accounts for 87% of total toluene production. An additional 9% is separated from pyrolysis gasoline' (undated text).",
+  "accessed": "2026-10-24"
+ },
+ {
   "key": "16",
-  "authors": "Meng, Qinglei; Yan, Jiang; Wu, Ruizhi; Liu, Huizhen; Sun, Yang; Wu, NingNing; Xiang, Junfeng; Zheng, Lirong; Zhang, Jing; Han, Buxing",
-  "year": 2021,
-  "title": "Sustainable production of benzene from lignin",
-  "container": "Nature Communications 12, 4534",
-  "doi": "10.1038/s41467-021-24780-8",
-  "verified_by": "crossref",
-  "verified_fact": "Crossref record confirmed (authors, 2021, title, journal). Introduction: 'benzene is an indispensable commodity in chemical industry with world production of more than 61 million metric tons in 2019' (the authors cite Statista; secondary statement).",
+  "authors": "U.S. Chemical Safety and Hazard Investigation Board",
+  "year": 2016,
+  "title": "CSB Safety Alert: Preventing High Temperature Hydrogen Attack (HTHA)",
+  "container": "U.S. Chemical Safety and Hazard Investigation Board",
+  "url": "https://www.csb.gov/assets/1/20/Safety_Alert_HTHA_Final.pdf",
+  "verified_by": "agency page",
+  "verified_fact": "HTHA 'severely cracked and weakened the carbon steel heat exchanger over time, leading to a rupture' (Tesoro Anacortes). 'American Petroleum Institute (API) Recommended Practice (RP) 941, Steels for Hydrogen Service at Elevated Temperatures and Pressures in Petroleum Refineries and the Petrochemical Plants. The standard uses Nelson Curves to predict the operating conditions where HTHA can occur in different types of steels.' 'the 2016 edition of API RP 941 reports 13 new failures below the carbon steel Nelson curve.' The CSB concluded inspection should not be relied on alone to control HTHA. CSB: the carbon steel Nelson curve 'has repeatedly proven to be unreliable'.",
   "accessed": "2026-10-24"
  }
 ]
