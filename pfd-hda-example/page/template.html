@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>@@TITLE@@</title>
+<link rel="stylesheet" href="@@KATEX_CSS_URL@@" crossorigin="anonymous">
+<style>
+:root{--ink:#1b1b1b;--ink2:#555;--rule:#d6d6d6;--paper:#fff;--tint:#f4f6f8;--accent:#0072B2;--err:#a4262c;--warn:#a05a00}
+*{box-sizing:border-box}
+html{background:#fff}
+body{background:#fff;color:var(--ink);font:16.5px/1.5 Georgia,"Times New Roman",serif;margin:0}
+h1,h2,h3,h4,.sans,nav,button,label,th,figcaption{font-family:Arial,Helvetica,sans-serif}
+/* One column for header, tab bar and panels: header and body share their edges. */
+.page{max-width:1180px;margin:0 auto;padding:0 16px}
+header{padding:26px 0 6px}
+h1{font-size:1.65rem;line-height:1.2;margin:0 0 8px}
+header p{margin:0 0 10px}
+.subtitle{color:var(--ink2)}
+#bootbar{height:8px;background:#e6e8ec;border-radius:4px;overflow:hidden;margin:8px 0}
+#bootbar>div{height:100%;width:0%;background:var(--accent);transition:width .4s}
+#bootstatus{font-size:.92rem;color:var(--ink2)}
+#bootstatus.bad{color:var(--err)}
+/* Sticky main tab bar: direct child of .page, opaque, no overflow ancestor. */
+nav.tabs{display:flex;gap:4px;border-bottom:2px solid var(--ink);margin:14px 0 0;flex-wrap:wrap;position:sticky;top:0;z-index:60;background:#fff;padding-top:8px}
+nav.tabs button{font-size:1rem;background:#fff;border:1px solid var(--rule);border-bottom:none;padding:8px 18px;cursor:pointer;border-radius:4px 4px 0 0}
+nav.tabs button[aria-selected="true"]{background:var(--ink);color:#fff}
+.panel{display:none;padding:18px 0 40px}
+.panel.active{display:block}
+h2,h3,h4,section[id],figure[id],div[id]{scroll-margin-top:64px}
+h2{font-size:1.35rem;margin:28px 0 10px}
+h3{font-size:1.1rem;margin:22px 0 8px}
+h4{font-size:1rem;margin:16px 0 6px}
+figure{margin:14px 0;padding:0}
+.figscroll{border:1px solid var(--rule);padding:8px;overflow-x:auto;background:#fff}
+.figscroll svg{display:block;width:100%;height:auto;min-width:960px}
+.subdiagram .figscroll svg{min-width:620px}
+figcaption{font-size:14px;line-height:1.4;color:var(--ink2);margin:8px 0 18px}
+table{border-collapse:collapse;margin:10px 0;font-size:.92rem}
+th,td{border:1px solid var(--rule);padding:4px 9px;text-align:left;font-variant-numeric:tabular-nums}
+td.num,th.num{text-align:right}
+th{font-size:.85rem;background:var(--tint)}
+.tablescroll{overflow-x:auto;max-width:100%}
+.grid{display:grid;grid-template-columns:290px minmax(0,1fr);gap:28px;align-items:start}
+.grid>div{min-width:0}
+label{display:block;font-size:.88rem;margin:10px 0 3px}
+label small{color:var(--ink2)}
+input[type=number]{width:100%;padding:6px 8px;font-size:1rem;border:1px solid var(--ink2);border-radius:4px;background:#fff;color:var(--ink)}
+input:disabled{background:#eceff2;color:#777}
+#btn-run{background:var(--accent);color:#fff;border:none;border-radius:4px;padding:10px 16px;font-size:1rem;cursor:pointer;width:100%;margin-top:14px}
+#btn-run:disabled{opacity:.5;cursor:not-allowed}
+#stale-note{color:var(--warn);display:none;margin:8px 0 0;font-size:.92rem}
+#run-error{color:var(--err);display:none;margin:8px 0 0;font-size:.95rem}
+#out-note{font-size:.9rem;color:var(--ink2);margin:6px 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:6px 0 12px}
+.card{border:1px solid var(--rule);border-radius:6px;padding:8px 10px;background:var(--tint)}
+.card .k{font:600 .78rem Arial,Helvetica,sans-serif;color:var(--ink2);white-space:nowrap}
+.card .v{font:600 1.35rem Arial,Helvetica,sans-serif;white-space:nowrap}
+.card .u{font:.76rem Arial,Helvetica,sans-serif;color:var(--ink2);white-space:nowrap}
+.chart{width:100%;height:380px}
+.with-toc{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;align-items:start}
+.with-toc>*{min-width:0}
+.toc{font-size:.9rem;position:sticky;top:64px;max-height:calc(100vh - 76px);overflow:auto;align-self:start}
+.toc summary{font-weight:bold;padding:3px 8px;list-style:none;cursor:pointer}
+.toc summary::-webkit-details-marker{display:none}
+.toc a{display:block;color:var(--ink);text-decoration:none;padding:3px 8px;border-left:3px solid transparent;line-height:1.3}
+.toc a.sub{padding-left:22px;font-size:.86rem}
+.toc a.current{border-left-color:var(--accent);background:var(--tint)}
+.prose{max-width:780px}
+.prose.wide{max-width:none}
+@media(min-width:801px){.toc summary{pointer-events:none}}
+@media(max-width:800px){
+  .grid,.with-toc{grid-template-columns:minmax(0,1fr)}
+  .toc{position:static;max-height:none;border:1px solid var(--rule);padding:6px;margin-bottom:12px}
+  .grid>div{width:100%}
+  .chart{height:340px}
+  nav.tabs button{padding:7px 14px}
+}
+pre{background:var(--tint);border:1px solid var(--rule);padding:12px;overflow-x:auto;font-size:.82rem;line-height:1.45;margin:8px 0}
+code{font-family:Consolas,"DejaVu Sans Mono",monospace}
+.subtabs{display:flex;gap:4px;margin:14px 0}
+.subtabs button{padding:7px 14px;border:1px solid var(--rule);background:#fff;cursor:pointer;border-radius:4px}
+.subtabs button[aria-selected="true"]{background:var(--ink);color:#fff}
+.wt-output{background:#fff;border:1px solid var(--rule);padding:8px 12px;white-space:pre-wrap;font-family:Consolas,"DejaVu Sans Mono",monospace;font-size:.83rem;overflow-x:auto;margin:0 0 10px}
+.wt-label{font:600 .8rem Arial,Helvetica,sans-serif;color:var(--ink2);margin:8px 0 2px}
+.btnlink{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;border-radius:4px;padding:8px 14px;font:1rem Arial,Helvetica,sans-serif}
+.katex{font-size:1.04em}
+a{color:var(--accent)}
+footer{border-top:1px solid var(--rule);padding:14px 0 30px;color:var(--ink2);font-size:.9rem}
+@@PYGMENTS_CSS@@
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+<h1>@@TITLE@@</h1>
+<p class="subtitle">@@INTRO@@</p>
+<div id="bootbar"><div></div></div>
+<p id="bootstatus">Python runtime: loading after first paint.</p>
+</header>
+<nav class="tabs" role="tablist">
+<button role="tab" id="tabbtn-app" aria-selected="true" data-panel="app">App</button>
+<button role="tab" id="tabbtn-theory" aria-selected="false" data-panel="theory">Theory</button>
+<button role="tab" id="tabbtn-code" aria-selected="false" data-panel="code">Code</button>
+</nav>
+
+<div class="panel active" id="panel-app">
+@@APP_HTML@@
+</div>
+
+<div class="panel" id="panel-theory">
+<div class="with-toc">
+<nav class="toc" id="theory-toc"><details open><summary>Contents</summary>@@THEORY_TOC@@</details></nav>
+<div class="prose" id="theory-body">@@THEORY_HTML@@</div>
+</div>
+</div>
+
+<div class="panel" id="panel-code">
+<div class="with-toc">
+<nav class="toc" id="code-toc"><details open><summary>Contents</summary>@@CODE_TOC@@</details></nav>
+<div class="prose wide" id="code-body">
+@@CODE_HTML@@
+</div>
+</div>
+</div>
+<footer>Version @@VERSION@@. Stream values on the diagrams and in the model are sample values.</footer>
+</div>
+
+<script id="prestart-data" type="application/json">@@PRESTART_JSON@@</script>
+<script id="py-files" type="application/json">@@PY_FILES_JSON@@</script>
+<script id="walkthrough-figs" type="application/json">@@WALKTHROUGH_FIGS_JSON@@</script>
+<script type="text/worker" id="worker-src">@@WORKER_JS@@</script>
+<script>@@PLOTLY_JS@@</script>
+<script>
+var PANELS = ["app", "theory", "code"];
+var chartIds = ["chart-purge", "chart-conv"];
+var wtRendered = false;
+var displayedParams = null;
+var worker = null, ready = false, selftestWanted = /[?&]selftest\b/.test(location.search);
+
+function $(id){ return document.getElementById(id); }
+function fmt(x, d){ return Number(x).toFixed(d); }
+
+/* ---------- App panel rendering from a result payload (no calculation) ---------- */
+var CARDS = [
+  ["benzene_product", "Benzene product", "kmol/h", function(v){ return fmt(v, 1); }],
+  ["yield", "Overall benzene yield", "of fresh toluene", function(v){ return fmt(100 * v, 1) + " %"; }],
+  ["makeup_h2", "Make-up H₂", "kmol/h", function(v){ return fmt(v, 1); }],
+  ["h2_utilisation", "H₂ utilisation", "consumed / make-up", function(v){ return fmt(100 * v, 1) + " %"; }],
+  ["purge", "Purge flow", "kmol/h", function(v){ return fmt(v, 1); }],
+  ["recycle_gas_ch4", "CH₄ in recycle gas", "mole fraction", function(v){ return fmt(v, 3); }],
+  ["toluene_recycle", "Toluene recycle", "kmol/h", function(v){ return fmt(v, 1); }]
+];
+var COMP = ["H2", "CH4", "B", "T", "D"];
+function renderCards(m){
+  $("cards").innerHTML = CARDS.map(function(c){
+    return '<div class="card"><div class="k">' + c[1] + '</div><div class="v">' + c[3](m[c[0]]) +
+           '</div><div class="u">' + c[2] + '</div></div>';
+  }).join("");
+}
+function renderTable(rows){
+  var h = '<table><tr><th class="num">Stream</th><th>Description</th><th class="num">H₂</th><th class="num">CH₄</th>' +
+          '<th class="num">Benzene</th><th class="num">Toluene</th><th class="num">Diphenyl</th><th class="num">Total</th></tr>';
+  rows.forEach(function(r){
+    h += '<tr><td class="num">' + r.stream + '</td><td>' + r.label + '</td>' +
+         COMP.map(function(c){ return '<td class="num">' + fmt(r.flows[c], 1) + '</td>'; }).join("") +
+         '<td class="num">' + fmt(r.total, 1) + '</td></tr>';
+  });
+  $("out-table").innerHTML = h + '</table>';
+}
+var STY = {
+  a: {color: "#0072B2", dash: "solid", symbol: "circle"},
+  b: {color: "#D55E00", dash: "dash", symbol: "square"}
+};
+function series(x, y, name, s){
+  return {type: "scatter", mode: "lines+markers", x: x, y: y, name: name,
+          line: {color: s.color, dash: s.dash, width: 2}, marker: {symbol: s.symbol, size: 7, color: s.color}};
+}
+function nowTrace(x, ys){
+  return {type: "scatter", mode: "markers", x: [x, x], y: ys, name: "current point",
+          marker: {symbol: "x", size: 13, color: "#111", line: {width: 2, color: "#111"}}};
+}
+function layoutFor(xt, yt){
+  return {margin: {l: 62, r: 16, t: 10, b: 120}, paper_bgcolor: "#fff", plot_bgcolor: "#fff",
+          font: {family: "Arial, Helvetica, sans-serif", size: 12, color: "#1b1b1b"},
+          xaxis: {title: {text: xt}, showline: true, linecolor: "#111", mirror: true, ticks: "outside", gridcolor: "#e6e6e6"},
+          yaxis: {title: {text: yt}, showline: true, linecolor: "#111", mirror: true, ticks: "outside", gridcolor: "#e6e6e6", rangemode: "tozero"},
+          legend: {orientation: "h", x: 0, y: -0.32, xanchor: "left", yanchor: "top"}};
+}
+var PCFG = {responsive: true, displaylogo: false};
+function renderCharts(res){
+  var a = res.sweep_beta, b = res.sweep_X;
+  Plotly.react("chart-purge", [
+    series(a.beta, a.makeup_h2, "make-up H₂", STY.a),
+    series(a.beta, a.recycle_gas, "recycle gas", STY.b),
+    nowTrace(a.now.beta, [a.now.makeup_h2, a.now.recycle_gas])
+  ], layoutFor("β", "Flow (kmol/h)"), PCFG);
+  Plotly.react("chart-conv", [
+    series(b.X, b.toluene_recycle, "toluene recycle", STY.a),
+    series(b.X, b.reactor_toluene, "reactor toluene", STY.b),
+    nowTrace(b.now.X, [b.now.toluene_recycle, b.now.reactor_toluene])
+  ], layoutFor("X", "Flow (kmol/h)"), PCFG);
+}
+function resizeCharts(){
+  chartIds.forEach(function(id){ try{ Plotly.Plots.resize($(id)); }catch(e){} });
+}
+var INPUT_IDS = ["in-F", "in-X", "in-beta", "in-r"];
+function currentInputs(){ return INPUT_IDS.map(function(i){ return $(i).value; }).join("|"); }
+function checkStale(){
+  if(displayedParams === null) return;
+  $("stale-note").style.display = currentInputs() !== displayedParams ? "block" : "none";
+}
+function renderResult(res, note, params){
+  renderCards(res.metrics);
+  renderTable(res.table);
+  renderCharts(res);
+  $("out-note").textContent = note;
+  displayedParams = params;
+  checkStale();
+}
+INPUT_IDS.forEach(function(i){ $(i).addEventListener("input", checkStale); });
+
+/* ---------- panels, sub-tabs, fragments ---------- */
+function showPanel(name){
+  PANELS.forEach(function(p){
+    $("panel-" + p).classList.toggle("active", p === name);
+    $("tabbtn-" + p).setAttribute("aria-selected", p === name ? "true" : "false");
+  });
+  if(name === "app"){ resizeCharts(); }
+}
+function showSub(name){
+  $("code-listings").style.display = name === "listings" ? "block" : "none";
+  $("code-walkthrough").style.display = name === "walkthrough" ? "block" : "none";
+  $("subtab-listings").setAttribute("aria-selected", name === "listings" ? "true" : "false");
+  $("subtab-walkthrough").setAttribute("aria-selected", name === "walkthrough" ? "true" : "false");
+  if(name === "walkthrough"){ renderWalkthroughCharts(); }
+}
+function renderWalkthroughCharts(){
+  var data = JSON.parse($("walkthrough-figs").textContent);
+  Object.keys(data).forEach(function(k){
+    if(!wtRendered){ Plotly.newPlot(k, data[k].data, data[k].layout, PCFG); }
+    else{ try{ Plotly.Plots.resize($(k)); }catch(e){} }
+  });
+  wtRendered = true;
+}
+PANELS.forEach(function(p){
+  $("tabbtn-" + p).addEventListener("click", function(){
+    showPanel(p);
+    history.replaceState(null, "", "#" + p);
+    window.scrollTo(0, 0);
+  });
+});
+$("subtab-listings").addEventListener("click", function(){ showSub("listings"); history.replaceState(null, "", "#code-listings"); });
+$("subtab-walkthrough").addEventListener("click", function(){ showSub("walkthrough"); history.replaceState(null, "", "#code-walkthrough"); });
+
+function route(){
+  var id = decodeURIComponent(location.hash.slice(1));
+  if(!id){ showPanel("app"); return; }
+  var el = $(id), panel = null;
+  if(PANELS.indexOf(id) >= 0){ panel = id; }
+  else if(el && el.closest(".panel")){ panel = el.closest(".panel").id.slice(6); }
+  if(!panel){ return; }
+  showPanel(panel);
+  if(panel === "code"){
+    if(id === "code-walkthrough" || (el && el.closest("#code-walkthrough"))){ showSub("walkthrough"); }
+    else if(id === "code-listings" || (el && el.closest("#code-listings"))){ showSub("listings"); }
+  }
+  if(PANELS.indexOf(id) >= 0){ window.scrollTo(0, 0); }
+  else if(el){ el.scrollIntoView(); }
+}
+window.addEventListener("hashchange", route);
+
+/* contents: collapsed on phones, open on desktop */
+var mq = window.matchMedia("(max-width: 800px)");
+function tocState(){
+  document.querySelectorAll(".toc details").forEach(function(d){ if(mq.matches){ d.removeAttribute("open"); } else{ d.setAttribute("open", ""); } });
+}
+tocState();
+if(mq.addEventListener){ mq.addEventListener("change", tocState); }
+document.querySelectorAll(".toc a").forEach(function(a){
+  a.addEventListener("click", function(){
+    if(mq.matches){ var d = a.closest("details"); if(d){ d.removeAttribute("open"); } }
+  });
+});
+/* current section highlighting */
+var spy = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(!e.isIntersecting) return;
+    var toc = e.target.closest(".panel").querySelector(".toc");
+    if(!toc) return;
+    toc.querySelectorAll("a").forEach(function(a){ a.classList.toggle("current", a.getAttribute("href") === "#" + e.target.id); });
+  });
+}, {rootMargin: "-70px 0px -75% 0px"});
+document.querySelectorAll("#panel-theory h2[id], #panel-theory h3[id], #panel-code h2[id], #panel-code h3[id]").forEach(function(el){ spy.observe(el); });
+
+/* ---------- first paint: precomputed design-basis run ---------- */
+var PRESTART = JSON.parse($("prestart-data").textContent);
+var PRESTART_PARAMS = INPUT_IDS.map(function(i){ return $(i).value; }).join("|");
+renderResult(PRESTART, "Displayed results: precomputed design-basis run, computed in Python when this page was built.", PRESTART_PARAMS);
+route();
+window.addEventListener("load", function(){ resizeCharts(); setTimeout(resizeCharts, 300); });
+setTimeout(resizeCharts, 50);
+
+/* ---------- Python runtime (Pyodide in a Web Worker), after first paint ---------- */
+var bootBar = document.querySelector("#bootbar>div"), bootStatus = $("bootstatus");
+function setControls(on){
+  INPUT_IDS.concat(["btn-run"]).forEach(function(i){ $(i).disabled = !on; });
+}
+function bootFail(msg){
+  ready = false;
+  bootStatus.className = "bad";
+  bootStatus.textContent = "Python runtime: failed to load (" + msg + "). The displayed results are the precomputed design basis; the controls stay disabled.";
+  bootBar.style.width = "0%";
+  if(selftestWanted){ window.SELFTEST = {pass: false, max_rel_diff: null, n: 0, error: msg}; }
+}
+var pending = {}, reqId = 0;
+function request(payload, cb){
+  var id = ++reqId; pending[id] = cb;
+  worker.postMessage({type: "req", id: id, payload: payload});
+}
+function walkCompare(a, b, acc, path){
+  if(typeof a === "number" && typeof b === "number"){
+    acc.n++;
+    var d = a === b ? 0 : Math.abs(a - b) / Math.max(Math.abs(a), Math.abs(b));
+    if(d > acc.max){ acc.max = d; acc.where = path; }
+  }else if(Array.isArray(a) && Array.isArray(b) && a.length === b.length){
+    for(var i = 0; i < a.length; i++){ walkCompare(a[i], b[i], acc, path + "[" + i + "]"); }
+  }else if(a && b && typeof a === "object" && typeof b === "object"){
+    var ka = Object.keys(a).sort(), kb = Object.keys(b).sort();
+    if(ka.join() !== kb.join()){ acc.bad = true; acc.where = path; return; }
+    ka.forEach(function(k){ walkCompare(a[k], b[k], acc, path + "." + k); });
+  }else if(a !== b){ acc.bad = true; acc.where = path; }
+}
+function runSelftest(){
+  request({type: "selftest"}, function(out){
+    var acc = {n: 0, max: 0, bad: false, where: ""};
+    if(out.ok){ walkCompare(PRESTART, out.result, acc, "result"); } else{ acc.bad = true; acc.where = out.error; }
+    var pass = !acc.bad && acc.max <= 1e-9 && acc.n > 0;
+    window.SELFTEST = {pass: pass, max_rel_diff: acc.max, n: acc.n};
+    if(!pass){ window.SELFTEST.where = acc.where; }
+    bootStatus.textContent = "Python runtime: ready. Self-test: " + (pass ? "pass" : "FAIL") +
+      " (" + acc.n + " embedded numbers compared with the live run, largest relative difference " + acc.max.toExponential(2) + ").";
+  });
+}
+function onWorker(e){
+  var m = e.data;
+  if(m.type === "stage"){
+    bootStatus.textContent = "Python runtime: " + m.text;
+    bootBar.style.width = m.pct + "%";
+  }else if(m.type === "ready"){
+    ready = true;
+    clearTimeout(bootTimer);
+    bootBar.style.width = "100%";
+    bootStatus.textContent = "Python runtime: ready.";
+    setControls(true);
+    checkStale();
+    if(selftestWanted){ runSelftest(); }
+  }else if(m.type === "bootfail"){
+    clearTimeout(bootTimer);
+    console.error(m.error);
+    bootFail("the runtime could not start");
+  }else if(m.type === "result"){
+    var cb = pending[m.id]; delete pending[m.id];
+    if(cb){ cb(JSON.parse(m.text)); }
+  }
+}
+var bootTimer = null;
+function boot(){
+  try{
+    var src = $("worker-src").textContent;
+    worker = new Worker(URL.createObjectURL(new Blob([src], {type: "text/javascript"})));
+    worker.addEventListener("message", onWorker);
+    worker.addEventListener("error", function(){ clearTimeout(bootTimer); bootFail("the worker script could not load"); });
+    bootTimer = setTimeout(function(){ bootFail("the runtime did not become ready within 3 minutes"); }, 180000);
+    worker.postMessage({type: "init", files: JSON.parse($("py-files").textContent)});
+    bootBar.style.width = "10%";
+  }catch(err){ console.error(err); bootFail("the worker could not be created"); }
+}
+setControls(false);
+window.addEventListener("load", function(){ setTimeout(boot, 150); });
+
+function doRun(){
+  if(!ready) return;
+  var params = currentInputs();
+  var payload = {type: "run", F: $("in-F").value, X: $("in-X").value, beta: $("in-beta").value, r: $("in-r").value};
+  $("btn-run").disabled = true;
+  request(payload, function(out){
+    $("btn-run").disabled = false;
+    if(out.ok){
+      $("run-error").style.display = "none";
+      renderResult(out.result, "Displayed results: live Python run.", params);
+    }else{
+      $("run-error").style.display = "block";
+      $("run-error").textContent = out.error;
+    }
+  });
+}
+$("btn-run").addEventListener("click", doRun);
+INPUT_IDS.forEach(function(i){ $(i).addEventListener("keydown", function(e){ if(e.key === "Enter"){ doRun(); } }); });
+</script>
+</body>
+</html>
