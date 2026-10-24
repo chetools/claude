@@ -29,6 +29,7 @@ NODES = {
     "J4":    ("junction", [1], None, "", "purge split"),
     "C-201": ("equip", [1], "compressor_1", "C-201", "Recycle gas compressor"),
     "LV-201": ("equip", [1], "control_valve_1", "LV-201", "Level control valve"),
+    "PV-201": ("equip", [1], "control_valve_1", "PV-201", "Purge pressure control valve"),
     "V-203": ("equip", [1], "flash_1", "V-203", "Low-pressure flash drum"),
     "J5":    ("junction", [1], None, "", "fuel gas mix"),
     "FG":    ("terminal", [1], "product_1", "", "Fuel gas"),
@@ -72,7 +73,7 @@ EDGES = {
     10: ("R-201", "bottom", "E-202", "left", [1], "Reactor effluent"),
     11: ("E-202", "right", "V-202", "side_3", [1], "Cooled effluent"),
     12: ("V-202", "top", "J4", "j", [1], "Separator vapour"),
-    13: ("J4", "j", "J5", "j", [1], "Purge"),
+    13: ("J4", "j", "PV-201", "left", [1], "Purge"),
     14: ("J4", "j", "C-201", "suction", [1], "Recycle gas to compressor"),
     15: ("C-201", "discharge", "J2", "j", [1], "Recycle gas"),
     16: ("V-202", "bottom", "LV-201", "left", [1], "Separator liquid"),
@@ -101,6 +102,7 @@ EDGES = {
     38: ("T-202", "bottoms", "E-207", "left", [2], "Toluene column bottoms"),
     39: ("E-207", "top", "T-202", "side_right", [2], "Toluene column boil-up"),
     40: ("E-207", "right", "DP", "inlet_edge", [2], "Diphenyl"),
+    41: ("PV-201", "right", "J5", "j", [1], "Let-down purge"),
 }
 # Sheet continuations (R9): the same stream number on both sheets, leaving and
 # entering at the same height (heights fixed by the layout in continuations.json).

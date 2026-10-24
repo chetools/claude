@@ -135,6 +135,15 @@
    "tag": "LV-201",
    "service": "Level control valve"
   },
+  "PV-201": {
+   "kind": "equip",
+   "sheets": [
+    1
+   ],
+   "key": "control_valve_1",
+   "tag": "PV-201",
+   "service": "Purge pressure control valve"
+  },
   "V-203": {
    "kind": "equip",
    "sheets": [
@@ -467,8 +476,8 @@
   "13": {
    "src": "J4",
    "src_port": "j",
-   "dst": "J5",
-   "dst_port": "j",
+   "dst": "PV-201",
+   "dst_port": "left",
    "sheets": [
     1
    ],
@@ -743,6 +752,16 @@
     2
    ],
    "desc": "Diphenyl"
+  },
+  "41": {
+   "src": "PV-201",
+   "src_port": "right",
+   "dst": "J5",
+   "dst_port": "j",
+   "sheets": [
+    1
+   ],
+   "desc": "Let-down purge"
   }
  },
  "continuations": {
@@ -865,8 +884,8 @@
     13,
     "J4",
     "j",
-    "J5",
-    "j"
+    "PV-201",
+    "left"
    ],
    [
     14,
@@ -922,6 +941,13 @@
     "IN38",
     "outlet",
     "J1",
+    "j"
+   ],
+   [
+    41,
+    "PV-201",
+    "right",
+    "J5",
     "j"
    ]
   ],

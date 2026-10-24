@@ -19,7 +19,9 @@ Assumptions (sample design basis, not a converged rigorous simulation):
               total equal to the overhead vapour total (constant molar
               overflow, saturated-liquid feed), boil-up composition
               y_i ~ alpha_i x_i of the bottoms product
-Temperatures and pressures are nominal sample values, not computed.
+Temperatures and pressures are nominal sample values; the column
+temperatures were set near ideal-solution (Raoult + Antoine) bubble points
+of the displayed compositions, see bubble_points().
 """
 import json, pathlib
 
@@ -34,7 +36,7 @@ VAP_HP = {"H2": 0.995, "CH4": 0.97, "B": 0.03, "T": 0.01, "D": 0.0}   # V-202
 VAP_LP = {"H2": 0.98, "CH4": 0.90, "B": 0.02, "T": 0.005, "D": 0.0}   # V-203
 COL1 = dict(rec={"H2": 1.0, "CH4": 1.0, "B": 0.995, "T": 0.005, "D": 0.0}, R=1.2,
             alpha={"H2": 1.0, "CH4": 1.0, "B": 2.5, "T": 1.0, "D": 0.05})
-VENT1 = {"H2": 1.0, "CH4": 1.0, "B": 0.01, "T": 0.0, "D": 0.0}       # V-204 vent
+VENT1 = {"H2": 1.0, "CH4": 1.0, "B": 0.001, "T": 0.0, "D": 0.0}      # V-204 vent (benzene Psat(45 C) = 29.8 kPa caps it)
 COL2 = dict(rec={"H2": 1.0, "CH4": 1.0, "B": 1.0, "T": 0.99, "D": 0.0}, R=0.8,
             alpha={"H2": 1.0, "CH4": 1.0, "B": 1.0, "T": 15.0, "D": 1.0})
 
@@ -46,13 +48,13 @@ TPP = {1: (25, 190, "Liquid"), 2: (50, 160, "Liquid"), 3: (50, 160, "Liquid"),
        13: (38, 2350, "Vapour"), 14: (38, 2350, "Vapour"), 15: (45, 2550, "Vapour"),
        16: (38, 2350, "Liquid"), 17: (37, 280, "Mixed"), 18: (37, 280, "Vapour"),
        19: (37, 250, "Vapour"), 20: (37, 280, "Liquid"), 21: (90, 250, "Liquid"),
-       22: (100, 220, "Vapour"), 23: (45, 200, "Mixed"), 24: (45, 200, "Vapour"),
+       22: (108, 220, "Vapour"), 23: (45, 200, "Mixed"), 24: (45, 200, "Vapour"),
        25: (45, 200, "Liquid"), 26: (45, 400, "Liquid"), 27: (45, 400, "Liquid"),
-       28: (45, 400, "Liquid"), 29: (150, 230, "Liquid"), 30: (152, 230, "Vapour"),
-       31: (152, 230, "Liquid"), 32: (128, 160, "Vapour"), 33: (120, 150, "Liquid"),
+       28: (45, 400, "Liquid"), 29: (141, 230, "Liquid"), 30: (142, 230, "Vapour"),
+       31: (142, 230, "Liquid"), 32: (127, 160, "Vapour"), 33: (120, 150, "Liquid"),
        34: (120, 150, "Liquid"), 35: (121, 350, "Liquid"), 36: (121, 350, "Liquid"),
-       37: (121, 350, "Liquid"), 38: (270, 170, "Liquid"), 39: (272, 170, "Vapour"),
-       40: (272, 170, "Liquid")}
+       37: (121, 350, "Liquid"), 38: (134, 170, "Liquid"), 39: (173, 170, "Vapour"),
+       40: (173, 170, "Liquid"), 41: (35, 260, "Vapour")}
 
 
 class Arith:
@@ -95,7 +97,8 @@ def run(A, tol_iter=2000):
         new15 = s14
         s17 = s16
         s18, s20 = A.frac(s17, VAP_LP)
-        s19 = add(s13, s18)
+        s41 = s13                                       # PV-201 purge let-down
+        s19 = add(s41, s18)
         # T-201 benzene column
         s21 = s20
         dist, bot = A.frac(s21, COL1["rec"])              # overhead products / bottoms product
@@ -129,10 +132,30 @@ def run(A, tol_iter=2000):
     else:
         raise RuntimeError("balance model did not converge")
     loc = locals()
-    S = {n: loc[f"s{n}"] for n in range(1, 41)}
+    S = {n: loc[f"s{n}"] for n in range(1, 42)}
     if A.exact:
         S = {n: {c: v / 10 for c, v in s.items()} for n, s in S.items()}
     return S, it
+
+
+ANTOINE = {"B": (6.90565, 1211.033, 220.790), "T": (6.95464, 1344.800, 219.482)}  # log10 P/mmHg, T/C
+
+
+def psat(c, T):
+    A, B, C_ = ANTOINE[c]
+    return 10 ** (A - B / (T + C_)) * 0.133322           # kPa
+
+
+def bubble_point(flows, P):
+    """Ideal-solution bubble point (deg C) of the benzene/toluene part of a
+    stream at P (kPa); diphenyl treated as non-volatile, H2/CH4 ignored."""
+    tot = flows["B"] + flows["T"] + flows["D"]
+    lo, hi = 0.0, 400.0
+    for _ in range(100):
+        T = (lo + hi) / 2
+        s = (flows["B"] * psat("B", T) + flows["T"] * psat("T", T)) / tot
+        lo, hi = (T, hi) if s < P else (lo, T)
+    return T
 
 
 def main():
@@ -146,10 +169,10 @@ def main():
            "streams": {str(n): {"flows": {c: round(St[n][c], 1) for c in C},
                                 "total": round(sum(St[n].values()), 1),
                                 "T": TPP[n][0], "P": TPP[n][1], "phase": TPP[n][2]}
-                       for n in range(1, 41)},
+                       for n in range(1, 42)},
            "float_reference": {str(n): Sf[n] for n in Sf}}
     pathlib.Path(__file__).with_name("streams.json").write_text(json.dumps(out, indent=1))
-    for n in range(1, 41):
+    for n in range(1, 42):
         s = St[n]
         print(f"{n:3d} " + " ".join(f"{s[c]:8.1f}" for c in C) + f" | {sum(s.values()):8.1f}")
 

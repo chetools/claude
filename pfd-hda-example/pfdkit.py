@@ -208,7 +208,7 @@ class Sheet:
         x, y = self.nodes[node]["ports"][port]
         dx, dy = {"R": (1, 0), "L": (-1, 0), "D": (0, 1), "U": (0, -1)}[direction]
         x2, y2 = x + dx * length, y + dy * length
-        self.el_lines.append(f'<line class="utility" data-node="{esc(node)}" x1="{_fmt(x)}" y1="{_fmt(y)}" '
+        self.el_lines.append(f'<line class="utility" data-node="{esc(node)}" data-port="{port}" data-label="{esc(label)}" x1="{_fmt(x)}" y1="{_fmt(y)}" '
                              f'x2="{_fmt(x2)}" y2="{_fmt(y2)}" stroke="{INK}" stroke-width="{W_SYM}"/>')
         if inward:
             self.arrow(x + dx * 2, y + dy * 2, {"R": "L", "L": "R", "U": "D", "D": "U"}[direction], size=0.75)

@@ -13,7 +13,7 @@
   "T": "Toluene",
   "D": "Diphenyl"
  },
- "assumptions": "Simple component-balance model of the HDA plant (sample values).\n\nTwo independent calculations of the same flowsheet:\n  1. `solve_float`  - successive substitution in floating point (reference);\n  2. `solve_tenths` - the same unit rules in integer tenths of kmol/h, every\n     split rounded and its last outlet taken by difference, so that every unit\n     balance formed from the DISPLAYED values (0.1 kmol/h) closes exactly\n     (PFD-SPEC-001 requirement A5).\nThe two must agree to within display rounding; checked in main().\n\nAssumptions (sample design basis, not a converged rigorous simulation):\n  reactions   T + H2 -> B + CH4   (toluene conversion per pass X = 0.75)\n              2 B -> D + H2      (extent = 0.005 x extent of reaction 1)\n  make-up H2  95 mol% H2, 5 mol% CH4; flow set so that H2/toluene = 5 at the\n              reactor inlet\n  purge       25 % of the high-pressure separator vapour\n  flashes     fixed fractions of each component to the vapour\n  columns     fixed recoveries to the distillate; reflux ratio R; boil-up\n              total equal to the overhead vapour total (constant molar\n              overflow, saturated-liquid feed), boil-up composition\n              y_i ~ alpha_i x_i of the bottoms product\nTemperatures and pressures are nominal sample values, not computed.\n",
+ "assumptions": "Simple component-balance model of the HDA plant (sample values).\n\nTwo independent calculations of the same flowsheet:\n  1. `solve_float`  - successive substitution in floating point (reference);\n  2. `solve_tenths` - the same unit rules in integer tenths of kmol/h, every\n     split rounded and its last outlet taken by difference, so that every unit\n     balance formed from the DISPLAYED values (0.1 kmol/h) closes exactly\n     (PFD-SPEC-001 requirement A5).\nThe two must agree to within display rounding; checked in main().\n\nAssumptions (sample design basis, not a converged rigorous simulation):\n  reactions   T + H2 -> B + CH4   (toluene conversion per pass X = 0.75)\n              2 B -> D + H2      (extent = 0.005 x extent of reaction 1)\n  make-up H2  95 mol% H2, 5 mol% CH4; flow set so that H2/toluene = 5 at the\n              reactor inlet\n  purge       25 % of the high-pressure separator vapour\n  flashes     fixed fractions of each component to the vapour\n  columns     fixed recoveries to the distillate; reflux ratio R; boil-up\n              total equal to the overhead vapour total (constant molar\n              overflow, saturated-liquid feed), boil-up composition\n              y_i ~ alpha_i x_i of the bottoms product\nTemperatures and pressures are nominal sample values; the column\ntemperatures were set near ideal-solution (Raoult + Antoine) bubble points\nof the displayed compositions, see bubble_points().\n",
  "streams": {
   "1": {
    "flows": {
@@ -292,12 +292,12 @@
    "flows": {
     "H2": 0.1,
     "CH4": 1.2,
-    "B": 208.7,
+    "B": 209.8,
     "T": 0.4,
     "D": 0.0
    },
-   "total": 210.4,
-   "T": 100,
+   "total": 211.5,
+   "T": 108,
    "P": 220,
    "phase": "Vapour"
   },
@@ -305,11 +305,11 @@
    "flows": {
     "H2": 0.1,
     "CH4": 1.2,
-    "B": 208.7,
+    "B": 209.8,
     "T": 0.4,
     "D": 0.0
    },
-   "total": 210.4,
+   "total": 211.5,
    "T": 45,
    "P": 200,
    "phase": "Mixed"
@@ -318,11 +318,11 @@
    "flows": {
     "H2": 0.1,
     "CH4": 1.2,
-    "B": 1.0,
+    "B": 0.1,
     "T": 0.0,
     "D": 0.0
    },
-   "total": 2.3,
+   "total": 1.4,
    "T": 45,
    "P": 200,
    "phase": "Vapour"
@@ -331,11 +331,11 @@
    "flows": {
     "H2": 0.0,
     "CH4": 0.0,
-    "B": 207.7,
+    "B": 209.7,
     "T": 0.4,
     "D": 0.0
    },
-   "total": 208.1,
+   "total": 210.1,
    "T": 45,
    "P": 200,
    "phase": "Liquid"
@@ -344,11 +344,11 @@
    "flows": {
     "H2": 0.0,
     "CH4": 0.0,
-    "B": 207.7,
+    "B": 209.7,
     "T": 0.4,
     "D": 0.0
    },
-   "total": 208.1,
+   "total": 210.1,
    "T": 45,
    "P": 400,
    "phase": "Liquid"
@@ -357,11 +357,11 @@
    "flows": {
     "H2": 0.0,
     "CH4": 0.0,
-    "B": 113.3,
+    "B": 114.4,
     "T": 0.2,
     "D": 0.0
    },
-   "total": 113.5,
+   "total": 114.6,
    "T": 45,
    "P": 400,
    "phase": "Liquid"
@@ -370,11 +370,11 @@
    "flows": {
     "H2": 0.0,
     "CH4": 0.0,
-    "B": 94.4,
+    "B": 95.3,
     "T": 0.2,
     "D": 0.0
    },
-   "total": 94.6,
+   "total": 95.5,
    "T": 45,
    "P": 400,
    "phase": "Liquid"
@@ -383,12 +383,12 @@
    "flows": {
     "H2": 0.0,
     "CH4": 0.0,
-    "B": 8.3,
-    "T": 234.7,
+    "B": 8.4,
+    "T": 235.8,
     "D": 0.7
    },
-   "total": 243.7,
-   "T": 150,
+   "total": 244.9,
+   "T": 141,
    "P": 230,
    "phase": "Liquid"
   },
@@ -396,12 +396,12 @@
    "flows": {
     "H2": 0.0,
     "CH4": 0.0,
-    "B": 7.8,
-    "T": 202.4,
+    "B": 7.9,
+    "T": 203.5,
     "D": 0.2
    },
-   "total": 210.4,
-   "T": 152,
+   "total": 211.6,
+   "T": 142,
    "P": 230,
    "phase": "Vapour"
   },
@@ -414,7 +414,7 @@
     "D": 0.5
    },
    "total": 33.3,
-   "T": 152,
+   "T": 142,
    "P": 230,
    "phase": "Liquid"
   },
@@ -427,7 +427,7 @@
     "D": 0.0
    },
    "total": 58.5,
-   "T": 128,
+   "T": 127,
    "P": 160,
    "phase": "Vapour"
   },
@@ -505,7 +505,7 @@
     "D": 6.3
    },
    "total": 59.2,
-   "T": 270,
+   "T": 134,
    "P": 170,
    "phase": "Liquid"
   },
@@ -518,7 +518,7 @@
     "D": 5.8
    },
    "total": 58.4,
-   "T": 272,
+   "T": 173,
    "P": 170,
    "phase": "Vapour"
   },
@@ -531,9 +531,22 @@
     "D": 0.5
    },
    "total": 0.8,
-   "T": 272,
+   "T": 173,
    "P": 170,
    "phase": "Liquid"
+  },
+  "41": {
+   "flows": {
+    "H2": 139.9,
+    "CH4": 99.6,
+    "B": 0.8,
+    "T": 0.1,
+    "D": 0.0
+   },
+   "total": 240.4,
+   "T": 35,
+   "P": 260,
+   "phase": "Vapour"
   }
  },
  "float_reference": {
@@ -687,65 +700,65 @@
   "22": {
    "H2": 0.05630048415132016,
    "CH4": 1.232848074617948,
-   "B": 209.07636156016707,
+   "B": 210.10836553861765,
    "T": 0.358534652392518,
    "D": 0.0
   },
   "23": {
    "H2": 0.05630048415132016,
    "CH4": 1.232848074617948,
-   "B": 209.07636156016707,
+   "B": 210.10836553861765,
    "T": 0.358534652392518,
    "D": 0.0
   },
   "24": {
    "H2": 0.05630048415132016,
    "CH4": 1.232848074617948,
-   "B": 0.9555592393060652,
+   "B": 0.09555592393060652,
    "T": 0.0,
    "D": 0.0
   },
   "25": {
    "H2": 0.0,
    "CH4": 0.0,
-   "B": 208.120802320861,
+   "B": 210.01280961468703,
    "T": 0.358534652392518,
    "D": 0.0
   },
   "26": {
    "H2": 0.0,
    "CH4": 0.0,
-   "B": 208.120802320861,
+   "B": 210.01280961468703,
    "T": 0.358534652392518,
    "D": 0.0
   },
   "27": {
    "H2": 0.0,
    "CH4": 0.0,
-   "B": 113.52043762956055,
+   "B": 114.55244160801111,
    "T": 0.19556435585046436,
    "D": 0.0
   },
   "28": {
    "H2": 0.0,
    "CH4": 0.0,
-   "B": 94.60036469130046,
+   "B": 95.46036800667592,
    "T": 0.16297029654205364,
    "D": 0.0
   },
   "29": {
    "H2": 0.0,
    "CH4": 0.0,
-   "B": 7.9962630163089035,
-   "T": 235.48367368186115,
-   "D": 0.6517086459458599
+   "B": 8.033072422870143,
+   "T": 236.47810730447645,
+   "D": 0.6524695952198798
   },
   "30": {
    "H2": 0.0,
    "CH4": 0.0,
-   "B": 7.516082494044555,
-   "T": 203.05258466999248,
-   "D": 0.15537760729182112
+   "B": 7.552891900605795,
+   "T": 204.0470182926078,
+   "D": 0.15613855656584108
   },
   "31": {
    "H2": 0.0,
@@ -816,6 +829,13 @@
    "B": 0.0,
    "T": 0.32431089011868863,
    "D": 0.4963310386540387
+  },
+  "41": {
+   "H2": 140.04745432640777,
+   "CH4": 99.65521936495074,
+   "B": 0.7577012238549669,
+   "T": 0.08272183977567313,
+   "D": 0.0
   }
  }
 }

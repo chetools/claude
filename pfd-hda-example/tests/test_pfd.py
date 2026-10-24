@@ -88,3 +88,17 @@ def test_verifier_detects_planted_defect(tmp_path, name, idx, fn, expect):
     code, out = mutate(tmp_path, idx, fn)
     assert code == 1, f"{name}: verifier passed a defective sheet\n{out}"
     assert expect in out, f"{name}: expected a {expect} failure\n{out}"
+
+
+def test_column_temperatures_near_bubble_points():
+    import json
+    d = json.loads((ROOT / "streams.json").read_text())["streams"]
+    for n in (22, 29, 31, 32, 38, 40):
+        s = d[str(n)]
+        assert abs(model.bubble_point(s["flows"], s["P"]) - s["T"]) < 1.5, n
+
+
+def test_vent_benzene_below_vapour_pressure_limit():
+    import json
+    s = json.loads((ROOT / "streams.json").read_text())["streams"]["24"]
+    assert s["flows"]["B"] / s["total"] <= model.psat("B", s["T"]) / s["P"]

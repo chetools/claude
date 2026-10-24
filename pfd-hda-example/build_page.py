@@ -75,7 +75,7 @@ footer.col{padding-bottom:40px;font-size:.88rem;color:var(--muted)}
 <ul>
 @@BASIS@@
 </ul>
-<p>The model runs twice: once in floating point and once in integer tenths of kmol/h, where every split is rounded and its last outlet is taken by difference. Every displayed balance therefore closes exactly. The two runs differ by at most @@DEV@@ kmol/h on any stream and component. Temperatures and pressures are nominal sample values and were not computed.</p>
+<p>The model runs twice: once in floating point and once in integer tenths of kmol/h, where every split is rounded and its last outlet is taken by difference. Every displayed balance therefore closes exactly. The two runs differ by at most @@DEV@@ kmol/h on any stream and component. Temperatures and pressures are nominal sample values. The column temperatures are set within 1 °C of the ideal-solution bubble point of the displayed composition (Raoult's law with Antoine constants for benzene and toluene; diphenyl treated as non-volatile). The vent's benzene content stays below the limit set by benzene's vapour pressure at 45 °C (29.8 kPa).</p>
 </main>
 <footer class="col"><p>Source: <a href="https://github.com/chetools/claude/tree/master/pfd-hda-example">chetools/claude, pfd-hda-example</a>. Revision 1, 2026-10-24.</p></footer>
 </body></html>
@@ -84,7 +84,7 @@ footer.col{padding-bottom:40px;font-size:.88rem;color:var(--muted)}
 BASIS = [
     "Fresh toluene 100.0 kmol/h. Hydrogen make-up is 95 mol% H<sub>2</sub> and 5 mol% CH<sub>4</sub>, sized so that H<sub>2</sub>/toluene = 5 at the reactor inlet.",
     "Reactions T + H<sub>2</sub> → B + CH<sub>4</sub>, with toluene conversion per pass 0.75, and 2 B → D + H<sub>2</sub>, with extent 0.005 × the first extent.",
-    "Purge: 25 % of the high-pressure separator vapour. The separators use fixed fractions of each component to the vapour.",
+    "Purge: 25 % of the high-pressure separator vapour, let down through PV-201 to the fuel-gas header. The separators and the V-204 vent use fixed fractions of each component to the vapour.",
     "Columns: fixed recoveries to the distillate. Reflux ratio 1.2 (T-201) and 0.8 (T-202). Boil-up total equals the overhead vapour total, with composition proportional to relative volatility × bottoms composition.",
 ]
 

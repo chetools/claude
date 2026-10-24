@@ -326,7 +326,7 @@ def rendered_checks(path, S, fails, info):
         instruments: q('g.instrument').map(e => ['instrument', R(e)]),
         blocks: q('g.table, g.titleblock, g.notes').map(e => [e.getAttribute('class'), R(e)]),
         arrows: q('polygon.arrow').map(e => R(e)),
-        utilities: q('line.utility').map(e => [e.getAttribute('data-node'), [+e.getAttribute('x1'), +e.getAttribute('y1'), +e.getAttribute('x2'), +e.getAttribute('y2')]]),
+        utilities: q('line.utility').map(e => [e.getAttribute('data-node'), [+e.getAttribute('x1'), +e.getAttribute('y1'), +e.getAttribute('x2'), +e.getAttribute('y2')], e.getAttribute('data-port'), e.getAttribute('data-label')]),
         signals: q('path.signal').map(e => e.getAttribute('d')),
       };
     }"""
@@ -355,8 +355,12 @@ def rendered_checks(path, S, fails, info):
              [("instrument", t, b) for t, b in g["instruments"]]
     syms = {n: b for n, b in g["symbols"]}
     lines = [(st["n"], s, st["w"]) for st in S["streams"] for s in segs(st["pts"])]
-    for u, (x1, y1, x2, y2) in g["utilities"]:
+    for u, (x1, y1, x2, y2), uport, ulabel in g["utilities"]:
         lines.append((f"utility {u}", ((x1, y1), (x2, y2)), 2.0))
+        # Annex A.6: cooling connections at the top, heating at the bottom
+        want = "top" if "cool" in (ulabel or "").lower() else ("fuel" if u.startswith("H-") else "bottom")
+        if uport != want:
+            fails.append(f"{tag} A2 utility '{ulabel}' of {u} on port '{uport}', Annex A.6 wants '{want}'")
     for d in g["signals"]:
         for s in segs(parse_points(d)):
             lines.append(("signal", s, 1.0))
@@ -385,8 +389,8 @@ def rendered_checks(path, S, fails, info):
     # marker vs arrowheads and bends: clear of arrows
     for m, b in g["markers"]:
         for a in g["arrows"]:
-            if ov(b, a, pad=1.0):
-                fails.append(f"{tag} L4 marker {m} touches an arrowhead")
+            if ov(b, a, pad=4.0):
+                fails.append(f"{tag} L4 marker {m} is within 4 px (1 mm) of an arrowhead")
     # R4 transit: stream segments through symbols other than their own end nodes
     for st in S["streams"]:
         ends = {st.get("src", (None,))[0], st.get("dst", (None,))[0]}
