@@ -16,9 +16,9 @@ Assumptions (sample design basis, not a converged rigorous simulation):
   purge       25 % of the high-pressure separator vapour
   flashes     fixed fractions of each component to the vapour
   columns     fixed recoveries to the distillate; reflux ratio R; boil-up
-              total equal to the overhead vapour total (constant molar
-              overflow, saturated-liquid feed), boil-up composition
-              y_i ~ alpha_i x_i of the bottoms product
+              total equal to the overhead vapour total (an assumption of the
+              model), boil-up composition y_i ~ alpha_i x_i of the bottoms
+              product
 Temperatures and pressures are nominal sample values; the column
 temperatures were set near ideal-solution (Raoult + Antoine) bubble points
 of the displayed compositions, see bubble_points().
