@@ -58,5 +58,17 @@
   },
   "score": 10,
   "justification": "(a) omega_u = 0.423 rad/min by interpolating the phase, and (b) K_u = 1.98, P_u = 14.85 min, correct (within 0.2 %). (c) K_c = 1.19, tau_I = 7.42 min, tau_D = 1.86 min, correct. (d) GM = 2.16 at omega_pc = 0.585 rad/min (0.3 % and 0.07 % off) and (e) PM = 45.5 deg at omega_gc = 0.284 rad/min, correct with phase and magnitude values that check out. (f) M_s = 2.12 at 0.47 rad/min from a scan of |1+L| (0.2 % and 0.1 % off): full points."
+ },
+ "anthropic/claude-haiku-5.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 2,
+   "e": 2,
+   "f": 1
+  },
+  "score": 10,
+  "justification": "(a) omega_u = 0.4232 rad/min and (b) K_u = 1.985, P_u = 14.85 min, correct (within 0.05 %). (c) K_c = 1.191, tau_I = 7.42 min, tau_D = 1.856 min, correct. (d) GM = 2.165 at omega_pc = 0.5854 rad/min and (e) PM = 45.5 deg at omega_gc = 0.2839 rad/min, correct with phase and magnitude values that check out. (f) M_s = 2.12 at 0.47 rad/min from a scan of |1+L|^2 and a parabolic fit (0.2 % and 0.1 % off): full points."
  }
 }

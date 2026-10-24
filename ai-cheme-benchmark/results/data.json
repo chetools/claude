@@ -8535,6 +8535,55 @@
     "f": 1
    },
    "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P13",
+   "run": 1,
+   "text": "**Method.** I solved this by hand, with no tools, so the results are good to about 1%. Pipe 3 is the most sensitive, since it depends on a small head difference.\n\n**Constants.** ρg = 9792 N/m³, ν = μ/ρ = 1.004×10⁻⁶ m²/s, 2g = 19.62 m/s².\n\n**Pipe resistances.** For each pipe, h = (fL/D + ΣK)·Q²/(2gA²) = R·Q², with f from Colebrook at the converged flow in that pipe.\n\n| Pipe | D (m) | f | R (s²/m⁵) |\n|---|---|---|---|\n| Suction | 0.200 | 0.0164 | 199 (h_s = 199·Q_p²) |\n| 1 (A–B) | 0.125 | 0.0242 | 2.10×10⁴ |\n| 2 (A–C) | 0.100 | 0.0184 | 7.49×10⁴ |\n| 3 (B–C) | 0.075 | 0.0260 (Re ≈ 6×10⁴) | 1.89×10⁵ |\n| 4 (B–D) | 0.100 | 0.0261 | 7.71×10⁴ |\n| 5 (C–D) | 0.125 | 0.0179 | 2.11×10⁴ |\n| 6 (D–T) | 0.150 | 0.0170 | 2.95×10³ |\n\n**Heads.**\n- Pump outlet (node A): H_A = (1 − h_s) + (80 − 12000 Q_p²) = 81 − 12199 Q_p² m.\n- B: H_B = H_A − R₁Q₁²; C: H_C = H_A − R₂Q₂².\n- D: H_D = 14 + R₆Q₆², where Q₆ = Q_p − 0.016 m³/s.\n- Pipe 3 flow is set by H_B − H_C; pipe 4 by H_B − H_D; pipe 5 by H_C − H_D.\n\n**Solution.** The unknowns are Q₁ and Q₂, with Q_p = Q₁ + Q₂. Newton iteration on the node balances at B and C gives:\n- Q₁ = 31.96 L/s, Q₂ = 17.83 L/s, so Q_p = 49.79 L/s\n- Q₃ = 3.51 L/s (B to C), Q₄ = 12.44 L/s, Q₅ = 21.33 L/s, Q₆ = 33.79 L/s\n- H_A = 50.76 m, H_B = 29.28 m, H_C = 26.96 m, H_D = 17.36 m\n\nResiduals at the solution are about 1×10⁻⁵ m³/s at both B and C, and Q₄ + Q₅ = Q₆ closes.\n\n**Derived quantities.**\n- Pump head: H_p = 80 − 12000(0.04979)² = 50.25 m.\n- Pipe 3: H_B − H_C = 2.32 m, so Q₃ = √(2.32/1.89×10⁵) = 3.5 L/s. Its direction is from B to C.\n- Pressure at C: p = ρg(H_C − z_C) = 9792 × (26.96 − 4.0) = 2.25×10⁵ Pa gauge.\n- Pump power: P_hyd = ρgQ_pH_p = 9792 × 0.04979 × 50.25 = 24.5 kW. Shaft power = 24.5 / 0.70 = 35.0 kW.\n\n**Direction of pipe 3:** from B to C (magnitude 3.5 L/s).\n\nFINAL (a): 49.8 L/s\nFINAL (b): 50.3 m\nFINAL (c): 3.5 L/s\nFINAL (d): 225 kPa\nFINAL (e): 35.0 kW",
+   "score": 10,
+   "justification": "Node-head Newton solution with Colebrook friction factors and resistances per pipe; the stated f, R, flows and heads (H_B = 29.28 m, H_C = 26.96 m) agree with my check of the network and satisfy continuity. (a) Qp = 49.79 L/s (FINAL 49.8) and (b) Hp = 50.25 m (FINAL 50.3), both within 0.1 %: full. (c) 3.5 L/s from B to C, from sqrt(2.32/1.89e5), 0.2 % off with the correct direction: full. (d) 225 kPa (224.8 kPa from the working, 0.05 % off) and (e) 35.0 kW, correct: full.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 3,
+    "d": 2,
+    "e": 1
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P14",
+   "run": 1,
+   "text": "**Setup.** Write the process-plus-sensor transfer function as G_pm(iω) = G_v G_p G_m, so the lag is f(ω) = 1.5ω + atan(6ω) + atan(2ω) + atan(ω) + atan(0.5ω) (rad), and |G_pm| = 2 / [√(1+36ω²) √(1+4ω²) √(1+ω²) √(1+0.25ω²)].\n\n**(a) Ultimate frequency.** Solve f(ω) = π.\n- f(0.40) = 3.0286, f(0.43) = 3.1742, so ω_u ≈ 0.4232 rad/min.\n- Newton refinement from ω = 0.423 gives f = 3.14054, with slope 4.80. This gives ω_u = 0.42322 rad/min.\n\nFINAL (a): 0.4232 rad/min\n\n**(b) Ultimate gain and period.**\n- At ω_u, ω² = 0.17912, and the four square-root factors multiply to 3.9693. So |G_pm| = 2/3.9693 = 0.50390.\n- K_u = 1/0.50390 = 1.9845.\n- P_u = 2π/0.42322 = 14.846 min.\n\nFINAL (b): 1.985 (dimensionless)\n\n**(c) Ziegler–Nichols PID.**\n- K_c = 0.6 × 1.9845 = 1.191.\n- τ_I = 14.846/2 = 7.423 min.\n- τ_D = 14.846/8 = 1.856 min.\n\nFINAL (c): 1.191 (dimensionless)\n\n**(d) Gain margin with PID.**\n- The PID term is G_c(iω) = K_c[1 + i·Im(ω)], with Im(ω) = ωτ_D − 1/(ωτ_I). Its phase is atan(Im), which runs from −90° to +90°.\n- Solve f(ω) − atan(Im(ω)) = π. Evaluations give ω = 0.58 → 3.12703 and ω = 0.585 → 3.14063. Newton refinement gives ω_pc = 0.58536 rad/min.\n- At ω_pc: Im = 0.85616, so |G_c| = K_c√(1+Im²) = 1.19071 × 1.31647 = 1.5674. Also |G_pm| = 0.29464. So |L| = 0.46180.\n- GM = 1/0.46180 = 2.165.\n\nFINAL (d): 2.165 (dimensionless)\n\n**(e) Phase margin.**\n- |L| = K_c √(1+Im²) |G_pm| = 1. Evaluations give |L| = 1.01393 at ω = 0.28 and 0.99585 at ω = 0.285. Refinement gives ω_gc = 0.2839 rad/min.\n- At ω_gc: Im = 0.0522, so the PID phase is +2.99°.\n- The process lag is f(ω_gc) = 2.39962 rad = 137.48°.\n- The loop phase is 2.99° − 137.48° = −134.50°, so PM = 180° − 134.50° = 45.5°.\n\nFINAL (e): 45.5 deg\n\n**(f) Maximum sensitivity.** Evaluate |1 + L|² = 1 + M² + 2M cos θ, where M = |L| and θ = atan(Im) − f.\n\n| ω (rad/min) | M = \\|L\\| | θ (deg) | \\|1+L\\|² | S = 1/\\|1+L\\| |\n|---|---|---|---|---|\n| 0.40 | 0.7026 | −151.5 | 0.25926 | 1.964 |\n| 0.45 | 0.6205 | −159.0 | 0.22593 | 2.104 |\n| 0.47 | 0.5921 | −162.2 | 0.22337 | 2.116 |\n| 0.50 | 0.5532 | −166.8 | 0.22896 | 2.090 |\n| 0.55 | 0.4967 | −174.5 | 0.25782 | 1.969 |\n\nA parabola through the 0.45, 0.47 and 0.50 points puts the minimum of |1 + L|² at about 0.22336, near ω ≈ 0.470 rad/min. S falls to about 1.86 at ω_pc and to about 1.3 near ω_gc, so the global maximum is at ω ≈ 0.47.\n\nFINAL (f): 2.12 (dimensionless)\n\n**Notes on verification.** No tools were used. All values are hand calculations with about four significant figures, not machine-checked. The M_s value at 0.47 rad/min is from a quadratic fit through three hand-evaluated points, so its last digit is uncertain. Within each part, the other quantities requested are: (b) P_u = 14.85 min; (c) τ_I = 7.42 min and τ_D = 1.86 min; (d) ω_pc = 0.5854 rad/min; (e) ω_gc = 0.2839 rad/min; (f) ω = 0.47 rad/min.",
+   "score": 10,
+   "justification": "(a) omega_u = 0.4232 rad/min and (b) K_u = 1.985, P_u = 14.85 min, correct (within 0.05 %). (c) K_c = 1.191, tau_I = 7.42 min, tau_D = 1.856 min, correct. (d) GM = 2.165 at omega_pc = 0.5854 rad/min and (e) PM = 45.5 deg at omega_gc = 0.2839 rad/min, correct with phase and magnitude values that check out. (f) M_s = 2.12 at 0.47 rad/min from a scan of |1+L|^2 and a parabolic fit (0.2 % and 0.1 % off): full points.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 1,
+    "d": 2,
+    "e": 2,
+    "f": 1
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P15",
+   "run": 1,
+   "text": "**Basis:** 100 g feed. Mole fractions are z = (0.34892, 0.39438, 0.25670), from 30/78.11 = 0.38407, 40/92.14 = 0.43412 and 30/106.17 = 0.28257 mol, normalised to 1.10076 mol.\n\n**Conversions:** P = 120 kPa = 900.08 mmHg (1 mmHg = 0.133322 kPa). K_i = P_i^sat(kPa)/120 = 10^(A − B/(C+T)) × 0.133322 / 120.\n\n**(a) Bubble point**\n\nSolve Σ z_i K_i = 1 by iterating on T.\n\n- At 106.9 °C: P^sat = 1621.8 (benzene), 682.8 (toluene), 250.6 (o-xylene) mmHg, giving K = 1.8027, 0.7591, 0.2786.\n- Σ z_i K_i = 0.9999 (residual of about 1e-4 gives a T correction of about 0.02 K).\n\nT_bubble ≈ 106.9 °C.\n\n**(b) Dew point**\n\nSolve Σ z_i / K_i = 1.\n\n- At 123.5 °C: K = 2.7162, 1.1992, 0.4693, so Σ z_i/K_i = 1.0043.\n- At 125 °C: Σ z_i/K_i = 0.9634.\n- Interpolating locally gives T ≈ 123.66 °C.\n\nT_dew ≈ 123.7 °C.\n\n**(c) Flash at 112 °C, 120 kPa**\n\n- P^sat at 112 °C = 1850.3, 790.1, 295.9 mmHg, giving K = 2.0557, 0.8787, 0.3288.\n- Bubble and dew checks: Σ z K = 1.148 > 1 and Σ z/K = 1.399 > 1, so the feed is inside the two-phase region.\n- Rachford–Rice: f(ψ) = Σ z_i(K_i − 1)/(1 + ψ(K_i − 1)) = 0.\n  - f(0.33) = +0.00204\n  - f(0.34) = −0.00208\n  - Root: ψ ≈ 0.335.\n\nV/F ≈ 0.335 mol/mol.\n\n**(d) Benzene mole fraction in vapour**\n\nAt ψ = 0.33495:\n- Liquid: x = z/(1 + ψ(K − 1)) = (0.25778, 0.41107, 0.33116).\n- Vapour: y = K x = (0.5299, 0.3612, 0.1089).\n- Checks: Σx = 1.0000, Σy = 0.9999.\n\ny_benzene ≈ 0.530.\n\n**(e) Temperature for V/F = 0.5**\n\nAt ψ = 0.5, Rachford–Rice reduces to Σ z_i(K_i − 1)/(K_i + 1) = 0 (since 1 + 0.5(K − 1) = 0.5(K + 1)).\n\n- At 112 °C: g = −0.03460.\n- At 114 °C: K = 2.1582, 0.9285, 0.3502; g = −0.01020.\n- At 115 °C: K = 2.2124, 0.9546, 0.3614; g = +0.00211.\n- Interpolating: T ≈ 114.8 °C, which lies between T_bubble and T_dew as required.\n\n**Accuracy:** All Antoine evaluations and root-finding steps were done by hand at about 5–6 significant figures. The temperatures are good to about ±0.1 °C and the compositions to about ±0.001. No tool or code check was run, so these figures are hand-computed, not verified by a second method.\n\nFINAL (a): 106.9 °C\nFINAL (b): 123.7 °C\nFINAL (c): 0.335 mol/mol\nFINAL (d): 0.530 (mole fraction)\nFINAL (e): 114.8 °C",
+   "score": 10,
+   "justification": "(a) 106.9 C (0.02 C off) and (b) 123.7 C by trial and interpolation (123.66 in the working, 0.01 C off), correct. (c) V/F = 0.335 by Rachford-Rice, 0.7 % above the reference despite a small slip in P1sat at 112 C (1850.3 instead of 1847.6 mmHg), within 2 %: full. (d) y1 = 0.530 (0.1 % off) and (e) 114.8 C (0.03 C off) from the V/F = 0.5 form of Rachford-Rice, correct.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 2,
+    "d": 2,
+    "e": 2
+   },
+   "errors": {}
   }
  ]
 }

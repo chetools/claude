@@ -53,5 +53,16 @@
   },
   "score": 10,
   "justification": "(a) 106.92 C and (b) 123.66 C by one Antoine evaluation plus a slope correction, both within 0.01 C. (c) V/F = 0.3326 by Rachford-Rice with bracketing values that check out (0.02 % off) and (d) y1 = 0.5305, correct. (e) 114.83 C from the V/F = 0.5 form of Rachford-Rice, 0.002 C off: full points."
+ },
+ "anthropic/claude-haiku-5.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) 106.9 C (0.02 C off) and (b) 123.7 C by trial and interpolation (123.66 in the working, 0.01 C off), correct. (c) V/F = 0.335 by Rachford-Rice, 0.7 % above the reference despite a small slip in P1sat at 112 C (1850.3 instead of 1847.6 mmHg), within 2 %: full. (d) y1 = 0.530 (0.1 % off) and (e) 114.8 C (0.03 C off) from the V/F = 0.5 form of Rachford-Rice, correct."
  }
 }
