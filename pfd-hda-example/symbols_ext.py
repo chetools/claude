@@ -6,6 +6,7 @@ Standard library only.  Run `python symbols_ext.py` to self-check ports
 and (re)write the standalone SVG files.
 """
 import math
+import re
 import os
 import sys
 
@@ -138,6 +139,14 @@ EXT_SYMBOLS = {
 _ALL = dict(_base.SYMBOLS)
 _ALL.update(EXT_SYMBOLS)
 
+# Augmentation of the base library: Annex A.7 gives flash_1 a liquid outlet
+# at the bottom, but the library's port list (six side ports, top, right) has
+# none. Add it at the lower head apex, which is on the drawn outline: the
+# bottom head is the arc "A58,29" ending at y = 489 + 29 = 518 on the axis
+# x = 308 (asserted in check_ports). The base module is not modified.
+_ALL["flash_1"] = dict(_base.SYMBOLS["flash_1"])
+_ALL["flash_1"]["ports"] = dict(_base.SYMBOLS["flash_1"]["ports"], bottom=[308, 518])
+
 
 def list_symbols():
     return sorted(_ALL)
@@ -174,6 +183,14 @@ def _dist_ellipse_arc(p, cx, cy, rx, ry, upper):
     return best
 
 
+def check_flash_bottom():
+    svg = _base.SYMBOLS["flash_1"]["svg"]
+    m = re.search(r"L366,(\d+) A58,29", svg)
+    y_end = int(m.group(1)) + 29          # lower head apex
+    assert _ALL["flash_1"]["ports"]["bottom"] == [308, y_end], (y_end,)
+    assert _base.SYMBOLS["flash_1"]["frame"][3] == y_end
+
+
 def check_ports(tol=0.5):
     # heater: polygon outline + fuel stub + coil
     segs = list(zip(F_OUTLINE, F_OUTLINE[1:] + F_OUTLINE[:1]))
@@ -206,6 +223,7 @@ def write_files(outdir=None):
 
 
 if __name__ == "__main__":
+    check_flash_bottom()
     check_ports()
     write_files()
     print("check_ports OK;", len(list_symbols()), "symbols;", "files written")

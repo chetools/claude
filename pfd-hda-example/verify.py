@@ -268,7 +268,11 @@ def balances(sheets, fails, info):
             if n in tab and tab[n] != vals:
                 fails.append(f"A5/R9 stream {n}: values differ between sheets")
             tab[n] = vals
-    E = {int(k): v for k, v in TOPO["edges"].items()}
+    E = {int(k): dict(v) for k, v in TOPO["edges"].items()}
+    for k, c in TOPO["continuations"].items():   # join a continued stream across sheets
+        ends = [c["sheet1"], c["sheet2"]]
+        E[int(k)]["src"] = next(e[0] for e in ends if not e[0].startswith("IN"))
+        E[int(k)]["dst"] = next(e[2] for e in ends if not e[2].startswith("OUT"))
     units = sorted({e["src"] for e in E.values()} | {e["dst"] for e in E.values()})
     checked = []
     for u in units:
@@ -276,6 +280,10 @@ def balances(sheets, fails, info):
             continue
         ins = [n for n, e in E.items() if e["dst"] == u]
         outs = [n for n, e in E.items() if e["src"] == u]
+        missing = [n for n in ins + outs if n not in tab]
+        if missing:
+            fails.append(f"A4/A5 {u}: balance not checkable, stream-table rows missing for {missing}")
+            continue
         if u == "R-201":
             for i, el in enumerate(("C", "H")):
                 a = sum(tab[n][c] * ATOMS[c][i] for n in ins for c in ATOMS)
@@ -291,6 +299,9 @@ def balances(sheets, fails, info):
                 if a != b:
                     fails.append(f"A5 {u} {c}: in {a / 10} != out {b / 10}")
         checked.append(u)
+    if any(n not in tab for n in E):
+        info["balances_checked"] = checked
+        return
     feeds = [n for n, e in E.items() if TOPO["nodes"][e["src"]]["kind"] == "terminal" and not e["src"].startswith("IN")]
     prods = [n for n, e in E.items() if TOPO["nodes"][e["dst"]]["kind"] == "terminal" and not e["dst"].startswith("OUT")]
     for i, el in enumerate(("C", "H")):
