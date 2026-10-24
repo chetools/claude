@@ -284,5 +284,27 @@
   },
   "score": 10,
   "justification": "(a) D = 44.57 kmol/h, correct. (b) R_min = 1.775 from the q-line/equilibrium pinch (0.3641, 0.5788) and (c) R = 2.66, both correct. (d) correct operating lines (intersection 0.387) and a full stage-by-stage list give 12.42 stages (reference 12.42), correct. (e) liquid first falls below x = 0.387 on stage 7, correct."
+ },
+ "anthropic/claude-sonnet-5.5": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 4,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) D = 44.57 kmol/h, correct. (b) R_min = 1.775 from the q-line/equilibrium pinch (0.3641, 0.5788) and (c) R = 2.663, both correct. (d) correct operating lines (stripping line from internal flows, intersection 0.3875) and a full stage-by-stage table give 12.42 stages (reference 12.42), correct. (e) liquid first falls below x = 0.3875 on stage 7, correct."
+ },
+ "anthropic/claude-haiku-5.5": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 1,
+   "d": 0,
+   "e": 0
+  },
+  "score": 4,
+  "justification": "(a) D = 44.57 kmol/h, (b) R_min = 1.775 from the q-line/equilibrium pinch and (c) R = 2.663 are correct. (d) the stripping line is drawn through (x_B, x_B) and the pinch point (0.364, 0.579), which is the minimum-reflux line (slope 1.662 instead of 1.450 from the internal flows), so the stepping gives 17.54 stages, 41 % above 12.42: 0. (e) stage 7 matches, but it comes from switching at the pinch x* = 0.364 instead of the operating-line intersection 0.3875 on the wrong lines, so the match is a coincidence of a wrong method: 0."
  }
 }

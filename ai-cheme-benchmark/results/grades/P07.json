@@ -310,5 +310,29 @@
   },
   "score": 10,
   "justification": "(a) omega_u = 0.677 rad/min, (b) K_u = 4.55 and (c) P_u = 9.28 min, all correct with the right phase and magnitude conditions. (d) K_c = 2.07, tau_I = 7.73 min, correct. (e) PI-loop phase crossover at 0.5985 rad/min, GM = 1.90 (reference 1.904, 0.2 % off): full points. (f) gain crossover at 0.3235 rad/min, PM = 36.30 deg (reference 36.31), correct."
+ },
+ "anthropic/claude-sonnet-5.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 1,
+   "e": 2,
+   "f": 2
+  },
+  "score": 10,
+  "justification": "(a) omega_u = 0.677 rad/min from atan(12w) + 2.5w = pi, (b) K_u = 4.55 and (c) P_u = 9.28 min, all within 0.05 % of the reference. (d) K_c = 2.07 and tau_I = 7.73 min, correct (within 0.1 %). (e) GM = 1.90 at the PI-loop phase crossover 0.5985 rad/min (reference 1.904, 0.2 % off), correct. (f) PM = 36.3 deg at the gain crossover 0.3235 rad/min (reference 36.31 deg), correct."
+ },
+ "anthropic/claude-haiku-5.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 1,
+   "d": 1,
+   "e": 2,
+   "f": 2
+  },
+  "score": 10,
+  "justification": "(a) omega_u = 0.677 rad/min by Newton iteration, (b) K_u = 4.55 and (c) P_u = 9.28 min, all within 0.05 % of the reference. (d) K_c = 2.07 and tau_I = 7.73 min, correct (within 0.1 %). (e) GM = 1.90 at the PI-loop phase crossover 0.5985 rad/min (reference 1.904, 0.2 % off), correct. (f) PM = 36.3 deg at the gain crossover 0.3235 rad/min (reference 36.31 deg), correct."
  }
 }

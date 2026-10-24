@@ -639,7 +639,7 @@ def fill_methodology(md, data):
         fail("grade-check flags not reviewed in tests/reviewed_flags.json:\n  " + "\n  ".join(unreviewed))
     meta = json.loads(read("results", "model_meta.json"))
     shown = {m["id"] for m in data["models"]}
-    absent = sorted(m["id"] for m in meta if m["id"] not in shown)
+    absent = sorted(m["id"] for m in meta if m["id"] not in shown and not m.get("excluded"))
     if any(not a.endswith(":free") for a in absent):
         fail("models in model_meta.json without graded replies that are not free-tier (the absence note "
              f"would be wrong): {[a for a in absent if not a.endswith(':free')]}")

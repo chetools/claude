@@ -1,0 +1,12 @@
+{
+ "model": "anthropic/claude-sonnet-5.5",
+ "problem": "P15",
+ "run": 1,
+ "served_model": "anthropic/claude-sonnet-5.5",
+ "provider": "Claude Code sub-agent (this session)",
+ "text": "**Method.** The feed is converted to a molar basis, K_i = P_i^sat/P is evaluated from the Antoine equation, and the bubble point, dew point and Rachford–Rice equation are each solved by hand iteration. The feed has to be converted first.\n\n**Feed on a mole basis.** On a 100 g basis the moles are 30/78.11 = 0.38407 (benzene), 40/92.14 = 0.43412 (toluene) and 30/106.17 = 0.28257 (o-xylene). The total is 1.10076 mol, so z = (0.34892, 0.39438, 0.25670).\n\nThe pressure is P = 120/0.133322 = 900.08 mmHg.\n\n**(a) Bubble point.** The condition is Σ z_i P_i^sat = 900.08 mmHg.\n- At 107 °C the vapour pressures are 1625.96, 684.82 and 251.42 mmHg, and the sum is 901.95 mmHg.\n- The slope is about 24.7 mmHg/°C, so the correction is −0.076 °C.\n- T_bubble ≈ 106.92 °C.\n\n**(b) Dew point.** The condition is Σ z_i/P_i^sat = 1/900.08 = 1.1110×10⁻³ mmHg⁻¹.\n- At 123.7 °C the vapour pressures are 2455.9, 1086.5 and 424.6 mmHg, and the sum is 1.10961×10⁻³ mmHg⁻¹.\n- The local slope is about −0.315×10⁻⁴ mmHg⁻¹ per °C, so the correction is −0.044 °C.\n- T_dew ≈ 123.66 °C.\n\n**(c) Flash at 112 °C.** The vapour pressures are 1847.7, 790.15 and 295.80 mmHg, so K = (2.0529, 0.8779, 0.3287).\n\nThe Rachford–Rice equation is Σ z_i(K_i−1)/(1+ψ(K_i−1)) = 0, with ψ = V/F. It evaluates to f(0.33) = +0.00107 and f(0.335) = −0.00097. Interpolating gives ψ = 0.3326, so V/F ≈ 0.3326.\n\n**(d) Benzene in the vapour.**\n- x₁ = 0.348918/(1 + 0.33262×1.05288) = 0.348918/1.35021 = 0.25842.\n- y₁ = K₁x₁ = 2.0529 × 0.25842 = 0.5305.\n\n**(e) Temperature at V/F = 0.5.** The Rachford–Rice equation reduces to Σ z_i(K_i−1)/(K_i+1) = 0.\n- At 112 °C the sum is −0.0350.\n- At 115 °C it is +0.00213, with K = (2.2124, 0.9546, 0.3615).\n- At 116 °C it is +0.0144.\n- The slope is about 0.0123 per °C, so the root is 115 − 0.17 = 114.83 °C.\n\nFINAL (a): 106.92 °C\nFINAL (b): 123.66 °C\nFINAL (c): 0.3326 (mol vapour/mol feed)\nFINAL (d): 0.5305 (mole fraction)\nFINAL (e): 114.83 °C",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "cost": null,
+ "tools_used": []
+}

@@ -206,5 +206,21 @@
   },
   "score": 10,
   "justification": "(a) N_min = ln(361)/ln(2.5) = 6.43 from the Fenske equation, matches the reference 6.427: full points. (b) Underwood with q = 1 gives theta = 1.5625 and R_min = 1.44 (reference 1.444, 0.3 % off), correct method: full points."
+ },
+ "anthropic/claude-sonnet-5.5": {
+  "parts": {
+   "a": 5,
+   "b": 5
+  },
+  "score": 10,
+  "justification": "(a) 6.43 from the correct Fenske equation, matches the reference 6.427: full points. (b) R_min = (x_D - y*)/(y* - z_F) with the q = 1 pinch y* = 0.625 gives 1.444, matches the reference: full points."
+ },
+ "anthropic/claude-haiku-5.5": {
+  "parts": {
+   "a": 5,
+   "b": 5
+  },
+  "score": 10,
+  "justification": "(a) 6.427 from the correct Fenske equation, matches the reference: full points. (b) Underwood with q = 1 (root equation = 0), theta = 1.5625, R_min = 1.444, matches the reference: full points."
  }
 }

@@ -6,5 +6,6 @@
  "deepseek/deepseek-r1-0528 P03 (a)": "All four values are close to the reference but are only stated in prose; no equation, friction factor, intermediate head or continuity check is shown: values without supporting working.",
  "deepseek/deepseek-r1-0528 P03 (b)": "As for (a): stated in prose without any working.",
  "deepseek/deepseek-r1-0528 P03 (c)": "As for (a): stated in prose without any working.",
- "deepseek/deepseek-r1-0528 P03 (d)": "As for (a): stated in prose without any working."
+ "deepseek/deepseek-r1-0528 P03 (d)": "As for (a): stated in prose without any working.",
+ "anthropic/claude-haiku-5.5 P11 (e)": "stage 7 matches the reference, but the reply switches lines at the minimum-reflux pinch (x = 0.364) on a wrong stripping line instead of at the operating-line intersection (0.3875); the match is a coincidence of a wrong method, graded 0 like the other P11 (e) answers without a sound method"
 }

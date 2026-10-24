@@ -40,7 +40,10 @@ def main():
         labels[pid] = json.loads(e.read_text()) if e.exists() else {}
     models, responses, errors, missing = [], [], [], []
     for m in meta:
-        cost, n = 0.0, 0
+        if m.get("excluded"):
+            missing.append(f"{m['id']}: left out ({m['excluded']})")
+            continue
+        cost, n, costs_known = 0.0, 0, False
         for pid in pids:
             f = raw_path(m["id"], pid, RUN)
             if not f.exists():
@@ -57,6 +60,7 @@ def main():
                 missing.append(f"{m['id']} {pid} (not graded)")
                 continue
             cost += raw.get("cost") or 0.0
+            costs_known |= raw.get("cost") is not None
             n += 1
             parts = g["parts"]
             for k, pts in POINTS[pid].items():
@@ -94,7 +98,7 @@ def main():
                            release_date=m["release_date"], params=total, params_active=active,
                            params_official=m["params_official"], params_source=m["params_source"],
                            reasoning="provider default" if m["reasoning"] else "none", effort=None,
-                           cost_usd=round(cost, 6)))
+                           cost_usd=round(cost, 6) if costs_known else None))   # None: not metered (sub-agent runs)
     if errors:
         sys.exit("grade errors:\n  " + "\n  ".join(errors))
     out = ROOT / "results" / "data.json"

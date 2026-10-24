@@ -313,19 +313,6 @@
    "cost_usd": 1.41707
   },
   {
-   "id": "anthropic/claude-opus-5.5",
-   "name": "Claude Opus 5.5",
-   "vendor": "Anthropic",
-   "release_date": "2026-09",
-   "params": null,
-   "params_active": null,
-   "params_official": false,
-   "params_source": null,
-   "reasoning": "provider default",
-   "effort": null,
-   "cost_usd": 1.133176
-  },
-  {
    "id": "meta/muse-spark-1.3",
    "name": "Muse Spark 1.3",
    "vendor": "Meta",
@@ -337,6 +324,32 @@
    "reasoning": "provider default",
    "effort": null,
    "cost_usd": 0.0
+  },
+  {
+   "id": "anthropic/claude-sonnet-5.5",
+   "name": "Claude Sonnet 5.5",
+   "vendor": "Anthropic",
+   "release_date": "2026-10",
+   "params": null,
+   "params_active": null,
+   "params_official": false,
+   "params_source": null,
+   "reasoning": "provider default",
+   "effort": null,
+   "cost_usd": null
+  },
+  {
+   "id": "anthropic/claude-haiku-5.5",
+   "name": "Claude Haiku 5.5",
+   "vendor": "Anthropic",
+   "release_date": "2026-10",
+   "params": null,
+   "params_active": null,
+   "params_official": false,
+   "params_source": null,
+   "reasoning": "provider default",
+   "effort": null,
+   "cost_usd": null
   }
  ],
  "problems": [
@@ -7862,235 +7875,6 @@
    "errors": {}
   },
   {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P01",
-   "run": 1,
-   "text": "The flow is laminar (Re ≈ 350), so f = 64/Re ≈ 0.183 and the pressure drop is about 71.6 kPa.\n\n**Given:** ρ = 880 kg/m³, μ = 0.12 Pa·s, Q = 1.5 L/s = 1.5×10⁻³ m³/s, D = 0.040 m, L = 25 m.\n\n**Mean velocity**\n\nA = πD²/4 = π(0.040)²/4 = 1.2566×10⁻³ m²\n\nV = Q/A = (1.5×10⁻³)/(1.2566×10⁻³) = 1.194 m/s\n\n**(a) Reynolds number**\n\nRe = ρVD/μ = (880)(1.194)(0.040)/0.12 ≈ 350\n\nRe is well below about 2100, so the flow is laminar.\n\n**(b) Darcy friction factor**\n\nFor fully developed laminar flow, f = 64/Re = 64/350.1 ≈ 0.183.\n\n**(c) Frictional pressure drop**\n\nUse the Darcy–Weisbach equation:\n\nΔP = f (L/D)(ρV²/2)\n\n- The dynamic pressure is ρV²/2 = 880 × (1.194)²/2 = 626.9 Pa.\n- The length ratio is L/D = 25/0.040 = 625.\n- So ΔP = 0.1828 × 625 × 626.9 ≈ 71,600 Pa.\n\nCheck with the Hagen–Poiseuille equation:\n\nΔP = 128μLQ/(πD⁴) = 128(0.12)(25)(1.5×10⁻³)/[π(0.040)⁴] = 0.576/(8.042×10⁻⁶) ≈ 71,600 Pa ✓\n\nFINAL (a): 350 dimensionless\nFINAL (b): 0.183 dimensionless\nFINAL (c): 71.6 kPa",
-   "score": 10,
-   "justification": "(a) Re = 350, matching 350.1: full points. (b) laminar f = 64/Re = 0.183, within 0.2 %: full points. (c) Darcy-Weisbach gives 71.6 kPa, confirmed with Hagen-Poiseuille, matching 71.62 kPa: full points.",
-   "parts": {
-    "a": 3,
-    "b": 3,
-    "c": 4
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P02",
-   "run": 1,
-   "text": "The pump head is about 28.7 m and the shaft power is about 9.76 kW. The working follows.\n\n**Pipe velocity**\n\nA = π(0.10)²/4 = 7.854×10⁻³ m²\n\nV = Q/A = 0.025 / 7.854×10⁻³ = 3.183 m/s\n\n**(a) Reynolds number**\n\nRe = ρVD/μ = (998)(3.183)(0.10) / (1.00×10⁻³) ≈ 3.18×10⁵\n\nThe flow is turbulent.\n\n**(b) Friction factor (Colebrook)**\n\nRelative roughness: ε/D = 0.046/100 = 4.6×10⁻⁴, so (ε/D)/3.7 = 1.243×10⁻⁴.\n\nColebrook equation:\n\n1/√f = −2 log₁₀[ (ε/D)/3.7 + 2.51/(Re√f) ]\n\nIterating from a starting guess of f = 0.0185:\n\n| Iteration | f used | 2.51/(Re√f) | New f |\n|---|---|---|---|\n| 1 | 0.0185 | 5.81×10⁻⁵ | 0.017883 |\n| 2 | 0.017883 | 5.909×10⁻⁵ | 0.017906 |\n| 3 | 0.017906 | — | 0.017905 |\n\nThe iteration has converged: f ≈ 0.0179.\n\n**(c) Pump head**\n\nBoth surfaces are at atmospheric pressure and their velocities are negligible. The energy balance therefore reduces to:\n\nH = Δz + (fL/D + ΣK)·V²/2g\n\n- Velocity head: V²/2g = (3.183)² / (2 × 9.81) = 0.5164 m\n- Pipe friction term: fL/D = 0.017905 × 150/0.10 = 26.86\n- Total loss coefficient: 26.86 + 5.5 = 32.36\n- Head loss: h_L = 32.36 × 0.5164 = 16.71 m\n\nH = 12 + 16.71 = 28.71 m\n\n**(d) Shaft power**\n\nP = ρgQH/η = (998)(9.81)(0.025)(28.71) / 0.72 = 7027 W / 0.72 ≈ 9.76×10³ W\n\nFINAL (a): 3.18e5 dimensionless\nFINAL (b): 0.0179 dimensionless\nFINAL (c): 28.7 m\nFINAL (d): 9.76 kW",
-   "score": 10,
-   "justification": "(a) Re = 3.18e5, correct. (b) f = 0.0179 from a shown, converged Colebrook iteration, correct. (c) H = 28.71 m, correct energy balance with friction and minor losses. (d) 9.76 kW, correct.",
-   "parts": {
-    "a": 2,
-    "b": 3,
-    "c": 3,
-    "d": 2
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P03",
-   "run": 1,
-   "text": "**Method.** For each pipe the head loss is $h = Z_\\text{res} - H_J$ (positive means flow toward J). Darcy–Weisbach is $h = f\\,(L/D)\\,V^2/2g$.\n\nDefine $S=\\sqrt{2gDh/L}$. Then $\\sqrt f = S/V$, so $Re\\sqrt f = DS/\\nu$. Substituting into Colebrook gives the velocity explicitly for a given $h$:\n\n$$V=-2S\\log_{10}\\!\\left(\\frac{\\varepsilon}{3.7D}+\\frac{2.51\\,\\nu}{D\\,S}\\right)$$\n\nI then iterated on $H_J$ until continuity at J was satisfied.\n\n**Trial $H_J = 100$ m** (pipe 2 carries no flow):\n- Pipe 1: $h = 20$ m, $V = 2.005$ m/s, $Q_1 = 0.1417$ m³/s.\n- Pipe 3: $h = 30$ m, $V = 2.458$ m/s, $Q_3 = 0.1206$ m³/s.\n- $Q_1 > Q_3$, so $H_J > 100$ m and pipe 2 flows into B.\n\nThe balance is $Q_1 - Q_2 - Q_3 = 0$.\n\n**Trial $H_J = 101$ m:**\n- $Q_1 = 0.13808$ m³/s\n- $Q_2 = 0.01441$ m³/s\n- $Q_3 = 0.12265$ m³/s\n- Residual $= +0.00101$ m³/s\n\n**Trial $H_J = 102$ m:**\n- $Q_1 = 0.13434$ m³/s\n- $Q_2 = 0.02066$ m³/s\n- $Q_3 = 0.12464$ m³/s\n- Residual $= -0.01096$ m³/s\n\n**Trial $H_J = 101.08$ m:**\n\n| Pipe | $h$ (m) | $S$ | $V$ (m/s) | $Q$ (m³/s) |\n|---|---|---|---|---|\n| 1 | 18.92 | 0.27247 | 1.9492 | 0.13778 |\n| 2 | 1.08 | 0.07278 | 0.4776 | 0.01500 |\n| 3 | 31.08 | 0.35643 | 2.5019 | 0.12281 |\n\nThe residual is $0.13778 - 0.01500 - 0.12281 = -0.00003$ m³/s. Interpolating between the last two trials gives $H_J \\approx 101.08$ m.\n\n**Results:**\n- (a) $H_J \\approx 101.1$ m\n- (b) $Q_1 \\approx 137.8$ L/s, flowing from A to J.\n- (c) $Q_2 \\approx 15.0$ L/s, flowing from J into reservoir B, because $H_J > 100$ m.\n- (d) $Q_3 \\approx 122.8$ L/s, flowing from J into C.\n- Check: $137.8 = 15.0 + 122.8$.\n\nFINAL (a): 101.08 m\nFINAL (b): 137.8 L/s\nFINAL (c): 15.0 L/s (into reservoir B)\nFINAL (d): 122.8 L/s",
-   "score": 10,
-   "justification": "Correct method: explicit Colebrook velocity from Darcy-Weisbach, trials at H_J = 100, 101, 102 and 101.08 m with residuals and a per-pipe table. (a) 101.08 m vs 101.08 m, (b) 137.8 vs 137.8 L/s, (c) 15.0 L/s into B vs 15.0 L/s into B, (d) 122.8 vs 122.8 L/s: all within 0.1 %, full points.",
-   "parts": {
-    "a": 4,
-    "b": 2,
-    "c": 2,
-    "d": 2
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P04",
-   "run": 1,
-   "text": "**Answers:** ṁ ≈ 17.4 kg/s, Re ≈ 6.72×10⁶, f ≈ 0.0132 and u₂ ≈ 12.3 m/s. The method is the isothermal pipe-flow equation combined with Colebrook, solved by iteration because f depends on the flow.\n\n**Isothermal pipe-flow equation**\n\nStart from the momentum balance:\ndP + ρu du + fρu²/(2D) dx = 0.\n\nIntroduce G = ρu, which is constant along the pipe, and ρ = PM/(RT). Multiply by ρ and integrate from inlet to outlet:\n\n$$\\frac{M}{2RT}(P_1^2-P_2^2)=G^2\\left[\\frac{fL}{2D}+\\ln\\frac{P_1}{P_2}\\right]$$\n\n**Numbers**\n\n- M/(RT) = 16.04/(8314 × 288) = 6.6988×10⁻⁶ s²/m²\n- Left-hand side: 0.5 × 6.6988×10⁻⁶ × (25 − 9)×10¹² = 5.3591×10⁷\n- ln(5/3) = 0.5108\n- L/(2D) = 40000/0.6 = 66 667\n- Pipe area A = π(0.30)²/4 = 0.070686 m²\n- Re = GD/μ = G(0.30)/(1.1×10⁻⁵) = 27 273 G\n- Relative roughness: ε/D = 1.533×10⁻⁴, so ε/(3.7D) = 4.144×10⁻⁵\n\n**Iteration (Colebrook: 1/√f = −2 log[ε/(3.7D) + 2.51/(Re√f)])**\n\n1. Guess f = 0.0135.\n   - G² = 5.3591×10⁷ / (900 + 0.511) = 59 512, so G = 244.0 kg/(m²·s).\n   - Re = 6.65×10⁶.\n   - Colebrook then gives f = 0.013215.\n2. Use f = 0.013215.\n   - G² = 5.3591×10⁷ / (881.0 + 0.511) = 60 795, so G = 246.6 kg/(m²·s).\n   - Re = 6.72×10⁶.\n   - Colebrook gives f = 0.013213, so the solution has converged.\n\nFinal values from the converged iteration: G = 246.6 kg/(m²·s), Re = 6.72×10⁶, f = 0.01321.\n\n**(a) Mass flow rate**\nṁ = GA = 246.6 × 0.070686 ≈ 17.4 kg/s\n\n**(b) Reynolds number**\nRe = 27 273 × 246.6 ≈ 6.72×10⁶\n\n**(c) Darcy friction factor**\nf ≈ 0.0132\n\n**(d) Outlet velocity**\n- Outlet density: ρ₂ = P₂M/(RT) = 3×10⁶ × 6.6988×10⁻⁶ = 20.10 kg/m³\n- Velocity: u₂ = G/ρ₂ = 246.6/20.10 ≈ 12.3 m/s\n\nFINAL (a): 17.4 kg/s\nFINAL (b): 6.72e6 dimensionless\nFINAL (c): 0.0132 dimensionless\nFINAL (d): 12.3 m/s",
-   "score": 10,
-   "justification": "(a) 17.4 kg/s from the correctly derived isothermal equation (M/(2RT))(p1^2 - p2^2) = G^2[fL/(2D) + ln(p1/p2)] with a shown Colebrook iteration, 0.2 % off: full. (b) Re = 6.72e6 as G D/mu, 0.1 % off: full. (c) f = 0.0132, 0.1 % off: full. (d) 12.3 m/s as G/rho2, 0.2 % off: full.",
-   "parts": {
-    "a": 4,
-    "b": 2,
-    "c": 2,
-    "d": 2
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P05",
-   "run": 1,
-   "text": "The process is first order: G(s) = K/(τs + 1), with gain K = 2.5 and time constant τ = 8 min. The input is a step of magnitude M = 4.\n\nThe Laplace transform of the step input is U′(s) = 4/s. The output is therefore\n\nY′(s) = 2.5·4 / [s(8s + 1)].\n\nInverting this gives the standard first-order step response:\n\ny′(t) = KM(1 − e^(−t/τ)) = 10(1 − e^(−t/8)).\n\n**(a) Final change in the output**\n\nBy the final value theorem:\n\ny′(∞) = lim(s→0) s·Y′(s) = KM = 2.5 × 4 = **10 units**.\n\n**(b) Output deviation at t = 10 min**\n\ny′(10) = 10(1 − e^(−10/8)) = 10(1 − e^(−1.25)) = 10(1 − 0.2865) ≈ **7.13 units**.\n\n**(c) Time to reach 95 % of the final change**\n\nSet the response equal to 95 % of the final change:\n\n1 − e^(−t/8) = 0.95, so e^(−t/8) = 0.05.\n\nSolving for t:\n\nt = −8 ln(0.05) = 8 × 2.9957 ≈ **23.97 min**.\n\nThis agrees with the usual rule of thumb that a first-order system reaches 95 % of its final change at about 3τ.\n\nFINAL (a): 10 units\nFINAL (b): 7.13 units\nFINAL (c): 23.97 min",
-   "score": 10,
-   "justification": "(a) 10, correct. (b) 7.13, correct (7.135 rounded down, 0.07 % off). (c) 23.97 min, correct.",
-   "parts": {
-    "a": 3,
-    "b": 4,
-    "c": 3
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P06",
-   "run": 1,
-   "text": "**Given:** G(s) = 4/(9s² + 2.4s + 1), with a step input of magnitude M = 2.\n\nCompare this with the standard second-order form K/(τ²s² + 2ζτs + 1):\n\n- Steady-state gain: K = 4\n- τ² = 9, so τ = 3 min\n- 2ζτ = 2.4\n\n**(a) Damping factor**\n\nζ = 2.4 / (2·3) = **0.4**\n\nSince ζ < 1, the response is underdamped. This means overshoot and oscillation occur.\n\nUseful quantity: √(1 − ζ²) = √0.84 = 0.91652\n\n**(b) Overshoot**\n\nOS = exp(−πζ/√(1−ζ²))\n= exp(−π(0.4)/0.91652)\n= exp(−1.3711)\n= 0.2538\n\nThe overshoot is **≈ 25.4 %** of the final change.\n\n**(c) Time of first peak**\n\nt_p = πτ/√(1−ζ²) = 3π/0.91652 = **≈ 10.28 min**\n\n**(d) Maximum value of y′**\n\nThe final change is y′(∞) = KM = 4 × 2 = 8.\n\ny′_max = KM(1 + OS) = 8 × 1.2538 = **≈ 10.03**\n\n**(e) Decay ratio**\n\nDR = OS² = exp(−2πζ/√(1−ζ²)) = (0.2538)² = **≈ 0.0644**\n\nFINAL (a): 0.4 dimensionless\nFINAL (b): 25.4 %\nFINAL (c): 10.28 min\nFINAL (d): 10.03 dimensionless\nFINAL (e): 0.0644 dimensionless",
-   "score": 10,
-   "justification": "(a) zeta = 0.4, correct. (b) 25.4 %, correct. (c) t_p = 3*pi/sqrt(0.84) = 10.28 min, correct. (d) KM(1+OS) = 10.03 and (e) DR = OS^2 = 0.0644, both correct.",
-   "parts": {
-    "a": 2,
-    "b": 2,
-    "c": 2,
-    "d": 2,
-    "e": 2
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P07",
-   "run": 1,
-   "text": "**Results:** ω_u ≈ 0.677 rad/min, K_u ≈ 4.55, P_u ≈ 9.28 min, K_c ≈ 2.07 with τ_I ≈ 7.73 min, GM ≈ 1.90 and PM ≈ 36.3°. Working follows.\n\nThe open-loop transfer function is G_OL = G_c·G_p, since the valve and measurement are both 1. The process has K = 1.8, τ = 12 min and θ = 2.5 min.\n\n**(a) Ultimate frequency**\n\nThe phase of G_p is −θω − arctan(τω). Setting it to −π:\n\n2.5ω + arctan(12ω) = π\n\nSolve by iteration:\n- At ω = 0.677: 1.6925 + 1.44832 = 3.14082, which is low by 0.00077.\n- The slope is about 2.679, so ω ≈ 0.6773.\n- At ω = 0.6773: 1.69323 + 1.44837 = 3.14160 ≈ π.\n\nω_u ≈ 0.677 rad/min\n\n**(b) Ultimate gain**\n\n|G_p(jω_u)| = 1.8 / √(1 + 8.1275²) = 1.8 / 8.1888 = 0.2198\n\nK_u = 1 / 0.2198 = 4.549\n\n**(c) Ultimate period**\n\nP_u = 2π / ω_u = 2π / 0.6773 = 9.28 min\n\n**(d) Ziegler–Nichols PI settings**\n\nK_c = 4.549 / 2.2 = 2.068\n\nτ_I = 9.277 / 1.2 = 7.731 min\n\n**(e) Gain margin**\n\nThe PI controller adds a phase of −(90° − arctan(τ_I ω)). The phase crossover condition is therefore:\n\n2.5ω + arctan(12ω) − arctan(7.731ω) = π/2\n\nSolve by iteration:\n- At ω = 0.598 the left side is 1.56956, slightly low.\n- At ω = 0.600 it is 1.57433, slightly high.\n- Interpolating gives ω_c ≈ 0.5985 rad/min.\n\nAmplitude ratio at ω_c:\n- Process: |G_p| = 1.8 / √(1 + 7.182²) = 0.2482.\n- Controller: |G_c| = 2.068 · √(1 + 1/4.627²) = 2.068 × 1.0231 = 2.116.\n- Open loop: AR = 0.2482 × 2.116 = 0.525.\n\nGM = 1 / 0.525 ≈ 1.90\n\n**(f) Phase margin**\n\nFind the gain crossover, where |G_OL| = 1:\n\n3.722 · √(1 + 1/(7.731ω)²) / √(1 + 144ω²) = 1\n\n- At ω = 0.323 the ratio is 1.0017.\n- At ω = 0.324 it is 0.9983.\n- Interpolating gives ω_g ≈ 0.3235 rad/min.\n\nPhase at ω_g, each term in radians:\n- Dead time: −2.5 × 0.3235 = −0.8088\n- Lag: −arctan(3.882) = −1.3187\n- PI: −arctan(1/2.501) = −0.3804\n- Total: −2.5078 rad = −143.7°\n\nPM = 180° − 143.7° ≈ 36.3°\n\nFINAL (a): 0.677 rad/min\nFINAL (b): 4.55 dimensionless\nFINAL (c): 9.28 min\nFINAL (d): K_c = 2.07, τ_I = 7.73 min\nFINAL (e): 1.90 dimensionless\nFINAL (f): 36.3 degrees",
-   "score": 10,
-   "justification": "(a) omega_u = 0.6773 rad/min by iteration, (b) K_u = 4.549, (c) P_u = 9.28 min and (d) K_c = 2.068, tau_I = 7.731 min, all matching the reference: full points. (e) phase crossover of the PI loop at 0.5985 rad/min, GM = 1.90 (reference 1.904): full points. (f) gain crossover at 0.3235 rad/min, PM = 36.3 deg: full points.",
-   "parts": {
-    "a": 2,
-    "b": 2,
-    "c": 1,
-    "d": 1,
-    "e": 2,
-    "f": 2
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P08",
-   "run": 1,
-   "text": "**Answers:** (a) K_c,max ≈ 6.36; (b) ω ≈ 0.658 rad/min; (c) offset = 0.25. Working follows.\n\n**Closed-loop characteristic equation**\n\nThe open-loop denominator expands to:\n\n(s+1)(2s+1)(5s+1) = 10s³ + 17s² + 8s + 1\n\nThe closed-loop condition is 1 + G_c·G_p = 0:\n\n1 + K_c(4s+1)/(4s) · 1/(10s³+17s²+8s+1) = 0\n\nMultiplying through by 4s(10s³+17s²+8s+1) gives:\n\n40s⁴ + 68s³ + 32s² + (4+4K_c)s + K_c = 0\n\n**(a) Routh array**\n\n| Row | Column 1 | Column 2 | Column 3 |\n|---|---|---|---|\n| s⁴ | 40 | 32 | K_c |\n| s³ | 68 | 4+4K_c | |\n| s² | b₁ = (2016 − 160K_c)/68 | K_c | |\n| s¹ | c₁ = [b₁(4+4K_c) − 68K_c]/b₁ | | |\n| s⁰ | K_c | | |\n\nStability requires every first-column entry to be positive.\n\n- From the s⁰ row: K_c > 0.\n- From the s² row: b₁ > 0, so K_c < 12.6.\n- From the s¹ row: c₁ > 0 requires (2016 − 160K_c)(4 + 4K_c) > 4624K_c.\n\nExpanding the s¹ condition:\n\n8064 + 2800K_c − 640K_c² > 0, which simplifies to 40K_c² − 175K_c − 504 < 0.\n\nSolving for the positive root:\n\nK_c,max = [175 + √(30625 + 80640)]/80 = (175 + 333.56)/80 ≈ 6.36\n\nThis is below 12.6, so it is the binding limit.\n\n**(b) Frequency of sustained oscillation**\n\nAt K_c,max the s¹ row is zero, so the roots on the imaginary axis come from the auxiliary equation of the s² row:\n\nb₁s² + K_c = 0\n\nWith b₁ = (2016 − 160 × 6.357)/68 = 14.689:\n\nω² = 6.357/14.689 = 0.4328\n\nAs a check, the s³ row gives the same result: ω² = (4 + 4 × 6.357)/68 = 0.4328.\n\nTherefore ω = √0.4328 ≈ 0.658 rad/min.\n\n**(c) Proportional-only control, K_c = 3**\n\nThe process steady-state gain is K_p = G_p(0) = 1, so the open-loop gain is K_c·K_p = 3.\n\nThe closed-loop steady-state gain is 3/(1+3) = 0.75.\n\nThe offset after a unit setpoint step is 1 − 0.75 = 1/(1 + K_cK_p) = 0.25.\n\nFINAL (a): 6.36 dimensionless\nFINAL (b): 0.658 rad/min\nFINAL (c): 0.25 dimensionless",
-   "score": 10,
-   "justification": "(a) correct characteristic polynomial and Routh array, c1 > 0 gives 40Kc^2 - 175Kc - 504 < 0 and Kc,max = 6.357 (final 6.36, within 0.05 %): full points. (b) auxiliary equation b1 s^2 + Kc = 0 gives omega = 0.658 rad/min, matches the reference: full points. (c) offset 1/(1+3) = 0.25, correct: full points.",
-   "parts": {
-    "a": 5,
-    "b": 3,
-    "c": 2
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P09",
-   "run": 1,
-   "text": "The Fenske equation gives about 6.43 theoretical stages (partial reboiler included), and the pinch at the feed gives a minimum reflux ratio of about 1.44.\n\n**(a) Minimum number of stages (Fenske equation)**\n\n$$N_{min}=\\frac{\\ln\\left[\\dfrac{x_D}{1-x_D}\\cdot\\dfrac{1-x_B}{x_B}\\right]}{\\ln\\alpha}$$\n\nSubstitute the given compositions:\n\n$$\\frac{x_D}{1-x_D}=\\frac{0.95}{0.05}=19,\\qquad \\frac{1-x_B}{x_B}=\\frac{0.95}{0.05}=19$$\n\nThe separation factor is $19 \\times 19 = 361$, so\n\n$$N_{min}=\\frac{\\ln 361}{\\ln 2.5}=\\frac{5.8889}{0.9163}=6.43$$\n\nWith a total condenser, this count includes the partial reboiler as a stage, as the question asks.\n\n**(b) Minimum reflux ratio**\n\nThe feed is saturated liquid, so q = 1 and the q-line is vertical at x = 0.40.\n\nThe equilibrium vapour at x = 0.40 is\n\n$$y^*=\\frac{\\alpha x}{1+(\\alpha-1)x}=\\frac{2.5(0.40)}{1+1.5(0.40)}=\\frac{1.0}{1.6}=0.625$$\n\nFor constant α the equilibrium curve has no inflection, so the pinch at minimum reflux occurs at the feed point (0.40, 0.625).\n\nThe rectifying operating line runs from (x_D, x_D) through the pinch point. Its slope at minimum reflux is\n\n$$\\frac{R_{min}}{R_{min}+1}=\\frac{x_D-y^*}{x_D-x_F}=\\frac{0.95-0.625}{0.95-0.40}=\\frac{0.325}{0.55}=0.5909$$\n\nSolving for R_min:\n\n$$R_{min}=\\frac{x_D-y^*}{y^*-x_F}=\\frac{0.325}{0.225}=1.444$$\n\nFINAL (a): 6.43 stages\nFINAL (b): 1.44 dimensionless",
-   "score": 10,
-   "justification": "(a) 6.43 from the correct Fenske equation, matches the reference 6.427: full points. (b) Pinch at x = z_F on the equilibrium curve (y* = 0.625), R_min = (x_D - y*)/(y* - z_F) = 1.444, matches the reference: full points.",
-   "parts": {
-    "a": 5,
-    "b": 5
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P10",
-   "run": 1,
-   "text": "**Data:** G = 100 kmol/h; y_in = 0.020; x₀ = 0 (pure water); m = 1.8.\nAt 95 % absorption, y_out = 0.05 × 0.020 = 0.0010.\n\nBecause the system is dilute, G and L are taken as constant and mole fractions are used directly.\n\n**(a) Minimum water flow**\n\nThe minimum liquid flow is reached when the exit liquid is in equilibrium with the entering gas (pinch at the bottom of the column):\n\nx_out,max = y_in / m = 0.020 / 1.8 = 0.011111\n\nA balance on acetone gives:\n\nL_min = G (y_in − y_out) / (x_out,max − x₀) = 100 × (0.020 − 0.001) / 0.011111 = **171 kmol/h**\n\nThis is the same as (L/G)_min = m × (fraction absorbed) = 1.8 × 0.95 = 1.71.\n\n**(b) Absorption factor**\n\nL = 1.5 × 171 = 256.5 kmol/h\n\nA = L/(mG) = 256.5 / (1.8 × 100) = **1.425**\n\n**(c) Number of theoretical stages (Kremser)**\n\nN = ln[ ((y_in − m x₀)/(y_out − m x₀)) (1 − 1/A) + 1/A ] / ln A\n\nEvaluate each term:\n\n- y_in/y_out = 0.020/0.001 = 20\n- 1/A = 0.70175\n- 20 × (1 − 0.70175) + 0.70175 = 20 × 0.29825 + 0.70175 = 6.6667\n\nSo:\n\nN = ln(6.6667) / ln(1.425) = 1.8971 / 0.35417 ≈ **5.36 stages**\n\nIn practice this would be rounded up to 6 theoretical stages.\n\nFINAL (a): 171 kmol/h\nFINAL (b): 1.425 dimensionless\nFINAL (c): 5.36 stages",
-   "score": 10,
-   "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425, correct. (c) N = 5.36 from the correct Kremser equation, correct.",
-   "parts": {
-    "a": 3,
-    "b": 3,
-    "c": 4
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P11",
-   "run": 1,
-   "text": "**Results:** D = 44.57 kmol/h, R_min = 1.775, R = 2.663, N ≈ 12.42 stages (including the reboiler), feed on stage 7. Compositions in the stage-by-stage table are rounded to 3 decimals; the calculation itself was carried to about 6.\n\n**(a) Distillate flow**\n\nFrom the overall and light-component balances:\n\nD = F(z_F − x_B)/(x_D − x_B) = 100(0.45 − 0.04)/(0.96 − 0.04) = **44.57 kmol/h**\n\nSo B = 55.43 kmol/h.\n\n**(b) Minimum reflux**\n\nThe q-line has slope q/(q−1) = 0.6/(−0.4) = −1.5:\n\ny = −1.5x + 1.125\n\nIntersect it with the equilibrium curve, y = 2.4x/(1 + 1.4x):\n\n- (1.125 − 1.5x)(1 + 1.4x) = 2.4x, which gives 2.1x² + 2.325x − 1.125 = 0.\n- Solving: x′ = 0.3641 and y′ = 0.5788.\n\nAt minimum reflux the rectifying line passes through this pinch point:\n\nR_min/(R_min + 1) = (0.96 − 0.5788)/(0.96 − 0.3641) = 0.6397\n\nR_min = **1.775**\n\n**(c) Operating reflux**\n\nR = 1.5 × 1.7754 = **2.663**\n\n**(d) Stage stepping**\n\nOperating lines:\n\n- **Rectifying line:** y = 0.72700x + 0.26208.\n- **Intersection with the q-line:** 0.727x + 0.26208 = −1.5x + 1.125, so x = 0.3875 and y = 0.5438.\n- **Stripping line:** it passes through (0.04, 0.04) and (0.3875, 0.5438), giving slope 1.4498. So y = 0.04 + 1.4498(x − 0.04).\n\nEquilibrium is inverted as x = y/(2.4 − 1.4y).\n\n| Stage | y | x |\n|---|---|---|\n| 1 | 0.960 | 0.909 |\n| 2 | 0.923 | 0.833 |\n| 3 | 0.868 | 0.732 |\n| 4 | 0.794 | 0.617 |\n| 5 | 0.711 | 0.506 |\n| 6 | 0.630 | 0.415 |\n| 7 | 0.564 | 0.350 (below 0.3875, switch to stripping line) |\n| 8 | 0.489 | 0.285 |\n| 9 | 0.395 | 0.214 |\n| 10 | 0.293 | 0.147 |\n| 11 | 0.195 | 0.0917 |\n| 12 | 0.115 | 0.0514 |\n| 13 | 0.0565 | 0.0243 (below x_B = 0.04) |\n\nFraction of the last stage = (0.05137 − 0.04)/(0.05137 − 0.02434) = 0.42\n\nThe total is 12.42 theoretical stages, including the partial reboiler.\n\n**(e) Optimal feed stage**\n\nStage 7 is the first stage whose liquid composition (x = 0.350) falls below the intersection value x = 0.3875. The feed therefore enters on stage 7 from the top.\n\nFINAL (a): 44.57 kmol/h\nFINAL (b): 1.775 dimensionless\nFINAL (c): 2.663 dimensionless\nFINAL (d): 12.42 stages\nFINAL (e): 7 stage",
-   "score": 10,
-   "justification": "(a) D = 44.57 kmol/h, correct. (b) R_min = 1.775 from the q-line/equilibrium pinch and (c) R = 2.663, both correct. (d) correct operating lines and a stage-by-stage table give 12.42 stages (reference 12.42), correct. (e) liquid first falls below x = 0.3875 on stage 7, correct.",
-   "parts": {
-    "a": 1,
-    "b": 2,
-    "c": 1,
-    "d": 4,
-    "e": 2
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P12",
-   "run": 1,
-   "text": "**Given:** F = 100 kmol/h, saturated liquid (q = 1). LK = n‑butane, HK = n‑pentane.\n\n## (a) Material balance\n\n| Component | Distillate (kmol/h) | Bottoms (kmol/h) |\n|---|---|---|\n| C₃ | 5.0 | 0 |\n| nC₄ (LK) | 0.98 × 35 = 34.3 | 0.7 |\n| nC₅ (HK) | 0.03 × 40 = 1.2 | 38.8 |\n| nC₆ | 0 | 20.0 |\n| **Total** | **D = 40.5** | **B = 59.5** |\n\nDistillate mole fractions: x_D = 0.12346 (C₃), 0.84691 (nC₄), 0.02963 (nC₅).\n\n## (b) Fenske equation\n\n$$N_{min}=\\frac{\\ln\\left[\\frac{34.3}{1.2}\\cdot\\frac{38.8}{0.7}\\right]}{\\ln 2}=\\frac{\\ln(1584.3)}{0.69315}=\\frac{7.3679}{0.69315}=10.63$$\n\n## (c) Underwood feed equation\n\nFor q = 1 the feed equation is Σ α z_F/(α − θ) = 0:\n\n$$\\frac{0.21}{4.2-\\theta}+\\frac{0.70}{2-\\theta}+\\frac{0.40}{1-\\theta}+\\frac{0.09}{0.45-\\theta}=0$$\n\nTrial values of θ between 1 and 2:\n\n| θ | Σ |\n|---|---|\n| 1.370 | +0.0064 |\n| 1.368 | −0.0032 |\n| 1.3687 | +0.00014 |\n\nInterpolating gives **θ ≈ 1.3687**.\n\n## (d) Minimum reflux\n\n$$R_{min}+1=\\sum\\frac{\\alpha x_D}{\\alpha-\\theta}=\\frac{0.51852}{2.83133}+\\frac{1.69383}{0.63133}-\\frac{0.02963}{0.36867}$$\n\n$$R_{min}+1=0.18314+2.68295-0.08037=2.7857$$\n\nSo **R_min = 1.786**.\n\n## (e) Gilliland (Eduljee form)\n\n- R = 1.3 × 1.7857 = 2.3214\n- X = (2.3214 − 1.7857)/3.3214 = 0.16129\n- X^0.5668 = 0.35553\n- Y = 0.75(1 − 0.35553) = 0.48335\n\nSolving Y = (N − N_min)/(N + 1) for N:\n\n$$N=\\frac{N_{min}+Y}{1-Y}=\\frac{10.6297+0.48335}{0.51665}=21.51$$\n\n## (f) Kirkbride equation\n\n- z_HK/z_LK = 0.40/0.35 = 1.14286\n- x_B,LK = 0.7/59.5 = 0.011765\n- x_D,HK = 0.029630, so (x_B,LK/x_D,HK)² = (0.39706)² = 0.15766\n- B/D = 59.5/40.5 = 1.46914\n\nThe argument of the log is 1.14286 × 0.15766 × 1.46914 = 0.26471.\n\n$$\\log_{10}(N_R/N_S)=0.206\\log_{10}(0.26471)=0.206(-0.57724)=-0.11891$$\n\n$$N_R/N_S=10^{-0.11891}=0.760$$\n\n**Answers**\n\nFINAL (a): 40.5 kmol/h\nFINAL (b): 10.63 stages\nFINAL (c): 1.369 dimensionless\nFINAL (d): 1.786 dimensionless\nFINAL (e): 21.51 stages\nFINAL (f): 0.760 dimensionless",
-   "score": 10,
-   "justification": "(a) D = 40.5 kmol/h and (b) N_min = 10.63, correct. (c) correct feed equation solved by trial and interpolation, theta = 1.3687: full points. (d) R_min = 1.786 and (e) N = 21.51, correct method and values: full points. (f) 0.760, correct: 1.",
-   "parts": {
-    "a": 1,
-    "b": 2,
-    "c": 2,
-    "d": 2,
-    "e": 2,
-    "f": 1
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P13",
-   "run": 1,
-   "text": "The network was solved as a node-head problem: Darcy–Weisbach with Colebrook in each pipe, and the Newton–Raphson method on the four unknown heads H_A, H_B, H_C and H_D. Friction factors were updated from the computed flows until all node residuals were below about 1.5×10⁻⁵ m³/s.\n\n**Basis**\n\n- Each pipe follows h = R Q², with R = (fL/D + ΣK)/(2gA²).\n- Reynolds number: Re = 4ρQ/(πDμ) = 1.268×10⁶ Q/D.\n- Friction factor from Colebrook: 1/√f = −2 log₁₀[ε/(3.7D) + 2.51/(Re√f)].\n- Pump outlet head: H_A = H_S − R_s Q_p² + (80 − 12000 Q_p²), with H_S = 1.0 m.\n- Tank head: H_T = 14.0 m.\n- Continuity:\n  - Node A: Q₁ + Q₂ = Q_p\n  - Node B: Q₁ = Q₃ + Q₄ + 0.016\n  - Node C: Q₂ + Q₃ = Q₅\n  - Node D: Q₄ + Q₅ = Q₆\n\n**Converged friction factors and resistances**\n\n| Pipe | Re | f | fL/D + ΣK | R (s²/m⁵) |\n|---|---|---|---|---|\n| Suction | 3.16×10⁵ | 0.01635 | 3.85 | 199 |\n| 1 | 3.24×10⁵ | 0.02421 | 62.1 | 21 020 |\n| 2 | 2.26×10⁵ | 0.01835 | 90.6 | 74 830 |\n| 3 | 5.9×10⁴ | 0.02609 | 72.6 | 189 500 |\n| 4 | 1.58×10⁵ | 0.02608 | 93.3 | 77 070 |\n| 5 | 2.16×10⁵ | 0.01792 | 62.3 | 21 100 |\n| 6 | 2.86×10⁵ | 0.01706 | 18.06 | 2 948 |\n\n**Converged heads**\n\nH_A = 50.77 m, H_B = 29.31 m, H_C = 26.97 m, H_D = 17.36 m.\n\n**Converged flows (L/s)**\n\n| Pipe | Flow | Direction |\n|---|---|---|\n| Pump | 49.78 | — |\n| 1 | 31.95 | A → B |\n| 2 | 17.83 | A → C |\n| 3 | 3.51 | B → C |\n| 4 | 12.45 | B → D |\n| 5 | 21.34 | C → D |\n| 6 | 33.78 | D → T |\n\nContinuity is satisfied at every node to within the stated tolerance.\n\n**(a) Pump flow**\n\nQ_p ≈ 49.8 L/s.\n\n**(b) Pump head**\n\nH_p = 80 − 12000(0.04978)² = 80 − 29.74 = 50.27 m.\n\n**(c) Flow in pipe 3**\n\nH_B (29.31 m) is higher than H_C (26.97 m), so water flows from B to C.\n\nQ₃ = √(2.335 / 189 500) = 3.51 L/s.\n\n**(d) Gauge pressure at node C**\n\np_C = ρg(H_C − z_C) = 998.2 × 9.81 × (26.97 − 4.0) = 225.0 kPa.\n\n**(e) Shaft power**\n\nP = ρ g Q_p H_p / η = 9792.4 × 0.04978 × 50.27 / 0.70 ≈ 35.0 kW.\n\nFINAL (a): 49.8 L/s\nFINAL (b): 50.3 m\nFINAL (c): 3.51 L/s from B to C\nFINAL (d): 225 kPa\nFINAL (e): 35.0 kW",
-   "score": 10.0,
-   "justification": "Node-head Newton solution with a table of Re, f and R per pipe, and of converged heads and flows; all values agree with my check of the network. (a) 49.8 L/s and (b) 50.27 m (FINAL 50.3), both within 0.1 %: full. (c) 3.51 L/s from B to C, from sqrt(2.335/189500): correct value and direction, full. (d) 225.0 kPa and (e) 35.0 kW, both within 0.05 %: full.",
-   "parts": {
-    "a": 2,
-    "b": 2,
-    "c": 3,
-    "d": 2,
-    "e": 1
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P14",
-   "run": 1,
-   "text": "**Approach.** Each quantity comes from the exact frequency response $G(i\\omega)=G_vG_pG_m$, with the dead time kept as $e^{-1.5i\\omega}$. Roots were found by interpolating between hand-evaluated points (with a Newton step for $\\omega_u$). Results are good to about 3–4 significant figures.\n\nThe process-plus-sensor part has\n\n- phase: $\\phi_G(\\omega)=-1.5\\omega-\\tan^{-1}6\\omega-\\tan^{-1}2\\omega-\\tan^{-1}\\omega-\\tan^{-1}0.5\\omega$\n- magnitude: $|G|=\\dfrac{2}{\\sqrt{(1+36\\omega^2)(1+4\\omega^2)(1+\\omega^2)(1+0.25\\omega^2)}}$\n\n**(a) Ultimate frequency**\n\nSolve $\\phi_G(\\omega)=-\\pi$:\n\n| ω (rad/min) | total phase lag (rad) |\n|---|---|\n| 0.420 | 3.12631 |\n| 0.425 | 3.15032 |\n\nA Newton step from 0.420, with slope ≈ 4.818 rad per rad/min, gives $\\omega_u \\approx 0.4232$ rad/min.\n\n**(b) Ultimate gain and period**\n\nAt $\\omega_u$ the product under the square root is 15.745, so $|G|=2/3.968=0.5040$.\n\n- $K_u = 1/0.5040 = 1.984$\n- $P_u = 2\\pi/0.4232 = 14.85$ min\n\n**(c) Ziegler–Nichols PID settings**\n\n- $K_c = 0.6(1.984) = 1.190$\n- $\\tau_I = 14.85/2 = 7.42$ min\n- $\\tau_D = 14.85/8 = 1.856$ min\n\n**(d) Gain margin**\n\nFor the ideal PID, $\\angle G_c=\\tan^{-1}x$ and $|G_c|=K_c\\sqrt{1+x^2}$, with $x=\\tau_D\\omega-1/(\\tau_I\\omega)$.\n\nSolve $\\phi_G+\\tan^{-1}x=-\\pi$:\n\n| ω (rad/min) | net lag (rad) |\n|---|---|\n| 0.580 | 3.12704 |\n| 0.585 | 3.14055 |\n| 0.600 | 3.18104 |\n\nInterpolating gives $\\omega_{pc}\\approx 0.5854$ rad/min.\n\nAt $\\omega_{pc}$:\n\n- $|G| = 0.2946$\n- $x = 0.8563$, so $|G_c| = 1.190(1.3166) = 1.567$\n- $|L| = 0.4617$\n\nTherefore GM $= 1/0.4617 = 2.17$.\n\n**(e) Phase margin**\n\nSolve $|L(i\\omega)|=1$:\n\n| ω (rad/min) | \\|L\\| |\n|---|---|\n| 0.280 | 1.0140 |\n| 0.285 | 0.9957 |\n\nInterpolating gives $\\omega_{gc}\\approx 0.2838$ rad/min.\n\nAt $\\omega_{gc}$:\n\n- $\\phi_G = -2.3994$ rad\n- $\\angle G_c = +0.0521$ rad\n- $\\angle L = -2.3473$ rad $= -134.49°$\n\nTherefore PM $= 180° - 134.49° = 45.5°$.\n\n**(f) Maximum sensitivity**\n\nUse $|1+L|^2 = 1+|L|^2+2|L|\\cos(\\angle L)$:\n\n| ω (rad/min) | \\|L\\| | \\|1+L\\|² |\n|---|---|---|\n| 0.38 | 0.741 | 0.2862 |\n| 0.4232 | 0.662 | 0.2386 |\n| 0.46 | 0.606 | 0.22414 |\n| 0.47 | 0.592 | 0.22357 |\n| 0.48 | 0.579 | 0.22426 |\n| 0.50 | 0.553 | 0.22906 |\n\nA parabolic fit through 0.46, 0.47 and 0.48 gives a minimum at ω ≈ 0.4695 rad/min, with $|1+L|_{min} = \\sqrt{0.22357} = 0.4728$.\n\nTherefore $M_s = 1/0.4728 = 2.115$.\n\nFINAL (a): 0.4232 rad/min\nFINAL (b): K_u = 1.984, P_u = 14.85 min\nFINAL (c): K_c = 1.190, τ_I = 7.42 min, τ_D = 1.856 min\nFINAL (d): GM = 2.17, ω_pc = 0.5854 rad/min\nFINAL (e): PM = 45.5 °, ω_gc = 0.2838 rad/min\nFINAL (f): M_s = 2.115 at ω = 0.4695 rad/min",
-   "score": 10,
-   "justification": "(a) omega_u = 0.4232 rad/min and (b) K_u = 1.984, P_u = 14.85 min, correct. (c) K_c = 1.190, tau_I = 7.42 min, tau_D = 1.856 min, correct. (d) GM = 2.17 at omega_pc = 0.5854 rad/min and (e) PM = 45.5 deg at omega_gc = 0.2838 rad/min, correct with tabulated phase and magnitude values. (f) M_s = 2.115 at 0.4695 rad/min from a scan of |1+L|^2 and a parabolic fit, matching the reference: full points.",
-   "parts": {
-    "a": 2,
-    "b": 2,
-    "c": 1,
-    "d": 2,
-    "e": 2,
-    "f": 1
-   },
-   "errors": {}
-  },
-  {
-   "model": "anthropic/claude-opus-5.5",
-   "problem": "P15",
-   "run": 1,
-   "text": "The feed is about 34.9 mol % benzene. At 120 kPa it boils at 106.92 °C and is fully vaporized at 123.65 °C. At 112 °C about one third of it (V/F = 0.3325) vaporizes, and half of it vaporizes at 114.83 °C. All results below come from hand iteration; the worked values are shown so each step can be re-checked.\n\n**Feed mole fractions (basis: 1 g of feed)**\n\n| | moles | zᵢ |\n|---|---|---|\n| benzene | 0.30/78.11 = 0.0038407 | **0.34892** |\n| toluene | 0.40/92.14 = 0.0043412 | **0.39438** |\n| o-xylene | 0.30/106.17 = 0.0028257 | **0.25670** |\n| total | 0.0110076 | 1 |\n\nThe pressure in mmHg is P = 120/0.133322 = 900.08 mmHg.\n\nEach step was refined with a Newton step, using d ln Pᵢˢᵃᵗ/dT = 2.302585·Bᵢ/(Cᵢ+T)². In (c) and (e) the vaporized fraction V/F is written ψ.\n\n**(a) Bubble point: Σ zᵢPᵢˢᵃᵗ = P**\n\n- At 105 °C: Σ zᵢPᵢˢᵃᵗ = 853.5 mmHg, too low.\n- At 107 °C:\n  - P₁ˢᵃᵗ = 1625.96, P₂ˢᵃᵗ = 684.82, P₃ˢᵃᵗ = 251.42 mmHg.\n  - Σ zᵢPᵢˢᵃᵗ = 567.32 + 270.08 + 64.54 = 901.94 mmHg.\n- The slope at 107 °C is about 24.7 mmHg/°C.\n- So ΔT = −1.87/24.7 = −0.076 °C, giving **T_b ≈ 106.92 °C**.\n\n**(b) Dew point: Σ zᵢ/Pᵢˢᵃᵗ = 1/P = 1.111017×10⁻³ mmHg⁻¹**\n\n- At 120 °C: Σ zᵢ/Pᵢˢᵃᵗ = 1.2315×10⁻³, too high.\n- At 123.6 °C:\n  - P₁ˢᵃᵗ = 2450.1, P₂ˢᵃᵗ = 1083.6, P₃ˢᵃᵗ = 423.37 mmHg.\n  - Σ zᵢ/Pᵢˢᵃᵗ = 1.112689×10⁻³.\n- The logarithmic slope is 0.02788 per °C.\n- So ΔT = ln(1.001505)/0.02788 = +0.054 °C, giving **T_d ≈ 123.65 °C**.\n\n**(c) Isothermal flash at 112 °C**\n\nThe vapour pressures are P₁ˢᵃᵗ = 1847.65, P₂ˢᵃᵗ = 790.15 and P₃ˢᵃᵗ = 295.80 mmHg. This gives:\n\n- K₁ = 2.05275\n- K₂ = 0.87787\n- K₃ = 0.32864\n\nSolve the Rachford–Rice equation for ψ:\n\nf(ψ) = Σ zᵢ(Kᵢ−1)/[1+ψ(Kᵢ−1)] = 0\n\n| ψ | f(ψ) |\n|---|---|\n| 0.300 | +0.01336 |\n| 0.330 | +0.001037 |\n| 0.333 | −0.000194 |\n\nInterpolating gives **V/F ≈ 0.3325**.\n\n**(d) Benzene in the vapour**\n\ny₁ = z₁K₁/[1+ψ(K₁−1)] = 0.716238/1.350069 = **0.5305**\n\n**(e) Temperature for V/F = 0.5**\n\n| T (°C) | K₁, K₂, K₃ | f(0.5) |\n|---|---|---|\n| 112.0 | 2.0528, 0.8779, 0.3286 | −0.07007 |\n| 114.8 | 2.2014, 0.9493, 0.3592 | −0.000689 |\n| 115.0 | 2.2123, 0.9546, 0.3614 | +0.00424 |\n\nInterpolating between 114.8 and 115 °C gives T = 114.8 + 0.000689/0.02461 ≈ **114.83 °C**.\n\nFINAL (a): 106.92 °C\nFINAL (b): 123.65 °C\nFINAL (c): 0.3325\nFINAL (d): 0.5305\nFINAL (e): 114.83 °C",
-   "score": 10,
-   "justification": "(a) 106.92 C and (b) 123.65 C by Newton-refined trials, both correct. (c) V/F = 0.3325 by Rachford-Rice, correct. (d) y1 = 0.5305 and (e) 114.83 C, correct.",
-   "parts": {
-    "a": 2,
-    "b": 2,
-    "c": 2,
-    "d": 2,
-    "e": 2
-   },
-   "errors": {}
-  },
-  {
    "model": "meta/muse-spark-1.3",
    "problem": "P01",
    "run": 1,
@@ -8316,6 +8100,424 @@
     "c": 2,
     "d": 2,
     "e": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P01",
+   "run": 1,
+   "text": "I did not use any tools for the working. I used one SubagentHandback call, only to deliver this answer.\n\n**Working**\n\nFlow area: A = πD²/4 = π(0.040)²/4 = 1.2566×10⁻³ m².\n\nVelocity: v = Q/A = 1.5×10⁻³ / 1.2566×10⁻³ = 1.194 m/s.\n\n(a) Re = ρvD/μ = 880 × 1.194 × 0.040 / 0.12 ≈ 350. This is below 2100, so the flow is laminar.\n\n(b) For laminar flow in a tube, the Darcy friction factor is f = 64/Re = 64/350.1 ≈ 0.183. The smooth wall does not matter in laminar flow.\n\n(c) ΔP = f (L/D) (ρv²/2) = 0.1828 × (25/0.040) × (880 × 1.194² / 2).\n- ρv²/2 = 626.9 Pa\n- ΔP = 0.1828 × 625 × 626.9 ≈ 71.6×10³ Pa\n\nAs a check, Hagen–Poiseuille gives ΔP = 32μvL/D² = 32 × 0.12 × 1.1937 × 25 / 0.0016 ≈ 71.6 kPa, which agrees.\n\nFINAL (a): 350 (dimensionless)\nFINAL (b): 0.183 (dimensionless)\nFINAL (c): 71.6 kPa",
+   "score": 10.0,
+   "justification": "(a) Re = 350 from v = 1.194 m/s, matching 350.1: full points. (b) laminar f = 64/Re = 0.183, within 0.2 %: full points. (c) Darcy-Weisbach gives 71.6 kPa, confirmed with Hagen-Poiseuille, matching 71.62 kPa: full points.",
+   "parts": {
+    "a": 3,
+    "b": 3,
+    "c": 4
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P02",
+   "run": 1,
+   "text": "**Setup**\n\n- Area: A = π(0.10)²/4 = 7.854×10⁻³ m².\n- Velocity: v = Q/A = 0.025/7.854×10⁻³ = 3.183 m/s.\n- Velocity head: v²/2g = 10.132/19.62 = 0.5164 m.\n\n**(a) Reynolds number**\n\nRe = ρvD/μ = 998 × 3.183 × 0.10 / 1.00×10⁻³ ≈ 3.18×10⁵, so the flow is turbulent.\n\n**(b) Friction factor (Colebrook)**\n\nε/D = 0.046/100 = 4.6×10⁻⁴, so (ε/D)/3.7 = 1.243×10⁻⁴.\n\nColebrook: 1/√f = −2 log₁₀[ (ε/D)/3.7 + 2.51/(Re√f) ]\n\n- Start with f = 0.0178, so √f = 0.1334. The second term is 2.51/(3.177×10⁵ × 0.1334) = 5.92×10⁻⁵. The bracket is 1.835×10⁻⁴, log₁₀ = −3.7363, so 1/√f = 7.473 and f = 0.01791.\n- Second pass with √f = 0.13383: the second term is 5.90×10⁻⁵ and the bracket is 1.834×10⁻⁴. This gives 1/√f = 7.4735, so f = 0.01790.\n\nThe iteration has converged at f ≈ 0.0179.\n\n**(c) Total pump head**\n\nApply the energy balance between the two free surfaces (both at atmospheric pressure, velocities negligible):\n\nH = Δz + (f L/D + ΣK) v²/2g\n\n- f L/D = 0.01790 × 150/0.10 = 26.86\n- f L/D + ΣK = 26.86 + 5.5 = 32.36\n- Losses = 32.36 × 0.5164 = 16.71 m\n- H = 12 + 16.71 = 28.7 m\n\n**(d) Pump shaft power**\n\n- Hydraulic power = ρgQH = 998 × 9.81 × 0.025 × 28.71 = 7.03 kW\n- Shaft power = 7.03/0.72 = 9.76 kW\n\nI did these calculations by hand without running any code.\n\nFINAL (a): 3.18e5 (dimensionless)\nFINAL (b): 0.0179 (dimensionless)\nFINAL (c): 28.7 m\nFINAL (d): 9.76 kW",
+   "score": 10.0,
+   "justification": "(a) Re = 3.18e5, correct. (b) f = 0.0179 from a shown, converged Colebrook iteration, correct. (c) H = 28.7 m (28.71 in the working), correct energy balance with friction and minor losses. (d) 9.76 kW, correct.",
+   "parts": {
+    "a": 2,
+    "b": 3,
+    "c": 3,
+    "d": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P03",
+   "run": 1,
+   "text": "Method: take the junction head H_J as unknown, find each pipe's flow from Darcy–Weisbach with Colebrook friction, and adjust H_J until the flows at J balance. I did this by hand and iterated on f, so the results are good to about three significant figures at best. I did not check them with code.\n\n**Setup**\n\n- Head loss: h_f = f(L/D)V²/2g, so Q = A·√(2gD·h_f/(fL)).\n- Colebrook: 1/√f = −2 log₁₀[(ε/D)/3.7 + 2.51/(Re√f)].\n- Relative roughness ε/D: 8.67×10⁻⁴ (pipe 1), 1.30×10⁻³ (pipe 2), 1.04×10⁻³ (pipe 3).\n- At the converged flows, Re is about 5.9×10⁵ in pipe 1, 9.6×10⁴ in pipe 2 and 6.3×10⁵ in pipe 3.\n- Colebrook then gives f₁ ≈ 0.0195, f₂ ≈ 0.0232 and f₃ ≈ 0.0203.\n- Resulting flow laws, with h the head difference across each pipe in m and Q in m³/s:\n  - Q₁ = 0.03168·√(120 − H_J)\n  - Q₂ = 0.01445·√|100 − H_J|\n  - Q₃ = 0.02203·√(H_J − 70)\n\n**Junction balance**\n\n- Pipe 3 always flows out of J toward C, since C is lowest. Pipe 1 always flows into J from A.\n- For H_J = 100 m, pipe 1 delivers more than pipe 3 can take, so H_J must be above 100 m. That means B receives water.\n- The balance is Q₁ = Q₂ + Q₃.\n- Trial values of (Q₂ + Q₃) − Q₁:\n\n| H_J (m) | (Q₂ + Q₃) − Q₁ (m³/s) |\n|---|---|\n| 101.0 | −0.00097 |\n| 101.1 | +0.00029 |\n\n- Linear interpolation gives H_J ≈ 101.08 m.\n- At that value the flows are Q₁ = 0.1378, Q₂ = 0.0150 and Q₃ = 0.1228 m³/s. Then Q₂ + Q₃ = 0.1378 m³/s = Q₁, so the balance closes.\n\n**Results**\n\n- (a) H_J ≈ 101.1 m.\n- (b) Q₁ ≈ 137.8 L/s, from A toward J.\n- (c) |Q₂| ≈ 15.0 L/s. Since H_J = 101.1 m is above B's 100 m, water flows from J into reservoir B.\n- (d) Q₃ ≈ 122.8 L/s, from J to C.\n\nFINAL (a): 101.1 m\nFINAL (b): 137.8 L/s\nFINAL (c): 15.0 L/s (flows into reservoir B)\nFINAL (d): 122.8 L/s",
+   "score": 10.0,
+   "justification": "Correct trial-and-error on H_J with Darcy-Weisbach and Colebrook friction factors (f1 = 0.0195, f2 = 0.0232, f3 = 0.0203), flow laws Q = k sqrt(h), residuals at 101.0 and 101.1 m and a continuity check. (a) 101.1 m (101.08 in the working) vs 101.08 m, (b) 137.8 vs 137.8 L/s, (c) 15.0 L/s into B vs 15.0 L/s into B, (d) 122.8 vs 122.8 L/s: all within 0.1 %, full points.",
+   "parts": {
+    "a": 4,
+    "b": 2,
+    "c": 2,
+    "d": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P04",
+   "run": 1,
+   "text": "Method: the isothermal compressible pipe-flow equation with the acceleration term included is\np1² − p2² = G² (RT/M) [ f·L/D + 2 ln(p1/p2) ]\nRe = G·D/μ = 4ṁ/(π D μ), which is constant along the pipe.\n\nNumbers:\n- RT/M = 8314 × 288 / 16.04 = 1.4928×10⁵ J/kg.\n- p1² − p2² = 25×10¹² − 9×10¹² = 16×10¹² Pa².\n- L/D = 40000 / 0.30 = 1.3333×10⁵.\n- 2 ln(5/3) = 1.0217.\n- ε/D = 0.046×10⁻³ / 0.30 = 1.533×10⁻⁴.\n- Pipe area A = π/4 × 0.30² = 0.070686 m².\n\nIteration (f and Re are coupled through G):\n1. Start with f ≈ 0.0135. Then G² = 16×10¹² / [1.4928×10⁵ × (1800 + 1.02)], so G ≈ 244 kg/m²s and Re ≈ 6.65×10⁶.\n2. Colebrook: 1/√f = −2 log10[ (ε/D)/3.7 + 2.51/(Re √f) ], with (ε/D)/3.7 = 4.144×10⁻⁵.\n3. At Re ≈ 6.7×10⁶ this gives 1/√f ≈ 8.70, so f ≈ 0.01321.\n4. With f = 0.01321: f·L/D = 1761.7, and the bracket is 1761.7 + 1.02 = 1762.7.\n5. G² = 16×10¹² / (1.4928×10⁵ × 1762.7) = 6.081×10⁴, so G = 246.6 kg/m²s.\n6. Re = 246.6 × 0.30 / 1.1×10⁻⁵ = 6.73×10⁶. Re-evaluating Colebrook at this Re gives f = 0.01321 again, so the iteration has converged.\n\n(a) ṁ = G·A = 246.6 × 0.070686 = 17.4 kg/s.\n(b) Re = 6.73×10⁶.\n(c) f = 0.0132 (Colebrook, 0.01321).\n(d) Outlet density ρ2 = p2 M/(RT) = 3×10⁶ / 1.4928×10⁵ = 20.10 kg/m³. Outlet velocity v2 = G/ρ2 = 246.6 / 20.10 = 12.3 m/s.\n\nI did this by hand with no tools and no code, so the numbers are not checked by a program.\n\nFINAL (a): 17.4 kg/s\nFINAL (b): 6.73e6 (dimensionless)\nFINAL (c): 0.0132 (dimensionless)\nFINAL (d): 12.3 m/s",
+   "score": 10.0,
+   "justification": "(a) 17.4 kg/s from the correct isothermal equation p1^2 - p2^2 = G^2 (RT/M)[fL/D + 2 ln(p1/p2)] with a shown Colebrook iteration, 0.2 % off: full. (b) Re = 6.73e6 as G D/mu, 0.1 % off: full. (c) f = 0.0132 (0.01321 in the working), 0.1 % off: full. (d) 12.3 m/s as G/rho2, 0.2 % off: full.",
+   "parts": {
+    "a": 4,
+    "b": 2,
+    "c": 2,
+    "d": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P05",
+   "run": 1,
+   "text": "**Setup.** The input step is U′(s) = 4/s, so\n\nY′(s) = 2.5·4 / [s(8s + 1)] = 10 / [s(8s + 1)]\n\nInverting gives y′(t) = 10(1 − e^(−t/8)), with gain K = 2.5 and time constant τ = 8 min.\n\n**(a)** The final value theorem gives the new steady-state change:\n\ny′(∞) = K·A = 2.5 × 4 = 10\n\n**(b)** At t = 10 min:\n\ny′(10) = 10(1 − e^(−10/8)) = 10(1 − e^(−1.25)) = 10(1 − 0.2865) ≈ 7.13\n\n**(c)** The output reaches 95 % of its final change when 1 − e^(−t/8) = 0.95. Then e^(−t/8) = 0.05, so\n\nt = −8 ln(0.05) = 8 × 2.996 ≈ 23.97 min, which is about 3τ.\n\nFINAL (a): 10 units\nFINAL (b): 7.13 units\nFINAL (c): 23.97 min",
+   "score": 10,
+   "justification": "(a) 10 units from K times the step size, correct. (b) y'(10) = 10(1 - e^(-1.25)) = 7.13 (reference 7.135, 0.07 % off), correct. (c) t = -8 ln(0.05) = 23.97 min (reference 23.97), correct.",
+   "parts": {
+    "a": 3,
+    "b": 4,
+    "c": 3
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P06",
+   "run": 1,
+   "text": "**Setup:** Compare G(s) = 4/(9s² + 2.4s + 1) with the standard form K/(τ²s² + 2ζτs + 1). This gives K = 4, τ² = 9 so τ = 3 min, and 2ζτ = 2.4. The step size is M = 2, so the final change is KM = 8.\n\n**(a) Damping factor**\n\nζ = 2.4/(2·3) = 0.4. This is below 1, so the response is underdamped.\n\n**(b) Overshoot**\n\nOvershoot = exp(−πζ/√(1−ζ²)), with √(1−0.16) = 0.9165.\n\nThe exponent is −π(0.4)/0.9165 = −1.3711, so the overshoot is exp(−1.3711) = 0.2538, or about 25.4% of the final change.\n\n**(c) Time of the first peak**\n\nt_p = πτ/√(1−ζ²) = 3π/0.9165 = 10.28 min.\n\n**(d) Maximum output deviation**\n\ny′_max = 8(1 + 0.2538) = 10.03.\n\n**(e) Decay ratio**\n\nThe decay ratio is the overshoot squared: 0.2538² = 0.0644.\n\nFINAL (a): 0.4 dimensionless\nFINAL (b): 25.4 %\nFINAL (c): 10.28 min\nFINAL (d): 10.03 (units of y′, deviation variable)\nFINAL (e): 0.0644 dimensionless",
+   "score": 10,
+   "justification": "(a) zeta = 0.4 from tau = 3 min and 2 zeta tau = 2.4, correct. (b) overshoot 25.4 % (reference 25.38 %) and (c) t_p = 10.28 min (reference 10.28), correct. (d) y'max = 8(1 + 0.2538) = 10.03 (reference 10.03) and (e) decay ratio OS^2 = 0.0644 (reference 0.0644), correct.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 2,
+    "d": 2,
+    "e": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P07",
+   "run": 1,
+   "text": "Working (hand calculation, no tools used):\n\n(a) The phase of G_p is -atan(12w) - 2.5w. Setting it equal to -pi gives w_u = 0.6773 rad/min. Check: atan(8.127) = 1.4484, 2.5w = 1.6932, and the sum is 3.1416.\n\n(b) At w_u, |G_p| = 1.8 / sqrt(1 + 8.1275^2) = 1.8 / 8.189 = 0.2198. So K_u = 1 / 0.2198 = 4.55.\n\n(c) P_u = 2*pi / 0.6773 = 9.28 min.\n\n(d) K_c = 4.55 / 2.2 = 2.07. tau_I = 9.277 / 1.2 = 7.73 min.\n\n(e) The PI loop phase is -atan(12w) - 2.5w - 90 deg + atan(7.731w). This equals -180 deg at w_c = 0.5985 rad/min.\n- The loop gain there is K_c * sqrt(1 + 1/(tau_I*w)^2) * 1.8 / sqrt(1 + (12w)^2) = 2.068 * 1.0231 * 0.2482 = 0.525.\n- Gain margin = 1 / 0.525 = 1.90.\n\n(f) The loop gain equals 1 at w_g = 0.3235 rad/min.\n- The phase there is -75.55 deg (from -atan(12w)) - 46.34 deg (from -2.5w) - 90 deg + 68.20 deg (from atan(tau_I*w)), which is -143.7 deg.\n- Phase margin = 180 - 143.7 = 36.3 deg.\n\nNothing was checked with code.\n\nFINAL (a): 0.677 rad/min\nFINAL (b): 4.55 (dimensionless)\nFINAL (c): 9.28 min\nFINAL (d): K_c = 2.07 (dimensionless); tau_I = 7.73 min\nFINAL (e): 1.90 (ratio)\nFINAL (f): 36.3 deg",
+   "score": 10,
+   "justification": "(a) omega_u = 0.677 rad/min from atan(12w) + 2.5w = pi, (b) K_u = 4.55 and (c) P_u = 9.28 min, all within 0.05 % of the reference. (d) K_c = 2.07 and tau_I = 7.73 min, correct (within 0.1 %). (e) GM = 1.90 at the PI-loop phase crossover 0.5985 rad/min (reference 1.904, 0.2 % off), correct. (f) PM = 36.3 deg at the gain crossover 0.3235 rad/min (reference 36.31 deg), correct.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 1,
+    "d": 1,
+    "e": 2,
+    "f": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P08",
+   "run": 1,
+   "text": "**Setup.** The open-loop denominator is (s+1)(2s+1)(5s+1) = 10s³ + 17s² + 8s + 1.\n\nThe characteristic equation is 1 + K_c(1 + 1/(4s))·G_p = 0. Multiplying through by 4s·(10s³ + 17s² + 8s + 1) gives:\n\n40s⁴ + 68s³ + 32s² + (4 + 4K_c)s + K_c = 0\n\n**(a) Routh array**\n\n| Row | Entries |\n|---|---|\n| s⁴ | 40, 32, K_c |\n| s³ | 68, 4 + 4K_c |\n| s² | b₁ = (68·32 − 40(4 + 4K_c))/68 = (2016 − 160K_c)/68, then K_c |\n| s¹ | d₁ = [b₁(4 + 4K_c) − 68K_c]/b₁ |\n| s⁰ | K_c |\n\nStability needs every first-column entry to be positive.\n\n- From b₁ > 0: K_c < 12.6.\n- From d₁ > 0: (2016 − 160K_c)(4 + 4K_c) > 4624K_c. Expanding gives 8064 + 2800K_c − 640K_c² > 0, which simplifies to 40K_c² − 175K_c − 504 < 0.\n- The positive root is K_c = [175 + √(175² + 4·40·504)]/80 = (175 + 333.56)/80 = 6.357.\n\nThis is below 12.6, so the d₁ condition governs: **K_c,max ≈ 6.36**.\n\n**(b) Oscillation frequency.** At K_c,max the s¹ row is zero, so the auxiliary equation comes from the s² row: b₁s² + K_c = 0.\n\n- b₁ = (2016 − 160·6.357)/68 = 14.69.\n- ω² = K_c/b₁ = 6.357/14.69 = 0.4328.\n- ω = 0.658 rad/min.\n\n**(c) P-only control with K_c = 3.** The characteristic polynomial is 10s³ + 17s² + 8s + 4. It is stable because 17·8 = 136 > 10·4 = 40, so an offset exists. The static gain of G_p is 1, so for a unit setpoint step:\n\n- Final output = K_c/(1 + K_c) = 3/4 = 0.75.\n- Offset = 1 − 0.75 = 1/(1 + K_c) = 0.25.\n\nI did these calculations by hand and did not run any code.\n\nFINAL (a): 6.36 (dimensionless)\nFINAL (b): 0.658 rad/min\nFINAL (c): 0.25 (dimensionless, in units of the unit setpoint step)",
+   "score": 10,
+   "justification": "(a) correct characteristic polynomial 40s^4+68s^3+32s^2+(4+4Kc)s+Kc and Routh array, the s^1 condition 40Kc^2 - 175Kc - 504 < 0 gives Kc,max = 6.36 (reference 6.357), correct. (b) auxiliary equation b1 s^2 + Kc = 0 gives omega = 0.658 rad/min (reference 0.658), correct. (c) offset 1/(1+Kc) = 0.25, correct.",
+   "parts": {
+    "a": 5,
+    "b": 3,
+    "c": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P09",
+   "run": 1,
+   "text": "**(a) Minimum stages (Fenske)**\n\nAt total reflux, N_min = ln[(x_D/(1−x_D))·((1−x_B)/x_B)] / ln α.\n\n- (x_D/(1−x_D)) = 0.95/0.05 = 19\n- ((1−x_B)/x_B) = 0.95/0.05 = 19\n- ln(19 × 19) = ln 361 = 5.8889\n- ln 2.5 = 0.9163\n- N_min = 5.8889 / 0.9163 = 6.43\n\nThis is the non-integer value, and it counts the partial reboiler as a stage.\n\n**(b) Minimum reflux ratio**\n\nThe feed is saturated liquid, so q = 1 and the q-line is vertical at x = z_F = 0.40. The pinch is at the intersection of the q-line with the equilibrium curve.\n\n- y* = αx/(1+(α−1)x) = 2.5(0.4)/(1+1.5(0.4)) = 1.0/1.6 = 0.625\n- R_min = (x_D − y*)/(y* − x) = (0.95 − 0.625)/(0.625 − 0.40) = 0.325/0.225 = 1.444\n\nFINAL (a): 6.43 stages\nFINAL (b): 1.44 (dimensionless, L/D)",
+   "score": 10,
+   "justification": "(a) 6.43 from the correct Fenske equation, matches the reference 6.427: full points. (b) R_min = (x_D - y*)/(y* - z_F) with the q = 1 pinch y* = 0.625 gives 1.444, matches the reference: full points.",
+   "parts": {
+    "a": 5,
+    "b": 5
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P10",
+   "run": 1,
+   "text": "**Basis:** G = 100 kmol/h. Because the system is dilute, I take G as constant and use y₁ = 0.020. With 95 % absorbed, y₂ = 0.05 × 0.020 = 0.0010. The inlet water is pure, so x₂ = 0.\n\n**(a) Minimum water flow**\n\nAt minimum flow the exit liquid is in equilibrium with the feed gas:\n\nx₁* = y₁/1.8 = 0.02/1.8 = 0.011111\n\nA balance on the acetone gives L_min = G(y₁ − y₂)/(x₁* − x₂) = 100 × 0.019 / 0.011111 = 171 kmol/h.\n\n**(b) Absorption factor at the operating flow**\n\nL = 1.5 × 171 = 256.5 kmol/h\n\nA = L/(mG) = 256.5/(1.8 × 100) = 1.425\n\n**(c) Number of theoretical stages (Kremser)**\n\nN = ln{ [(y₁ − m x₂)/(y₂ − m x₂)] (1 − 1/A) + 1/A } / ln A\n\n- y₁/y₂ = 20\n- 1/A = 0.7018, so 1 − 1/A = 0.2982\n- The bracket is 20 × 0.2982 + 0.7018 = 6.667\n- ln 6.667 = 1.8971\n- ln 1.425 = 0.3542\n\nN = 1.8971/0.3542 ≈ 5.36 theoretical stages\n\nI did not check these results against a second method.\n\nFINAL (a): 171 kmol/h\nFINAL (b): 1.425 dimensionless\nFINAL (c): 5.36 stages",
+   "score": 10,
+   "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 256.5/180 = 1.425, correct. (c) N = 5.36 from the correct Kremser equation, correct.",
+   "parts": {
+    "a": 3,
+    "b": 3,
+    "c": 4
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P11",
+   "run": 1,
+   "text": "**Basis:** α = 2.4, so the equilibrium curve is y = 2.4x/(1+1.4x) and its inverse is x = y/(2.4 − 1.4y). Total condenser, so y1 = x_D. Constant molar overflow. All numbers were worked by hand and not checked with code.\n\n**(a) Distillate flow**\n- Overall balance: 100(0.45) = 0.96 D + 0.04 (100 − D).\n- 45 − 4 = 0.92 D, so D = 41/0.92 = 44.57 kmol/h. B = 55.43 kmol/h.\n\n**(b) Minimum reflux ratio**\n- The q-line (q = 0.6) is y = −1.5x + 1.125.\n- Intersecting it with equilibrium gives 2.1x² + 2.325x − 1.125 = 0, so x* = 0.3641 and y* = 0.5788.\n- R_min = (x_D − y*)/(y* − x*) = (0.96 − 0.5788)/(0.5788 − 0.3641) = 1.775.\n\n**(c) Operating reflux ratio**\n- R = 1.5 × 1.7754 = 2.663.\n\n**(d) Stage stepping**\n- Rectifying line: y = 0.72701x + 0.26207.\n- Flows: L = R D = 118.68 and V = L + D = 163.25 kmol/h. L' = L + qF = 178.68 and V' = V − (1 − q)F = 123.25 kmol/h.\n- Stripping line: y = 1.44978x − 0.017991. It passes through (0.04, 0.04) as it should.\n- The operating lines intersect at x = 0.3875 and y = 0.5438.\n\n| Stage | x |\n|---|---|\n| 1 | 0.9091 |\n| 2 | 0.8332 |\n| 3 | 0.7323 |\n| 4 | 0.6169 |\n| 5 | 0.5057 |\n| 6 | 0.4147 |\n| 7 | 0.3498 (below 0.3875, so switch lines) |\n| 8 | 0.2852 |\n| 9 | 0.2142 |\n| 10 | 0.1470 |\n| 11 | 0.0917 |\n| 12 | 0.0514 |\n| 13 | 0.0243 (below x_B = 0.04) |\n\n- Stage 13 is the last stage, and it overshoots x_B. Its fraction is (x12 − x_B)/(x12 − x13) = (0.05137 − 0.04)/(0.05137 − 0.02433) = 0.0114/0.0270 = 0.42.\n- Total = 12 + 0.42 = 12.42 theoretical stages, including the partial reboiler.\n\n**(e) Optimal feed stage**\n- x6 = 0.4147 is above the intersection x of 0.3875, and x7 = 0.3498 is the first below it. The feed stage is stage 7 from the top.\n\nFINAL (a): 44.57 kmol/h\nFINAL (b): 1.775 (dimensionless)\nFINAL (c): 2.663 (dimensionless)\nFINAL (d): 12.42 stages\nFINAL (e): 7 (stage number from the top)",
+   "score": 10,
+   "justification": "(a) D = 44.57 kmol/h, correct. (b) R_min = 1.775 from the q-line/equilibrium pinch (0.3641, 0.5788) and (c) R = 2.663, both correct. (d) correct operating lines (stripping line from internal flows, intersection 0.3875) and a full stage-by-stage table give 12.42 stages (reference 12.42), correct. (e) liquid first falls below x = 0.3875 on stage 7, correct.",
+   "parts": {
+    "a": 1,
+    "b": 2,
+    "c": 1,
+    "d": 4,
+    "e": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P12",
+   "run": 1,
+   "text": "Basis: F = 100 kmol/h. Feed flows: C3 5, nC4 35, nC5 40, nC6 20 kmol/h.\n\n(a) Distillate and bottoms\n- d(C3) = 5, d(nC4) = 0.98(35) = 34.3, d(nC5) = 0.03(40) = 1.2, d(nC6) = 0.\n- D = 5 + 34.3 + 1.2 = 40.5 kmol/h, so B = 59.5 kmol/h.\n- Bottoms: nC4 0.7, nC5 38.8, nC6 20 (sums to 59.5).\n\n(b) Fenske\n- N_min = ln[(d_LK/d_HK)(b_HK/b_LK)] / ln α_LK,HK = ln[(34.3/1.2)(38.8/0.7)] / ln 2.\n- The product is 28.583 × 55.429 = 1584.4, so ln = 7.368.\n- N_min = 7.368 / 0.6931 = 10.63.\n\n(c) Underwood root (q = 1, so the feed equation sums to zero)\n- Solve 0.21/(4.2−θ) + 0.7/(2−θ) + 0.4/(1−θ) + 0.09/(0.45−θ) = 0 for 1 < θ < 2.\n- θ = 1.368 gives −0.0032 and θ = 1.370 gives +0.0064.\n- Interpolating, θ = 1.3687.\n\n(d) Minimum reflux\n- R_min + 1 = (1/D) Σ α_i d_i/(α_i − θ).\n- The terms are 21/2.8313 = 7.417, 68.6/0.6313 = 108.66, 1.2/(−0.3687) = −3.255, and 0 for nC6. The sum is 112.82.\n- R_min + 1 = 112.82/40.5 = 2.786, so R_min = 1.786.\n\n(e) Gilliland (Eduljee)\n- R = 1.3 × 1.7857 = 2.321.\n- X = (2.3214 − 1.7857)/(3.3214) = 0.1613.\n- X^0.5668 = 0.3555, so Y = 0.75(1 − 0.3555) = 0.4834.\n- N = (N_min + Y)/(1 − Y) = (10.63 + 0.4834)/0.5166 = 21.5 (non-integer, includes the partial reboiler).\n\n(f) Kirkbride\n- z_HK/z_LK = 0.4/0.35 = 1.1429.\n- x_B,LK = 0.7/59.5 = 0.011765 and x_D,HK = 1.2/40.5 = 0.029630. Their ratio is 0.3971, and its square is 0.15766.\n- B/D = 1.4691.\n- The product is 1.1429 × 0.15766 × 1.4691 = 0.2647, so log₁₀ = −0.5772.\n- log₁₀(N_R/N_S) = 0.206 × (−0.5772) = −0.1189, so N_R/N_S = 0.760.\n\nAll values were calculated by hand, with no code run to cross-check them.\n\nFINAL (a): 40.5 kmol/h\nFINAL (b): 10.63 stages\nFINAL (c): 1.369 (dimensionless)\nFINAL (d): 1.786 (dimensionless)\nFINAL (e): 21.5 stages\nFINAL (f): 0.760 (dimensionless)",
+   "score": 10,
+   "justification": "(a) D = 40.5 kmol/h, correct. (b) N_min = 10.63 from Fenske on the keys and (c) theta = 1.3687, both correct. (d) R_min = 1.786 and (e) N = 21.5 from the Eduljee form (reference 21.51, 0.05 % off), correct. (f) N_R/N_S = 0.760 from Kirkbride, correct.",
+   "parts": {
+    "a": 1,
+    "b": 2,
+    "c": 2,
+    "d": 2,
+    "e": 2,
+    "f": 1
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P13",
+   "run": 1,
+   "text": "**Method.** Take Q_p as the unknown and use piezometric heads.\n\n- Pump inlet head: H = 1.0 − h_suction.\n- Pump outlet (node A): H_A = 1.0 − h_s + H_p.\n- Node D: H_D = 14.0 + h₆, with Q₆ = Q_p − 0.016, because the 16 L/s leaves at B.\n- The withdrawal at B is fixed, so H_B is free.\n- Each pipe loses h = (fL/D + ΣK)·8Q²/(π²gD⁴).\n- f comes from Colebrook at each pipe's own Re = 1.268×10⁶·Q/D.\n- Continuity at B: Q₁ = 0.016 + Q₃ + Q₄. At C: Q₂ + Q₃ = Q₅.\n- For each trial Q_p, I solved H_B and H_C by Newton iteration with f updated each time. I then adjusted Q_p until Q₁ + Q₂ = Q_p.\n\n**Convergence.**\n\n| Q_p (L/s) | Q₁ + Q₂ (L/s) |\n|---|---|\n| 45 | ≈ 53.6 (rough solve) |\n| 50 | 49.59 |\n| 49.8 | 49.77 |\n\nInterpolating gives Q_p = 49.78 L/s.\n\n**Converged state (Q_p ≈ 49.8 L/s).**\n\n- Suction pipe: f = 0.0163, h_s ≈ 0.49 m, so H_A ≈ 50.7 m.\n- Pipe 6: f = 0.0170, h₆ ≈ 3.37 m, so H_D ≈ 17.4 m.\n- H_B ≈ 29.3 m and H_C ≈ 26.97 m.\n- Q₁ ≈ 31.9, Q₂ ≈ 17.8, Q₃ ≈ 3.5, Q₄ ≈ 12.4, Q₅ ≈ 21.3 L/s.\n- Check at B: 31.9 − 3.5 − 12.4 = 16.0 L/s.\n- Check at C: 17.8 + 3.5 − 21.3 = 0.\n\n**(a)** Q_p ≈ 49.8 L/s.\n\n**(b)** H_p = 80 − 12000(0.04978)² ≈ 50.3 m.\n\n**(c)** H_B > H_C (29.3 m against 26.97 m), so the flow in pipe 3 is about 3.5 L/s from B to C.\n\n**(d)** The pressure head at C is 26.97 − 4.0 = 22.97 m. The gauge pressure is 998.2 × 9.81 × 22.97 ≈ 225 kPa.\n\n**(e)** P = ρgQ_pH_p/η = 9792 × 0.04978 × 50.26 / 0.70 ≈ 35.0 kW.\n\nI did all of this by hand with no code, so the numbers are accurate to about 2–3 significant figures.\n\nFINAL (a): 49.8 L/s\nFINAL (b): 50.3 m\nFINAL (c): 3.5 L/s from B to C\nFINAL (d): 225 kPa\nFINAL (e): 35.0 kW",
+   "score": 10,
+   "justification": "Node-head solution with Darcy-Weisbach and Colebrook per pipe, outer iteration on Qp with a short convergence table (inner Newton iterations not shown); the stated suction and pipe-6 losses, heads (H_B = 29.3 m, H_C = 26.97 m) and pipe flows agree with my check and satisfy continuity. (a) Qp = 49.78 L/s (FINAL 49.8) and (b) Hp = 50.26 m (FINAL 50.3), both within 0.1 %: full. (c) 3.5 L/s from B to C (0.2 % off), direction correct: full. (d) 225 kPa (22.97 m pressure head, 224.9 kPa, 0.03 % off) and (e) 35.0 kW, correct: full.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 3,
+    "d": 2,
+    "e": 1
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P14",
+   "run": 1,
+   "text": "I worked this by hand with no tools, so the values are hand-computed and good to about 2–3 significant figures.\n\n**Phase of G_v·G_p·G_m**\n\nφ(ω) = −1.5ω − atan 6ω − atan 2ω − atan ω − atan 0.5ω\n\n**(a) Ultimate frequency**\n\nI solved φ(ω) = −180° by interpolation:\n- At ω = 0.42 the total lag is 179.1°.\n- At ω = 0.425 it is 180.5°.\n- The root is ω_u ≈ 0.423 rad/min.\n\n**(b) Ultimate gain and period**\n\nAt ω_u the magnitude is |G| = 2 / (2.729 · 1.310 · 1.086 · 1.022) = 2 / 3.969 = 0.504.\n- K_u = 1/0.504 ≈ 1.98.\n- P_u = 2π/0.4232 ≈ 14.85 min.\n\n**(c) Ziegler–Nichols PID settings**\n\n- K_c = 0.6 · 1.985 ≈ 1.19.\n- τ_I = P_u/2 ≈ 7.42 min.\n- τ_D = P_u/8 ≈ 1.86 min.\n\nThe controller phase is atan(τ_D ω − 1/(τ_I ω)) and its magnitude is K_c·√(1 + (τ_D ω − 1/(τ_I ω))²).\n\n**(d) Gain margin**\n\nThe PID adds phase lead, so the −180° crossing moves above ω_u.\n- At ω = 0.585 the process lag is 220.5° and the controller lead is +40.5°, so the total is −179.95°.\n- Refining gives ω_pc ≈ 0.585 rad/min.\n- There |G| = 0.2946 and |G_c| = 1.191 · 1.316 = 1.568, so |L| = 0.462.\n- GM = 1/0.462 ≈ 2.16.\n\n**(e) Phase margin**\n\n|L| = 1.141 at ω = 0.25, 0.996 at ω = 0.285 and 0.945 at ω = 0.30, so ω_gc ≈ 0.284 rad/min.\n- At that frequency the process lag is 137.5° and the controller lead is +3.0°, so the phase of L is −134.5°.\n- PM = 180° − 134.5° ≈ 45.5°.\n\n**(f) Maximum sensitivity**\n\nI evaluated |1 + L| at several frequencies:\n\n| ω (rad/min) | |1 + L| |\n|---|---|\n| 0.45 | 0.475 |\n| 0.46 | 0.473 |\n| 0.47 | 0.472 |\n| 0.48 | 0.473 |\n| 0.50 | 0.479 |\n\nThe minimum of about 0.472 is near ω ≈ 0.47 rad/min, which gives M_s = 1/0.472 ≈ 2.12.\n\nFINAL (a): 0.423 rad/min\nFINAL (b): K_u = 1.98 (dimensionless), P_u = 14.85 min\nFINAL (c): K_c = 1.19 (dimensionless), τ_I = 7.42 min, τ_D = 1.86 min\nFINAL (d): GM = 2.16 (ratio), ω_pc = 0.585 rad/min\nFINAL (e): PM = 45.5 degrees, ω_gc = 0.284 rad/min\nFINAL (f): M_s = 2.12 (dimensionless), at ω = 0.47 rad/min",
+   "score": 10,
+   "justification": "(a) omega_u = 0.423 rad/min by interpolating the phase, and (b) K_u = 1.98, P_u = 14.85 min, correct (within 0.2 %). (c) K_c = 1.19, tau_I = 7.42 min, tau_D = 1.86 min, correct. (d) GM = 2.16 at omega_pc = 0.585 rad/min (0.3 % and 0.07 % off) and (e) PM = 45.5 deg at omega_gc = 0.284 rad/min, correct with phase and magnitude values that check out. (f) M_s = 2.12 at 0.47 rad/min from a scan of |1+L| (0.2 % and 0.1 % off): full points.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 1,
+    "d": 2,
+    "e": 2,
+    "f": 1
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "problem": "P15",
+   "run": 1,
+   "text": "**Method.** The feed is converted to a molar basis, K_i = P_i^sat/P is evaluated from the Antoine equation, and the bubble point, dew point and Rachford–Rice equation are each solved by hand iteration. The feed has to be converted first.\n\n**Feed on a mole basis.** On a 100 g basis the moles are 30/78.11 = 0.38407 (benzene), 40/92.14 = 0.43412 (toluene) and 30/106.17 = 0.28257 (o-xylene). The total is 1.10076 mol, so z = (0.34892, 0.39438, 0.25670).\n\nThe pressure is P = 120/0.133322 = 900.08 mmHg.\n\n**(a) Bubble point.** The condition is Σ z_i P_i^sat = 900.08 mmHg.\n- At 107 °C the vapour pressures are 1625.96, 684.82 and 251.42 mmHg, and the sum is 901.95 mmHg.\n- The slope is about 24.7 mmHg/°C, so the correction is −0.076 °C.\n- T_bubble ≈ 106.92 °C.\n\n**(b) Dew point.** The condition is Σ z_i/P_i^sat = 1/900.08 = 1.1110×10⁻³ mmHg⁻¹.\n- At 123.7 °C the vapour pressures are 2455.9, 1086.5 and 424.6 mmHg, and the sum is 1.10961×10⁻³ mmHg⁻¹.\n- The local slope is about −0.315×10⁻⁴ mmHg⁻¹ per °C, so the correction is −0.044 °C.\n- T_dew ≈ 123.66 °C.\n\n**(c) Flash at 112 °C.** The vapour pressures are 1847.7, 790.15 and 295.80 mmHg, so K = (2.0529, 0.8779, 0.3287).\n\nThe Rachford–Rice equation is Σ z_i(K_i−1)/(1+ψ(K_i−1)) = 0, with ψ = V/F. It evaluates to f(0.33) = +0.00107 and f(0.335) = −0.00097. Interpolating gives ψ = 0.3326, so V/F ≈ 0.3326.\n\n**(d) Benzene in the vapour.**\n- x₁ = 0.348918/(1 + 0.33262×1.05288) = 0.348918/1.35021 = 0.25842.\n- y₁ = K₁x₁ = 2.0529 × 0.25842 = 0.5305.\n\n**(e) Temperature at V/F = 0.5.** The Rachford–Rice equation reduces to Σ z_i(K_i−1)/(K_i+1) = 0.\n- At 112 °C the sum is −0.0350.\n- At 115 °C it is +0.00213, with K = (2.2124, 0.9546, 0.3615).\n- At 116 °C it is +0.0144.\n- The slope is about 0.0123 per °C, so the root is 115 − 0.17 = 114.83 °C.\n\nFINAL (a): 106.92 °C\nFINAL (b): 123.66 °C\nFINAL (c): 0.3326 (mol vapour/mol feed)\nFINAL (d): 0.5305 (mole fraction)\nFINAL (e): 114.83 °C",
+   "score": 10,
+   "justification": "(a) 106.92 C and (b) 123.66 C by one Antoine evaluation plus a slope correction, both within 0.01 C. (c) V/F = 0.3326 by Rachford-Rice with bracketing values that check out (0.02 % off) and (d) y1 = 0.5305, correct. (e) 114.83 C from the V/F = 0.5 form of Rachford-Rice, 0.002 C off: full points.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 2,
+    "d": 2,
+    "e": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P01",
+   "run": 1,
+   "text": "**Setup**\n\n- Volumetric flow: Q = 1.5 L/s = 1.5 × 10⁻³ m³/s\n- Diameter: D = 0.040 m, so the area is A = πD²/4 = 1.2566 × 10⁻³ m²\n- Mean velocity: V = Q/A = 1.5 × 10⁻³ / 1.2566 × 10⁻³ = 1.1937 m/s\n\n**(a) Reynolds number**\n\nRe = ρVD/μ = (880)(1.1937)(0.040)/0.12 = 350.1\n\nEquivalently, Re = 4ρQ/(πDμ) = 4(880)(1.5 × 10⁻³)/(π(0.040)(0.12)) = 350.1.\n\nRe ≈ 350 is well below the transition value of about 2100, so the flow is laminar. The laminar correlations below apply.\n\n**(b) Darcy friction factor**\n\nFor fully developed laminar flow in a smooth tube, f = 64/Re = 64/350.1 = 0.1828.\n\n**(c) Frictional pressure drop**\n\nDarcy–Weisbach: ΔP = f (L/D) (ρV²/2)\n- ρV²/2 = 880 × (1.1937)²/2 = 626.9 Pa\n- L/D = 25/0.040 = 625\n- ΔP = 0.1828 × 625 × 626.9 ≈ 71,600 Pa\n\nCross-check with Hagen–Poiseuille for laminar flow: ΔP = 32μLV/D² = 32(0.12)(25)(1.1937)/(0.040)² = 71,630 Pa. The two agree to within rounding.\n\nBecause the flow is horizontal, the frictional pressure drop equals the total pressure drop.\n\nFINAL (a): 350 (dimensionless)\nFINAL (b): 0.183 (dimensionless)\nFINAL (c): 71.6 kPa",
+   "score": 10.0,
+   "justification": "(a) Re = 350.1 from v = 1.1937 m/s, matching the reference: full points. (b) laminar f = 64/Re = 0.1828, matching: full points. (c) Darcy-Weisbach gives 71.6 kPa, confirmed with Hagen-Poiseuille (71.63 kPa), matching 71.62 kPa: full points.",
+   "parts": {
+    "a": 3,
+    "b": 3,
+    "c": 4
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P02",
+   "run": 1,
+   "text": "**Solution**\n\n**Flow and velocity**\n\n- Pipe area: A = π(0.10)²/4 = 7.854×10⁻³ m²\n- Mean velocity: V = Q/A = 0.025/7.854×10⁻³ = 3.183 m/s\n\n**(a) Reynolds number**\n\nRe = ρVD/μ = (998)(3.183)(0.10)/(1.00×10⁻³) = 3.177×10⁵\n\n**(b) Darcy friction factor (Colebrook)**\n\n- Relative roughness: ε/D = 0.046/100 = 4.6×10⁻⁴, so ε/(3.7D) = 1.243×10⁻⁴\n- Colebrook: 1/√f = −2 log₁₀[ε/(3.7D) + 2.51/(Re√f)]\n- Fixed-point iteration:\n  - f = 0.0190 gives f = 0.01787\n  - f = 0.01787 gives f = 0.01791\n  - f = 0.01791 gives f = 0.01791 (converged)\n- Check: Haaland gives f ≈ 0.0178, within about 1% of the Colebrook value.\n\nf = 0.0179\n\n**(c) Pump head**\n\nEnergy balance between the two free surfaces (both at atmospheric pressure, velocities negligible):\n\nH = Δz + h_L, with h_L = (f L/D + ΣK) V²/(2g)\n\n- V²/(2g) = (3.183)²/(2 × 9.81) = 0.5164 m\n- f L/D = 0.01791 × 150/0.10 = 26.86\n- f L/D + ΣK = 26.86 + 5.5 = 32.36\n- h_L = 32.36 × 0.5164 = 16.71 m\n- H = 12.00 + 16.71 = 28.71 m\n\nThe exit loss is included in ΣK, as the problem states.\n\n**(d) Shaft power**\n\n- Hydraulic power: P_h = ρgQH = (998)(9.81)(0.025)(28.71) = 7.03 kW\n- Shaft power: P_shaft = P_h/η = 7.03/0.72 = 9.76 kW\n\nThe values above were computed by hand, not run through code. No tools were used, as requested.\n\nFINAL (a): 3.18×10^5 dimensionless\nFINAL (b): 0.0179 dimensionless\nFINAL (c): 28.7 m\nFINAL (d): 9.76 kW",
+   "score": 10.0,
+   "justification": "(a) Re = 3.177e5, correct. (b) f = 0.0179 from a shown, converged Colebrook fixed-point iteration, correct. (c) H = 28.71 m, correct energy balance with friction and minor losses (exit loss in Sum K). (d) 9.76 kW, correct.",
+   "parts": {
+    "a": 2,
+    "b": 3,
+    "c": 3,
+    "d": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P03",
+   "run": 1,
+   "text": "**Setup**\n\nLet the junction head be H_J = x. Each pipe carries Q = sqrt(h·π²gD⁵ / (8fL)), where h is the head difference across the pipe. Define C = π²gD⁵/(8L):\n\n| Pipe | L (m) | D (m) | ε/D | C (m⁵/s²·…) = π²gD⁵/(8L) |\n|---|---|---|---|---|\n| 1 (A–J) | 1500 | 0.30 | 8.667×10⁻⁴ | 1.9607×10⁻⁵ |\n| 2 (B–J) | 800 | 0.20 | 1.300×10⁻³ | 4.8413×10⁻⁶ |\n| 3 (C–J) | 1200 | 0.25 | 1.040×10⁻³ | 9.8496×10⁻⁶ |\n\nEach pipe's flow is Q_i = sqrt(|h_i|·C_i/f_i), with h_1 = 120 − x, h_2 = 100 − x, h_3 = x − 70.\n\n**Flow directions.** With x between 70 and 100, both A and B would feed J and C would take the outflow. A trial solution shows the balance Q₁ + Q₂ = Q₃ has no root with x < 100. The residual is still positive at x = 100, so the root lies above B's level. At x > 100, pipe 2 reverses and carries water from J into B.\n\n**Friction factors (Colebrook, iterated by hand).** Colebrook is 1/√f = −2 log₁₀(ε/3.7D + 2.51/(Re√f)).\n\n- Pipe 1: Re ≈ 5.8×10⁵ gives f₁ ≈ 0.0195. Haaland check gives 0.0195.\n- Pipe 2: Re ≈ 9.5×10⁴ gives f₂ ≈ 0.0232.\n- Pipe 3: Re ≈ 6.3×10⁵ gives f₃ ≈ 0.0203. Haaland check gives 0.0203.\n\n**Junction balance.** With these f values, the equation is\n\nsqrt(1.0034×10⁻³ · (120 − x)) = sqrt(4.8545×10⁻⁴ · (x − 70)) + sqrt(2.0840×10⁻⁴ · (x − 100))\n\n| x (m) | Q₁ − Q₃ − Q₂(into J) residual (m³/s) |\n|---|---|\n| 100.8 | +0.0036 (earlier pass with other f values) |\n| 101.0 | +0.0010 |\n| 101.2 | −0.0015 |\n| 101.08 | ≈ 0 |\n\nThe root is x ≈ 101.08 m. Re-evaluating the friction factors at the final flows (Re₁ ≈ 5.8×10⁵, Re₂ ≈ 9.5×10⁴, Re₃ ≈ 6.3×10⁵) gives no change at this precision.\n\n**Flows at x ≈ 101.08 m**\n\n- Q₁ = sqrt(18.92 × 1.0034×10⁻³) ≈ 0.1378 m³/s\n- Q₃ = sqrt(31.08 × 4.8545×10⁻⁴) ≈ 0.1228 m³/s\n- |Q₂| = sqrt(1.08 × 2.0840×10⁻⁴) ≈ 0.0150 m³/s, directed from J into B\n- Check: Q₁ = Q₃ + |Q₂| gives 137.8 = 122.8 + 15.0 L/s.\n\nThe hand calculation is good to about 0.5%. I did not run code, and the value of pipe 2's flow is the least precise because its head difference is only about 1 m.\n\n**FINAL (a): 101.1 m**\n**FINAL (b): 137.8 L/s**\n**FINAL (c): 15.0 L/s, flowing out of the junction into reservoir B (water flows into B)**\n**FINAL (d): 122.8 L/s**",
+   "score": 10.0,
+   "justification": "Correct trial-and-error on H_J with Q = sqrt(h pi^2 g D^5/(8 f L)), Colebrook friction factors (f1 = 0.0195, f2 = 0.0232, f3 = 0.0203), residuals at 101.0 and 101.2 m and a continuity check. (a) 101.1 m (101.08 in the working) vs 101.08 m, (b) 137.8 vs 137.8 L/s, (c) 15.0 L/s into B vs 15.0 L/s into B, (d) 122.8 vs 122.8 L/s: all within 0.1 %, full points.",
+   "parts": {
+    "a": 4,
+    "b": 2,
+    "c": 2,
+    "d": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P04",
+   "run": 1,
+   "text": "**Setup**\n\n- Molar mass M = 16.04 kg/kmol, so R_specific = R/M = 8314/16.04 = 518.3 J/(kg·K)\n- RT/M = 518.3 × 288 = 1.4928×10⁵ m²/s²\n- A = πD²/4 = π(0.30)²/4 = 0.070686 m²\n- ε/D = 0.046 mm / 300 mm = 1.533×10⁻⁴\n\n**Governing equation**\n\nWith constant mass flux G = ṁ/A, we have v = G·RT/(Mp), so ρv·dv/dx = G·dv/dx. The momentum balance with the acceleration term is\n\n−dp/dx·(1 − G²RT/(Mp²)) = f·G²RT/(2DMp)\n\nMultiplying by p and integrating over the length L gives\n\np₁² − p₂² = (G²RT/M)·[f·L/D + 2 ln(p₁/p₂)]\n\n**Numbers**\n\n- p₁² − p₂² = (5.0² − 3.0²)×10¹² = 1.6×10¹³ Pa²\n- 2 ln(p₁/p₂) = 2 ln(5/3) = 1.02165\n- L/D = 40000/0.30 = 1.3333×10⁵\n\nSo G²·(1.3333×10⁵·f + 1.02165) = 1.6×10¹³ / 1.4928×10⁵ = 1.07185×10⁸ kg²/(m⁴·s²)\n\n**Iteration (f and G are coupled through Re)**\n\nRe = GD/μ = G × 0.30 / 1.1×10⁻⁵ = 2.7273×10⁴·G, which is constant along the pipe.\n\nColebrook: 1/√f = −2 log₁₀[(ε/D)/3.7 + 2.51/(Re√f)]\n\n1. Start with f = 0.011, which gives G ≈ 270 and Re ≈ 7.4×10⁶.\n2. Colebrook gives f ≈ 0.0132.\n3. With f = 0.0132, G² = 1.07185×10⁸ / 1762.8 = 6.0806×10⁴, so G = 246.6 kg/(m²·s) and Re ≈ 6.73×10⁶.\n4. Colebrook at Re = 6.73×10⁶ gives f = 0.01321, which matches the value used in step 3, so the iteration has converged.\n\n**Check**\n\n- Substituting back: a = G²RT/M = 9.077×10⁹ Pa², and a × (fL/D + 2 ln(p₁/p₂)) = 9.077×10⁹ × 1762.8 = 1.600×10¹³ Pa², which matches p₁² − p₂².\n- Re from the mass flow, 4ṁ/(πDμ) = 4(17.43)/(π × 0.30 × 1.1×10⁻⁵) = 6.73×10⁶, agrees with the iteration.\n\n**Velocities**\n\n- Outlet: v₂ = G·RT/(M·p₂) = 246.6 × 1.4928×10⁵ / 3.0×10⁶ = 12.27 m/s\n- Inlet, for reference: v₁ = 7.36 m/s\n\nEach value was computed by hand with a converged Colebrook iteration and checked by back-substitution. I did not run a numerical integrator. The last digit of f and Re is uncertain by roughly ±0.2%.\n\nFINAL (a): 17.4 kg/s\nFINAL (b): 6.73×10^6 (dimensionless)\nFINAL (c): 0.0132 (dimensionless)\nFINAL (d): 12.3 m/s",
+   "score": 10.0,
+   "justification": "(a) 17.4 kg/s from the correctly derived isothermal equation p1^2 - p2^2 = (G^2 RT/M)[fL/D + 2 ln(p1/p2)] with a shown Colebrook iteration and back-substitution check, 0.2 % off: full. (b) Re = 6.73e6 as G D/mu, 0.1 % off: full. (c) f = 0.0132 (0.01321 in the working), 0.1 % off: full. (d) 12.3 m/s (12.27 in the working) as G/rho2: full.",
+   "parts": {
+    "a": 4,
+    "b": 2,
+    "c": 2,
+    "d": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P05",
+   "run": 1,
+   "text": "**Setup:** The process is first-order with gain K = 2.5 and time constant τ = 8 min. The input step is M = 4 units.\n\n**(a) Final change in output**\n\nFor a first-order system, the steady-state gain applied to the step gives the final change:\n\ny′(∞) = K·M = 2.5 × 4 = 10 units\n\n**(b) Output deviation at t = 10 min**\n\nThe step response of G(s) = K/(τs + 1) to a step of size M is\n\ny′(t) = K·M·(1 − e^(−t/τ))\n\nSubstituting values:\n\ny′(10) = 10 × (1 − e^(−10/8)) = 10 × (1 − e^(−1.25))\n\nWith e^(−1.25) = 0.286505:\n\ny′(10) = 10 × 0.713495 ≈ 7.13 units\n\n**(c) Time to reach 95 % of the final change**\n\nSet y′(t) = 0.95 × 10 = 9.5:\n\n1 − e^(−t/8) = 0.95, so e^(−t/8) = 0.05\n\nt = 8 × ln(20) = 8 × 2.995732 ≈ 23.97 min\n\n**Check:** The approach to steady state is 1 − e^(−t/τ), so 95 % is reached at t = 3τ ≈ 24 min, which agrees with 23.97 min. I did not run any code for this answer; the values were calculated by hand.\n\nFINAL (a): 10 units\nFINAL (b): 7.13 units\nFINAL (c): 23.97 min",
+   "score": 10,
+   "justification": "(a) 10 units from K times the step size, correct. (b) y'(10) = 10(1 - e^(-1.25)) = 7.13 (reference 7.135, 0.07 % off), correct. (c) t = 8 ln 20 = 23.97 min (reference 23.97), correct.",
+   "parts": {
+    "a": 3,
+    "b": 4,
+    "c": 3
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P06",
+   "run": 1,
+   "text": "**Solution**\n\nWrite G(s) in standard second-order form, τ²s² + 2ζτs + 1, multiplied by gain K:\n\nG(s) = K / (τ²s² + 2ζτs + 1)\n\nMatching coefficients with G(s) = 4/(9s² + 2.4s + 1):\n\n- Gain: K = 4\n- τ² = 9, so τ = 3 min\n- 2ζτ = 2.4, so ζ = 2.4 / (2 × 3) = 0.40\n\nThe input is a step of magnitude M = 2, so the final change in output is K·M = 4 × 2 = 8.\n\n**(a) Damping factor**\n\nζ = 0.40, which is dimensionless.\n\n**(b) Overshoot**\n\nFor an underdamped system, the overshoot as a fraction of the final change is\n\nOS = exp(−πζ / √(1 − ζ²))\n\nWith ζ = 0.4:\n\n- √(1 − 0.16) = √0.84 = 0.91652\n- πζ / √(1 − ζ²) = 1.25664 / 0.91652 = 1.37110\n- OS = exp(−1.37110) = 0.2538\n\nSo the overshoot is 25.4 % of the final change.\n\n**(c) Time of first peak**\n\nt_p = π / ω_d, where ω_d = (1/τ)√(1 − ζ²).\n\n- ω_d = (1/3)(0.91652) = 0.30551 rad/min\n- t_p = π / 0.30551 = 10.28 min\n\n**(d) Maximum output deviation**\n\ny'_max = K·M·(1 + OS) = 8 × (1 + 0.2538) = 8 × 1.2538 = 10.03\n\nSo the peak is 10.03 in the output's deviation units. The problem does not state output units.\n\n**(e) Decay ratio**\n\nThe ratio of successive overshoots is\n\nDR = exp(−2πζ / √(1 − ζ²)) = OS² = 0.2538² = 0.0644\n\nCheck: exp(−2.7422) = 0.0644, which agrees.\n\n**Checks and caveats**\n\n- All values were computed by hand from the closed-form expressions above. I did not run code, and I did not verify them numerically against a simulated step response.\n- The overshoot is defined relative to the final change (not the peak value), as the problem asks.\n\nFINAL (a): 0.40 dimensionless\nFINAL (b): 25.4 %\nFINAL (c): 10.28 min\nFINAL (d): 10.03 output units\nFINAL (e): 0.0644 dimensionless",
+   "score": 10,
+   "justification": "(a) zeta = 0.40 from tau = 3 min and 2 zeta tau = 2.4, correct. (b) overshoot 25.4 % (reference 25.38 %) and (c) t_p = pi/omega_d = 10.28 min (reference 10.28), correct. (d) y'max = 8(1 + 0.2538) = 10.03 (reference 10.03) and (e) decay ratio OS^2 = 0.0644 (reference 0.0644), correct.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 2,
+    "d": 2,
+    "e": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P07",
+   "run": 1,
+   "text": "**Setup**\n\nG_p(jω) = 1.8 e^(−2.5jω) / (1 + 12jω)\n\n- Magnitude: |G_p| = 1.8 / √(1 + 144ω²)\n- Phase (rad): −atan(12ω) − 2.5ω\n\n**(a) Ultimate frequency**\n\nSet the phase to −π:\n\natan(12ω) + 2.5ω = π\n\nSolving numerically (Newton iteration) gives ω_u = 0.6773 rad/min.\n\nCheck: atan(8.128) = 1.44837 rad and 2.5 × 0.6773 = 1.69325 rad, which sum to 3.14162 rad, equal to π within 2×10⁻⁵.\n\n**(b) Ultimate gain**\n\n|G_p(jω_u)| = 1.8 / √(1 + 144 × 0.45872) = 1.8 / 8.1886 = 0.21982\n\nK_u = 1 / 0.21982 = 4.549\n\n**(c) Ultimate period**\n\nP_u = 2π / ω_u = 6.2832 / 0.67729 = 9.277 min\n\n**(d) Ziegler–Nichols PI settings**\n\nK_c = K_u / 2.2 = 4.549 / 2.2 = 2.068\n\nτ_I = P_u / 1.2 = 9.277 / 1.2 = 7.731 min\n\n**(e) Gain margin of the PI loop**\n\nController: G_c(jω) = K_c(1 + 1/(jτ_I ω)), so |G_c| = K_c √(1 + 1/(τ_I ω)²) and its phase is −atan(1/(τ_I ω)).\n\nThe PI lag moves the phase-crossover frequency below ω_u. Solve\n\natan(12ω) + 2.5ω + atan(1/(τ_I ω)) = π\n\nwhich gives ω_pc = 0.5985 rad/min.\n\nAt ω_pc:\n- |G_p| = 1.8 / √(1 + 144 × 0.35819) = 1.8 / 7.2518 = 0.24821\n- |G_c| = 2.068 × √(1 + 0.04672) = 2.068 × 1.02309 = 2.1156\n- |L| = 0.24821 × 2.1156 = 0.52510\n\nGM = 1 / 0.52510 = 1.904\n\n**(f) Phase margin of the PI loop**\n\nCrossover, where |L| = 1, is found from\n\nK_c × 1.8 × √(1 + 1/(τ_I ω)²) / √(1 + 144ω²) = 1\n\nThe solution is ω_gc = 0.3235 rad/min (|L| = 1.00006 there, checked by interpolation).\n\nPhase lag at ω_gc:\n- Plant: atan(3.8822) + 2.5 × 0.3235 = 1.31868 + 0.80880 = 2.12748 rad (121.9°)\n- PI: atan(1/(7.731 × 0.3235)) = atan(0.39983) = 0.38036 rad (21.8°)\n- Total: 2.50784 rad = 143.69°\n\nPM = 180° − 143.69° = 36.3°\n\n**Summary of checks**\n\n- K_u and the PI loop's gain margin are internally consistent: the PI lag shifts ω_pc below ω_u, so GM (1.90) is below K_u (4.55) by the expected amount.\n- I did not run these numbers in code. They were computed by hand with iterative root-finding, so the last digit may be slightly off.\n\nFINAL (a): 0.677 rad/min\nFINAL (b): 4.55 dimensionless\nFINAL (c): 9.28 min\nFINAL (d): K_c = 2.07 dimensionless; τ_I = 7.73 min\nFINAL (e): 1.90 dimensionless\nFINAL (f): 36.3 degrees",
+   "score": 10,
+   "justification": "(a) omega_u = 0.677 rad/min by Newton iteration, (b) K_u = 4.55 and (c) P_u = 9.28 min, all within 0.05 % of the reference. (d) K_c = 2.07 and tau_I = 7.73 min, correct (within 0.1 %). (e) GM = 1.90 at the PI-loop phase crossover 0.5985 rad/min (reference 1.904, 0.2 % off), correct. (f) PM = 36.3 deg at the gain crossover 0.3235 rad/min (reference 36.31 deg), correct.",
+   "parts": {
+    "a": 2,
+    "b": 2,
+    "c": 1,
+    "d": 1,
+    "e": 2,
+    "f": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P08",
+   "run": 1,
+   "text": "**Setup**\n\nExpand the process denominator:\n(s+1)(2s+1)(5s+1) = 10s³ + 17s² + 8s + 1\n\nThe PI controller is G_c = K_c(4s+1)/(4s), with τ_I = 4 min.\n\nThe closed-loop characteristic equation 1 + G_c G_p = 0, multiplied by 4s(10s³ + 17s² + 8s + 1), is:\n\n40s⁴ + 68s³ + 32s² + (4 + 4K_c)s + K_c = 0\n\n**(a) Routh array**\n\n| Row | Entries |\n|---|---|\n| s⁴ | 40, 32, K_c |\n| s³ | 68, 4 + 4K_c |\n| s² | b₁ = (68·32 − 40(4 + 4K_c))/68 = (2016 − 160K_c)/68 |\n| s¹ | c₁ = [b₁(4 + 4K_c) − 68K_c]/b₁ |\n| s⁰ | K_c |\n\nConditions for stability (all first-column entries positive):\n\n- K_c > 0 (s⁰ row).\n- b₁ > 0 gives K_c < 12.6.\n- c₁ > 0 requires b₁(4 + 4K_c) > 68K_c. Multiplying through by 68 and simplifying gives 40K_c² − 175K_c − 504 < 0.\n\nThe roots of 40K² − 175K − 504 = 0 are K = [175 ± √111265]/80, so the positive root is K = 508.564/80 = 6.357. This is the binding limit, because it is lower than 12.6.\n\nK_c,max ≈ 6.36 (dimensionless)\n\n**(b) Frequency of sustained oscillation**\n\nAt K_c = K_c,max the s¹ row vanishes. The auxiliary equation from the s² row is b₁s² + K_c = 0, so ω² = K_c/b₁.\n\nWith b₁ = (2016 − 160 × 6.357)/68 = 14.689, we get ω² = 6.357/14.689 = 0.4328, so ω = 0.658 rad/min.\n\nCross-check: setting s = iω in the polynomial gives the imaginary part −68ω³ + (4 + 4K)ω = 0, so ω² = (1 + K)/17 = 0.4328. Substituting into the real part gives 40K² − 175K − 504 = 0, the same condition as in (a). The two methods agree.\n\nω = 0.658 rad/min (period about 9.5 min).\n\n**(c) Proportional-only control, K_c = 3**\n\nWith G_c = K_c, the closed loop is stable for K_c = 3 < 6.36. For a unit setpoint step, the final output is\n\ny_ss = K_c G_p(0)/(1 + K_c G_p(0)) = 3/(1 + 3) = 0.75, since G_p(0) = 1.\n\nOffset = setpoint − final output = 1 − 0.75 = 0.25. This matches the standard result 1/(1 + K_c) = 0.25.\n\nNot verified numerically: I solved this by hand from the transfer functions and did not run a simulation.\n\nFINAL (a): 6.36 (dimensionless)\nFINAL (b): 0.658 rad/min\nFINAL (c): 0.25 (dimensionless)",
+   "score": 10,
+   "justification": "(a) correct characteristic polynomial 40s^4+68s^3+32s^2+(4+4Kc)s+Kc and Routh array, the s^1 condition 40Kc^2 - 175Kc - 504 < 0 gives Kc,max = 6.36 (reference 6.357), correct. (b) auxiliary equation b1 s^2 + Kc = 0 gives omega = 0.658 rad/min (reference 0.658), cross-checked with s = i omega, correct. (c) offset 1 - 3/4 = 0.25, correct (its stability remark compares Kc = 3 with the PI limit 6.36 rather than the P-only limit 12.6, but the offset itself is right).",
+   "parts": {
+    "a": 5,
+    "b": 3,
+    "c": 2
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P09",
+   "run": 1,
+   "text": "**Part (a): Fenske minimum stages at total reflux**\n\nThe Fenske equation, with a partial reboiler counted as a stage, is\n\nN_min = ln[ (x_D/(1−x_D)) · ((1−x_B)/x_B) ] / ln α\n\nWith x_D = 0.95 and x_B = 0.05:\n\n- x_D/(1−x_D) = 0.95/0.05 = 19\n- (1−x_B)/x_B = 0.95/0.05 = 19\n- Product = 361, so ln 361 = 2 ln 19 = 5.88888\n- ln α = ln 2.5 = 0.916291\n\nN_min = 5.88888 / 0.916291 = 6.427\n\n**Part (b): Minimum reflux ratio**\n\nThe feed is saturated liquid, so q = 1 and the feed line is vertical at x = z_F = 0.40. I used Underwood's equations for a binary mixture.\n\nStep 1: Find θ from the feed condition, Σ α_i z_i/(α_i − θ) = 1 − q = 0:\n\n2.5(0.40)/(2.5 − θ) + 1(0.60)/(1 − θ) = 0\n\nThis gives 1 − θ + 1.5 − 0.6θ = 0, so θ = 2.5/1.6 = 1.5625.\n\nStep 2: Find R_min from Σ α_i x_{D,i}/(α_i − θ) = R_min + 1:\n\n2.5(0.95)/(2.5 − 1.5625) + 0.05/(1 − 1.5625) = 2.53333 − 0.08889 = 2.44444\n\nSo R_min = 1.44444, which is exactly 13/9.\n\nCheck: the equilibrium composition at x = 0.40 is y* = 2.5(0.4)/(1 + 1.5(0.4)) = 0.625. The operating line y = [R/(R+1)]x + x_D/(R+1) at x = 0.40 with R = 1.44444 gives 0.590909(0.4) + 0.95/2.44444 = 0.236364 + 0.388636 = 0.625, which confirms the result.\n\nI did not run any numerical tools for this answer. Both results are closed-form calculations that I checked by hand.\n\nFINAL (a): 6.43 stages\nFINAL (b): 1.444 (dimensionless)",
+   "score": 10,
+   "justification": "(a) 6.427 from the correct Fenske equation, matches the reference: full points. (b) Underwood with q = 1 (root equation = 0), theta = 1.5625, R_min = 1.444, matches the reference: full points.",
+   "parts": {
+    "a": 5,
+    "b": 5
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P10",
+   "run": 1,
+   "text": "**Basis and assumptions**\n\n- Gas flow G = 100 kmol/h, held constant, as the problem states.\n- Inlet gas y_in = 0.02. Outlet gas y_out = 0.05 × 0.02 = 0.001, since 95 % is absorbed.\n- Equilibrium y = 1.8x, so m = 1.8.\n- Pure water enters, so x_in = 0.\n\n**(a) Minimum water flow**\n\nThe minimum flow puts the outlet liquid in equilibrium with the inlet gas, so x_max = y_in/m = 0.02/1.8 = 0.011111.\n\nOverall balance on the solute:\n\nL_min = G(y_in − y_out)/x_max = 100 × (0.02 − 0.001)/0.011111 = 171.0 kmol/h\n\nUsing the pinch condition in closed form, L_min/(mG) = 0.95, so L_min = 0.95 × m × G = 0.95 × 1.8 × 100 = 171 kmol/h.\n\n**(b) Absorption factor at the operating water flow**\n\nL = 1.5 × L_min = 1.5 × 171 = 256.5 kmol/h\n\nA = L/(mG) = 256.5/(1.8 × 100) = 1.425\n\nCheck: A = 1.5 × (L_min/(mG)) = 1.5 × 0.95 = 1.425, which does not depend on the basis chosen.\n\n**(c) Number of theoretical stages (Kremser)**\n\nN = ln{[(y_in − m x_in)/(y_out − m x_in)](1 − 1/A) + 1/A} / ln A\n\nWith x_in = 0, (y_in − m x_in)/(y_out − m x_in) = 0.02/0.001 = 20.\n\n- 1 − 1/A = 0.298246\n- 20 × 0.298246 + 0.701754 = 6.66667\n- ln(6.66667) = 1.897120\n- ln(1.425) = 0.354172\n\nN = 1.897120/0.354172 = 5.356\n\nCheck: with N = 5.356, A^(N+1) = 1.425^6.356 = 9.50, and the fraction absorbed is (9.50 − 1.425)/(9.50 − 1) = 0.950, as required.\n\nCaveats: I did not run any code to verify these figures. The hand checks above are the only verification. If the inert gas flow (98 kmol/h) is used as the basis instead of the total 100 kmol/h, L_min becomes about 167.6 kmol/h. The absorption factor and stage count are unchanged, because they depend only on the ratio L_min/(mG) = 0.95.\n\nFINAL (a): 171 kmol/h\nFINAL (b): 1.425 (dimensionless)\nFINAL (c): 5.36 stages (non-integer Kremser value)",
+   "score": 10,
+   "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425, correct. (c) N = 5.356 (FINAL 5.36) from the correct Kremser equation, correct.",
+   "parts": {
+    "a": 3,
+    "b": 3,
+    "c": 4
+   },
+   "errors": {}
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P11",
+   "run": 1,
+   "text": "**Setup**\n\n- Feed: F = 100 kmol/h, z_F = 0.45, q = 0.6, x_D = 0.96, x_B = 0.04, α = 2.4\n- Equilibrium: y = αx / (1 + (α−1)x) = 2.4x / (1 + 1.4x)\n- Feed line: y = [q/(q−1)]x − z_F/(q−1) = −1.5x + 1.125\n\n**(a) Distillate flow**\n\nOverall balance: D = F(z_F − x_B)/(x_D − x_B) = 100(0.45 − 0.04)/(0.96 − 0.04) = 44.57 kmol/h\n\n(B = 55.43 kmol/h)\n\n**(b) Minimum reflux ratio**\n\nThe q-line meets the equilibrium curve where\n\n−1.5x + 1.125 = 2.4x / (1 + 1.4x)\n\nThis gives 2.1x² + 2.325x − 1.125 = 0, so x* = 0.36412 and y* = 0.57882. Check: 2.4(0.36412)/(1 + 1.4 × 0.36412) = 0.57882.\n\nR_min = (x_D − y*)/(y* − x*) = (0.96 − 0.57882)/(0.57882 − 0.36412) = 1.7754\n\n**(c) Operating reflux ratio**\n\nR = 1.5 R_min = 2.663\n\n**(d) Number of stages**\n\n- Rectifying line: y = [R/(R+1)]x + x_D/(R+1) = 0.72702x + 0.26206\n- Stripping line through (x_B, x_B) and (x*, y*): slope = (y* − x_B)/(x* − x_B) = 1.66242, so y = 1.66242x − 0.02650\n\nStepping from the top with y₁ = x_D (total condenser) and x = y/(2.4 − 1.4y):\n\n| Stage | y | x | Line used for y |\n|---|---|---|---|\n| 1 | 0.9600 | 0.9091 | — |\n| 2 | 0.9230 | 0.8332 | rectifying |\n| 3 | 0.8678 | 0.7322 | rectifying |\n| 4 | 0.7944 | 0.6169 | rectifying |\n| 5 | 0.7105 | 0.5056 | rectifying |\n| 6 | 0.6297 | 0.4147 | rectifying |\n| 7 | 0.5635 | 0.3498 | rectifying |\n| 8 | 0.5550 | 0.3420 | stripping |\n| … | | | |\n| 17 | 0.1212 | 0.05434 | stripping |\n| 18 | 0.0638 | 0.02763 | stripping |\n\nStage 7 is the first stage with x₇ = 0.3498 below x* = 0.3641, so the switch to the stripping line happens there. Stage 17 is the last with x₁₇ = 0.05434 above x_B = 0.04, and stage 18 has x₁₈ = 0.02763, below x_B.\n\nFraction of the last stage:\n\n(x₁₇ − x_B)/(x₁₇ − x₁₈) = (0.05434 − 0.04)/(0.05434 − 0.02763) = 0.537\n\nTotal stages, including the partial reboiler: 17 + 0.537 = 17.54\n\nThese values were computed by hand, not with code. Rounding in the stage-by-stage arithmetic could shift the last digit, so treat 17.54 as accurate to about ±0.02.\n\n**(e) Optimal feed stage**\n\nStage 7 counted from the top, the first stage whose liquid composition falls below x* = 0.364.\n\n**Answers**\n\nFINAL (a): 44.57 kmol/h\nFINAL (b): 1.775 (dimensionless)\nFINAL (c): 2.663 (dimensionless)\nFINAL (d): 17.54 stages\nFINAL (e): 7 stage",
+   "score": 4,
+   "justification": "(a) D = 44.57 kmol/h, (b) R_min = 1.775 from the q-line/equilibrium pinch and (c) R = 2.663 are correct. (d) the stripping line is drawn through (x_B, x_B) and the pinch point (0.364, 0.579), which is the minimum-reflux line (slope 1.662 instead of 1.450 from the internal flows), so the stepping gives 17.54 stages, 41 % above 12.42: 0. (e) stage 7 matches, but it comes from switching at the pinch x* = 0.364 instead of the operating-line intersection 0.3875 on the wrong lines, so the match is a coincidence of a wrong method: 0.",
+   "parts": {
+    "a": 1,
+    "b": 2,
+    "c": 1,
+    "d": 0,
+    "e": 0
+   },
+   "errors": {
+    "d": {
+     "type": "method",
+     "note": "Stripping line drawn through the R_min pinch, not from stripping-section flows."
+    },
+    "e": {
+     "type": "method",
+     "note": "Carried from (d): feed switch at pinch x*, not operating-line intersection."
+    }
+   }
+  },
+  {
+   "model": "anthropic/claude-haiku-5.5",
+   "problem": "P12",
+   "run": 1,
+   "text": "**Mass balance (part a)**\n\n- Light key (n-butane) in distillate: 0.98 × 35 = 34.3 kmol/h; in bottoms: 0.7 kmol/h.\n- Heavy key (n-pentane) in bottoms: 0.97 × 40 = 38.8 kmol/h; in distillate: 1.2 kmol/h.\n- Propane in distillate: 5.0 kmol/h. n-Hexane in bottoms: 20.0 kmol/h.\n- D = 5.0 + 34.3 + 1.2 = 40.5 kmol/h. B = 59.5 kmol/h.\n- Check: bottoms = 0.7 + 38.8 + 20.0 = 59.5 kmol/h, which closes the balance.\n\n**Fenske (part b)**\n\n- x_D,LK/x_D,HK = 34.3/1.2 = 28.583. x_B,HK/x_B,LK = 38.8/0.7 = 55.429. Product = 1584.3.\n- N_min = log₂(1584.3)/1 = 10.63 stages (including the reboiler), with α_LK = 2.0 and α_HK = 1.0.\n\n**Underwood root (part c)**\n\n- For a saturated-liquid feed (q = 1), Σ α_i z_i/(α_i − θ) = 0.\n- That is 0.21/(4.2−θ) + 0.70/(2−θ) + 0.40/(1−θ) + 0.09/(0.45−θ) = 0.\n- The function is −0.0032 at θ = 1.368 and +0.0064 at θ = 1.370. Interpolating gives θ ≈ 1.3687.\n- Check at θ = 1.3687: residual ≈ 1×10⁻⁴, which is within the interpolation error.\n\n**Minimum reflux (part d)**\n\n- Distillate compositions: propane 0.12346, n-butane 0.84691, n-pentane 0.02963, hexane 0.\n- R_min + 1 = Σ α_i x_D,i/(α_i − θ)\n  - Propane: 4.2 × 0.12346/2.8313 = 0.18314\n  - n-Butane: 2.0 × 0.84691/0.6313 = 2.68308\n  - n-Pentane: 1.0 × 0.02963/(−0.3687) = −0.08037\n- Sum = 2.7858, so R_min = 1.786.\n\n**Gilliland–Eduljee (part e)**\n\n- R = 1.3 × 1.7858 = 2.3216.\n- X = (R − R_min)/(R + 1) = 0.5357/3.3216 = 0.16128.\n- X^0.5668 = exp(0.5668 × ln 0.16128) = exp(−1.03428) = 0.35546.\n- Y = 0.75 × (1 − 0.35546) = 0.48340.\n- N = (N_min + Y)/(1 − Y) = (10.630 + 0.4834)/(0.5166) = 21.51 stages (including the reboiler).\n\n**Kirkbride (part f)**\n\n- z_HK/z_LK = 0.40/0.35 = 1.1429.\n- (x_B,LK/x_D,HK)² = (0.011765/0.029630)² = (0.39706)² = 0.15766.\n- B/D = 59.5/40.5 = 1.4691.\n- Product = 1.1429 × 0.15766 × 1.4691 = 0.26471.\n- log₁₀(N_R/N_S) = 0.206 × (−0.57725) = −0.11892.\n- N_R/N_S = 10^(−0.11892) = 0.760.\n\nUnverified: I did not run these numbers on a computer. I checked the arithmetic by hand, and the Underwood root was checked by substituting it back into the equation.\n\nFINAL (a): 40.5 kmol/h\nFINAL (b): 10.63 stages\nFINAL (c): 1.369 (dimensionless)\nFINAL (d): 1.786 (dimensionless)\nFINAL (e): 21.51 stages\nFINAL (f): 0.760 (dimensionless)",
+   "score": 10,
+   "justification": "(a) D = 40.5 kmol/h, correct. (b) N_min = 10.63 from Fenske on the keys and (c) theta = 1.3687, both correct. (d) R_min = 1.786 and (e) N = 21.51 from the Eduljee form, correct. (f) N_R/N_S = 0.760 from Kirkbride, correct.",
+   "parts": {
+    "a": 1,
+    "b": 2,
+    "c": 2,
+    "d": 2,
+    "e": 2,
+    "f": 1
    },
    "errors": {}
   }

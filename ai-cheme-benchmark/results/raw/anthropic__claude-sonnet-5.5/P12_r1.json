@@ -1,0 +1,12 @@
+{
+ "model": "anthropic/claude-sonnet-5.5",
+ "problem": "P12",
+ "run": 1,
+ "served_model": "anthropic/claude-sonnet-5.5",
+ "provider": "Claude Code sub-agent (this session)",
+ "text": "Basis: F = 100 kmol/h. Feed flows: C3 5, nC4 35, nC5 40, nC6 20 kmol/h.\n\n(a) Distillate and bottoms\n- d(C3) = 5, d(nC4) = 0.98(35) = 34.3, d(nC5) = 0.03(40) = 1.2, d(nC6) = 0.\n- D = 5 + 34.3 + 1.2 = 40.5 kmol/h, so B = 59.5 kmol/h.\n- Bottoms: nC4 0.7, nC5 38.8, nC6 20 (sums to 59.5).\n\n(b) Fenske\n- N_min = ln[(d_LK/d_HK)(b_HK/b_LK)] / ln α_LK,HK = ln[(34.3/1.2)(38.8/0.7)] / ln 2.\n- The product is 28.583 × 55.429 = 1584.4, so ln = 7.368.\n- N_min = 7.368 / 0.6931 = 10.63.\n\n(c) Underwood root (q = 1, so the feed equation sums to zero)\n- Solve 0.21/(4.2−θ) + 0.7/(2−θ) + 0.4/(1−θ) + 0.09/(0.45−θ) = 0 for 1 < θ < 2.\n- θ = 1.368 gives −0.0032 and θ = 1.370 gives +0.0064.\n- Interpolating, θ = 1.3687.\n\n(d) Minimum reflux\n- R_min + 1 = (1/D) Σ α_i d_i/(α_i − θ).\n- The terms are 21/2.8313 = 7.417, 68.6/0.6313 = 108.66, 1.2/(−0.3687) = −3.255, and 0 for nC6. The sum is 112.82.\n- R_min + 1 = 112.82/40.5 = 2.786, so R_min = 1.786.\n\n(e) Gilliland (Eduljee)\n- R = 1.3 × 1.7857 = 2.321.\n- X = (2.3214 − 1.7857)/(3.3214) = 0.1613.\n- X^0.5668 = 0.3555, so Y = 0.75(1 − 0.3555) = 0.4834.\n- N = (N_min + Y)/(1 − Y) = (10.63 + 0.4834)/0.5166 = 21.5 (non-integer, includes the partial reboiler).\n\n(f) Kirkbride\n- z_HK/z_LK = 0.4/0.35 = 1.1429.\n- x_B,LK = 0.7/59.5 = 0.011765 and x_D,HK = 1.2/40.5 = 0.029630. Their ratio is 0.3971, and its square is 0.15766.\n- B/D = 1.4691.\n- The product is 1.1429 × 0.15766 × 1.4691 = 0.2647, so log₁₀ = −0.5772.\n- log₁₀(N_R/N_S) = 0.206 × (−0.5772) = −0.1189, so N_R/N_S = 0.760.\n\nAll values were calculated by hand, with no code run to cross-check them.\n\nFINAL (a): 40.5 kmol/h\nFINAL (b): 10.63 stages\nFINAL (c): 1.369 (dimensionless)\nFINAL (d): 1.786 (dimensionless)\nFINAL (e): 21.5 stages\nFINAL (f): 0.760 (dimensionless)",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "cost": null,
+ "tools_used": []
+}

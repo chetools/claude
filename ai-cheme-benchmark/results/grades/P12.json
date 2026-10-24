@@ -310,5 +310,29 @@
   },
   "score": 10,
   "justification": "(a) D = 40.5 kmol/h and (b) N_min = 10.63 from the Fenske equation, correct. (c) Underwood root theta = 1.369 and (d) R_min = 1.786, both correct. (e) Gilliland/Eduljee gives N = 21.51 (reference 21.51), correct. (f) Kirkbride gives N_R/N_S = 0.760, correct."
+ },
+ "anthropic/claude-sonnet-5.5": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2,
+   "f": 1
+  },
+  "score": 10,
+  "justification": "(a) D = 40.5 kmol/h, correct. (b) N_min = 10.63 from Fenske on the keys and (c) theta = 1.3687, both correct. (d) R_min = 1.786 and (e) N = 21.5 from the Eduljee form (reference 21.51, 0.05 % off), correct. (f) N_R/N_S = 0.760 from Kirkbride, correct."
+ },
+ "anthropic/claude-haiku-5.5": {
+  "parts": {
+   "a": 1,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2,
+   "f": 1
+  },
+  "score": 10,
+  "justification": "(a) D = 40.5 kmol/h, correct. (b) N_min = 10.63 from Fenske on the keys and (c) theta = 1.3687, both correct. (d) R_min = 1.786 and (e) N = 21.51 from the Eduljee form, correct. (f) N_R/N_S = 0.760 from Kirkbride, correct."
  }
 }

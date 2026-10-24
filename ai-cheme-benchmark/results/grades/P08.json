@@ -232,5 +232,23 @@
   },
   "score": 10,
   "justification": "(a) correct characteristic polynomial 40s^4+68s^3+32s^2+(4+4Kc)s+Kc and Routh first column, s^1 condition gives Kc,max = 6.36 (reference 6.357): full points. (b) omega = 0.658 rad/min from the s^2-row auxiliary equation, matches the reference: full points. (c) offset 1 - 3/4 = 0.25, correct: full points."
+ },
+ "anthropic/claude-sonnet-5.5": {
+  "parts": {
+   "a": 5,
+   "b": 3,
+   "c": 2
+  },
+  "score": 10,
+  "justification": "(a) correct characteristic polynomial 40s^4+68s^3+32s^2+(4+4Kc)s+Kc and Routh array, the s^1 condition 40Kc^2 - 175Kc - 504 < 0 gives Kc,max = 6.36 (reference 6.357), correct. (b) auxiliary equation b1 s^2 + Kc = 0 gives omega = 0.658 rad/min (reference 0.658), correct. (c) offset 1/(1+Kc) = 0.25, correct."
+ },
+ "anthropic/claude-haiku-5.5": {
+  "parts": {
+   "a": 5,
+   "b": 3,
+   "c": 2
+  },
+  "score": 10,
+  "justification": "(a) correct characteristic polynomial 40s^4+68s^3+32s^2+(4+4Kc)s+Kc and Routh array, the s^1 condition 40Kc^2 - 175Kc - 504 < 0 gives Kc,max = 6.36 (reference 6.357), correct. (b) auxiliary equation b1 s^2 + Kc = 0 gives omega = 0.658 rad/min (reference 0.658), cross-checked with s = i omega, correct. (c) offset 1 - 3/4 = 0.25, correct (its stability remark compares Kc = 3 with the PI limit 6.36 rather than the P-only limit 12.6, but the offset itself is right)."
  }
 }

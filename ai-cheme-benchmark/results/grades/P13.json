@@ -42,5 +42,16 @@
   },
   "score": 10,
   "justification": "Loop-equation set-up with Darcy-Weisbach and Colebrook per pipe; the pipe resistances (within 0.5 % of my check) and the converged flows are given (iterations only sketched) and they satisfy continuity and both loop balances. (a) Qp = 49.8 L/s and (b) Hp = 50.24 m, both within 0.1 %: full. (c) 3.5 L/s from B to C (reference 3.507, 0.2 % off), direction correct: full. (d) p_C = 224.9 kPa and (e) 35.0 kW shaft power, both correct."
+ },
+ "anthropic/claude-sonnet-5.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 3,
+   "d": 2,
+   "e": 1
+  },
+  "score": 10,
+  "justification": "Node-head solution with Darcy-Weisbach and Colebrook per pipe, outer iteration on Qp with a short convergence table (inner Newton iterations not shown); the stated suction and pipe-6 losses, heads (H_B = 29.3 m, H_C = 26.97 m) and pipe flows agree with my check and satisfy continuity. (a) Qp = 49.78 L/s (FINAL 49.8) and (b) Hp = 50.26 m (FINAL 50.3), both within 0.1 %: full. (c) 3.5 L/s from B to C (0.2 % off), direction correct: full. (d) 225 kPa (22.97 m pressure head, 224.9 kPa, 0.03 % off) and (e) 35.0 kW, correct: full."
  }
 }

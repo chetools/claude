@@ -284,5 +284,27 @@
   },
   "score": 10,
   "justification": "(a) zeta = 0.40 from 2 zeta tau = 2.4 with tau = 3 min, correct. (b) overshoot 25.4 % (reference 25.38 %), correct. (c) t_p = 10.28 min, correct. (d) y'max = 8 x (1 + 0.254) = 10.03 and (e) decay ratio 0.0644, both correct: full points."
+ },
+ "anthropic/claude-sonnet-5.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.4 from tau = 3 min and 2 zeta tau = 2.4, correct. (b) overshoot 25.4 % (reference 25.38 %) and (c) t_p = 10.28 min (reference 10.28), correct. (d) y'max = 8(1 + 0.2538) = 10.03 (reference 10.03) and (e) decay ratio OS^2 = 0.0644 (reference 0.0644), correct."
+ },
+ "anthropic/claude-haiku-5.5": {
+  "parts": {
+   "a": 2,
+   "b": 2,
+   "c": 2,
+   "d": 2,
+   "e": 2
+  },
+  "score": 10,
+  "justification": "(a) zeta = 0.40 from tau = 3 min and 2 zeta tau = 2.4, correct. (b) overshoot 25.4 % (reference 25.38 %) and (c) t_p = pi/omega_d = 10.28 min (reference 10.28), correct. (d) y'max = 8(1 + 0.2538) = 10.03 (reference 10.03) and (e) decay ratio OS^2 = 0.0644 (reference 0.0644), correct."
  }
 }

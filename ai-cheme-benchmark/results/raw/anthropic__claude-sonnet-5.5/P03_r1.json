@@ -1,0 +1,12 @@
+{
+ "model": "anthropic/claude-sonnet-5.5",
+ "problem": "P03",
+ "run": 1,
+ "served_model": "anthropic/claude-sonnet-5.5",
+ "provider": "Claude Code sub-agent (this session)",
+ "text": "Method: take the junction head H_J as unknown, find each pipe's flow from Darcy–Weisbach with Colebrook friction, and adjust H_J until the flows at J balance. I did this by hand and iterated on f, so the results are good to about three significant figures at best. I did not check them with code.\n\n**Setup**\n\n- Head loss: h_f = f(L/D)V²/2g, so Q = A·√(2gD·h_f/(fL)).\n- Colebrook: 1/√f = −2 log₁₀[(ε/D)/3.7 + 2.51/(Re√f)].\n- Relative roughness ε/D: 8.67×10⁻⁴ (pipe 1), 1.30×10⁻³ (pipe 2), 1.04×10⁻³ (pipe 3).\n- At the converged flows, Re is about 5.9×10⁵ in pipe 1, 9.6×10⁴ in pipe 2 and 6.3×10⁵ in pipe 3.\n- Colebrook then gives f₁ ≈ 0.0195, f₂ ≈ 0.0232 and f₃ ≈ 0.0203.\n- Resulting flow laws, with h the head difference across each pipe in m and Q in m³/s:\n  - Q₁ = 0.03168·√(120 − H_J)\n  - Q₂ = 0.01445·√|100 − H_J|\n  - Q₃ = 0.02203·√(H_J − 70)\n\n**Junction balance**\n\n- Pipe 3 always flows out of J toward C, since C is lowest. Pipe 1 always flows into J from A.\n- For H_J = 100 m, pipe 1 delivers more than pipe 3 can take, so H_J must be above 100 m. That means B receives water.\n- The balance is Q₁ = Q₂ + Q₃.\n- Trial values of (Q₂ + Q₃) − Q₁:\n\n| H_J (m) | (Q₂ + Q₃) − Q₁ (m³/s) |\n|---|---|\n| 101.0 | −0.00097 |\n| 101.1 | +0.00029 |\n\n- Linear interpolation gives H_J ≈ 101.08 m.\n- At that value the flows are Q₁ = 0.1378, Q₂ = 0.0150 and Q₃ = 0.1228 m³/s. Then Q₂ + Q₃ = 0.1378 m³/s = Q₁, so the balance closes.\n\n**Results**\n\n- (a) H_J ≈ 101.1 m.\n- (b) Q₁ ≈ 137.8 L/s, from A toward J.\n- (c) |Q₂| ≈ 15.0 L/s. Since H_J = 101.1 m is above B's 100 m, water flows from J into reservoir B.\n- (d) Q₃ ≈ 122.8 L/s, from J to C.\n\nFINAL (a): 101.1 m\nFINAL (b): 137.8 L/s\nFINAL (c): 15.0 L/s (flows into reservoir B)\nFINAL (d): 122.8 L/s",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "cost": null,
+ "tools_used": []
+}

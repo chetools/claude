@@ -332,5 +332,15 @@
    "type": "numerical",
    "note": "Carried from (d): stage 4 follows from the invalid stage table."
   }
+ },
+ "anthropic/claude-haiku-5.5": {
+  "d": {
+   "type": "method",
+   "note": "Stripping line drawn through pinch point, not from internal flows; slope 1.662 not 1.450."
+  },
+  "e": {
+   "type": "method",
+   "note": "Carried from (d): feed stage switched at pinch on wrong lines; stage 7 coincidental."
+  }
  }
 }

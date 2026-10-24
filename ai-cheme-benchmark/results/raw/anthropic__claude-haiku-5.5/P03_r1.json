@@ -1,0 +1,12 @@
+{
+ "model": "anthropic/claude-haiku-5.5",
+ "problem": "P03",
+ "run": 1,
+ "served_model": "anthropic/claude-haiku-5.5",
+ "provider": "Claude Code sub-agent (this session)",
+ "text": "**Setup**\n\nLet the junction head be H_J = x. Each pipe carries Q = sqrt(h·π²gD⁵ / (8fL)), where h is the head difference across the pipe. Define C = π²gD⁵/(8L):\n\n| Pipe | L (m) | D (m) | ε/D | C (m⁵/s²·…) = π²gD⁵/(8L) |\n|---|---|---|---|---|\n| 1 (A–J) | 1500 | 0.30 | 8.667×10⁻⁴ | 1.9607×10⁻⁵ |\n| 2 (B–J) | 800 | 0.20 | 1.300×10⁻³ | 4.8413×10⁻⁶ |\n| 3 (C–J) | 1200 | 0.25 | 1.040×10⁻³ | 9.8496×10⁻⁶ |\n\nEach pipe's flow is Q_i = sqrt(|h_i|·C_i/f_i), with h_1 = 120 − x, h_2 = 100 − x, h_3 = x − 70.\n\n**Flow directions.** With x between 70 and 100, both A and B would feed J and C would take the outflow. A trial solution shows the balance Q₁ + Q₂ = Q₃ has no root with x < 100. The residual is still positive at x = 100, so the root lies above B's level. At x > 100, pipe 2 reverses and carries water from J into B.\n\n**Friction factors (Colebrook, iterated by hand).** Colebrook is 1/√f = −2 log₁₀(ε/3.7D + 2.51/(Re√f)).\n\n- Pipe 1: Re ≈ 5.8×10⁵ gives f₁ ≈ 0.0195. Haaland check gives 0.0195.\n- Pipe 2: Re ≈ 9.5×10⁴ gives f₂ ≈ 0.0232.\n- Pipe 3: Re ≈ 6.3×10⁵ gives f₃ ≈ 0.0203. Haaland check gives 0.0203.\n\n**Junction balance.** With these f values, the equation is\n\nsqrt(1.0034×10⁻³ · (120 − x)) = sqrt(4.8545×10⁻⁴ · (x − 70)) + sqrt(2.0840×10⁻⁴ · (x − 100))\n\n| x (m) | Q₁ − Q₃ − Q₂(into J) residual (m³/s) |\n|---|---|\n| 100.8 | +0.0036 (earlier pass with other f values) |\n| 101.0 | +0.0010 |\n| 101.2 | −0.0015 |\n| 101.08 | ≈ 0 |\n\nThe root is x ≈ 101.08 m. Re-evaluating the friction factors at the final flows (Re₁ ≈ 5.8×10⁵, Re₂ ≈ 9.5×10⁴, Re₃ ≈ 6.3×10⁵) gives no change at this precision.\n\n**Flows at x ≈ 101.08 m**\n\n- Q₁ = sqrt(18.92 × 1.0034×10⁻³) ≈ 0.1378 m³/s\n- Q₃ = sqrt(31.08 × 4.8545×10⁻⁴) ≈ 0.1228 m³/s\n- |Q₂| = sqrt(1.08 × 2.0840×10⁻⁴) ≈ 0.0150 m³/s, directed from J into B\n- Check: Q₁ = Q₃ + |Q₂| gives 137.8 = 122.8 + 15.0 L/s.\n\nThe hand calculation is good to about 0.5%. I did not run code, and the value of pipe 2's flow is the least precise because its head difference is only about 1 m.\n\n**FINAL (a): 101.1 m**\n**FINAL (b): 137.8 L/s**\n**FINAL (c): 15.0 L/s, flowing out of the junction into reservoir B (water flows into B)**\n**FINAL (d): 122.8 L/s**",
+ "reasoning": null,
+ "finish_reason": "stop",
+ "cost": null,
+ "tools_used": []
+}

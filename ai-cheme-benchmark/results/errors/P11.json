@@ -332,5 +332,15 @@
    "type": "numerical",
    "note": "Carried from (d): stage 4 follows from the invalid stage table."
   }
+ },
+ "anthropic/claude-haiku-5.5": {
+  "d": {
+   "type": "method",
+   "note": "Stripping line drawn through the R_min pinch, not from stripping-section flows."
+  },
+  "e": {
+   "type": "method",
+   "note": "Carried from (d): feed switch at pinch x*, not operating-line intersection."
+  }
  }
 }

@@ -25,14 +25,28 @@ of `problems/PNN.md`), with nothing added. Each problem was a separate conversat
   tools and no code execution (as stated in the file of replies), and were pasted into this project by the
   user. Its sampling settings are not known, and its cost is shown as $0 because the Muse app did not charge
   for the run.
+- Exception: Claude Sonnet 5.5 and Claude Haiku 5.5 were not called through OpenRouter either. Each reply
+  came from a fresh Claude Code sub-agent (one per model and problem) whose task was the system message
+  above, the problem statement, and one added line: "Do not use any tools (no files, no code, no search).
+  Answer from your own knowledge in a single reply; your reply is recorded verbatim as your exam answer."
+  The sub-agents also carried Claude Code's own system prompt, which the other models did not have. Every
+  sub-agent's transcript was checked: none called a tool apart from handing its answer back. The reply is
+  the sub-agent's first answer with FINAL lines, verbatim, or its hand-back message when it gave no other
+  answer; text written after the harness asked a sub-agent to hand its answer back (repeats of the answer)
+  is not part of the reply. Their sampling
+  settings are Claude Code's defaults, and their cost is not shown ("—") because these runs are not billed
+  per request.
 
 ## Which models were run, and the Frontier problems
 
 The models were added in steps, roughly in order of release, to follow the progress of widely available
 models over time: small and older models first, then 2024 flagships (GPT-4o, Mistral Large 2, DeepSeek V3),
 the first widely available reasoning models (o3, DeepSeek R1, Gemini 2.5 Pro), late-2025 models (GPT-5,
-GPT-5.2, Claude Sonnet 4.5, Claude Opus 4.5) and 2026 models (Gemini 3.1 Pro, Claude Opus 4.8, Claude
-Opus 5.5). GPT-4 Turbo, o3-mini and o4-mini were planned but OpenAI has retired them, so they could not be
+GPT-5.2, Claude Sonnet 4.5, Claude Opus 4.5) and 2026 models (Gemini 3.1 Pro, Claude Opus 4.8). Claude
+Opus 5.5 was also run, but it is not shown: it is the grader, so its replies were graded by the model
+itself (its replies and grades are kept in `results/`). Claude Sonnet 5.5 and Claude Haiku 5.5 were added in
+its place, run as sub-agents (see Sampling settings); their release month is shown as 2026-10, the month
+they were run, and was not checked. GPT-4 Turbo, o3-mini and o4-mini were planned but OpenAI has retired them, so they could not be
 called. GPT-4 and o1 were left out to stay within the budget. Muse Spark 1.3 (Meta) was added last, run
 outside OpenRouter (see Sampling settings); its release month is shown as 2026-10, the month it was run, and
 was not checked against an announcement.
@@ -76,7 +90,8 @@ credit of the working. A model's score is the mean of its problem scores, in per
 The grader was an AI model, Claude Opus 5.5, in one session: one grader instance per problem, which graded
 every model's reply to that problem, so that the same mistake got the same deduction. As models were added
 in steps, each instance graded the new replies in a further batch, keeping its earlier grades unchanged.
-Note that the grader is a model from the same family as some of the graded Claude models. It
+Note that the grader is a model from the same family as the graded Claude models, and from the same
+generation as Claude Sonnet 5.5 and Claude Haiku 5.5; the grader's own replies are left out for this reason. It
 saw the problem, the reference answers, the reference solution and the rubric, graded the reply text only
 (not any hidden reasoning), and wrote the one-to-four-sentence justification shown under each reply. The
 instructions it followed are in `python/grading_prompt.md`.
@@ -115,7 +130,9 @@ fixed before any model saw them.
 - Release dates were collected before the run and not checked against a primary source; parameter
   counts are from the model cards linked above and were not checked further.
 - Which provider served each request, and with which settings, is as reported by OpenRouter. For
-  Muse Spark 1.3 nothing is known beyond the replies themselves.
+  Muse Spark 1.3 nothing is known beyond the replies themselves. The Sonnet 5.5 and Haiku 5.5 sub-agents
+  ran under different conditions from the others (an extra instruction line and Claude Code's system
+  prompt), so their comparison with the other models is not exact.
 - The reference answers were checked against an independent second solution for every part (Code tab),
   but not against a textbook answer key.
 

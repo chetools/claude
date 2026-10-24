@@ -232,5 +232,23 @@
   },
   "score": 10,
   "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 256.5/180 = 1.425, correct. (c) N = 5.36 from the correct Kremser equation, correct."
+ },
+ "anthropic/claude-sonnet-5.5": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 256.5/180 = 1.425, correct. (c) N = 5.36 from the correct Kremser equation, correct."
+ },
+ "anthropic/claude-haiku-5.5": {
+  "parts": {
+   "a": 3,
+   "b": 3,
+   "c": 4
+  },
+  "score": 10,
+  "justification": "(a) 171 kmol/h with the rich-end pinch, correct. (b) A = 1.425, correct. (c) N = 5.356 (FINAL 5.36) from the correct Kremser equation, correct."
  }
 }

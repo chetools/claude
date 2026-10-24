@@ -413,7 +413,8 @@
   "reasoning": true,
   "price_in_per_M": 4.0,
   "price_out_per_M": 20.0,
-  "release_source": "https://www.anthropic.com/news/claude-opus-5-5"
+  "release_source": "https://www.anthropic.com/news/claude-opus-5-5",
+  "excluded": "the grader is Claude Opus 5.5, so this model's replies were graded by the model itself; its replies and grades stay in results/ but are not shown"
  },
  {
   "id": "meta/muse-spark-1.3",
@@ -429,5 +430,35 @@
   "price_out_per_M": null,
   "release_source": null,
   "run_in": "Muse app"
+ },
+ {
+  "id": "anthropic/claude-sonnet-5.5",
+  "name": "Anthropic: Claude Sonnet 5.5",
+  "vendor": "Anthropic",
+  "openrouter_created": null,
+  "release_date": "2026-10",
+  "params": null,
+  "params_official": false,
+  "params_source": null,
+  "reasoning": true,
+  "price_in_per_M": null,
+  "price_out_per_M": null,
+  "release_source": null,
+  "run_in": "Claude Code sub-agent"
+ },
+ {
+  "id": "anthropic/claude-haiku-5.5",
+  "name": "Anthropic: Claude Haiku 5.5",
+  "vendor": "Anthropic",
+  "openrouter_created": null,
+  "release_date": "2026-10",
+  "params": null,
+  "params_official": false,
+  "params_source": null,
+  "reasoning": true,
+  "price_in_per_M": null,
+  "price_out_per_M": null,
+  "release_source": null,
+  "run_in": "Claude Code sub-agent"
  }
 ]

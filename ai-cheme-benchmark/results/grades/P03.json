@@ -258,5 +258,25 @@
   },
   "score": 10,
   "justification": "Correct trial-and-error on the junction head with Darcy-Weisbach and Colebrook in each pipe, trials at 100, 101 and 101.2 m (values check) and a continuity and head-loss check at the solution. (a) 101.08 m vs 101.08 m, (b) 137.8 vs 137.8 L/s, (c) 15.0 L/s into B vs 15.0 L/s into B (0.1 % off, direction correct), (d) 122.8 vs 122.8 L/s: all within 0.2 %, full points."
+ },
+ "anthropic/claude-sonnet-5.5": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 2,
+   "d": 2
+  },
+  "score": 10.0,
+  "justification": "Correct trial-and-error on H_J with Darcy-Weisbach and Colebrook friction factors (f1 = 0.0195, f2 = 0.0232, f3 = 0.0203), flow laws Q = k sqrt(h), residuals at 101.0 and 101.1 m and a continuity check. (a) 101.1 m (101.08 in the working) vs 101.08 m, (b) 137.8 vs 137.8 L/s, (c) 15.0 L/s into B vs 15.0 L/s into B, (d) 122.8 vs 122.8 L/s: all within 0.1 %, full points."
+ },
+ "anthropic/claude-haiku-5.5": {
+  "parts": {
+   "a": 4,
+   "b": 2,
+   "c": 2,
+   "d": 2
+  },
+  "score": 10.0,
+  "justification": "Correct trial-and-error on H_J with Q = sqrt(h pi^2 g D^5/(8 f L)), Colebrook friction factors (f1 = 0.0195, f2 = 0.0232, f3 = 0.0203), residuals at 101.0 and 101.2 m and a continuity check. (a) 101.1 m (101.08 in the working) vs 101.08 m, (b) 137.8 vs 137.8 L/s, (c) 15.0 L/s into B vs 15.0 L/s into B, (d) 122.8 vs 122.8 L/s: all within 0.1 %, full points."
  }
 }
