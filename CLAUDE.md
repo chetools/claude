@@ -149,6 +149,32 @@ These complement the rules above. They apply to every project.
 - **When done,** give the user the shareable `https://chetools.github.io/claude/<page-dir>/` link, after confirming
   that it serves.
 
+## Chemical process pages and flow diagrams (skills in `.claude/skills/`)
+
+- **Process flow diagrams:** follow `.claude/skills/process-flow-diagram-drawing/SKILL.md` and its specification
+  PFD-SPEC-001 (`specification/`). Addendum A at the end of that file (library corrections, strict readings of
+  the spec, the process-sense review, verifier tests) is part of the skill.
+- **Process pages** (an interactive page about a plant or process unit: PFD at the centre, live Python balance model,
+  subunit breakdown, economics, safety): follow `.claude/skills/chemical-process-wasm-page/SKILL.md`. It is the
+  process-page counterpart of the teaching-page rules above. Reference build: `pfd-hda-example/page/`.
+- Where these skills differ from this file, this file wins:
+  - publish under `gh-pages:<dir>/`, not `muse-html/<slug>/`;
+  - the built page is committed in the project directory (as for teaching pages).
+- **General lessons from the first use (HDA plant):**
+  - Passing the geometric and balance checks does not make a flowsheet right. Before delivery, read the stream table
+    and drawing as a process engineer:
+    - pressure let-downs have valves;
+    - temperatures and phases agree with computed bubble and dew points;
+    - vapour compositions respect vapour pressures;
+    - utilities and instrument taps are on the correct side.
+  - Use an independent reviewer for that read.
+  - "Shall exceed" limits are strict inequalities in checks.
+  - A verifier is trusted only after planted-defect tests show that it fails.
+  - Values shared between parallel sub-agents' outputs (for example sheet-continuation heights) are fixed with the most
+    constrained output in view, not as an arbitrary range in advance.
+  - A sub-agent's "inspected the render" may refer to an earlier draft. Re-render the deliverables from source and
+    look at them yourself before issuing.
+
 ## Lessons learned (packed-bed-runaway, 2026-10)
 
 ### Working with the user

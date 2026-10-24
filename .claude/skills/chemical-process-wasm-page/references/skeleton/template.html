@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- Template skeleton for a chemical process WASM page.
+     Structure only: the builder replaces @@NAME@@ placeholders
+     (Section 6 of the skill) and supplies styles, the sheet, the
+     model interface, and the panel bodies. Load-bearing features
+     marked in comments: sticky tab bar (Section 2), per-panel
+     tables of contents, fragment identifiers on every panel and
+     headed section, header block at body width, precomputed
+     design-basis run rendered on load, controls disabled until the
+     Python runtime boots. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>@@TITLE@@</title>
+<style>
+  body { background: #fff; }
+  /* Header block: same max-width as the body column (Section 2). */
+  .hwrap { max-width: 72ch; margin: 0 auto; }
+  /* Sticky main panel selection tab bar (Section 2, no exceptions):
+     direct child of the full-height wrapping column; no ancestor
+     with overflow hidden/auto; opaque background. */
+  nav.tabs { position: sticky; top: 0; z-index: 60; background: #fff; }
+  /* In-panel table of contents offset below the stuck bar. */
+  .tocside { position: sticky; top: 60px; max-height: calc(100vh - 70px); }
+  /* Fragment targets clear the stuck bar. */
+  h2, h3, section[id] { scroll-margin-top: 60px; }
+  figure.subdiagram figcaption { text-align: left; }
+  @media (max-width: 760px) {
+    /* Phone: results column full width; component table scrolls. */
+    .main { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hwrap">
+    <h1>@@TITLE@@</h1>
+    <p>@@INTRO@@</p>
+    <p id="status">@@STATUS@@</p>
+  </div>
+  <nav class="tabs">
+    <button data-panel="app" class="on">App</button>
+    <button data-panel="theory">Theory</button>
+    <button data-panel="code">Code</button>
+  </nav>
+  <section class="tab" id="panel-app">
+    <figure id="sheet">@@SHEET_SVG@@</figure>
+    <div id="equipment-index">@@EQUIPMENT_INDEX@@</div>
+    <div id="model">@@MODEL_PANEL@@</div>
+  </section>
+  <section class="tab" id="panel-theory" hidden>
+    <nav class="tocside">@@THEORY_TOC@@</nav>
+    <div class="prose">@@THEORY_HTML@@</div>
+  </section>
+  <section class="tab" id="panel-code" hidden>
+    <nav class="tocside">@@CODE_TOC@@</nav>
+    <div class="prose">@@CODE_HTML@@</div>
+  </section>
+</div>
+<script id="prestart-data" type="application/json">@@PRESTART_JSON@@</script>
+@@APP_JS@@
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>PFD Layout Specification — PFD-SPEC-001</title>
+<style>
+  @page { size: Letter; margin: 20mm 19mm 18mm 19mm; }
+  * { box-sizing: border-box; }
+  body { font-family: Georgia, "Times New Roman", serif; font-size: 10.6pt; line-height: 1.46; color: #111; background: #fff; margin: 0; }
+  h1, h2, h3, .sans { font-family: Arial, Helvetica, sans-serif; }
+  h1 { font-size: 14.5pt; margin: 20px 0 7px 0; padding-bottom: 3px; border-bottom: 1.6px solid #111; }
+  h1.nobreak { break-before: auto; }
+  .annex h1, h1.annex { break-before: page; }
+  h2 { font-size: 12pt; margin: 14px 0 5px 0; }
+  h3 { font-size: 10.8pt; margin: 11px 0 4px 0; }
+  p { margin: 5px 0; text-align: justify; }
+  ul, ol { margin: 5px 0 8px 0; padding-left: 20px; }
+  li { margin: 2.5px 0; text-align: justify; }
+  table { border-collapse: collapse; width: 100%; margin: 7px 0 11px 0; font-size: 9.6pt; }
+  th, td { border: 0.7px solid #444; padding: 4px 6px; vertical-align: top; text-align: left; }
+  th { font-family: Arial, Helvetica, sans-serif; font-size: 9.3pt; background: #eee; }
+  .titleblock { border: 2px solid #111; padding: 16px 20px 12px 20px; margin-bottom: 14px; }
+  .titleblock .doctitle { font-family: Arial, Helvetica, sans-serif; font-size: 20pt; font-weight: bold; line-height: 1.2; margin: 2px 0 6px 0; }
+  .titleblock table { font-size: 10pt; margin: 8px 0 2px 0; }
+  .titleblock td { border: none; padding: 2.5px 6px 2.5px 0; }
+  .titleblock td.k { font-family: Arial, Helvetica, sans-serif; font-weight: bold; width: 130px; }
+  .req { margin: 7px 0; }
+  .req .rid { font-family: Arial, Helvetica, sans-serif; font-weight: bold; }
+  .small { font-size: 9.4pt; }
+  .toc td { border: none; padding: 2.2px 4px; }
+  .toc td.pg { text-align: right; width: 34px; }
+  .toc { font-size: 10.4pt; }
+  .cat { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 8px 0; }
+  .cell { border: 0.8px solid #444; padding: 6px 8px 5px 8px; break-inside: avoid; }
+  .cell .gname { font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 9.8pt; margin-top: 3px; }
+  .cell .gsrc { font-size: 8.8pt; color: #222; }
+  .cell svg { display: block; margin: 0 auto; }
+  .check li { list-style: none; }
+  .check { padding-left: 4px; }
+  .refs p { margin: 4px 0 4px 18px; text-indent: -18px; text-align: left; }
+  .note { border-left: 3px solid #111; padding: 4px 10px; margin: 8px 0; background: #f5f5f5; }
+</style>
+</head>
+<body>
+
+<div class="titleblock">
+  <div class="sans" style="font-size:10pt; letter-spacing:1.5px;">SPECIFICATION</div>
+  <div class="doctitle">Layout of Process Flow Diagrams</div>
+  <table>
+    <tr><td class="k">Document number</td><td>PFD-SPEC-001</td><td class="k">Version</td><td>2.0</td></tr>
+    <tr><td class="k">Date of issue</td><td>2026-10-24</td><td class="k">Status</td><td>Issued for use</td></tr>
+    <tr><td class="k">Application</td><td colspan="3">Process flow diagrams (defined in Section 3) generated from process simulation results from any source, and drawn with the symbol set reproduced in Annex A</td></tr>
+  </table>
+</div>
+
+<h1 class="nobreak">Contents</h1>
+<table class="toc">
+  <tr><td>1&nbsp;&nbsp;Scope and field of application</td><td class="pg">1</td></tr>
+  <tr><td>2&nbsp;&nbsp;References</td><td class="pg">2</td></tr>
+  <tr><td>3&nbsp;&nbsp;Terms, definitions and notation</td><td class="pg">2</td></tr>
+  <tr><td>4&nbsp;&nbsp;General principles</td><td class="pg">3</td></tr>
+  <tr><td>5&nbsp;&nbsp;Accuracy requirements</td><td class="pg">4</td></tr>
+  <tr><td>6&nbsp;&nbsp;Symbol selection requirements</td><td class="pg">4</td></tr>
+  <tr><td>7&nbsp;&nbsp;Placement requirements</td><td class="pg">5</td></tr>
+  <tr><td>8&nbsp;&nbsp;Routing requirements</td><td class="pg">5</td></tr>
+  <tr><td>9&nbsp;&nbsp;Line weights, lettering and labelling requirements</td><td class="pg">6</td></tr>
+  <tr><td>10&nbsp;&nbsp;Sheet organisation and density requirements</td><td class="pg">7</td></tr>
+  <tr><td>11&nbsp;&nbsp;Layout procedure</td><td class="pg">7</td></tr>
+  <tr><td>12&nbsp;&nbsp;Verification and acceptance</td><td class="pg">8</td></tr>
+  <tr><td>Annex A (normative)&nbsp;&nbsp;Symbol catalogue</td><td class="pg">9</td></tr>
+  <tr><td>Annex B (informative)&nbsp;&nbsp;Worked compliance record: sample diagram PFD-101</td><td class="pg">11</td></tr>
+  <tr><td>Annex C (informative)&nbsp;&nbsp;Pre-delivery checklist</td><td class="pg">12</td></tr>
+  <tr><td>References</td><td class="pg">13</td></tr>
+</table>
+
+<h1>1&nbsp;&nbsp;Scope and field of application</h1>
+<p>This specification establishes requirements for the placement of equipment symbols and the routing of stream lines on a process flow diagram (PFD), with the objective of maximum clarity and simplicity subject to no loss of process accuracy. The specification applies to every PFD produced from a process simulation topology, whether the drawing is produced inside a simulation application or rendered externally as vector output (Scalable Vector Graphics, SVG, or Portable Document Format, PDF). Where external rendering is used, the symbols shall be the symbols reproduced in Annex A.</p>
+<p>This specification does not cover piping and instrumentation diagrams (P&amp;IDs). Content appropriate to a P&amp;ID — pipe specifications, minor valves and fittings, and complete instrumentation — is outside the content level of a PFD as classified in reference [1].</p>
+
+<h1>2&nbsp;&nbsp;References</h1>
+<p>The following documents are referenced in the requirements. Full bibliographic entries, each verified against the publisher or standards-body record before issue of this specification, are given in the References list at the end of the document.</p>
+<ul>
+  <li>[1] ISO 10628-1:2014 — classification, information content and drafting rules for process flow diagrams.</li>
+  <li>[2] ISO 10628-2:2012 — graphical symbols for diagrams in the chemical and petrochemical industry.</li>
+  <li>[3] ANSI/ISA-5.1-2009 — instrumentation symbols and identification.</li>
+  <li>[4] Purchase (1997) — empirical priority order of graph-drawing aesthetics for human understanding.</li>
+  <li>[5] STEM visual style specification (internal) — line-weight hierarchy, lettering sizes, and final visual verification for technical figures.</li>
+  <li>[6] Traced symbol library verification summary (internal, 2026-10-24) — inventory and verification record of the source symbol library from which the Annex A reproductions were traced.</li>
+</ul>
+
+<h1>3&nbsp;&nbsp;Terms, definitions and notation</h1>
+<h2>3.1&nbsp;&nbsp;Terms and definitions</h2>
+<ul>
+  <li><b>process flow diagram (PFD):</b> a diagram that depicts a process by graphical symbols representing equipment, interconnected by lines representing flows of mass, energy, or energy carriers, and that carries the information content specified for the PFD level in reference [1].</li>
+  <li><b>piping and instrumentation diagram (P&amp;ID):</b> a diagram at the next level of detail after a PFD, depicting the technical realisation of the process, including all piping, valves, fittings, and instrumentation.</li>
+  <li><b>topology:</b> the connection structure of a process, comprising the set of equipment items, the set of streams, the equipment item at each stream end, the port at each stream end, and the direction of flow of each stream. Topology carries no geometric information.</li>
+  <li><b>layout:</b> the assignment of a position, a size, and an orientation on the drawing sheet to every equipment symbol, together with a route for every stream line. Layout is geometry only; a layout change shall not alter topology.</li>
+  <li><b>node:</b> an equipment item regarded as an element of the topology. <b>edge:</b> a stream regarded as an element of the topology.</li>
+  <li><b>port:</b> a defined connection point on an equipment symbol, identified by position on the symbol and by the physical stream end that connects there (for example, the vapour outlet at the top of a vessel).</li>
+  <li><b>bend:</b> a single change of direction of a stream line between horizontal and vertical. <b>crossing:</b> an intersection of two stream lines at a point that is not a port and not a junction. <b>junction:</b> a point at which one stream divides into two or more streams, or two or more streams combine into one, marked with a junction dot.</li>
+  <li><b>lane:</b> a reserved horizontal or vertical band of the sheet through which a group of related stream lines is routed. <b>spine:</b> the straight principal lane that carries the main process flow across the sheet. <b>perimeter lane:</b> a lane at the boundary of the equipment area, reserved for recycle streams and utility streams.</li>
+  <li><b>template:</b> a fixed relative arrangement of symbols and internal routes for a recurrent equipment group, applied without alteration to every occurrence of that group.</li>
+  <li><b>grid module (symbol M):</b> the base drafting module of reference [1], M = 2.5 mm at final scale (the letter M denotes the grid module; the unit millimetre is denoted mm).</li>
+  <li><b>hard failure:</b> a defect class for which the acceptance limit is zero occurrences (Section 12). <b>quality score:</b> a measured layout quantity that is minimised or maximised subject to zero hard failures.</li>
+</ul>
+<h2>3.2&nbsp;&nbsp;Notation</h2>
+<p>The following symbols are used in Sections 11 and 12 and in Annex B. Each symbol is defined here, before first use, with its unit where a unit applies.</p>
+<table>
+  <tr><th style="width:110px;">Symbol</th><th>Definition</th><th style="width:90px;">Unit</th></tr>
+  <tr><td>N<sub>c</sub></td><td>Number of crossings on a sheet</td><td>—</td></tr>
+  <tr><td>N<sub>b</sub></td><td>Total number of bends summed over all stream lines on a sheet</td><td>—</td></tr>
+  <tr><td>b<sub>max</sub></td><td>Maximum number of bends on any single stream line</td><td>—</td></tr>
+  <tr><td>L<sub>t</sub></td><td>Total routed length of all stream lines on a sheet, measured at final scale</td><td>mm</td></tr>
+  <tr><td>s<sub>min</sub></td><td>Minimum clear spacing between any two parallel stream lines, measured at final scale</td><td>mm</td></tr>
+</table>
+
+<h1>4&nbsp;&nbsp;General principles</h1>
+<p><b>4.1 Graph separation principle.</b> A PFD is a drawing of a directed graph in which nodes represent equipment items and edges represent streams. Topology is fixed by the simulation. Layout is the only variable under the control of the drawing process, and no layout operation shall create, delete, merge, split, redirect, or re-terminate an edge.</p>
+<p><b>4.2 Information preservation principle.</b> Simplification is permitted only through the content level of the diagram (requirement A3), never through alteration of the content that the selected level requires. Clarity gained by omission of required content is an accuracy loss and is prohibited.</p>
+<p><b>4.3 Priority principle.</b> Where layout objectives conflict, resolution shall follow the priority order of Table 1. The order is evidence-based: controlled experiments on human understanding of graph drawings found that reduction of edge crossings is by far the most important aesthetic factor, with reduction of bends and increase of symmetry having a lesser effect [4].</p>
+<table>
+  <tr><th style="width:80px;">Priority</th><th>Objective</th><th style="width:200px;">Governing requirements</th></tr>
+  <tr><td>1</td><td>Elimination of crossings (minimisation of N<sub>c</sub>)</td><td>P2, P6, R5</td></tr>
+  <tr><td>2</td><td>Minimisation of bends (minimisation of N<sub>b</sub> and b<sub>max</sub>)</td><td>R2, R3</td></tr>
+  <tr><td>3</td><td>Minimisation of total routed length L<sub>t</sub> and of occupied sheet area</td><td>P4, R4</td></tr>
+  <tr><td>4</td><td>Maximisation of alignment, regularity, and symmetry</td><td>P5, P7</td></tr>
+</table>
+<p><b>4.4 Reproducibility principle.</b> Identical topology shall produce an identical layout. Recurrent equipment groups shall be drawn from templates (requirement P5), and every symbol shall be taken from Annex A without local modification.</p>
+
+<h1>5&nbsp;&nbsp;Accuracy requirements</h1>
+<p class="req"><span class="rid">A1 — Topology preservation.</span> Every equipment item, stream, flow direction, and stream end connection in the simulation topology shall appear exactly once on the diagram, and nothing shall appear on the diagram that is absent from the topology. <i>Verification:</i> automated comparison of the node list, edge list, and port assignments extracted from the drawing against the simulation topology; any difference is a hard failure.</p>
+<p class="req"><span class="rid">A2 — Port correctness.</span> Every stream shall connect to the physically correct port of each equipment symbol: vapour streams at the top of a vessel, liquid streams at the bottom, a column feed at the entry point corresponding to its feed location, a pump suction and discharge on the correct sides, and equivalent assignments for other equipment. <i>Verification:</i> port-by-port inspection against the port table of the selected symbol in Annex A; any incorrect port is a hard failure.</p>
+<p class="req"><span class="rid">A3 — Content level.</span> The diagram shall contain at least the basic information required for a PFD in reference [1]: the kind of equipment needed for the process (drivers excepted), reference designations for equipment, route and direction of incoming and outgoing material and energy flows, designation and flow rates of incoming and outgoing materials, designation of energy types and carriers, and characteristic operating conditions. Pipe specifications, minor valves and fittings, and full instrumentation detail shall not be shown; essential valves in their logical process position and principal control loops shall be shown. <i>Verification:</i> content checklist (Annex C).</p>
+<p class="req"><span class="rid">A4 — Identity consistency.</span> Equipment designations, stream numbers, and stream table entries shall correspond one to one. Every stream number placed on the diagram shall appear exactly once in the stream table, and every row of the stream table shall correspond to exactly one stream number on the diagram. <i>Verification:</i> automated cross-count; any mismatch is a hard failure.</p>
+<p class="req"><span class="rid">A5 — Balance integrity.</span> Stream values shown on the diagram and in the stream table shall be the values of the simulation result from which the diagram is generated, without rounding that alters a displayed balance: every equipment balance and the overall balance formed from the displayed values shall close within the rounding of the least precise displayed value. <i>Verification:</i> recomputation of all unit balances and the overall balance from the displayed values.</p>
+
+<h1>6&nbsp;&nbsp;Symbol selection requirements</h1>
+<p class="req"><span class="rid">S1 — Symbol set.</span> Equipment shall be represented by the symbols reproduced in Annex A. The catalogue entries are vector reproductions of symbol variants held in the source symbol library recorded in reference [6]: 234 symbol definition files and 11 symbol set files.</p>
+<p class="req"><span class="rid">S2 — Named variant.</span> The source library provides multiple variants for most equipment types (for example, 20 heat exchanger variants and 20 rigorous column variants are present in the library recorded in reference [6]). The specification of a diagram shall therefore name the variant, by catalogue entry number in Annex A and by library file name, for every equipment item. A diagram that names only the equipment type is incompletely specified.</p>
+<p class="req"><span class="rid">S3 — Reproduction fidelity.</span> A reproduced symbol shall preserve the outline, internal linework, proportions, and port positions of the original symbol. Fidelity shall be verified by comparison of the reproduction against the geometry decoded from the original symbol definition file; deviation of any port position or principal outline dimension shall not exceed 0.5 mm at final scale. The source symbol definition files use a proprietary binary format and shall not be embedded in external output; the verified vector reproduction is the deliverable form.</p>
+<p class="req"><span class="rid">S4 — Instruments.</span> Instrument and control symbols, where shown at PFD content level, shall follow reference [3].</p>
+<p class="req"><span class="rid">S5 — Symbols outside the catalogue.</span> An equipment type absent from Annex A shall be drawn with the corresponding symbol of reference [2], reproduced under requirement S3, and added to Annex A at the next revision of this specification before a second use.</p>
+
+<h1>7&nbsp;&nbsp;Placement requirements</h1>
+<p class="req"><span class="rid">P1 — Reading direction.</span> The main flow direction shall be drawn from left to right, and secondary progression from top to bottom, in accordance with the drafting rules of reference [1]. Feeds shall enter at the left boundary of the sheet and products shall leave at the right boundary, except where a stream is a sheet continuation under requirement R9.</p>
+<p class="req"><span class="rid">P2 — Process order.</span> Equipment shall be placed in process sequence along the flow direction, in topological order of the main path, so that forward flow requires no movement against the reading direction. Placement order is the primary instrument for the elimination of crossings (priority 1, Table 1).</p>
+<p class="req"><span class="rid">P3 — Relative elevation and size.</span> Symbol sizes shall reflect approximate relative equipment size, and vertical position shall reflect approximate relative elevation, in accordance with reference [1]: equipment at the highest level of the plant at the top of the drawing and equipment at the lowest level at the bottom. Columns shall be drawn tall and vertical, overhead condensers above column tops, reboilers at column bases, and pumps at low elevation.</p>
+<p class="req"><span class="rid">P4 — Proximity.</span> Equipment items connected by short or tightly coupled streams shall be placed adjacent, so that coupled streams are short and do not cross the sheet. Distance between unconnected equipment carries no meaning and shall not be used to encode information.</p>
+<p class="req"><span class="rid">P5 — Template application.</span> Recurrent equipment groups shall be placed from fixed templates. The distillation column template is normative: column at the centre, condenser above the column top, reflux drum at condenser elevation to the right of the condenser, reflux return on a vertical lane to the right of the column entering the column top section, reboiler below the column base offset to one side, boilup vapour return entering the column bottom section, bottoms product leaving from the reboiler elevation. Templates for other recurrent groups shall be recorded in the project documentation before a second use.</p>
+<p class="req"><span class="rid">P6 — Crossing resolution by placement.</span> A crossing predicted during placement shall be resolved first by reordering equipment within the freedom left by requirements P2 to P5, second by reassignment of lanes under requirement R5, and only third accepted and drawn under requirement R7.</p>
+<p class="req"><span class="rid">P7 — Grid alignment.</span> Symbol anchor points shall be placed on a common grid based on the grid module M (Section 3.1). Symbols in one train shall share a baseline or a centreline. Parallel trains shall be drawn with equal spacing and, where the topology is symmetric, with a symmetric layout.</p>
+<p class="req"><span class="rid">P8 — Grouping and whitespace.</span> Equipment of one process section shall form one visual group, separated from other sections by whitespace of at least twice the normal inter-symbol spacing. Whitespace shall not be used inside a template group.</p>
+
+<h1>8&nbsp;&nbsp;Routing requirements</h1>
+<p class="req"><span class="rid">R1 — Orthogonal routing.</span> Stream lines shall consist of horizontal and vertical segments only. Diagonal segments and curved process lines are prohibited.</p>
+<p class="req"><span class="rid">R2 — Straight spine.</span> The principal process stream shall run as one straight spine across the main train wherever the topology permits. The spine shall not detour around equipment; other streams shall join and leave the spine.</p>
+<p class="req"><span class="rid">R3 — Bend minimisation.</span> Every stream line shall carry the minimum number of bends compatible with its two ports. Targets: zero bends for a stream on the spine; at most two bends for any stream (acceptance limit b<sub>max</sub> ≤ 2, Section 12). Two bends separated by a straight segment shorter than 4 M (10 mm at final scale) form a jog and are prohibited.</p>
+<p class="req"><span class="rid">R4 — No transit.</span> No stream line shall pass through an equipment symbol, a label, a stream number marker, or a table. Lines shall be routed only in lanes between symbols.</p>
+<p class="req"><span class="rid">R5 — Lane ordering.</span> Parallel stream lines shall maintain a consistent order in the lane corresponding to the order of their destinations, so that ordering resolves intersections without crossings. The clear spacing s<sub>min</sub> between parallel flow lines shall exceed 10 mm at final scale, and shall never be less than twice the width of the widest of the lines, in accordance with reference [1].</p>
+<p class="req"><span class="rid">R6 — Recycle and utility routing.</span> A recycle stream shall return on a perimeter lane and shall not weave through forward-flowing equipment; a liquid recycle shall use the lower perimeter lane by default. A utility stream shall approach its equipment from the nearest sheet boundary on a short stub and shall not traverse the process area.</p>
+<p class="req"><span class="rid">R7 — Crossings and junctions.</span> A crossing is not a connection and shall be drawn without a junction dot. Where lines of equal width cross without connecting, the vertical line shall be interrupted at the crossing; where lines of different widths cross, the thinner line shall be interrupted, in accordance with reference [1]. A junction dot shall appear only at a genuine division or combination of streams.</p>
+<p class="req"><span class="rid">R8 — Direction marking.</span> Flow direction shall be marked by an arrowhead at every equipment inlet, after the final bend before a destination on any stream longer than 40 M (100 mm at final scale), and upstream of every branch. Direction shall be determinable from any single segment of a stream without tracing the stream in full.</p>
+<p class="req"><span class="rid">R9 — Sheet continuation.</span> A stream continued on another sheet shall leave and enter at the same height on both sheets, with a matched continuation marker and an identical stream number, in accordance with reference [1].</p>
+<p class="req"><span class="rid">R10 — Port approach.</span> A stream line shall meet every port along the port axis (horizontally for a side port, vertically for a top or bottom port) with a final straight segment of at least 2 M (5 mm at final scale). An angled approach to a port is prohibited.</p>
+
+<h1>9&nbsp;&nbsp;Line weights, lettering and labelling requirements</h1>
+<p class="req"><span class="rid">L1 — Line weight hierarchy.</span> Line widths at final scale shall follow Table 2, after reference [1]. No line shall be thinner than 0.25 mm.</p>
+<table>
+  <tr><th>Element</th><th style="width:130px;">Line width (mm)</th></tr>
+  <tr><td>Main flow lines</td><td>1.0</td></tr>
+  <tr><td>Equipment symbols (valves and fittings excepted); subsidiary flow lines; energy carrier lines</td><td>0.5</td></tr>
+  <tr><td>Valves and fittings; instrument and control symbols and lines; reference and auxiliary lines</td><td>0.25</td></tr>
+</table>
+<p class="req"><span class="rid">L2 — Lettering.</span> One typeface shall be used throughout a sheet. Lettering height at final scale shall be between 2.5 mm and 3.5 mm for equipment designations and stream data, and not less than 2 mm for any text, consistent with the lettering range of reference [5]. Every abbreviation and every symbol used in text or tables shall be defined in words at first use on the sheet or in the governing document.</p>
+<p class="req"><span class="rid">L3 — Equipment labels.</span> The designation of an equipment item shall be placed at a fixed position relative to its symbol for each equipment family, and the service name shall be placed adjacent to the designation or below the symbol. A label shall not overlap a line, a symbol, or another label, and a label position that would be crossed by a line shall be moved to the nearest clear position on the same side of the symbol.</p>
+<p class="req"><span class="rid">L4 — Stream number markers.</span> The stream number shall be placed in a diamond marker on a horizontal segment of the stream, clear of bends, crossings, junctions, and arrowheads. Where a stream has no horizontal segment, the marker shall be placed beside the longest vertical segment with a reference line of 0.25 mm.</p>
+<p class="req"><span class="rid">L5 — Leader lines.</span> A leader line shall not cross a process line. Labels to the left of a symbol shall be flush right; labels to the right shall be flush left.</p>
+<p class="req"><span class="rid">L6 — Colour independence.</span> Meaning shall not be carried by colour. A diagram shall remain fully legible when reproduced in greyscale, in accordance with reference [5].</p>
+
+<h1>10&nbsp;&nbsp;Sheet organisation and density requirements</h1>
+<p class="req"><span class="rid">D1 — Fixed final size.</span> A sheet shall be designed at its final reproduction size. Text, line weights, and spacings specified in millimetres refer to that size. Reduction of a completed sheet to fit additional content is prohibited.</p>
+<p class="req"><span class="rid">D2 — Density limit.</span> When requirements R3, R5, L3, and L4 cannot all be met on one sheet, the process shall be divided by section across sheets under requirement R9. Font size, spacing, and symbol size shall not be reduced to accommodate additional equipment on a sheet.</p>
+<p class="req"><span class="rid">D3 — Stream table.</span> The stream table shall be placed below the flowsheet area, shall carry one row per stream in stream number order, and shall state the unit of every quantity in its column heading in words or in a defined unit symbol (for example, flow rate in kilomoles per hour is written kmol/h, where kmol denotes kilomole and h denotes hour).</p>
+<p class="req"><span class="rid">D4 — Title block.</span> Every sheet shall carry a title block stating the process name, the drawing number, the date, the originator, and the revision. The title block shall not overlap the flowsheet area, the stream table, or the equipment summary.</p>
+
+<h1>11&nbsp;&nbsp;Layout procedure</h1>
+<p>The following procedure shall be applied in order. Steps 3 to 7 implement the priority order of Table 1.</p>
+<ol>
+  <li>Extract the topology (node list, edge list, port assignments, flow directions) from the simulation result. Layout work shall not begin from a prior drawing.</li>
+  <li>Select the symbol variant for every node from Annex A and record the variant in the diagram specification (requirement S2).</li>
+  <li>Order the nodes topologically along the main path and assign nodes to process sections (requirements P2, P8).</li>
+  <li>Place template groups as units (requirement P5); place remaining nodes in process order, on the grid, respecting relative elevation (requirements P3, P7).</li>
+  <li>Assign every edge to a lane; order edges within each lane by destination order (requirement R5). Route the spine first, template-internal streams second, remaining process streams third, recycle and utility streams last on perimeter lanes (requirements R2, R6).</li>
+  <li>Route every edge orthogonally between its ports with the minimum bend count (requirements R1, R3, R10). Where a crossing arises, return to steps 4 and 5 under requirement P6 before accepting the crossing.</li>
+  <li>Compute N<sub>c</sub>, N<sub>b</sub>, b<sub>max</sub>, L<sub>t</sub>, and s<sub>min</sub>. Iterate steps 4 to 6 while any quality score can be improved in the priority order of Table 1 without degrading a higher-priority score.</li>
+  <li>Place designations, service names, stream number markers, and arrowheads (requirements L3, L4, R8). Resolve every overlap by label movement, never by size reduction.</li>
+  <li>Verify under Section 12 and record the results in the compliance record of the diagram.</li>
+</ol>
+
+<h1>12&nbsp;&nbsp;Verification and acceptance</h1>
+<p><b>12.1 Hard failures.</b> The following are hard failures, each with an acceptance limit of zero: a topology difference (A1); an incorrect port (A2); a missing or duplicated stream number, designation, or stream table row (A4); a non-closing balance formed from displayed values beyond displayed rounding (A5); an overlap between a label and a line, a symbol, or another label (L3); a line transiting a symbol or a table (R4); a spacing violation (R5); a junction dot at a crossing or a missing junction dot at a genuine junction (R7).</p>
+<p><b>12.2 Quality scores.</b> The following scores shall be measured and recorded for every sheet: N<sub>c</sub>, N<sub>b</sub>, b<sub>max</sub>, L<sub>t</sub>, and s<sub>min</sub>. Acceptance requires b<sub>max</sub> ≤ 2 and, for every crossing counted in N<sub>c</sub>, a recorded justification stating the placement and lane alternatives that were examined under requirement P6. A sheet with N<sub>c</sub> = 0 and b<sub>max</sub> ≤ 1 meets the reference standard of layout quality established by the worked record in Annex B.</p>
+<p><b>12.3 Measurement methods.</b> Crossings and bends shall be counted from the drawing geometry by segment intersection and direction-change tests over all stream line segment pairs. Overlaps shall be assessed by rendered inspection of the full sheet at final size and of magnified regions covering every template group, in accordance with the visual verification requirement of reference [5]. Balances shall be recomputed from displayed values (requirement A5).</p>
+<p><b>12.4 Acceptance.</b> A diagram is accepted when no hard failure is present, the quality scores are recorded, and every crossing carries its justification. Rejection of a draft during verification, with defects recorded and corrected in a new version, is the expected operation of the verification step and shall be documented in the compliance record (Annex B gives the form).</p>
+
+<h1 class="annex">Annex A (normative)&nbsp;&nbsp;Symbol catalogue</h1>
+<p>The glyphs in Table A.1 are the normative symbol forms for diagrams under this specification. Each glyph is the vector reproduction, verified under requirement S3, of the library variant named in the entry. Connection stubs shown at the left and right of a glyph indicate the principal process ports and are not part of the symbol. A catalogue entry shall be cited in a diagram specification by entry number and library file name (requirement S2). The full source library recorded in reference [6] contains further variants of every family; variants not reproduced here shall be added under requirement S5 before use.</p>
+
+<div class="cat">
+  <div class="cell">
+    <svg viewBox="0 0 120 84" width="150" height="105"><g stroke="#111" stroke-width="2.2" fill="white"><line x1="8" y1="42" x2="34" y2="42"/><polygon points="34,29 58,29 58,36 72,42 58,48 58,55 34,55"/></g></svg>
+    <div class="gname">A.1 — Feed terminal</div><div class="gsrc">Library file: feed_1.svg. Port: outlet at the right point of the block arrow.</div>
+  </div>
+  <div class="cell">
+    <svg viewBox="0 0 120 84" width="150" height="105"><g stroke="#111" stroke-width="2.2" fill="white"><line x1="8" y1="42" x2="48" y2="42"/><polygon points="48,29 72,29 72,36 86,42 72,48 72,55 48,55"/><line x1="86" y1="42" x2="112" y2="42" stroke="none"/></g></svg>
+    <div class="gname">A.2 — Product terminal</div><div class="gsrc">Library file: product_1.svg. Port: inlet at the left edge of the block arrow.</div>
+  </div>
+  <div class="cell">
+    <svg viewBox="0 0 120 84" width="150" height="105"><g stroke="#111" stroke-width="2.2"><line x1="8" y1="42" x2="38" y2="42"/><line x1="82" y1="42" x2="112" y2="42"/><circle cx="60" cy="42" r="22" fill="white"/><polygon points="52,31 52,53 71,42" fill="#111" stroke="none"/></g></svg>
+    <div class="gname">A.3 — Centrifugal pump</div><div class="gsrc">Library file: pump_1.svg. Ports: suction at the left, discharge at the right; the solid triangle points in the flow direction. For a vertical run, the symbol is rotated so that the triangle points in the flow direction.</div>
+  </div>
+  <div class="cell">
+    <svg viewBox="0 0 120 84" width="150" height="105"><g stroke="#111" stroke-width="2.2" fill="white"><line x1="8" y1="42" x2="36" y2="42"/><line x1="84" y1="42" x2="112" y2="42"/><polygon points="36,26 84,36 84,48 36,58"/></g></svg>
+    <div class="gname">A.4 — Compressor</div><div class="gsrc">Library file: compressor_1.svg. Ports: suction at the left (wide end), discharge at the right.</div>
+  </div>
+  <div class="cell">
+    <svg viewBox="0 0 120 84" width="150" height="105"><g stroke="#111" stroke-width="2.2" fill="white"><line x1="8" y1="42" x2="36" y2="42"/><line x1="84" y1="42" x2="112" y2="42"/><polygon points="36,36 84,26 84,58 36,48"/></g></svg>
+    <div class="gname">A.5 — Expander</div><div class="gsrc">Library file: expander_1.svg. Ports: inlet at the left, outlet at the right (narrow end).</div>
+  </div>
+  <div class="cell">
+    <svg viewBox="0 0 120 84" width="150" height="105"><g stroke="#111" stroke-width="2.2"><line x1="8" y1="42" x2="38" y2="42"/><line x1="82" y1="42" x2="112" y2="42"/><circle cx="60" cy="42" r="22" fill="white"/><line x1="44" y1="26" x2="76" y2="58"/><line x1="44" y1="58" x2="76" y2="26"/></g></svg>
+    <div class="gname">A.6 — Heat exchanger</div><div class="gsrc">Library file: heat_exchanger_1.svg. Ports: process inlet and outlet at the left and right on the horizontal axis; utility connections at the bottom (heating) or top (cooling) circumference.</div>
+  </div>
+  <div class="cell">
+    <svg viewBox="0 0 120 84" width="150" height="105"><g stroke="#111" stroke-width="2.2"><line x1="60" y1="4" x2="60" y2="14"/><line x1="14" y1="52" x2="43" y2="52"/><line x1="77" y1="52" x2="106" y2="52"/><line x1="60" y1="70" x2="60" y2="82"/><path d="M 43 24 Q 60 12 77 24 L 77 58 Q 60 70 43 58 Z" fill="white"/><line x1="44" y1="52" x2="76" y2="52" stroke-width="1.2" stroke-dasharray="4 3"/></g></svg>
+    <div class="gname">A.7 — Flash drum (vertical vessel)</div><div class="gsrc">Library file: flash_1.svg. Ports: feed at the left side, vapour outlet at the top, liquid outlet at the bottom. The dashed line marks the liquid level.</div>
+  </div>
+  <div class="cell">
+    <svg viewBox="0 0 120 84" width="150" height="105"><g stroke="#111" stroke-width="2.2"><line x1="8" y1="42" x2="24" y2="42"/><line x1="96" y1="42" x2="112" y2="42"/><line x1="60" y1="68" x2="60" y2="82"/><path d="M 32 26 L 88 26 Q 104 42 88 58 L 32 58 Q 16 42 32 26 Z" fill="white"/><line x1="24" y1="50" x2="96" y2="50" stroke-width="1.2"/></g></svg>
+    <div class="gname">A.8 — Horizontal vessel (reflux drum)</div><div class="gsrc">Library file: vessel_1.svg. Ports: inlet at the left, vapour or overflow outlet at the right, liquid outlet at the bottom. The solid line marks the liquid level.</div>
+  </div>
+  <div class="cell">
+    <svg viewBox="0 0 120 84" width="150" height="105"><g stroke="#111" stroke-width="2.2"><line x1="60" y1="2" x2="60" y2="10"/><line x1="14" y1="30" x2="44" y2="30"/><line x1="14" y1="58" x2="44" y2="58"/><line x1="76" y1="44" x2="106" y2="44"/><line x1="60" y1="74" x2="60" y2="83"/><path d="M 44 16 Q 60 6 76 16 L 76 68 Q 60 78 44 68 Z" fill="white"/><g stroke-width="1.1"><line x1="47" y1="24" x2="73" y2="24"/><line x1="47" y1="34" x2="73" y2="34"/><line x1="47" y1="44" x2="73" y2="44"/><line x1="47" y1="54" x2="73" y2="54"/><line x1="47" y1="64" x2="73" y2="64"/></g></g></svg>
+    <div class="gname">A.9 — Distillation column</div><div class="gsrc">Library file: scds_1.svg. Ports: overhead vapour at the top, feed entries at the left side at the feed locations, reflux entry at the right side of the top section, boilup vapour entry at the right side of the bottom section, bottoms draw at the bottom. Internal horizontal lines mark trays or packing sections. Condenser and reboiler are separate symbols (entry A.6) placed under the column template of requirement P5.</div>
+  </div>
+  <div class="cell">
+    <svg viewBox="0 0 120 84" width="150" height="105"><g stroke="#111" stroke-width="2.2"><line x1="14" y1="42" x2="42" y2="42"/><line x1="78" y1="42" x2="106" y2="42"/><path d="M 42 22 Q 60 12 78 22 L 78 60 Q 60 70 42 60 Z" fill="white"/><rect x="54" y="2" width="12" height="8" fill="white"/><line x1="60" y1="10" x2="60" y2="56"/><line x1="50" y1="56" x2="70" y2="56"/><line x1="52" y1="50" x2="58" y2="60"/><line x1="68" y1="50" x2="62" y2="60"/></g></svg>
+    <div class="gname">A.10 — Stirred reactor</div><div class="gsrc">Library file: kinetic_1.svg. Ports: feed at the left side, product at the right side; the agitator shaft, impeller, and drive block at the top are part of the symbol.</div>
+  </div>
+  <div class="cell">
+    <svg viewBox="0 0 120 84" width="150" height="105"><g stroke="#111" stroke-width="2.2" fill="white"><line x1="8" y1="42" x2="40" y2="42"/><line x1="80" y1="42" x2="112" y2="42"/><polygon points="40,30 58,42 40,54"/><polygon points="80,30 62,42 80,54"/></g></svg>
+    <div class="gname">A.11 — Valve</div><div class="gsrc">Library file: valve_1.svg. Ports: left and right on the flow axis. At PFD content level a valve is shown only where essential under requirement A3.</div>
+  </div>
+  <div class="cell">
+    <svg viewBox="0 0 120 84" width="150" height="105"><g stroke="#111" stroke-width="2.2" fill="white"><line x1="8" y1="52" x2="40" y2="52"/><line x1="80" y1="52" x2="112" y2="52"/><polygon points="40,40 58,52 40,64"/><polygon points="80,40 62,52 80,64"/><line x1="60" y1="46" x2="60" y2="30"/><path d="M 44 30 A 16 12 0 0 1 76 30 Z"/></g></svg>
+    <div class="gname">A.12 — Control valve</div><div class="gsrc">Library file: control_valve_1.svg. Ports: left and right on the flow axis; the semicircular diaphragm actuator above the bowtie is part of the symbol. Instrument connections follow reference [3].</div>
+  </div>
+</div>
+<p class="small">Table A.1 — Normative symbol catalogue (entries A.1 to A.12). Stream number markers (diamond form), junction dots, and arrowheads are drawing elements governed by requirements L4, R7, and R8 respectively and are not equipment symbols.</p>
+
+<h1 class="annex">Annex B (informative)&nbsp;&nbsp;Worked compliance record: sample diagram PFD-101</h1>
+<p><b>B.1 Object.</b> Sample process flow diagram PFD-101, benzene–toluene separation, version 3 (delivered 2026-10-24). Topology: eight equipment items (feed pump P-101, feed preheater E-101, flash drum V-101, distillation column T-101, condenser E-102, reflux drum V-102, reflux pump P-102, reboiler E-103) and twelve streams. Symbol variants used: A.1, A.2, A.3 (twice, the second instance rotated for a vertical run), A.6 (three times), A.7, A.8, A.9. Stream values on the diagram are illustrative sample values; the record verifies layout and balance closure of the displayed values, not a converged simulation.</p>
+<p><b>B.2 Balance verification (requirement A5).</b> All balances formed from displayed values close exactly on total flow, benzene flow, and toluene flow: flash drum, condenser, reflux drum, reboiler, column including reflux and boilup circulation, and overall (feed 100.0 kmol/h; distillate 48.0 kmol/h; bottoms 52.0 kmol/h; kmol/h denotes kilomole per hour).</p>
+<p><b>B.3 Measured quality scores (Section 12.2).</b></p>
+<table>
+  <tr><th style="width:150px;">Score</th><th style="width:110px;">Measured value</th><th>Method and remark</th></tr>
+  <tr><td>N<sub>c</sub></td><td>0</td><td>Segment intersection test over all stream segment pairs</td></tr>
+  <tr><td>N<sub>b</sub></td><td>6</td><td>Direction-change count over all twelve stream lines</td></tr>
+  <tr><td>b<sub>max</sub></td><td>1</td><td>Streams 4, 5, 6, 8, 10, and 11 carry one bend each; streams 1, 2, 3, 7, 9, and 12 are straight</td></tr>
+  <tr><td>L<sub>t</sub></td><td>Recorded in drawing units</td><td>Total routed length 2 896 drawing units on a 1 680-unit-wide sheet (drawing unit: the coordinate unit of the source file)</td></tr>
+  <tr><td>s<sub>min</sub></td><td>Compliant</td><td>Minimum parallel-line spacing (flash vapour lane and flash liquid lane; boilup return lane and bottoms lane) exceeds the R5 limit at final scale</td></tr>
+</table>
+<p><b>B.4 Rule application record.</b> Reading direction and process order (P1, P2): feed at the left boundary, products at the right boundary, equipment in process sequence. Elevation (P3): condenser and reflux drum above the column top section, reboiler at the column base, pumps at low elevation. Template (P5): the distillation column group follows the normative template without alteration. Routing (R2, R5, R6): the feed train occupies one straight spine; flash vapour and flash liquid leave the drum in destination order (upper feed point, lower feed point) in parallel lanes; reflux and boilup streams occupy perimeter lanes; utility streams terminate in short stubs at the preheater, condenser, and reboiler. Markers (L4): every stream number is placed in a diamond on a horizontal segment.</p>
+<p><b>B.5 Verification history (Section 12.4).</b> Draft version 1 was rejected at rendered inspection for four defects: utility stub lines crossing the preheater service name and duty text, condenser utility arrows overlapping the condenser designation, flash drum liquid fill protruding outside the vessel outline, and the title block overlapping two rows of the equipment summary. Draft version 2 corrected those defects and was rejected for one remaining defect: the condenser designation overlapped the overhead stream line. Version 3 corrected that defect and passed full-sheet inspection and magnified inspection of the column-top region with zero hard failures. Each corrected version was issued under a new file name; no version was re-issued under a previous file name.</p>
+
+<h1 class="annex">Annex C (informative)&nbsp;&nbsp;Pre-delivery checklist</h1>
+<ul class="check">
+  <li>☐&nbsp; Topology extracted from the simulation result; no element taken from a prior drawing (Section 11, step 1).</li>
+  <li>☐&nbsp; Symbol variant named for every equipment item, by Annex A entry and library file name (S2).</li>
+  <li>☐&nbsp; Node, edge, and port comparison against the simulation topology shows zero differences (A1, A2).</li>
+  <li>☐&nbsp; Content level conforms to A3; no P&amp;ID content present; essential valves and principal control loops present.</li>
+  <li>☐&nbsp; Stream numbers, designations, and stream table rows cross-counted with zero mismatches (A4).</li>
+  <li>☐&nbsp; All balances recomputed from displayed values and closing (A5).</li>
+  <li>☐&nbsp; N<sub>c</sub>, N<sub>b</sub>, b<sub>max</sub>, L<sub>t</sub>, and s<sub>min</sub> measured and recorded; every crossing justified (Section 12.2).</li>
+  <li>☐&nbsp; No label overlap, no line transit, no spacing violation, no junction-dot error (Section 12.1).</li>
+  <li>☐&nbsp; Full-sheet rendered inspection at final size completed, plus magnified inspection of every template group (Section 12.3).</li>
+  <li>☐&nbsp; Title block complete and clear of all tables and of the flowsheet area (D4).</li>
+  <li>☐&nbsp; Greyscale reproduction checked for full legibility (L6).</li>
+</ul>
+
+<h1 class="annex">References</h1>
+<div class="refs">
+<p>[1]&nbsp; International Organization for Standardization. <i>ISO 10628-1:2014, Diagrams for the chemical and petrochemical industry — Part 1: Specification of diagrams.</i> Geneva: ISO, 2014.</p>
+<p>[2]&nbsp; International Organization for Standardization. <i>ISO 10628-2:2012, Diagrams for the chemical and petrochemical industry — Part 2: Graphical symbols.</i> Geneva: ISO, 2012.</p>
+<p>[3]&nbsp; International Society of Automation. <i>ANSI/ISA-5.1-2009, Instrumentation Symbols and Identification.</i> Research Triangle Park, NC: ISA, 2009.</p>
+<p>[4]&nbsp; Purchase, H. C. “Which aesthetic has the greatest effect on human understanding?” In <i>Graph Drawing</i>, Lecture Notes in Computer Science, Vol. 1353, pp. 248–261. Berlin: Springer, 1997. DOI: 10.1007/3-540-63938-1_67.</p>
+<p>[5]&nbsp; <i>STEM visual style specification</i> (internal document, adopted 2026-10-16). Line-weight hierarchy, lettering sizes at final size, greyscale legibility, and rendered visual verification for technical figures.</p>
+<p>[6]&nbsp; <i>Traced symbol library verification summary</i> (internal record, 2026-10-24). Inventory of the source symbol library (234 symbol definition files; 11 symbol set files) and file-level verification of the traced reproductions reproduced in Annex A, including the heat exchanger, pump, and distillation column entries.</p>
+</div>
+<p class="small" style="margin-top:14px;">End of specification PFD-SPEC-001, version 2.0.</p>
+
+</body>
+</html>

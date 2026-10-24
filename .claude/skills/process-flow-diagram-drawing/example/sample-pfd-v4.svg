@@ -1,0 +1,227 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1190" viewBox="0 0 1680 1190">
+<rect x="0" y="0" width="1680" height="1190" fill="white"/>
+<rect x="18" y="18" width="1644" height="1154" fill="none" stroke="#111111" stroke-width="2.4"/>
+<text x="60" y="78" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="bold" text-anchor="start" fill="#111111">PROCESS FLOW DIAGRAM</text>
+<text x="60" y="108" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="start" fill="#111111">Benzene–toluene separation  |  Sample process  |  Traced symbols (library v1)</text>
+<path d="M 101.5 300.0 L 287.6 300.0" fill="none" stroke="#111111" stroke-width="3.4"/>
+<path d="M 323.5 278.0 L 407.6 278.0" fill="none" stroke="#111111" stroke-width="3.4"/>
+<path d="M 452.0 278.0 L 499.2 278.1" fill="none" stroke="#111111" stroke-width="3.4"/>
+<path d="M 546.0 201.2 L 546.0 185.0 L 838.0 185.0" fill="none" stroke="#111111" stroke-width="3.4"/>
+<path d="M 546.0 415.3 L 546.0 470.0 L 838.0 470.0" fill="none" stroke="#111111" stroke-width="3.4"/>
+<path d="M 876.0 150.0 L 876.0 118.0 L 1019.6 118.0" fill="none" stroke="#111111" stroke-width="3.4"/>
+<path d="M 1064.0 118.0 L 1130.0 118.0" fill="none" stroke="#111111" stroke-width="3.4"/>
+<path d="M 1200.0 141.4 L 1200.0 207.0 L 1070.4 207.0" fill="none" stroke="#111111" stroke-width="3.4"/>
+<path d="M 1037.7 187.0 L 914.0 187.0" fill="none" stroke="#111111" stroke-width="3.4"/>
+<path d="M 1270.0 118.0 L 1560.0 118.0" fill="none" stroke="#111111" stroke-width="3.4"/>
+<path d="M 876.0 555.3 L 876.0 640.0 L 989.6 640.0" fill="none" stroke="#111111" stroke-width="3.4"/>
+<path d="M 1012.0 617.6 L 1012.0 500.0 L 914.0 500.0" fill="none" stroke="#111111" stroke-width="3.4"/>
+<path d="M 1034.0 640.0 L 1560.0 640.0" fill="none" stroke="#111111" stroke-width="3.4"/>
+<line x1="430.0" y1="300.0" x2="430.0" y2="330.0" stroke="#111111" stroke-width="1.3"/>
+<polygon points="423.18,316 430,299.5 436.82,316" fill="#111111"/>
+<text x="442" y="322" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="start" fill="#111111">Steam in</text>
+<text x="442" y="338" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="start" fill="#111111">296 kW</text>
+<line x1="1042.0" y1="140.0" x2="1042.0" y2="168.0" stroke="#111111" stroke-width="1.3"/>
+<polygon points="1035.18,156 1042,172.5 1048.82,156" fill="#111111"/>
+<text x="1054" y="162" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="start" fill="#111111">Cooling water out</text>
+<text x="1054" y="178" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="start" fill="#111111">−893 kW</text>
+<line x1="1012.0" y1="662.0" x2="1012.0" y2="690.0" stroke="#111111" stroke-width="1.3"/>
+<polygon points="1005.18,678 1012,661.5 1018.82,678" fill="#111111"/>
+<text x="1024" y="684" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="start" fill="#111111">Steam in</text>
+<text x="1024" y="700" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="start" fill="#111111">623 kW</text>
+<polygon points="200,293.18 216.5,300 200,306.82" fill="#111111"/>
+<polygon points="382,271.18 398.5,278 382,284.82" fill="#111111"/>
+<polygon points="482,271.18 498.5,278 482,284.82" fill="#111111"/>
+<polygon points="700,178.18 716.5,185 700,191.82" fill="#111111"/>
+<polygon points="700,463.18 716.5,470 700,476.82" fill="#111111"/>
+<polygon points="962,111.18 978.5,118 962,124.82" fill="#111111"/>
+<polygon points="1150,200.18 1133.5,207 1150,213.82" fill="#111111"/>
+<polygon points="952,180.18526315789475 935.5,187.00526315789475 952,193.82526315789474" fill="#111111"/>
+<polygon points="1500,111.18 1516.5,118 1500,124.82" fill="#111111"/>
+<polygon points="942,633.18 958.5,640 942,646.82" fill="#111111"/>
+<polygon points="935,493.18 918.5,500 935,506.82" fill="#111111"/>
+<polygon points="1500,633.18 1516.5,640 1500,646.82" fill="#111111"/>
+<g transform="translate(56 287) scale(0.65 0.65) translate(-200 -340)"><g fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><polygon points="200,350 250,350 250,340 270,360 250,380 250,370 200,370" fill="white"/></g></g>
+<g transform="translate(288 275.7) scale(0.38596491228070173 0.38596491228070173) translate(-442 -167)"><g fill="none" stroke="#111" stroke-width="5.2" stroke-linejoin="round" stroke-linecap="round"><circle cx="499" cy="230" r="57" fill="white"/><line x1="500" y1="173" x2="534" y2="173"/><polygon points="526,167 526,179 534,173" fill="#111" stroke="none"/><polygon points="478,209 478,251 520,230" fill="#111" stroke="none"/></g></g>
+<g transform="translate(408 254.4) scale(0.39285714285714285 0.39285714285714285) translate(-173 -115)"><g fill="none" stroke="#111" stroke-width="5.1" stroke-linejoin="round" stroke-linecap="round"><circle cx="229" cy="175" r="56" fill="white"/><line x1="189" y1="135" x2="269" y2="215"/><line x1="189" y1="215" x2="269" y2="135"/></g></g>
+<g transform="translate(500 202) scale(0.7931034482758621 0.7931034482758621) translate(-250 -250)"><g fill="none" stroke="#111" stroke-width="4.9" stroke-linejoin="round" stroke-linecap="round"><path d="M250,279 A58,29 0 0 1 366,279 L366,489 A58,29 0 0 1 250,489 Z" fill="white"/><line x1="252" y1="461" x2="364" y2="461" stroke-dasharray="7 5"/></g></g>
+<g transform="translate(838 150) scale(1.2666666666666666 1.2666666666666666) translate(-530 -200)"><g fill="none" stroke="#111" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"><path d="M530,235 A30,15 0 0 1 590,235 L590,490 A30,15 0 0 1 530,490 Z" fill="white"/><line x1="533" y1="285" x2="587" y2="285"/><line x1="533" y1="330" x2="587" y2="330"/><line x1="533" y1="375" x2="587" y2="375"/><line x1="533" y1="420" x2="587" y2="420"/><line x1="533" y1="465" x2="587" y2="465"/></g></g>
+<g transform="translate(1020 94.4) scale(0.39285714285714285 0.39285714285714285) translate(-173 -115)"><g fill="none" stroke="#111" stroke-width="5.1" stroke-linejoin="round" stroke-linecap="round"><circle cx="229" cy="175" r="56" fill="white"/><line x1="189" y1="135" x2="269" y2="215"/><line x1="189" y1="215" x2="269" y2="135"/></g></g>
+<g transform="translate(1130 94.7) scale(0.7777777777777778 0.7777777777777778) translate(0 0)"><g fill="none" stroke="#111" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round"><path d="M22,0 L158,0 A22,30 0 0 1 158,60 L22,60 A22,30 0 0 1 22,0 Z" fill="white"/><line x1="4" y1="42" x2="176" y2="42"/></g></g>
+<g transform="translate(1030 184.9) scale(-0.3508771929824561 0.3508771929824561) translate(-556 -167)"><g fill="none" stroke="#111" stroke-width="5.2" stroke-linejoin="round" stroke-linecap="round"><circle cx="499" cy="230" r="57" fill="white"/><line x1="500" y1="173" x2="534" y2="173"/><polygon points="526,167 526,179 534,173" fill="#111" stroke="none"/><polygon points="478,209 478,251 520,230" fill="#111" stroke="none"/></g></g>
+<g transform="translate(990 616.4) scale(0.39285714285714285 0.39285714285714285) translate(-173 -115)"><g fill="none" stroke="#111" stroke-width="5.1" stroke-linejoin="round" stroke-linecap="round"><circle cx="229" cy="175" r="56" fill="white"/><line x1="189" y1="135" x2="269" y2="215"/><line x1="189" y1="215" x2="269" y2="135"/></g></g>
+<g transform="translate(1560 105) scale(0.65 0.65) translate(-200 -390)"><g fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><polygon points="200,400 260,400 260,390 290,410 260,430 260,420 200,420" fill="white"/></g></g>
+<g transform="translate(1560 627) scale(0.65 0.65) translate(-200 -390)"><g fill="none" stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><polygon points="200,400 260,400 260,390 290,410 260,430 260,420 200,420" fill="white"/></g></g>
+<polygon points="176,300 195,286 214,300 195,314" fill="white" stroke="#111111" stroke-width="1.8"/>
+<text x="195" y="305" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">1</text>
+<polygon points="343,278 362,264 381,278 362,292" fill="white" stroke="#111111" stroke-width="1.8"/>
+<text x="362" y="283" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">2</text>
+<polygon points="456,278 475,264 494,278 475,292" fill="white" stroke="#111111" stroke-width="1.8"/>
+<text x="475" y="283" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">3</text>
+<polygon points="671,185 690,171 709,185 690,199" fill="white" stroke="#111111" stroke-width="1.8"/>
+<text x="690" y="190" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">4</text>
+<polygon points="671,470 690,456 709,470 690,484" fill="white" stroke="#111111" stroke-width="1.8"/>
+<text x="690" y="475" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">5</text>
+<polygon points="929,118 948,104 967,118 948,132" fill="white" stroke="#111111" stroke-width="1.8"/>
+<text x="948" y="123" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">6</text>
+<polygon points="1078,118 1097,104 1116,118 1097,132" fill="white" stroke="#111111" stroke-width="1.8"/>
+<text x="1097" y="123" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">7</text>
+<polygon points="981,187.00526315789475 1000,173.00526315789475 1019,187.00526315789475 1000,201.00526315789475" fill="white" stroke="#111111" stroke-width="1.8"/>
+<text x="1000" y="192.00526315789475" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">8</text>
+<polygon points="1401,118 1420,104 1439,118 1420,132" fill="white" stroke="#111111" stroke-width="1.8"/>
+<text x="1420" y="123" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">9</text>
+<polygon points="909,640 928,626 947,640 928,654" fill="white" stroke="#111111" stroke-width="1.8"/>
+<text x="928" y="645" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">10</text>
+<polygon points="944,500 963,486 982,500 963,514" fill="white" stroke="#111111" stroke-width="1.8"/>
+<text x="963" y="505" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">11</text>
+<polygon points="1401,640 1420,626 1439,640 1420,654" fill="white" stroke="#111111" stroke-width="1.8"/>
+<text x="1420" y="645" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#111111">12</text>
+<text x="56" y="270" font-family="Arial, Helvetica, sans-serif" font-size="13.5" font-weight="bold" text-anchor="start" fill="#111111">Fresh feed</text>
+<text x="310" y="354" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#111111">P-101</text>
+<text x="310" y="372" font-family="Arial, Helvetica, sans-serif" font-size="12.5" text-anchor="middle" fill="#111111">Feed pump</text>
+<text x="430" y="230" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#111111">E-101</text>
+<text x="430" y="248" font-family="Arial, Helvetica, sans-serif" font-size="12.5" text-anchor="middle" fill="#111111">Feed preheater</text>
+<text x="606" y="262" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" text-anchor="start" fill="#111111">V-101</text>
+<text x="606" y="280" font-family="Arial, Helvetica, sans-serif" font-size="12.5" text-anchor="start" fill="#111111">Flash drum</text>
+<text x="824" y="300" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" text-anchor="end" fill="#111111">T-101</text>
+<text x="824" y="318" font-family="Arial, Helvetica, sans-serif" font-size="12.5" text-anchor="end" fill="#111111">Distillation column</text>
+<text x="1042" y="64" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#111111">E-102</text>
+<text x="1042" y="82" font-family="Arial, Helvetica, sans-serif" font-size="12.5" text-anchor="middle" fill="#111111">Condenser</text>
+<text x="1200" y="60" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#111111">V-102</text>
+<text x="1200" y="78" font-family="Arial, Helvetica, sans-serif" font-size="12.5" text-anchor="middle" fill="#111111">Reflux drum</text>
+<text x="1050" y="254" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">P-102</text>
+<text x="1050" y="272" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle" fill="#111111">Reflux pump</text>
+<text x="1046" y="632" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" text-anchor="start" fill="#111111">E-103</text>
+<text x="1046" y="654" font-family="Arial, Helvetica, sans-serif" font-size="12.5" text-anchor="start" fill="#111111">Reboiler</text>
+<text x="1420" y="90" font-family="Arial, Helvetica, sans-serif" font-size="13.5" font-weight="bold" text-anchor="middle" fill="#111111">Distillate product</text>
+<text x="1420" y="612" font-family="Arial, Helvetica, sans-serif" font-size="13.5" font-weight="bold" text-anchor="middle" fill="#111111">Bottoms product</text>
+<text x="60" y="858" font-family="Arial, Helvetica, sans-serif" font-size="14.5" font-weight="bold" text-anchor="start" fill="#111111">Stream table — flow rates, temperatures, pressures and benzene contents are sample values</text>
+<rect x="60" y="872" width="866" height="299" fill="none" stroke="#111111" stroke-width="1.4"/>
+<text x="103.0" y="888" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">Stream</text>
+<text x="230.0" y="888" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">Flow rate (kmol/h)</text>
+<text x="393.0" y="888" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">Temperature (°C)</text>
+<text x="546.0" y="888" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">Pressure (kPa)</text>
+<text x="709.0" y="888" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">Benzene (mol %)</text>
+<text x="862.0" y="888" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">Phase</text>
+<line x1="60" y1="895" x2="926" y2="895" stroke="#111111" stroke-width="0.6"/>
+<line x1="60" y1="918" x2="926" y2="918" stroke="#111111" stroke-width="0.6"/>
+<line x1="60" y1="941" x2="926" y2="941" stroke="#111111" stroke-width="0.6"/>
+<line x1="60" y1="964" x2="926" y2="964" stroke="#111111" stroke-width="0.6"/>
+<line x1="60" y1="987" x2="926" y2="987" stroke="#111111" stroke-width="0.6"/>
+<line x1="60" y1="1010" x2="926" y2="1010" stroke="#111111" stroke-width="0.6"/>
+<line x1="60" y1="1033" x2="926" y2="1033" stroke="#111111" stroke-width="0.6"/>
+<line x1="60" y1="1056" x2="926" y2="1056" stroke="#111111" stroke-width="0.6"/>
+<line x1="60" y1="1079" x2="926" y2="1079" stroke="#111111" stroke-width="0.6"/>
+<line x1="60" y1="1102" x2="926" y2="1102" stroke="#111111" stroke-width="0.6"/>
+<line x1="60" y1="1125" x2="926" y2="1125" stroke="#111111" stroke-width="0.6"/>
+<line x1="60" y1="1148" x2="926" y2="1148" stroke="#111111" stroke-width="0.6"/>
+<line x1="146" y1="872" x2="146" y2="1171" stroke="#111111" stroke-width="0.6"/>
+<line x1="314" y1="872" x2="314" y2="1171" stroke="#111111" stroke-width="0.6"/>
+<line x1="472" y1="872" x2="472" y2="1171" stroke="#111111" stroke-width="0.6"/>
+<line x1="620" y1="872" x2="620" y2="1171" stroke="#111111" stroke-width="0.6"/>
+<line x1="798" y1="872" x2="798" y2="1171" stroke="#111111" stroke-width="0.6"/>
+<text x="103.0" y="911" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">1</text>
+<text x="230.0" y="911" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">100.0</text>
+<text x="393.0" y="911" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">25</text>
+<text x="546.0" y="911" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">110</text>
+<text x="709.0" y="911" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">50.0</text>
+<text x="862.0" y="911" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">Liquid</text>
+<text x="103.0" y="934" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">2</text>
+<text x="230.0" y="934" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">100.0</text>
+<text x="393.0" y="934" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">26</text>
+<text x="546.0" y="934" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">150</text>
+<text x="709.0" y="934" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">50.0</text>
+<text x="862.0" y="934" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">Liquid</text>
+<text x="103.0" y="957" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">3</text>
+<text x="230.0" y="957" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">100.0</text>
+<text x="393.0" y="957" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">98</text>
+<text x="546.0" y="957" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">140</text>
+<text x="709.0" y="957" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">50.0</text>
+<text x="862.0" y="957" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">Two-phase</text>
+<text x="103.0" y="980" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">4</text>
+<text x="230.0" y="980" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">40.0</text>
+<text x="393.0" y="980" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">98</text>
+<text x="546.0" y="980" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">135</text>
+<text x="709.0" y="980" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">70.0</text>
+<text x="862.0" y="980" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">Vapour</text>
+<text x="103.0" y="1003" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">5</text>
+<text x="230.0" y="1003" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">60.0</text>
+<text x="393.0" y="1003" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">98</text>
+<text x="546.0" y="1003" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">135</text>
+<text x="709.0" y="1003" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">36.7</text>
+<text x="862.0" y="1003" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">Liquid</text>
+<text x="103.0" y="1026" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">6</text>
+<text x="230.0" y="1026" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">96.0</text>
+<text x="393.0" y="1026" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">84</text>
+<text x="546.0" y="1026" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">120</text>
+<text x="709.0" y="1026" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">96.9</text>
+<text x="862.0" y="1026" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">Vapour</text>
+<text x="103.0" y="1049" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">7</text>
+<text x="230.0" y="1049" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">96.0</text>
+<text x="393.0" y="1049" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">82</text>
+<text x="546.0" y="1049" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">115</text>
+<text x="709.0" y="1049" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">96.9</text>
+<text x="862.0" y="1049" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">Liquid</text>
+<text x="103.0" y="1072" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">8</text>
+<text x="230.0" y="1072" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">48.0</text>
+<text x="393.0" y="1072" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">82</text>
+<text x="546.0" y="1072" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">170</text>
+<text x="709.0" y="1072" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">96.9</text>
+<text x="862.0" y="1072" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">Liquid</text>
+<text x="103.0" y="1095" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">9</text>
+<text x="230.0" y="1095" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">48.0</text>
+<text x="393.0" y="1095" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">82</text>
+<text x="546.0" y="1095" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">115</text>
+<text x="709.0" y="1095" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">96.9</text>
+<text x="862.0" y="1095" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">Liquid</text>
+<text x="103.0" y="1118" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">10</text>
+<text x="230.0" y="1118" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">120.0</text>
+<text x="393.0" y="1118" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">115</text>
+<text x="546.0" y="1118" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">128</text>
+<text x="709.0" y="1118" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">11.4</text>
+<text x="862.0" y="1118" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">Liquid</text>
+<text x="103.0" y="1141" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">11</text>
+<text x="230.0" y="1141" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">68.0</text>
+<text x="393.0" y="1141" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">115</text>
+<text x="546.0" y="1141" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">125</text>
+<text x="709.0" y="1141" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">15.0</text>
+<text x="862.0" y="1141" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">Vapour</text>
+<text x="103.0" y="1164" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111111">12</text>
+<text x="230.0" y="1164" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">52.0</text>
+<text x="393.0" y="1164" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">115</text>
+<text x="546.0" y="1164" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">128</text>
+<text x="709.0" y="1164" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">6.7</text>
+<text x="862.0" y="1164" font-family="Arial, Helvetica, sans-serif" font-size="11.5" text-anchor="middle" fill="#111111">Liquid</text>
+<text x="960" y="858" font-family="Arial, Helvetica, sans-serif" font-size="14.5" font-weight="bold" text-anchor="start" fill="#111111">Equipment summary</text>
+<text x="960" y="890" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="start" fill="#111111">P-101</text>
+<text x="1034" y="890" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">Feed pump</text>
+<text x="1228" y="890" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">—</text>
+<text x="960" y="913" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="start" fill="#111111">E-101</text>
+<text x="1034" y="913" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">Feed preheater</text>
+<text x="1228" y="913" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">296 kW</text>
+<text x="960" y="936" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="start" fill="#111111">V-101</text>
+<text x="1034" y="936" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">Flash drum</text>
+<text x="1228" y="936" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">—</text>
+<text x="960" y="959" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="start" fill="#111111">T-101</text>
+<text x="1034" y="959" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">Distillation column</text>
+<text x="1228" y="959" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">30 stages</text>
+<text x="960" y="982" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="start" fill="#111111">E-102</text>
+<text x="1034" y="982" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">Condenser (total)</text>
+<text x="1228" y="982" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">−893 kW</text>
+<text x="960" y="1005" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="start" fill="#111111">V-102</text>
+<text x="1034" y="1005" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">Reflux drum</text>
+<text x="1228" y="1005" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">—</text>
+<text x="960" y="1028" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="start" fill="#111111">P-102</text>
+<text x="1034" y="1028" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">Reflux pump</text>
+<text x="1228" y="1028" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">Reflux ratio 1.0</text>
+<text x="960" y="1051" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="start" fill="#111111">E-103</text>
+<text x="1034" y="1051" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">Reboiler</text>
+<text x="1228" y="1051" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">623 kW</text>
+<rect x="960" y="1062" width="682" height="100" fill="none" stroke="#111111" stroke-width="1.6"/>
+<line x1="960" y1="1100" x2="1642" y2="1100" stroke="#111111" stroke-width="0.8"/>
+<line x1="960" y1="1132" x2="1642" y2="1132" stroke="#111111" stroke-width="0.8"/>
+<line x1="1301" y1="1132" x2="1301" y2="1162" stroke="#111111" stroke-width="0.8"/>
+<text x="974" y="1088" font-family="Arial, Helvetica, sans-serif" font-size="14.5" font-weight="bold" text-anchor="start" fill="#111111">Benzene–toluene separation — PFD-101</text>
+<text x="974" y="1120" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">Sample process flow diagram (layout demonstration)</text>
+<text x="974" y="1154" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">Sample sheet  |  2026-10-24</text>
+<text x="1315" y="1154" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="start" fill="#111111">Revision 1  |  Sheet 1 of 1</text>
+</svg>
