@@ -1,0 +1,130 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Used 2.5/8 as the response and ignored the step size of 4."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Part missing."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Part missing."
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Incoherent manipulation of the transfer function."
+  },
+  "b": {
+   "type": "formula",
+   "note": "Wrong formula for the response value at the given time."
+  },
+  "c": {
+   "type": "method",
+   "note": "Wrong set-up, t = -8 ln(0.95)."
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Wrong gain 2.5/8, step size ignored."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Correct y(t) derived but never evaluated; final value contradicts it."
+  },
+  "c": {
+   "type": "method",
+   "note": "Inconsistent set-up on the wrong gain, with wrong algebra."
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "method",
+   "note": "Wrong gain 2.5/8, step size ignored."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Correct expression 10 - 10e^(-1.25) evaluated as 9.94 instead of 7.135."
+  },
+  "c": {
+   "type": "method",
+   "note": "Inconsistent set-up on the wrong gain, with wrong algebra."
+  }
+ },
+ "openai/gpt-3.5-turbo": {
+  "a": {
+   "type": "method",
+   "note": "Wrong partial-fraction decomposition."
+  },
+  "b": {
+   "type": "method",
+   "note": "Wrong y(t) from the bad decomposition, and evaluated wrongly even so."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Equation solved wrongly; -8 ln 0.05 miscomputed as 28.897."
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "b": {
+   "type": "numerical",
+   "note": "Wrong partial-fraction result, y = 10 - 1.25e^(-t/8)."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): solved correctly from its own wrong expression."
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Only final values given, no working."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Only final values given, no working."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Only final values given, no working."
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "method",
+   "note": "Gain given without multiplying by the step size of 4."
+  },
+  "b": {
+   "type": "method",
+   "note": "Closed-loop formula mixing s and t."
+  },
+  "c": {
+   "type": "method",
+   "note": "Wrong method; model itself says the result is wrong."
+  }
+ },
+ "microsoft/phi-4": {
+  "b": {
+   "type": "formula",
+   "note": "Wrong inverse transform: 80e^(-t/8) instead of 10e^(-t/8)."
+  },
+  "c": {
+   "type": "formula",
+   "note": "Carried from (b): solved correctly from its own wrong expression."
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "b": {
+   "type": "numerical",
+   "note": "Wrong partial-fraction result, y = 10 - 1.25e^(-t/8)."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): solved correctly from its own wrong expression."
+  }
+ }
+}

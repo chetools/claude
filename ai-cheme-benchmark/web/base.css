@@ -149,3 +149,26 @@ details.resp pre{background:#fafbfc;border:1px solid var(--card-border);border-r
 }
 .label{font-weight:600;margin:1.1rem 0 .3rem;font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
 h2,h3,h4{scroll-margin-top:3.6rem}
+/* where points were lost: model x part grid, mistake-type tags */
+.egrid{border-collapse:collapse;font-size:.85rem}
+.egrid th,.egrid td{border:1px solid var(--card-border);padding:.2rem .5rem;text-align:center;white-space:nowrap}
+.egrid thead th{background:#fafbfc;font-weight:600}
+.egrid th[scope=row]{text-align:left;font-weight:400}
+.egrid .pts{display:block;font-weight:400;font-size:.72rem;color:var(--muted)}
+.egrid .got{display:block;font-size:.72rem;opacity:.8}
+.egrid .tot{font-variant-numeric:tabular-nums;font-weight:600}
+.etag{display:inline-block;padding:.02rem .4rem;border-radius:.7rem;font-size:.76rem;font-weight:600;margin-left:.3rem;
+  border:1px solid transparent;white-space:nowrap}
+.elegend{list-style:none;padding:0;margin:.3rem 0 1rem;font-size:.88rem;max-width:90ch}
+.elegend li{margin:.25rem 0}
+.elegend .etag{margin-left:0;min-width:6.6rem;text-align:center}
+.elist{list-style:none;padding:0;margin:.2rem 0 .6rem;font-size:.86rem;color:#4a4e5c}
+.elist li{margin:.2rem 0}
+.elist .etag{margin-left:0}
+.e-ok{background:#e8f5ec;color:#1b6b34}
+.e-method{background:#fbe1e1;color:#8c1d1d}
+.e-formula{background:#fde9d3;color:#85460a}
+.e-numerical{background:#fdf6c9;color:#6b5a00}
+.e-units{background:#e3effa;color:#1b4f82}
+.e-incomplete{background:#e9e9ee;color:#43465a}
+.e-interpretation{background:#efe3f8;color:#5a2b7e}

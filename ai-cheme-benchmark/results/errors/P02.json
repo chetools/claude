@@ -1,0 +1,232 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "formula",
+   "note": "Wrong area formula (pi D^2 instead of pi D^2/4) and rounded velocity."
+  },
+  "b": {
+   "type": "method",
+   "note": "Read f from a Moody chart instead of solving Colebrook."
+  },
+  "c": {
+   "type": "method",
+   "note": "Head omits the L/D friction term and all minor losses."
+  },
+  "d": {
+   "type": "method",
+   "note": "Multiplied by efficiency and used only the static lift."
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Computed Reynolds number with flow rate instead of velocity."
+  },
+  "b": {
+   "type": "method",
+   "note": "Friction factor from an invented formula, not Colebrook."
+  },
+  "c": {
+   "type": "method",
+   "note": "Head from a meaningless formula."
+  },
+  "d": {
+   "type": "method",
+   "note": "Power ignores efficiency and uses the wrong head."
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Used flow rate in place of velocity in Reynolds number."
+  },
+  "b": {
+   "type": "formula",
+   "note": "Friction factor from a wrong rough-pipe formula, not Colebrook."
+  },
+  "c": {
+   "type": "formula",
+   "note": "Head from a dimensionally wrong formula."
+  },
+  "d": {
+   "type": "method",
+   "note": "Multiplied and divided by efficiency so it cancels; wrong value."
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "numerical",
+   "note": "Correct formula but velocity miscomputed as 1.59 instead of 3.18 m/s."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Colebrook set up correctly but stated f is not its solution."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Correct energy balance but arithmetic slips in friction loss."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Correct formula but arithmetic slip; 5.5 kW instead of 8.4 kW."
+  }
+ },
+ "openai/gpt-3.5-turbo": {
+  "a": {
+   "type": "method",
+   "note": "Used flow rate instead of velocity in Reynolds number."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "No iteration shown; f is not the Colebrook solution."
+  },
+  "c": {
+   "type": "method",
+   "note": "Head omits minor losses and shows no working."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Correct formula but large arithmetic slip; 412 kW instead of 4.34 kW."
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "a": {
+   "type": "numerical",
+   "note": "Area slip (0.0785 instead of 0.00785 m2) made velocity ten times too small."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Colebrook iteration failed to converge; assumed f = 0.02 instead."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a), (b): correct energy balance on wrong velocity and f."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): correct formula applied to its own wrong head."
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "b": {
+   "type": "formula",
+   "note": "Used Swamee-Jain approximation instead of Colebrook, with a slip; 2.8% off."
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Bare final value with no working; wrong."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Bare final value with no working; wrong."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Bare final value with no working; wrong."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Bare final value with no working or unit; wrong."
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "b": {
+   "type": "numerical",
+   "note": "Colebrook set up but stated f = 0.0208 is not the solution."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): correct energy balance using the wrong f."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): correct formula on its own head, small arithmetic slip."
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "numerical",
+   "note": "Working used V = 31.83 m/s, ten times too large."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Colebrook iterations miscomputed; f 22% off."
+  },
+  "c": {
+   "type": "method",
+   "note": "Head omits minor losses and uses the wrong velocity."
+  },
+  "d": {
+   "type": "formula",
+   "note": "Power formula omits g in rho g Q H / eta."
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "b": {
+   "type": "numerical",
+   "note": "Iterated Colebrook with eps/D ten times too large; never converged; 2.3% off."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Correct method but result 2.05% off, just outside tolerance."
+  }
+ },
+ "mistralai/mistral-large": {
+  "b": {
+   "type": "numerical",
+   "note": "Colebrook term 2.51/(Re sqrt f) evaluated ten times too large; f 24% off."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): correct energy balance using the wrong f."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): correct formula applied to its own head."
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "b": {
+   "type": "incomplete",
+   "note": "f stated as Colebrook solution without shown iteration; 3.3% off."
+  },
+  "c": {
+   "type": "formula",
+   "note": "Added extra exit velocity head already in sum of K; sum miscomputed."
+  },
+  "d": {
+   "type": "formula",
+   "note": "Carried from (c): correct power formula applied to its own wrong head."
+  }
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "b": {
+   "type": "numerical",
+   "note": "Colebrook term 2.51/(Re sqrt f) evaluated about 30 times too large."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): correct energy balance using the wrong f."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): correct formula applied to its own head."
+  }
+ },
+ "anthropic/claude-opus-4.5": {
+  "b": {
+   "type": "numerical",
+   "note": "Colebrook term 2.51/(Re sqrt f) evaluated about 50 times too small."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (b): correct energy balance using the wrong f."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (c): correct formula applied to its own head, about 4% off."
+  }
+ }
+}

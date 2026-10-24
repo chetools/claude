@@ -1,0 +1,412 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Meaningless integral expression, no valid method for omega_u."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Part not answered."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Part not answered."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Part not answered."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Part not answered."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "Part not answered."
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "formula",
+   "note": "Invented formula giving a negative frequency."
+  },
+  "b": {
+   "type": "formula",
+   "note": "K_u = omega_u/G_p is the wrong formula."
+  },
+  "c": {
+   "type": "formula",
+   "note": "P_u = 1/omega_u is the wrong formula."
+  },
+  "d": {
+   "type": "formula",
+   "note": "Carried from (b): Z-N formulas right but fed wrong K_u and P_u."
+  },
+  "e": {
+   "type": "method",
+   "note": "Invented formulas for gain margin, giving GM = -0.18."
+  },
+  "f": {
+   "type": "method",
+   "note": "Invented formula giving phase margin of 90 degrees."
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "formula",
+   "note": "Only result is K_u = 4.9 from an invalid formula."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Reply incoherent; no valid ultimate gain given."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Reply incoherent; no period given."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Reply incoherent; no tuning given."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Reply incoherent; no gain margin given."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "Reply incoherent; no phase margin given."
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "numerical",
+   "note": "Correct phase equation but stated root 0.49 is 28% off."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Correct K_u formula but 1.63 matches neither reference nor own omega_u."
+  },
+  "c": {
+   "type": "formula",
+   "note": "P_u = 1/omega_u instead of 2 pi/omega_u."
+  },
+  "d": {
+   "type": "formula",
+   "note": "Carried from (c): correct Z-N formulas applied to wrong P_u."
+  },
+  "e": {
+   "type": "method",
+   "note": "GM given without phase-crossover calculation."
+  },
+  "f": {
+   "type": "method",
+   "note": "Wrong PI phase and PM taken at phase crossover."
+  }
+ },
+ "openai/gpt-3.5-turbo": {
+  "a": {
+   "type": "method",
+   "note": "Ignored the lag phase, so omega_u = pi/2.5 is wrong."
+  },
+  "b": {
+   "type": "formula",
+   "note": "Used K_u = |G_p| instead of 1/|G_p|."
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (a): P_u correct for its own wrong omega_u."
+  },
+  "d": {
+   "type": "formula",
+   "note": "Carried from (b): tuning correct for its own wrong K_u."
+  },
+  "e": {
+   "type": "formula",
+   "note": "GM = 1/|1+GcGp| is a wrong formula."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "PM of 44.3 degrees given without working."
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "a": {
+   "type": "method",
+   "note": "Used approximation pi/(2 theta), ignoring lag phase; 7% off."
+  },
+  "b": {
+   "type": "method",
+   "note": "K_u = tau/(K theta) is not the ultimate-gain condition."
+  },
+  "c": {
+   "type": "method",
+   "note": "Carried from (a): P_u from approximate omega_u."
+  },
+  "d": {
+   "type": "method",
+   "note": "Carried from (b): tuning from wrong K_u and P_u."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Gain margin not calculated."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "Phase margin not calculated."
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "formula",
+   "note": "Lag phase written with wrong sign, giving 0.213 rad/min."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Correct K_u formula but arithmetic slip, 0.610 instead of 1.52."
+  },
+  "c": {
+   "type": "formula",
+   "note": "Carried from (a): P_u from wrong omega_u."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (b): tuning from wrong K_u and P_u."
+  },
+  "e": {
+   "type": "method",
+   "note": "GM evaluated without the PI controller."
+  },
+  "f": {
+   "type": "method",
+   "note": "PM taken at the wrong frequency, giving 0 degrees."
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "Final value only, no working, far from reference."
+  },
+  "b": {
+   "type": "incomplete",
+   "note": "Final value only, no working, far from reference."
+  },
+  "c": {
+   "type": "incomplete",
+   "note": "Final value only, no working, far from reference."
+  },
+  "d": {
+   "type": "incomplete",
+   "note": "Final value only, no working, far from reference."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "Final value only, no working, far from reference."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "Final value only, no working, far from reference."
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "a": {
+   "type": "numerical",
+   "note": "Correct phase equation but stated root 0.88 is 30% off."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Carried from (a): K_u correct for its own wrong omega_u."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a): P_u correct for its own wrong omega_u."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (a): tuning correct for its own wrong K_u, P_u."
+  },
+  "e": {
+   "type": "method",
+   "note": "GM = 1/K_c is a wrong method."
+  },
+  "f": {
+   "type": "method",
+   "note": "Invented phase-margin formula giving 46.2 degrees."
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "method",
+   "note": "Converted 1/2.5 rad/s to 24 rad/min; wrong method."
+  },
+  "b": {
+   "type": "formula",
+   "note": "Used K_u = |G_p| instead of 1/|G_p|."
+  },
+  "c": {
+   "type": "formula",
+   "note": "P_u = 1/omega_u is the wrong formula."
+  },
+  "d": {
+   "type": "formula",
+   "note": "Carried from (b): tuning correct for its own wrong K_u."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "GM = 4 is a guess without valid working."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "PM = 4 degrees is a guess without valid working."
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "a": {
+   "type": "units",
+   "note": "Dead-time term 2.5w evaluated in degrees, giving 36 rad/min."
+  },
+  "b": {
+   "type": "units",
+   "note": "Carried from (a): K_u correct for its own wrong omega_u."
+  },
+  "c": {
+   "type": "units",
+   "note": "Carried from (a): P_u correct for its own wrong omega_u."
+  },
+  "d": {
+   "type": "units",
+   "note": "Carried from (b): tuning correct for its own wrong K_u."
+  },
+  "e": {
+   "type": "method",
+   "note": "GM at process phase crossover; PI term mis-written."
+  },
+  "f": {
+   "type": "method",
+   "note": "Carried from (e): PM evaluated at same wrong frequency."
+  }
+ },
+ "microsoft/phi-4": {
+  "a": {
+   "type": "numerical",
+   "note": "Correct phase equation but stated root 0.196 is 71% off."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Correct K_u formula with a small slip, 1.361 vs 1.42."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a): P_u from wrong omega_u."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (b): tuning from wrong K_u and P_u."
+  },
+  "e": {
+   "type": "method",
+   "note": "GM = 1 taken by assumption."
+  },
+  "f": {
+   "type": "method",
+   "note": "Wrong PI phase and wrong frequency, giving 54.5 degrees."
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "a": {
+   "type": "numerical",
+   "note": "Correct phase equation solved with atan(x)=x at 12w=2.6; root wrong."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Correct K_u formula with small arithmetic slip, 1.534 vs 1.548."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a): P_u from wrong omega_u."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (b): tuning from slightly wrong K_u and P_u."
+  },
+  "e": {
+   "type": "method",
+   "note": "GM = 2 from incoherent approximations, no valid calculation."
+  },
+  "f": {
+   "type": "method",
+   "note": "PM = 147 degrees from incoherent approximations, no valid calculation."
+  }
+ },
+ "mistralai/mistral-large": {
+  "e": {
+   "type": "method",
+   "note": "GM evaluated at process ultimate frequency, not PI-loop phase crossover."
+  },
+  "f": {
+   "type": "formula",
+   "note": "Gain crossover right but PI phase added with wrong sign."
+  }
+ },
+ "deepseek/deepseek-chat": {
+  "a": {
+   "type": "numerical",
+   "note": "Correct phase equation but stated root 0.425 is 37% off."
+  },
+  "b": {
+   "type": "method",
+   "note": "Dead time wrongly treated as reducing magnitude."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a): P_u from wrong omega_u."
+  },
+  "d": {
+   "type": "method",
+   "note": "Carried from (b): tuning from wrong K_u and P_u."
+  },
+  "e": {
+   "type": "incomplete",
+   "note": "GM = 2.0 stated without calculation."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "PM = 45 degrees stated without calculation."
+  }
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "a": {
+   "type": "numerical",
+   "note": "Accepted 1.01 rad/min although own phase check gave 4.01, not pi."
+  },
+  "b": {
+   "type": "numerical",
+   "note": "Carried from (a): K_u from wrong omega_u."
+  },
+  "c": {
+   "type": "numerical",
+   "note": "Carried from (a): P_u from wrong omega_u."
+  },
+  "d": {
+   "type": "numerical",
+   "note": "Carried from (b): tuning from wrong K_u and P_u."
+  },
+  "e": {
+   "type": "numerical",
+   "note": "Assumed omega_pc instead of solving; PI magnitude factor miscomputed."
+  },
+  "f": {
+   "type": "incomplete",
+   "note": "PM at assumed gain crossover, no calculation."
+  }
+ },
+ "anthropic/claude-opus-4.5": {
+  "e": {
+   "type": "numerical",
+   "note": "Correct method but root 0.52 off (0.599), so GM 1.63."
+  },
+  "f": {
+   "type": "numerical",
+   "note": "Correct method but omega_gc 0.36 instead of 0.324, so PM 31.6."
+  }
+ }
+}

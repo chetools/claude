@@ -39,6 +39,8 @@ SOL = os.path.join(PYDIR, "solutions")
 TOOLS = os.path.join(ROOT, ".buildtools")
 DIST = os.path.join(ROOT, "dist")
 sys.path.insert(0, PYDIR)
+from error_types import TYPES                                # noqa: E402
+from rubric import POINTS                                    # noqa: E402
 
 TITLE = "AI models on ChemE problems"
 PAGE_NAME = "ai-cheme-benchmark-standalone.html"
@@ -237,6 +239,11 @@ def validate(data):
             fail(f"{r['model']}/{r['problem']}: run must be 1..{N_RUNS}")
         if not isinstance(r["score"], (int, float)) or not 0 <= r["score"] <= 10:
             fail(f"{r['model']}/{r['problem']}/{r['run']}: score must be a number in 0..10")
+        for part, lab in (r.get("errors") or {}).items():
+            if part not in POINTS.get(r["problem"], {}) or lab.get("type") not in TYPES or not lab.get("note"):
+                fail(f"{r['model']}/{r['problem']}: bad error label for part {part}: {lab!r}")
+            if r.get("parts") and r["parts"].get(part, 0) >= POINTS[r["problem"]][part]:
+                fail(f"{r['model']}/{r['problem']}: error label on full-marks part {part}")
         key = (r["model"], r["problem"], r["run"])
         if key in seen:
             fail(f"duplicate response {key}")
@@ -397,6 +404,62 @@ def response_html(text, batch):
 
 
 # ---------------------------------------------------------------- page parts
+ERR_SHORT = {"method": "Method", "formula": "Formula", "numerical": "Arithmetic", "units": "Units",
+             "incomplete": "Missing", "interpretation": "Interpretation"}
+
+
+def num(x):
+    return f"{x:g}"
+
+
+def error_legend():
+    items = "".join(f'<li><span class="etag e-{k}">{esc(ERR_SHORT[k])}</span> <strong>{esc(v[0])}</strong>: {esc(v[1])}</li>'
+                    for k, v in TYPES.items())
+    return f'<ul class="elegend">{items}</ul>'
+
+
+def error_grid(p, models, by_pr):
+    """Models x parts table for one problem: where points were lost and what type of mistake it was."""
+    pts = POINTS[p["id"]]
+    head = "".join(f'<th>({esc(k)})<span class="pts">{num(v)} pt</span></th>' for k, v in pts.items())
+    body = []
+    for m in models:
+        rs = by_pr.get((p["id"], m["id"]))
+        if not rs:
+            continue
+        r = rs[0]
+        parts, errs = r.get("parts") or {}, r.get("errors") or {}
+        cells = []
+        for k, mx in pts.items():
+            got = parts.get(k)
+            if got is None:
+                cells.append("<td>–</td>")
+            elif k in errs:
+                e = errs[k]
+                cells.append(f'<td class="ecell e-{e["type"]}" title="{esc(TYPES[e["type"]][0])}: {esc(e["note"])}">'
+                             f'{esc(ERR_SHORT[e["type"]])}<span class="got">{num(got)}/{num(mx)}</span></td>')
+            else:
+                cells.append(f'<td class="ecell e-ok" title="full marks">✓<span class="got">{num(got)}/{num(mx)}</span></td>')
+        body.append(f'<tr><th scope="row">{esc(m["name"])}</th>{"".join(cells)}<td class="tot">{num(r["score"])}</td></tr>')
+    if not body:
+        return ""
+    return ('<div class="label">Where points were lost</div>'
+            '<div class="tablewrap"><table class="egrid"><thead><tr><th>Model</th>' + head + '<th>Score</th></tr></thead>'
+            '<tbody>' + "".join(body) + '</tbody></table></div>'
+            '<p class="caption">Each cell is one part of the problem: a tick for full marks, otherwise the type of the main '
+            'mistake with points earned / available. Hover over a cell, or open the model\'s reply below, for the note. '
+            'A part that only repeats an earlier wrong value carries the type of the original mistake.</p>')
+
+
+def error_chips(r):
+    errs = r.get("errors") or {}
+    if not errs:
+        return ""
+    lis = "".join(f'<li><span class="etag e-{e["type"]}">({esc(k)}) {esc(ERR_SHORT[e["type"]])}</span> {esc(e["note"])}</li>'
+                  for k, e in sorted(errs.items()))
+    return f'<ul class="elist">{lis}</ul>'
+
+
 def problems_html(data, ref, batch, models):
     """Pre-rendered Problems tab. Returns a list of (html with math tokens) strings; math finished later."""
     by_pr = {}
@@ -414,6 +477,10 @@ def problems_html(data, ref, batch, models):
         doc, _ = solution_source(p["id"])
         rows = "".join(f"<tr><td>({esc(k)})</td><td>{esc(fmt_value(v))}</td></tr>" for k, v in ref[p["id"]].items())
         title = f"{p['id']} · {p['title']}"
+        if p["id"] == data["problems"][0]["id"]:
+            out0 = ['<div class="label">Mistake types used in the grids below</div>', error_legend()]
+        else:
+            out0 = []
         out = [f'<section class="prob" data-pid="{esc(p["id"])}" data-topic="{esc(p["topic"])}" '
                f'data-diff="{esc(p["difficulty"])}">',
                f'<h2 data-toc="{esc(title)}">{esc(title)}</h2>',
@@ -424,7 +491,9 @@ def problems_html(data, ref, batch, models):
                f'<tbody>{rows}</tbody></table></div>',
                '<div class="label">Reference solution</div>',
                f'<div class="explain">{batch.md(doc, p["id"])}</div>',
+               error_grid(p, models, by_pr),
                '<div class="label">Responses</div>']
+        out[:0] = out0
         if p["difficulty"] == "Frontier":
             given = [m for m in models if (p["id"], m["id"]) in by_pr]
             out.append('<p class="caption">Frontier problems were given only to models that scored 10/10 on every one '
@@ -437,12 +506,15 @@ def problems_html(data, ref, batch, models):
             scores = ", ".join(f"{r['score']:g}" for r in rs)
             avg = sum(r["score"] for r in rs) / len(rs)
             label = f"mean {avg:.1f} / 10 (runs: {scores})" if N_RUNS > 1 else f"score {avg:g} / 10"
-            out.append(f'<details class="resp"><summary>{esc(m["name"])}<span class="mean">{esc(label)}</span></summary>')
+            kinds = sorted({e["type"] for e in (rs[0].get("errors") or {}).values()})
+            tags = "".join(f'<span class="etag e-{k}">{esc(ERR_SHORT[k])}</span>' for k in kinds)
+            out.append(f'<details class="resp"><summary>{esc(m["name"])} {tags}<span class="mean">{esc(label)}</span></summary>')
             for r in rs:
                 head = f'Run {r["run"]}<span class="score-pill">score {r["score"]:g} / 10</span>' if N_RUNS > 1 else "Response"
                 out.append(f'<h4>{head}</h4>'
                            f'<div class="resp-body">{response_html(r["text"], batch)}</div>'
-                           f'<p class="just"><strong>Grader:</strong> {esc(r["justification"])}</p>')
+                           f'<p class="just"><strong>Grader:</strong> {esc(r["justification"])}</p>'
+                           + error_chips(r))
             out.append("</details>")
         out.append("</section>")
         blocks.append("\n".join(out))
@@ -472,6 +544,16 @@ def make_notebook():
     if not os.path.isfile(dst) or os.path.getsize(dst) < 1000:
         fail("make_molab did not write notebook/solutions_molab.py")
     return dst
+
+
+def error_types_md(rs):
+    n = {k: 0 for k in TYPES}
+    for r in rs:
+        for e in (r.get("errors") or {}).values():
+            n[e["type"]] += 1
+    if not sum(n.values()):
+        fail("no error labels in the data (results/errors/ empty?)")
+    return "\n".join(f"- **{v[0]}** ({n[k]} labelled parts): {v[1]}." for k, v in TYPES.items())
 
 
 def fill_methodology(md, data):
@@ -512,6 +594,7 @@ def fill_methodology(md, data):
                    "complete (the free endpoints were rate-limited or returned errors): "
                    + ", ".join(f"`{a}`" for a in absent) + ".") if absent else "",
         "MODEL_SOURCES": "\n".join(sources),
+        "ERROR_TYPES": error_types_md(rs),
     }
     def sub(m):
         if m.group(1) not in vals:

@@ -2,6 +2,8 @@
 (results/model_meta.json) into results/data.json, the input of build.py.
 
 grades/PNN.json: {"<model id>": {"parts": {"a": points, ...}, "score": total, "justification": "..."}}
+results/errors/PNN.json: {"<model id>": {"<part>": {"type": <key of error_types.TYPES>, "note": "..."}}}, one label for
+every part that lost points and none for parts with full points.
 Stops with a message on a missing grade, a part score above the rubric's points or off the half-point grid,
 or a total that is not the sum of the parts.
 """
@@ -11,6 +13,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "python"))
 from rubric import POINTS                                    # noqa: E402
 from run_models import load_problem, raw_path               # noqa: E402
+from error_types import TYPES                               # noqa: E402
 
 RUN = 1
 
@@ -26,13 +29,15 @@ def num_b(s):
 def main():
     meta = json.loads((ROOT / "results" / "model_meta.json").read_text())
     pids = sorted(POINTS)
-    problems, grades = [], {}
+    problems, grades, labels = [], {}, {}
     for pid in pids:
         h, _ = load_problem(pid)
         problems.append(dict(id=pid, topic=h["topic"], difficulty=h["difficulty"], title=h["title"],
                              parts=h["parts"].split(",")))
         g = ROOT / "results" / "grades" / f"{pid}.json"
         grades[pid] = json.loads(g.read_text()) if g.exists() else {}
+        e = ROOT / "results" / "errors" / f"{pid}.json"
+        labels[pid] = json.loads(e.read_text()) if e.exists() else {}
     models, responses, errors, missing = [], [], [], []
     for m in meta:
         cost, n = 0.0, 0
@@ -55,11 +60,21 @@ def main():
                     errors.append(f"{m['id']} {pid} ({k}): {v!r} (max {pts}, half points)")
             if abs(sum(parts.values()) - g["score"]) > 1e-9:
                 errors.append(f"{m['id']} {pid}: score {g['score']} != sum of parts {sum(parts.values())}")
+            lab = labels[pid].get(m["id"], {})
+            for k, pts in POINTS[pid].items():
+                lost = parts[k] < pts
+                if lost != (k in lab):
+                    errors.append(f"{m['id']} {pid} ({k}): " + ("lost points but no error label" if lost
+                                                                else "error label on a full-marks part"))
+                if k in lab and (lab[k].get("type") not in TYPES or not lab[k].get("note")):
+                    errors.append(f"{m['id']} {pid} ({k}): bad error label {lab[k]!r}")
+            if set(lab) - set(POINTS[pid]):
+                errors.append(f"{m['id']} {pid}: error labels for unknown parts {sorted(set(lab) - set(POINTS[pid]))}")
             text = raw["text"]
             if raw.get("finish_reason") == "length":
                 text += "\n\n[reply cut off at the provider's output-token limit]"
             responses.append(dict(model=m["id"], problem=pid, run=RUN, text=text, score=g["score"],
-                                  justification=g["justification"], parts=parts))
+                                  justification=g["justification"], parts=parts, errors=lab))
         if not n:
             missing.append(f"{m['id']}: no graded reply at all; model left out")
             continue

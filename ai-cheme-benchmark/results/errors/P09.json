@@ -1,0 +1,132 @@
+{
+ "meta-llama/llama-3.2-3b-instruct": {
+  "a": {
+   "type": "formula",
+   "note": "Invented Fenske form giving 1.625 stages."
+  },
+  "b": {
+   "type": "interpretation",
+   "note": "Assumed L_min = 1 and D_min = 5 stages without physical basis."
+  }
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "a": {
+   "type": "incomplete",
+   "note": "No number of stages given; balance unrelated to Fenske."
+  },
+  "b": {
+   "type": "method",
+   "note": "4.65 from invented quantities."
+  }
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "a": {
+   "type": "formula",
+   "note": "Fenske form omits bottoms term and is mis-evaluated."
+  },
+  "b": {
+   "type": "formula",
+   "note": "Ratio of invented quantities."
+  }
+ },
+ "mistralai/mistral-nemo": {
+  "a": {
+   "type": "formula",
+   "note": "Garbled Fenske form with inconsistent arithmetic, 10% low."
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented Underwood formula unrelated to the feed pinch."
+  }
+ },
+ "openai/gpt-3.5-turbo": {
+  "a": {
+   "type": "formula",
+   "note": "Wrong Fenske form mixing z_F into the ratio."
+  },
+  "b": {
+   "type": "formula",
+   "note": "R_min = (N_min - 1)/N_min is not a valid relation."
+  }
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "b": {
+   "type": "method",
+   "note": "Invented shortcut formula that ignores the feed pinch."
+  }
+ },
+ "openai/gpt-4o-mini": {
+  "a": {
+   "type": "formula",
+   "note": "Invented formula using z_F, with the sign dropped."
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula, not the pinch-based minimum reflux."
+  }
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "a": {
+   "type": "formula",
+   "note": "Invented equation, then an unexplained 3 stages."
+  },
+  "b": {
+   "type": "formula",
+   "note": "Wrong formula (x_D - x_B)/(z_F - x_D), value negative."
+  }
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "a": {
+   "type": "interpretation",
+   "note": "Correct Fenske value 6.426, but added 1 for reboiler wrongly."
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula ignoring the feed pinch."
+  }
+ },
+ "google/gemma-3-4b-it": {
+  "a": {
+   "type": "formula",
+   "note": "Wrong Fenske form using z_F/z_D and x_B/x_D."
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula, not pinch-based."
+  }
+ },
+ "google/gemma-3-27b-it": {
+  "a": {
+   "type": "formula",
+   "note": "Fenske form leaves out the heavy-component terms."
+  },
+  "b": {
+   "type": "method",
+   "note": "Invented formula (alpha+1)/(2 alpha-1), not pinch-based."
+  }
+ },
+ "microsoft/phi-4": {
+  "b": {
+   "type": "method",
+   "note": "Underwood root outside volatility interval; wrong R_min expression."
+  }
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "b": {
+   "type": "method",
+   "note": "Invented formula that ignores the feed pinch."
+  }
+ },
+ "openai/o3": {
+  "b": {
+   "type": "formula",
+   "note": "Underwood root equation set to sum = 1 instead of 1 - q."
+  }
+ },
+ "openai/gpt-5.2": {
+  "b": {
+   "type": "formula",
+   "note": "Underwood root equation set to sum = 1 instead of 1 - q."
+  }
+ }
+}
