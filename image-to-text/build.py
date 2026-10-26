@@ -1,6 +1,9 @@
 """Build dist/image-to-text-standalone.html: one self-contained file (CSS, markdown-it, converters, app inlined)."""
+import base64
+import json
 import pathlib
 import re
+import subprocess
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent
@@ -17,7 +20,10 @@ def script(path):
 def main():
     if not MDIT.exists():
         sys.exit(f"missing {MDIT}: run `npm i markdown-it@14.1.0` in .buildtools/")
+    subprocess.run(["node", str(ROOT / "tools/render_probe.mjs")], check=True)
     values = {
+        "PROBE_PNG_B64": base64.b64encode((WEB / "probe.png").read_bytes()).decode(),
+        "PROBE_JSON": json.dumps(json.loads((WEB / "probe.json").read_text(encoding="utf-8")), ensure_ascii=False).replace("</", "<\\/"),
         "CSS": (WEB / "style.css").read_text(encoding="utf-8"),
         "MARKDOWN_IT": script(MDIT),
         "CONVERT_JS": script(WEB / "convert.js"),

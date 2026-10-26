@@ -223,7 +223,37 @@
     };
   }
 
-  const api = { cleanModelOutput, pickFreeVisionModels, convertAll };
+  // ---------- model ranking: score a transcription of the test card ----------
+  // Character error rate: Levenshtein distance / expected length, on whitespace-normalised text.
+  function cer(got, expected) {
+    const a = [...got.replace(/\s+/g, " ").trim()], b = [...expected.replace(/\s+/g, " ").trim()];
+    let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) {
+      const cur = [i];
+      for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = cur;
+    }
+    return prev[b.length] / Math.max(1, b.length);
+  }
+
+  // 0-100: 60 for text accuracy, 8 each for bold, italic, strikethrough, emoji and the table.
+  function scoreTranscription(markdownit, md, spec) {
+    const r = convertAll(markdownit, md);
+    const strip = (t) => t.replace(/[|•◦▪]/g, " ");
+    const frac = (list, found) => (list.length ? list.filter(found).length / list.length : 1);
+    const parts = {
+      text: 60 * Math.max(0, 1 - cer(strip(r.plain), strip(spec.expected))),
+      bold: 8 * frac(spec.bold, (x) => r.html.includes("<strong>" + x + "</strong>")),
+      italic: 8 * frac(spec.italic, (x) => r.html.includes("<em>" + x + "</em>")),
+      strike: 8 * frac(spec.strike, (x) => r.html.includes("<s>" + x + "</s>")),
+      emoji: 8 * frac(spec.emoji, (x) => r.markdown.includes(x)),
+      table: spec.table && /<table/.test(r.html) ? 8 : 0,
+    };
+    const total = Object.values(parts).reduce((x, y) => x + y, 0);
+    return { total, parts };
+  }
+
+  const api = { cleanModelOutput, pickFreeVisionModels, convertAll, cer, scoreTranscription };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.ImgText = api;
 })(typeof window !== "undefined" ? window : globalThis);

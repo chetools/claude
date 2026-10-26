@@ -3,7 +3,8 @@ import { createRequire } from "module";
 import assert from "assert/strict";
 const require = createRequire(import.meta.url);
 const markdownit = require("../.buildtools/node_modules/markdown-it");
-const { convertAll, cleanModelOutput, pickFreeVisionModels } = require("../web/convert.js");
+import fs from "fs";
+const { convertAll, cleanModelOutput, pickFreeVisionModels, cer, scoreTranscription } = require("../web/convert.js");
 
 let n = 0;
 const t = (name, fn) => { fn(); n++; console.log("ok  " + name); };
@@ -105,6 +106,27 @@ t("free vision model filter and ranking", () => {
     m("openrouter/free", 60, 1000, ["text", "image"]),
   ]).map((x) => x.id);
   assert.deepEqual(got, ["a/new-big:free", "a/new:free", "a/old:free"]);
+});
+
+t("cer", () => {
+  assert.equal(cer("abc", "abc"), 0);
+  assert.equal(cer("abd", "abc"), 1 / 3);
+  assert.equal(cer("a  b\nc", "a b c"), 0);
+  assert.equal(cer("🚀x", "🚀"), 1); // emoji count as one character
+});
+
+t("probe scoring", () => {
+  const spec = JSON.parse(fs.readFileSync(new URL("../web/probe.json", import.meta.url), "utf8"));
+  const perfect = "## Team Update 🚀\n\nHi all, the **release is on Friday**. Please *double-check* the ~~old~~ new checklist ✅.\n\n" +
+    "- Tests: **142 passed**, 3 skipped\n- Budget: $12,480.50 (↑ 4.2%)\n\n| Name | Role | Status |\n|---|---|---|\n| Ana | QA | ✅ Done |\n| Raj | Dev | ⏳ In progress |\n\n" +
+    "Invoice #A-20931 is due 2026-11-15; contact ops@example.com or call +1 (555) 013-2244 before 5 pm.";
+  const s = scoreTranscription(markdownit, perfect, spec);
+  assert.ok(Math.abs(s.total - 100) < 1e-9, JSON.stringify(s));
+  const flat = perfect.replace(/\*\*|~~/g, "").replace(/[🚀✅⏳]/gu, "");
+  const f = scoreTranscription(markdownit, flat, spec);
+  assert.equal(f.parts.bold, 0); assert.equal(f.parts.strike, 0); assert.equal(f.parts.emoji, 0);
+  assert.equal(f.parts.italic, 8); assert.equal(f.parts.table, 8);
+  assert.ok(f.parts.text > 55 && f.parts.text < 60);
 });
 
 console.log(`\n${n} tests passed`);

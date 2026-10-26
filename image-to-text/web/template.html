@@ -24,11 +24,12 @@
   <label for="model">Model</label>
   <select id="model"><option value="auto">Auto: best free vision model</option></select>
   <div class="row">
-    <button id="refreshModels" class="small ghost">Refresh list</button>
+    <button id="retest" class="small ghost">Re-test models</button>
   </div>
   <p class="hint" id="modelInfo">Loading free models…</p>
-  <p class="hint">"Best" = newest free model that reads images (larger context breaks ties); OpenRouter publishes
-    no quality ranking. If a model is busy, the next ones are tried, then OpenRouter's own free router.</p>
+  <p class="hint">"Auto" ranks the free vision models by how well each reads a built-in sample card (text, bold,
+    italic, strikethrough, emoji, table), tested once a day with your key; models scoring under 50 are skipped. If a model is busy, the next ones are
+    tried, then OpenRouter's own free router. Tesseract's plain reading is sent along as a draft.</p>
 </aside>
 
 <main class="main">
@@ -82,6 +83,9 @@
 
 <script>
 @@MARKDOWN_IT@@
+</script>
+<script>
+window.ITT_PROBE = { png: "data:image/png;base64,@@PROBE_PNG_B64@@", spec: @@PROBE_JSON@@ };
 </script>
 <script>
 @@CONVERT_JS@@

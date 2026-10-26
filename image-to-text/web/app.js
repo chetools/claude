@@ -24,10 +24,25 @@
     del(k) { try { localStorage.removeItem(k); } catch (e) { /* private mode */ } },
   };
 
+  // Sent with the image: Tesseract's plain reading, as a draft for the exact characters.
+  const hintPrompt = (ocr) => !ocr.trim() ? PROMPT : PROMPT +
+    "\n\nA plain OCR engine (Tesseract) read this text from the same image. Use it as a draft for the exact characters, " +
+    "but trust the image where they differ: Tesseract misses emoji and symbols, loses all formatting, and mangles tables. " +
+    "Restore headings, bold, italic, strikethrough, lists, tables, code and emoji from the image.\n\n<ocr>\n" + ocr.trim() + "\n</ocr>";
+
+  const TESSERACT_JS = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
+  const SCORE_TTL_MS = 24 * 3600 * 1000;
+
   let imageDataUrl = null;
   let freeModels = [];
+  // s: model id -> test-card score 0-100, or null if it gave no usable answer; busy: id -> time it was rate-limited
+  let scores = { t: 0, s: {}, busy: {} };
+  const BUSY_RETRY_MS = 3600 * 1000;
+  const MIN_SCORE = 50;
   let outputs = { html: "", discord: "", plain: "" };
   let modelsReady = Promise.resolve();
+  let tesseractWorker = null;
+  let probeHint = null;
 
   function status(msg, kind) {
     const el = $("status");
@@ -37,6 +52,10 @@
 
   // ---------- models ----------
   async function loadModels(force) {
+    try {
+      const c = JSON.parse(store.get("itt.scores") || "null");
+      if (c && Date.now() - c.t < SCORE_TTL_MS) scores = { busy: {}, ...c };
+    } catch (e) { /* no scores */ }
     const cached = store.get("itt.models");
     if (!force && cached) {
       try {
@@ -58,30 +77,71 @@
     }
   }
 
+  // Best test-card score first; untested models next (newest first), models that failed the test last.
+  function rankedModels() {
+    const key = (m) => (m.id in scores.s ? (scores.s[m.id] === null ? -2 : scores.s[m.id]) : -1);
+    return freeModels.slice().sort((a, b) => key(b) - key(a) || b.created - a.created);
+  }
+
   function setModels(models, t) {
     freeModels = models;
     const sel = $("model"), keep = store.get("itt.model") || "auto";
+    const label = (m) => m.id in scores.s ? (scores.s[m.id] === null ? " (failed test)" : " (score " + Math.round(scores.s[m.id]) + ")")
+      : m.id in scores.busy ? " (busy when tested)" : "";
     sel.length = 1;
-    for (const m of models) sel.add(new Option(m.name + " — " + m.id, m.id));
+    for (const m of rankedModels()) sel.add(new Option(m.name + label(m) + " — " + m.id, m.id));
     sel.add(new Option("OpenRouter free router — openrouter/free", "openrouter/free"));
     sel.value = [...sel.options].some((o) => o.value === keep) ? keep : "auto";
-    $("modelInfo").textContent = models.length
-      ? models.length + " free vision models, list from " + new Date(t).toLocaleTimeString() + ". Auto picks: " + models[0].id
-      : "No free vision models listed; OpenRouter's free router will be used.";
+    const top = rankedModels()[0];
+    $("modelInfo").textContent = !models.length
+      ? "No free vision models listed; OpenRouter's free router will be used."
+      : models.length + " free vision models (list from " + new Date(t).toLocaleTimeString() + "). " +
+        (top && typeof scores.s[top.id] === "number"
+          ? "Auto picks " + top.id + ", test score " + Math.round(scores.s[top.id]) + "/100 (tested " + new Date(scores.t).toLocaleString() + ")."
+          : "Not tested yet: they are tested on the first read (needs your key).");
   }
 
   function candidateBatches() {
     const sel = $("model").value;
     if (sel !== "auto") return [[sel], ["openrouter/free"]].filter((b, i) => i === 0 || sel !== "openrouter/free");
-    const ids = freeModels.map((m) => m.id);
+    const usable = (id) => !(id in scores.s) || (scores.s[id] !== null && scores.s[id] >= MIN_SCORE);
+    const ids = rankedModels().map((m) => m.id).filter(usable);
     const batches = [];
     for (let i = 0; i < Math.min(ids.length, 9); i += 3) batches.push(ids.slice(i, i + 3));
     batches.push(["openrouter/free"]);
     return batches;
   }
 
+  // ---------- Tesseract (draft text for the model) ----------
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const el = document.createElement("script");
+      el.src = src;
+      el.onload = resolve;
+      el.onerror = () => reject(new Error("could not load " + src));
+      document.head.appendChild(el);
+    });
+  }
+
+  async function tesseractText(dataUrl) {
+    try {
+      if (!tesseractWorker) {
+        tesseractWorker = (async () => {
+          if (!window.Tesseract) await loadScript(TESSERACT_JS);
+          return window.Tesseract.createWorker("eng");
+        })();
+      }
+      const w = await tesseractWorker;
+      return (await w.recognize(dataUrl)).data.text || "";
+    } catch (e) {
+      tesseractWorker = null;
+      console.warn("Tesseract unavailable, sending the image alone:", e);
+      return "";
+    }
+  }
+
   // ---------- OCR ----------
-  async function callModels(batch, key) {
+  async function callModels(batch, key, dataUrl, prompt) {
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), 120000);
     try {
@@ -99,8 +159,8 @@
           models: batch.length > 1 ? batch : undefined,
           temperature: 0,
           messages: [{ role: "user", content: [
-            { type: "text", text: PROMPT },
-            { type: "image_url", image_url: { url: imageDataUrl } },
+            { type: "text", text: prompt },
+            { type: "image_url", image_url: { url: dataUrl } },
           ] }],
         }),
       });
@@ -108,16 +168,41 @@
       if (!r.ok || body.error) {
         const msg = (body.error && body.error.message) || "HTTP " + r.status;
         const code = (body.error && body.error.code) || r.status;
-        return { ok: false, fatal: code === 401 || code === 403, msg: code + ": " + msg };
+        // 401 = bad key: stop. A 403 can be model-specific (e.g. "only available on agentic harnesses"): try others.
+        return { ok: false, fatal: code === 401, busy: code === 408 || code === 429 || code >= 500, msg: code + ": " + msg };
       }
       const text = body.choices && body.choices[0] && body.choices[0].message && body.choices[0].message.content;
       if (!text || !String(text).trim()) return { ok: false, msg: "empty answer from " + (body.model || batch[0]) };
       return { ok: true, text: String(text), model: body.model || batch[0] };
     } catch (e) {
-      return { ok: false, msg: e.name === "AbortError" ? "timed out" : e.message };
+      return { ok: false, busy: true, msg: e.name === "AbortError" ? "timed out" : e.message };
     } finally {
       clearTimeout(timer);
     }
+  }
+
+  // Ranking: every untested free vision model reads the built-in test card at once; scores are kept for a day.
+  async function testModels(key, all) {
+    if (all || Date.now() - scores.t >= SCORE_TTL_MS) scores = { t: Date.now(), s: {}, busy: {} };
+    const todo = freeModels.filter((m) => !(m.id in scores.s) && !(Date.now() - (scores.busy[m.id] || 0) < BUSY_RETRY_MS));
+    if (!todo.length) return;
+    status("Testing " + todo.length + " free models on a sample card to find the best one (once a day)…", "busy");
+    if (probeHint === null) probeHint = await tesseractText(ITT_PROBE.png);
+    const results = await Promise.all(todo.map(async (m) => {
+      const res = await callModels([m.id], key, ITT_PROBE.png, hintPrompt(probeHint));
+      if (res.fatal) return { id: m.id, fatal: res.msg };
+      if (res.busy) return { id: m.id, busy: true };
+      return { id: m.id, score: res.ok ? ImgText.scoreTranscription(window.markdownit, res.text, ITT_PROBE.spec).total : null };
+    }));
+    const fatal = results.find((r) => r.fatal);
+    if (fatal) throw new Error(fatal.fatal);
+    // A rate-limited model stays untested and is tried again after an hour.
+    for (const r of results) {
+      if (r.busy) scores.busy[r.id] = Date.now();
+      else { scores.s[r.id] = r.score; delete scores.busy[r.id]; }
+    }
+    store.set("itt.scores", JSON.stringify(scores));
+    setModels(freeModels, JSON.parse(store.get("itt.models") || "{}").t || Date.now());
   }
 
   async function run() {
@@ -129,9 +214,13 @@
     const errors = [];
     try {
       await modelsReady; // a click right after page load must not skip the free-model list
+      const hint = tesseractText(imageDataUrl); // runs while the models are tested
+      if ($("model").value === "auto") await testModels(key, false);
+      status("Reading the text (Tesseract draft)…", "busy");
+      const prompt = hintPrompt(await hint);
       for (const batch of candidateBatches()) {
         status("Reading with " + batch.join(", ") + " …", "busy");
-        const res = await callModels(batch, key);
+        const res = await callModels(batch, key, imageDataUrl, prompt);
         if (res.ok) {
           $("md").value = ImgText.cleanModelOutput(res.text);
           update();
@@ -143,8 +232,25 @@
         if (res.fatal) break;
       }
       status("Failed. " + errors.join(" · "), "err");
+    } catch (e) {
+      status("Failed. " + e.message, "err");
     } finally {
       $("run").disabled = !imageDataUrl;
+    }
+  }
+
+  async function retest() {
+    const key = $("key").value.trim();
+    if (!key) { status("Enter your OpenRouter API key in the sidebar first.", "err"); $("key").focus(); return; }
+    $("retest").disabled = true;
+    try {
+      await (modelsReady = loadModels(true));
+      await testModels(key, true);
+      status("Models re-tested.", "ok");
+    } catch (e) {
+      status("Test failed. " + e.message, "err");
+    } finally {
+      $("retest").disabled = false;
     }
   }
 
@@ -236,7 +342,7 @@
   $("saveKey").onclick = () => { store.set("itt.key", $("key").value.trim()); status("Key saved in this browser.", "ok"); };
   $("forgetKey").onclick = () => { store.del("itt.key"); $("key").value = ""; status("Key removed from this browser."); };
   $("model").onchange = () => store.set("itt.model", $("model").value);
-  $("refreshModels").onclick = () => { modelsReady = loadModels(true); };
+  $("retest").onclick = retest;
   $("run").onclick = run;
   $("md").addEventListener("input", update);
 

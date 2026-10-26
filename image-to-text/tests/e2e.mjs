@@ -17,6 +17,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const URL_ = "http://localhost:8765/dist/image-to-text-standalone.html";
 const KEY = process.env.OPENROUTER_API_KEY || "sk-or-test-dummy";
 const failures = [];
+let cdnBytes = 0;
 const check = (cond, msg) => { console.log((cond ? "ok   " : "FAIL ") + msg); if (!cond) failures.push(msg); };
 
 // Fixture document: rendered to PNG on every run, so it can never go stale.
@@ -71,22 +72,30 @@ async function newPage(width, opts = {}) {
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
-  page.on("console", (m) => { if (m.type() === "error") errors.push("console: " + m.text()); });
+  // The browser logs every non-2xx fetch; refused (403) and rate-limited (429) models are expected and handled.
+  page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource: .*status of (403|429)/.test(m.text())) errors.push("console: " + m.text()); });
   const calls = [];
-  await page.route("https://openrouter.ai/**", async (route) => {
+  const probePng = "data:image/png;base64," + fs.readFileSync(path.join(HERE, "../web/probe.png")).toString("base64");
+  let reads = 0;
+  // Page and worker traffic to OpenRouter and jsDelivr is forwarded from Node (the browser here has no direct network).
+  await ctx.route(/^https:\/\/(openrouter\.ai|cdn\.jsdelivr\.net)\//, async (route) => {
     const req = route.request();
     const cors = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "GET,POST,OPTIONS" };
     if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: cors });
     const body = req.postData();
     if (body) {
       const j = JSON.parse(body);
-      calls.push(j.models || [j.model]);
-      if (opts.fail429 && calls.length === 1) return route.fulfill({ status: 429, headers: cors, contentType: "application/json", body: JSON.stringify({ error: { code: 429, message: "rate limited (simulated)" } }) });
+      const probe = j.messages[0].content[1].image_url.url === probePng;
+      calls.push((probe ? "probe:" : "read:") + (j.models || [j.model]).join(","));
+      if (!probe && opts.fail429 && reads++ === 0) return route.fulfill({ status: 429, headers: cors, contentType: "application/json", body: JSON.stringify({ error: { code: 429, message: "rate limited (simulated)" } }) });
     }
-    const headers = { "content-type": "application/json" };
+    const headers = {};
+    if (body) headers["content-type"] = "application/json";
     if (req.headers()["authorization"]) headers.authorization = req.headers()["authorization"];
     const r = await fetch(req.url(), { method: req.method(), headers, body: body || undefined });
-    return route.fulfill({ status: r.status, headers: { ...cors, "content-type": "application/json" }, body: await r.text() });
+    const buf = Buffer.from(await r.arrayBuffer());
+    if (/jsdelivr/.test(req.url())) cdnBytes += buf.length;
+    return route.fulfill({ status: r.status, headers: { ...cors, "content-type": r.headers.get("content-type") || "application/octet-stream" }, body: buf });
   });
   await page.goto(URL_ + (opts.query || ""));
   return { ctx, page, errors, calls };
@@ -109,7 +118,7 @@ async function ocrRun(label, opts) {
   await page.setInputFiles("#file", fixturePng);
   await page.waitForSelector("#run:not([disabled])");
   await page.click("#run");
-  await page.waitForFunction(() => /status (ok|err)/.test(document.getElementById("status").className), null, { timeout: 400000 });
+  await page.waitForFunction(() => /status (ok|err)/.test(document.getElementById("status").className), null, { timeout: 600000 });
   const st = await page.textContent("#status");
   const used = await page.textContent("#modelUsed");
   const res = await page.evaluate(() => ({
@@ -118,7 +127,8 @@ async function ocrRun(label, opts) {
     plain: document.getElementById("out-imessage").textContent,
     html: document.getElementById("out-gmail").innerHTML,
   }));
-  console.log(`\n[${label}] ${st} | ${used} | calls: ${JSON.stringify(calls)}`);
+  const scores = await page.evaluate(() => localStorage.getItem("itt.scores"));
+  console.log(`\n[${label}] ${st} | ${used} | calls: ${JSON.stringify(calls)}\n  scores: ${scores}`);
   return { ctx, page, errors, calls, st, used, res };
 }
 
@@ -131,10 +141,13 @@ async function ocrRun(label, opts) {
   const e = cer(r.res.plain, EXPECTED_PLAIN);
   console.log("character error rate (plain vs expected): " + (100 * e).toFixed(1) + "%");
   check(e < 0.1, "plain text CER < 10%");
+  check(r.calls.some((c) => c.startsWith("probe:")), "free models were tested on the sample card first");
+  console.log("jsDelivr download for Tesseract (first use): " + (cdnBytes / 1e6).toFixed(1) + " MB");
   check(/<h1/.test(r.res.html) && /<strong>very well<\/strong>/.test(r.res.html) && /<em>basil<\/em>/.test(r.res.html), "Gmail HTML has heading, bold, italic");
   check(/<table/.test(r.res.html) && /<ol/.test(r.res.html) && /<ul/.test(r.res.html) && /<pre/.test(r.res.html), "Gmail HTML has table, lists, code block");
   check(/\*\*very well\*\*/.test(r.res.discord) && /```/.test(r.res.discord), "Discord text keeps bold and code blocks");
 
+  if (!/Done/.test(r.st)) { await browser.close(); console.log("\nOCR failed; skipping the remaining checks"); process.exit(1); }
   await r.page.click('.tab[data-tab="gmail"]');
   await r.page.click('.copy[data-out="gmail"]');
   await r.page.waitForFunction(() => /Copied/.test(document.querySelector('.copy[data-out="gmail"]').textContent));
@@ -161,7 +174,7 @@ async function ocrRun(label, opts) {
 // 3. failover: first request answered with 429
 {
   const r = await ocrRun("failover", { fail429: true });
-  check(r.calls.length >= 2 && /Done/.test(r.st), "after a 429 the next model batch is tried and succeeds");
+  check(r.calls.filter((c) => c.startsWith("read:")).length >= 2 && /Done/.test(r.st), "after a 429 the next model batch is tried and succeeds");
   await r.ctx.close();
 }
 

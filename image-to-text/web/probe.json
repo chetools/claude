@@ -1,0 +1,19 @@
+{
+ "expected": "Team Update 🚀 Hi all, the release is on Friday. Please double-check the old new checklist ✅. Tests: 142 passed, 3 skipped Budget: $12,480.50 (↑ 4.2%) Name Role Status Ana QA ✅ Done Raj Dev ⏳ In progress Invoice #A-20931 is due 2026-11-15; contact ops@example.com or call +1 (555) 013-2244 before 5 pm.",
+ "bold": [
+  "release is on Friday",
+  "142 passed"
+ ],
+ "italic": [
+  "double-check"
+ ],
+ "strike": [
+  "old"
+ ],
+ "emoji": [
+  "🚀",
+  "✅",
+  "⏳"
+ ],
+ "table": true
+}
