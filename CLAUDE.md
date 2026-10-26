@@ -68,35 +68,11 @@ These complement the rules above. They apply to every project.
 - **Combine competing explicit time-step limits harmonically,** `dt = 1/(1/dt_a + 1/dt_b)`, not with `min()`.
   With AB2, `min(dt_cfl, dt_diff)` blew up where the two limits are equal.
 
-### WebGPU
-- **Headless testing in this container.**
-  - Use `/opt/pw-browsers/chromium` with `--enable-unsafe-webgpu --use-webgpu-adapter=swiftshader`, on an
-    `http://localhost` page.
-  - Compute works but a WebGPU canvas cannot be presented: the device is lost with "valid external Instance
-    reference". Provide an offscreen-texture render path (`?blit`) for tests; it doubles as PNG export.
-  - Also provide `?cpu` (force the CPU fallback) and `?preset=…&N=…` URL options.
-- **Host code.**
-  - Keep a reference to the adapter.
-  - Check `getCompilationInfo()`.
-  - Use explicit bind-group layouts per kernel.
-- **WGSL.**
-  - Avoid reserved words such as `active`.
-  - f32 `tanh`/`exp` overflow to NaN for large arguments, so clamp them.
-
 ### Visualisation and UI
 - **Scale visual encodings to the data, not the inputs.** Colour ranges, line darkness and auto-scales should follow
   the data's own statistics. Make clear what a control holds fixed when another changes.
 - **`Plotly.react` with arrays mutated in place** needs a changing `datarevision`, or the chart does not redraw.
 - **Metric cards:** keep sub-labels short, with `white-space: nowrap`.
-- **Tracers and trails** (learned on cylinder-cavity-3d):
-  - Define anything animated in **simulated time, not frames.** A fast GPU covers more time per frame, so a
-    frame-counted trail was several times longer there. Split each move exactly at the sample times.
-  - Store trails as point histories, not a fading ink image, so they stay correct when a 3D camera turns.
-  - Don't draw trails over a coloured field: switch the field colouring off and colour the trails by one quantity
-    (speed), with its own colour bar.
-  - When panels are compared side by side, show the **same density** in each (the 2D panel had all particles near
-    every slice, the 3D one only a slab), and lower opacity where trails would overlap.
-  - Hide what a moving body now covers, and put a turning pattern (alternating sectors) on a spinning body.
 - **Round shown values and control steps to nice numbers** (slider steps 0.05, 0.1, 0.2, …; scale tops rounded up
   to 1, 1.5, 2, 2.5, 3, 5 × 10^k), and let a preset carry display settings so the first view is the good one.
 - **The page header matches the body text width.** On wide monitors the title, intro and status/progress bar must
@@ -175,25 +151,7 @@ These complement the rules above. They apply to every project.
   - A sub-agent's "inspected the render" may refer to an earlier draft. Re-render the deliverables from source and
     look at them yourself before issuing.
 
-## Lessons learned (packed-bed-runaway, 2026-10)
-
-### Working with the user
-- **Grill before building.** Ask the open design questions in one batch, each with a recommended option. Proceed on the
-  recommendation for anything left unanswered, and say which defaults were used.
-- **Build only what was asked for.** Extras were removed after delivery: the Barkelew curve, the Semenov and
-  Morbidelli–Varma criteria (including the benchmark tab and verdict), and a cross-reference note.
-  - When a request says "X or Y", ask which one.
-  - Don't add derived verdicts, benchmark tabs or "see also" notes on my own initiative.
-  - Theory derives only what the page computes.
-- **Teaching priorities.**
-  - Python is the readable reference, explained step by step. Students don't know Rust.
-  - Rust is there for speed. It gets a "Rust for Python readers" guide and a Python↔Rust function map.
-  - Every chart that reacts to the inputs is computed by Rust.
-  - Rust is confirmed against Python on the page, with a click-to-run comparison and a speed race of about 10 s of Python.
-- **No unverified claims on the page.** Compute a number or leave it out, whether it is a literature comparison, a flop count or a
-  physics statement. For example, check the adiabatic limit numerically before calling a temperature superadiabatic.
-
-### Build and publishing
+## Building and publishing pages
 - **Layout.** One directory per page: `solver/` (Rust), `python/` (reference + breakdown + MoLab generator),
   `web/` (template, app.js, markdown), and `build.py` producing `dist/<page>-standalone.html`. The built page is committed.
 - **Template placeholders** look like `@@NAME@@`. The regex must allow digits (`[A-Z0-9_]`; `WASM_B64` was silently
@@ -211,44 +169,19 @@ These complement the rules above. They apply to every project.
   - Pushing the branch switched Pages on by itself.
   - Push a placeholder early, so the URL exists while building.
 
-### Rust → WASM in the page
-- **Plain `extern "C"` exports, no wasm-bindgen.** `alloc(n)` gives input buffers; results live in a static `Vec<f64>`
-  and are read through a `Float64Array` view of `out_ptr()`/`out_len()`. The `.wasm` is base64-embedded.
-- **Workers.** Compile the `WebAssembly.Module` once and post it to a Web Worker pool, whose source is a Blob built from
-  stringified `makeApi`. Use chunked jobs with an `isStale` cancel, so a newer input change aborts work not yet started.
-- **Generic code for AD.** Write the model generically (`T: Real`) so `f64` and `Dual<f64>` share one code path. Nested
-  `Dual<Dual<T>>` gives Jacobian blocks for free.
-
-### Numerics (stiff, runaway-prone problems)
-- **Accurate AD sensitivities** through an adaptive integrator need two things:
-  1. The **error test must include the derivative parts**, scaled by their largest component. Without it, the
-     runaway side is garbage.
-  2. The minimum step must be **relative** (`h < 1e-15·max(ξ, 1e-3)`), because ignition fronts need very small steps.
-- **Peak of a sampled solution:** take the cubic Hermite between accepted steps (values plus the right-hand-side
-  slopes), and use the envelope theorem for the derivative. A 3-point parabola fails at a runaway hot spot's sharp corner.
-- **Validation.** Check AD against fine-tolerance finite differences on both sides of the steep region. Dump Rust
-  reference values to JSON and check Python parity in pytest. With the same algorithm, both take the identical step
-  sequence and agree to about 1e-10.
-- **Speed race:** calibrate the Python run on several points, because cost varies with the inputs.
-
-### Python in the browser, and MoLab
-- **Pyodide** runs in a Web Worker, loaded lazily after first paint with numpy and scipy. Pass inputs with `py.toPy`.
-  `runPython` returns the last expression, so return JSON strings.
-- **marimo notebook generated from the breakdown cells:**
-  - one definition per global (use `_`-prefixed locals, and rename collisions);
-  - top-level `figure(...)` becomes `_figN = make_fig(...)`, plus a final `mo.vstack`;
-  - add `__generated_with` so `marimo check` is clean.
-
-### Verification checklist (before publishing)
-- `cargo test --release`, `pytest`, `marimo check`, and `python notebook.py` all pass.
+## Verification checklist (before publishing)
+- Run every test suite the project has.
 - **Playwright on the built page.** Use `$(npm root -g)/playwright` with the preinstalled Chromium, served by
   `python -m http.server`. Check:
   - no page or console errors;
   - every tab renders;
-  - a live Python run works;
   - at 390 px wide there is no horizontal scroll (let the tabs wrap).
 - Take screenshots and look at them.
 - Confirm the gh-pages URL serves the new content before handing over the link.
+
+## Topic skills (load only when the project needs them)
+- `webgpu-page`: WebGPU compute/rendering, headless testing, tracers and trails.
+- `rust-wasm-numerics-page`: Rust to WASM solver, Pyodide, AD sensitivities, stiff ODEs, marimo generation.
 
 ## Working alongside other sessions
 - Another session may edit the same project directory (for example the Theory text). Never revert or overwrite its
