@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Image to Text</title>
+<style>
+@@CSS@@
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="side-title">Settings</div>
+
+  <label for="key">OpenRouter API key</label>
+  <input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-or-…">
+  <div class="row">
+    <button id="saveKey" class="small">Save</button>
+    <button id="forgetKey" class="small ghost">Forget key</button>
+  </div>
+  <p class="hint">Stored only in this browser and sent only to openrouter.ai. Free models need no credit;
+    get a key at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>.</p>
+
+  <label for="model">Model</label>
+  <select id="model"><option value="auto">Auto: best free vision model</option></select>
+  <div class="row">
+    <button id="refreshModels" class="small ghost">Refresh list</button>
+  </div>
+  <p class="hint" id="modelInfo">Loading free models…</p>
+  <p class="hint">"Best" = newest free model that reads images (larger context breaks ties); OpenRouter publishes
+    no quality ranking. If a model is busy, the next ones are tried, then OpenRouter's own free router.</p>
+</aside>
+
+<main class="main">
+  <div class="wrap">
+    <header>
+      <h1>Image to Text</h1>
+      <p class="intro">Drop, paste or pick an image with text. A free vision model transcribes it with its
+        formatting, ready to paste into Gmail, Discord or iPhone Messages.</p>
+      <div id="status" class="status">Add an image to start.</div>
+    </header>
+
+    <section class="card">
+      <div id="drop" class="drop" tabindex="0">
+        <input id="file" type="file" accept="image/*" hidden>
+        <img id="preview" alt="" hidden>
+        <div id="dropText">Click to choose an image, drag one here, or paste with Ctrl/⌘ + V</div>
+      </div>
+      <div class="row">
+        <button id="run" disabled>Read text</button>
+        <span id="modelUsed" class="muted"></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <label for="md">Transcription (Markdown, edit to fix mistakes; outputs update as you type)</label>
+      <textarea id="md" spellcheck="false" rows="10"></textarea>
+    </section>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="gmail">Gmail</button>
+      <button class="tab" data-tab="discord">Discord</button>
+      <button class="tab" data-tab="imessage">iMessage</button>
+    </nav>
+    <section class="card panel" id="panel-gmail">
+      <div class="row"><button class="copy" data-out="gmail">Copy for Gmail</button>
+        <span class="muted">Copies formatted text; paste into the message body.</span></div>
+      <div id="out-gmail" class="gmail-preview"></div>
+    </section>
+    <section class="card panel" id="panel-discord" hidden>
+      <div class="row"><button class="copy" data-out="discord">Copy for Discord</button>
+        <span class="muted">Discord Markdown; tables become monospace blocks.</span></div>
+      <pre id="out-discord" class="text-out"></pre>
+    </section>
+    <section class="card panel" id="panel-imessage" hidden>
+      <div class="row"><button class="copy" data-out="imessage">Copy for iMessage</button>
+        <span class="muted">Plain text: Messages keeps no pasted formatting.</span></div>
+      <pre id="out-imessage" class="text-out"></pre>
+    </section>
+  </div>
+</main>
+
+<script>
+@@MARKDOWN_IT@@
+</script>
+<script>
+@@CONVERT_JS@@
+</script>
+<script>
+@@APP_JS@@
+</script>
+</body>
+</html>
