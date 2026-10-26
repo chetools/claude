@@ -10,6 +10,10 @@
   and verifies the results.
 - **Build only what was asked for.** No unrequested extras: derived verdicts, benchmark tabs, criteria, or "see also"
   notes. When a request says "X or Y", ask which one. Extras added on my own initiative get removed later.
+- **Surgical changes.** Edit only what the task needs and match the existing style. No refactoring or reformatting of
+  neighbouring code. Every changed line traces to the request. Report unrelated problems; don't fix them.
+- **Goal first.** Before starting, state the checkable success criterion. For a bug, write a test that reproduces it,
+  then make it pass.
 - **No unverified claims.** Every number, comparison with the literature or physical statement shown to the user is
   either computed and checked, or left out. Say plainly what was not verified.
 - **Teaching material.** Explain code for the audience's language (students know Python, not Rust). Keep a readable
@@ -29,6 +33,8 @@
   - Keep work resumable: commit and push after each finished step, and keep the task list current, so a resumed
     turn can continue without the lost context.
   - When the task is delivered, or blocked on the user, delete the scheduled task. Never leave more than one per project.
+- **Record corrections.** When the user corrects me or a mistake recurs, propose a one-line rule for the right file
+  (root, project, or skill) and add it once approved. Keep this file short: fold new rules into existing ones.
 
 ## General practices by topic
 
