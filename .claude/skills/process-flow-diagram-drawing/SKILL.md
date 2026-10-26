@@ -45,7 +45,13 @@ memory of its rules.
   verification and acceptance (Section 12), and Annex A, the normative
   symbol catalogue (12 glyphs, each named by its library file), with a
   worked compliance record in Annex B and a pre-delivery checklist in
-  Annex C.
+  Annex C. Note on the specification's references: reference [6] is
+  included in this package as `symbols/verification-summary.md`.
+  Reference [5] is a provenance citation only — requirements L2 and
+  L6 and Section 12 state the lettering range, the greyscale
+  legibility requirement, and the visual verification requirement in
+  full, and no step under this skill requires consulting
+  reference [5].
 - **Traced symbol library (normative for symbol geometry).** In
   `symbols/`:
   - `symbols/pfd_symbols.py` — Python module giving, for each of the 12
@@ -60,10 +66,11 @@ memory of its rules.
   - `symbols/catalogue-sheet.png` — all 12 glyphs on one sheet for
     visual reference.
   - `symbols/verification-summary.md` — verification of the library
-    under requirement S3 (tolerance 0.5 mm at final scale): 10 symbols
-    Pass, 2 Conditional (`expander_1`, `vessel_1`); use the Conditional
-    entries as supplied and record their status in the compliance
-    record of any sheet that uses them.
+    under requirement S3 (tolerance 0.5 mm at final scale, where mm
+    denotes the millimetre): 10 symbols Pass, 2 Conditional
+    (`expander_1`, `vessel_1`); use the Conditional entries as supplied
+    and record their status in the compliance record of any sheet that
+    uses them.
   Library keys: `feed_1`, `product_1`, `pump_1`, `compressor_1`,
   `expander_1`, `heat_exchanger_1`, `flash_1`, `vessel_1`, `scds_1`,
   `kinetic_1`, `valve_1`, `control_valve_1`.
@@ -83,7 +90,12 @@ memory of its rules.
     result: 0 crossings, 6 total bends, maximum 1 bend per stream, total
     routed length 2763 drawing units, all balances closing on displayed
     values. The stream values are illustrative sample values, labelled
-    as such on the sheet.
+    as such on the sheet. Note: the sample sheet's line widths and
+    equipment tag sizes do not themselves meet requirements L1 and L2
+    (main lines 0.85 mm against 1.0 mm required; utility lines 0.33 mm
+    against 0.5 mm required; equipment tags 4.0 mm against the 3.5 mm
+    maximum); the specification, not the sample sheet, governs those
+    quantities.
 
 ## 2. Symbol use
 
@@ -182,6 +194,14 @@ Rules for parallel work under this skill:
   coordination and integration risk without adding accuracy. Stop at
   the smallest number that covers the separable scopes, plus at most
   one independent verifier.
+- Freeze more than the topology and the symbol selection: the drawing
+  kit (placement, stroke rescaling, marker, arrow and table helpers)
+  and the verifier are frozen by the coordinator as well and issued
+  read-only to every sub-agent, so that parallel sheets integrate
+  without rework (Section 9.6). Before issue, the coordinator rebuilds
+  every sheet from source, confirms the delivered file is byte-identical
+  to the fresh build, and inspects the final renders itself; a
+  sub-agent's inspection report may refer to an earlier draft.
 
 ## 5. Verification and acceptance
 
@@ -198,7 +218,8 @@ Hard failures (zero permitted):
 - Non-closing balance: any unit balance or the overall balance formed
   from the **displayed** values fails to close within the rounding of
   the least precise displayed value (A5). Recompute from displayed
-  values, as in the `check_balance` function of the worked example.
+  values, as in the `bal` balance-check function of the worked
+  example.
 - Label overlap (label against line, symbol, or label), a line
   transiting a symbol or table, a parallel-line spacing violation, a
   junction dot at a crossing, or a missing junction dot at a genuine
@@ -218,6 +239,14 @@ lesson — early drafts passed the numeric checks and were rejected on
 rendered inspection (label overlaps, a liquid fill protruding past a
 vessel outline, a title block overlapping a table). Code inspection
 alone is not verification.
+
+Two further verification requirements apply (Section 9): the
+process-sense review (Section 9.3), a recorded review of the stream
+table and the drawing together for process plausibility, performed
+after the geometric battery and, where available, by a reviewer
+independent of the layout; and verification of the verifier itself
+(Section 9.4), planted-defect tests that the verifier must fail on
+purpose before its zero-failure report is accepted.
 
 ## 6. Honesty rules
 
@@ -256,232 +285,175 @@ rather than letting the drawing imply it exists.
   Science Vol. 1353, pp. 248–261, Springer,
   DOI 10.1007/3-540-63938-1_67.
 
----
+## 9. Operative additions: library corrections, specification interpretations, added verification
 
-# Addendum A — Lessons from first external use (2026-10-24)
+The rules in this section are operative under this skill. They record
+corrections and interpretations established in use, where the library
+or the specification as issued is silent, ambiguous, or in error. In
+this section, px denotes one drawing unit of the sheet coordinate
+system; the worked example uses 4 px per mm.
 
-**To the maintainer of this skill.** This addendum reports what happened when the
-skill was used, as supplied (export v2, PFD-SPEC-001 v2.0, symbol library v1), on a
-real plant: a toluene hydrodealkylation (HDA) process drawn on two A3 sheets. The
-drawing had 22 equipment items, 41 streams, two column templates, a gas recycle
-loop and two control loops.
+### 9.1 Library corrections applied at load time
 
-The delivered sheets passed the full Section 5 battery: 0 hard failures,
-N<sub>c</sub> = 0, b<sub>max</sub> = 2, and every balance closing on displayed
-values. Even so, the sheets that first passed that battery contained five process
-errors and several drafting defects. Rendered inspection or a separate process
-review found them. Sections 9 to 15 below are written to be appended to `SKILL.md`
-as they stand. Section 16 lists proposed corrections to the library, the
-specification and the worked example, with exact values. Every number below was
-measured from the library files or from the drawing geometry; nothing is quoted
-from memory.
+Apply these in a project-local wrapper module at load time. Do not
+edit the library files; record each correction in the compliance
+record of every sheet that uses the affected symbol.
 
-The worked case can be inspected at <https://chetools.github.io/claude/pfd-hda-example/>.
-Its source, including the verifier and the planted-defect tests, is in
-<https://github.com/chetools/claude/tree/master/pfd-hda-example>.
+- **`flash_1` (A.7).** The liquid outlet is described as "at the
+  bottom", but the port list has no bottom port (it has `side_1` to
+  `side_6`, `top` and `right`). Add `bottom = [308, 518]`, the lower
+  head apex, which lies on the outline and equals the frame bottom.
+- **`scds_1` (A.9).** The `overhead` port (560, 200) lies 20 native
+  units above the top head apex (y = 220) and the `bottoms` port
+  (560, 520) lies 15 units below the bottom apex (y = 505), where y
+  denotes the vertical native coordinate; a stream ending at the port
+  stops short of the column (a visible gap of about 25 px in practice).
+  Keep the stream end on the port and draw a nozzle stub from port to
+  apex at main-line weight, inside the symbol group.
+- **`scds_1` side entries (A.9).** Feed, reflux and boil-up entries
+  have no named ports. Use virtual ports `side_left` and `side_right`:
+  a point on the shell edge (x = 530 or 590, where x denotes the
+  horizontal native coordinate) at a height chosen by the layout,
+  restricted to the straight shell (y from 235 to 490). The verifier
+  must recognise them.
+- **`control_valve_1` (A.12).** The frame top (y = 485) is 22 units
+  above the actuator dome apex (y = 507); a signal line ended at the
+  frame top stops short of the actuator. End instrument signal lines
+  at the dome apex, (576 − 507) × scale above the port centreline,
+  where scale is the placement scale factor.
+- **Stroke rescaling, all symbols.** Library stroke widths are fixed
+  in native units at each symbol's library scale and drift at any
+  other placement scale (in practice the flash drum outline has
+  rendered at 0.97 mm, a column at 0.73 mm and a reflux drum at
+  0.39 mm, against the 0.5 mm required by L1). Rescale every
+  `stroke-width` at placement by (target width in px) ÷ (placement
+  scale × native main stroke), preserving the internal weight ratios.
+  Use 0.5 mm for equipment and 0.25 mm for valves.
 
-## 9. Library corrections to apply before drawing
+### 9.2 Specification interpretations
 
-Apply these at load time, in a project-local wrapper module. Do not edit the library
-files. Record each one in the compliance record.
+Apply this reading where the specification is silent or ambiguous,
+and state it in the compliance record.
 
-| Symbol | Defect | Correction |
-|---|---|---|
-| `flash_1` (A.7) | Annex A.7 says the liquid outlet is "at the bottom", but the port list has no bottom port (it has `side_1`…`side_6`, `top` and `right`). | Add `bottom = [308, 518]`, the lower head apex. It lies on the outline: the arc ends at y = 489 and its depth is 29. It also equals the frame bottom. |
-| `scds_1` (A.9) | The `overhead` port (560, 200) lies 20 native units above the top head apex (y = 220). The `bottoms` port (560, 520) lies 15 units below the bottom apex (y = 505). A stream ending at the port therefore stops short of the column. The worked example shows this as a visible gap of about 25 px at the column top and bottom. | Keep the stream end on the port. Draw a nozzle stub from port to apex at main-line weight, inside the symbol group. |
-| `scds_1` (A.9) | Feed, reflux and boil-up entries are described in Annex A.9, but they have no named ports. | Use virtual ports `side_left` and `side_right`: a point on the shell edge (x = 530 or 590), at a height chosen by the layout, restricted to the straight shell (y 235–490). The verifier must recognise them. |
-| `control_valve_1` (A.12) | The frame top (y = 485) is 22 units above the actuator dome apex (y = 507). A signal line ended at the frame top stops short of the actuator. | End instrument signal lines at the dome apex: (576 − 507) × scale above the port centreline. |
-| All symbols | Stroke widths are fixed in native units for each symbol's library scale. At any other placement scale they drift. In the worked example the flash drum outline renders at 0.97 mm, the column at 0.73 mm and the reflux drum at 0.39 mm, against 0.5 mm required by L1. | Rescale every `stroke-width` at placement by (target width in px) ÷ (placement scale × native main stroke). This keeps the internal weight ratios. Use 0.5 mm for equipment and 0.25 mm for valves. |
+- **R5 is a strict inequality.** "Shall exceed 10 mm" fails at exactly
+  10.0 mm. Implement the clear spacing test as gap > 40 px at
+  4 px/mm, not >=.
+- **A.6 utility side.** Cooling utilities connect to the top port and
+  heating utilities to the bottom port. A reboiler whose top port
+  carries boil-up takes its heating medium at the bottom port. A fired
+  heater takes fuel at its fuel port. Check this automatically.
+- **Column entries relative to trays (A.9, P5).** Reflux enters above
+  the top tray line, boil-up enters below the bottom tray line, and a
+  feed enters between two tray lines, never on one. Assert this in
+  the builder.
+- **L4 "clear of arrowheads" quantified.** At least 1 mm (4 px)
+  between a stream-number marker outline and any arrowhead; 1.5 mm is
+  preferred.
+- **L3 overlaps include sheet text.** The overlap check covers the
+  title, subtitle, notes and table captions as well as equipment
+  labels.
+- **Principal control loops (A3, S4).** A loop is complete only with
+  all three parts: the measurement connection to the process (a level
+  tap at the liquid level; a pressure tap in the vapour space or on
+  the line), the controller bubble, and the signal to the valve
+  actuator. A bubble wired only to its valve is incomplete.
+- **Terminal labels.** One side per terminal family (for example,
+  product and continuation labels above the glyph), kept on every
+  sheet of a set.
 
-## 10. Specification interpretations
+### 9.3 Process-sense review (required, after the geometric battery)
 
-The specification is silent or ambiguous on these points. Apply this reading and
-state it in the compliance record.
+The Section 5 battery verifies the drawing against the topology and
+the displayed values against closure; it cannot see an error that is
+consistent with both. Error classes of this kind include: a
+high-pressure purge joining a low-pressure fuel-gas header with no
+let-down valve; cooling water connected to a heating port; a level
+tap in the vapour space; column bottoms temperature inconsistent with
+the bubble point of the displayed composition; a condenser vent
+composition exceeding the vapour-pressure limit at the displayed
+temperature and pressure.
 
-- **R5 "shall exceed 10 mm"** is a strict inequality. A clear spacing of exactly
-  10.0 mm fails. Implement it as `gap > 40 px` at 4 px/mm, not `>=`. A layout sat
-  exactly on the limit and passed the first verifier.
-- **A.6 utility side.** Cooling utilities connect to the **top** port and heating
-  utilities to the **bottom** port. A reboiler whose top port carries boil-up
-  takes its heating medium at the bottom. A fired heater takes fuel at its fuel
-  port. Check this automatically: a cooling-water stub on the bottom port was
-  missed by eye in a first issue.
-- **Column entries relative to trays (A.9, P5).** Reflux enters above the top tray
-  line, boil-up enters below the bottom tray line, and a feed enters between two
-  tray lines, never on one. Assert this in the builder.
-- **L4 "clear of arrowheads".** Quantify it as at least 1 mm (4 px) between the
-  marker outline and any arrowhead; 1.5 mm is preferred. A marker 0.5 mm from an
-  arrowhead reads as touching.
-- **L3 overlaps include sheet text.** The overlap check must cover the title,
-  subtitle, notes and table captions as well as equipment labels. A process lane
-  under the subtitle touched it without any check firing.
-- **Principal control loops (A3, S4).** A loop is complete only with all three
-  parts shown:
-  - the measurement connection to the process, with a level tap at the liquid
-    level and a pressure tap in the vapour space or on the line;
-  - the controller bubble;
-  - the signal to the valve actuator.
+Before delivery, read the stream table and the drawing together as a
+process engineer and record the result. Minimum checklist:
 
-  A bubble wired only to its valve is incomplete.
-- **Terminal labels.** Choose one side per terminal family (for example,
-  product and continuation labels above the glyph) and keep it on every sheet of
-  a set.
+1. **Pressure.** Where streams join, every inlet is at or above the
+   outlet pressure. Any drop much larger than line losses has a valve
+   or a machine on the sheet. Pressure rises only across pumps and
+   compressors.
+2. **Temperature and phase.** Liquids are at or below their bubble
+   point at the displayed pressure; vapours are at or above their dew
+   point; column overheads and bottoms sit near their saturation
+   temperatures; the phase label agrees. Compute bubble points (for
+   example Raoult's law with Antoine constants) rather than judging
+   by eye, and keep the calculation as a test.
+3. **Composition limits.** Vapour mole fractions of condensable
+   components do not exceed vapour pressure ÷ total pressure at the
+   displayed temperature.
+4. **Port sense.** Vapours leave from tops and liquids from bottoms;
+   feeds enter above the liquid level; utilities are on the correct
+   side (Section 9.2); instrument taps are in the correct phase.
+5. **Values that are not results.** Values not produced by a
+   calculation are labelled on the sheet as nominal or sample values.
 
-## 11. Process-sense review: a required step after the geometric battery
+Where available, use an independent reviewer for this step — one with
+no part in the layout, asked only for process plausibility — in
+addition to the verifier of Section 4, not in place of it.
 
-The Section 5 battery verifies the drawing against the topology and the displayed
-values against closure. It cannot see an error that is consistent with both. On
-the HDA sheets these errors passed every automated check:
+### 9.4 Verifying the verifier
 
-- a purge at 2350 kPa joined a 280 kPa fuel-gas header with no let-down valve;
-- the effluent cooler had cooling water on its heating port;
-- the level tap sat in the vapour space;
-- toluene-column bottoms were shown at 270 °C, while the computed bubble point of
-  the displayed composition is 134 °C;
-- the condenser vent carried 43 mol % benzene at 45 °C and 200 kPa. Benzene's
-  vapour pressure of 29.8 kPa (Antoine) caps this at 15 %.
+A verifier that reports zero failures proves nothing until it has
+failed on purpose.
 
-Before delivery, read the stream table and the drawing together as a process
-engineer, and record the result. The minimum checklist:
+- **Planted-defect tests.** Keep as a test suite run on every
+  delivery. Each test takes a copy of the delivered sheets, plants
+  one defect, and requires the matching failure code: a displayed
+  value changed by one unit of its last digit (A5); a stream-table
+  row deleted (A4); a stream-number marker deleted (A4); a stream end
+  moved off its port (A1); a label placed on a line (L3).
+- **Re-derive topology from geometry.** Do not trust metadata written
+  by the builder. Match each drawn line end to a transformed library
+  port, then compare the resulting edge list with the topology.
+- **Multi-sheet balances.** Join continued streams across sheets
+  before forming balances; otherwise the receiving unit appears to
+  have no inlet.
+- **Exact closure under rounding (A5).** Compute each balance twice:
+  once in floating point, as the reference; and once in integer units
+  of the displayed precision, rounding every split and taking its
+  last outlet by difference. Display the integer result and test that
+  it stays within a stated tolerance of the reference.
 
-1. **Pressure.** Where streams join, every inlet is at or above the outlet
-   pressure. Any drop much larger than line losses has a valve or a machine on
-   the sheet. Pressure rises only across pumps and compressors.
-2. **Temperature and phase.**
-   - Liquids are at or below their bubble point at the displayed pressure.
-   - Vapours are at or above their dew point.
-   - Column overheads and bottoms sit near their saturation temperatures.
-   - The phase label agrees with all of this.
+### 9.5 Sheet continuations in a multi-sheet set (R9)
 
-   Compute bubble points (for example Raoult's law with Antoine constants)
-   rather than judging by eye, and keep the calculation as a test.
-3. **Composition limits.** Vapour mole fractions of condensable components do
-   not exceed vapour pressure ÷ total pressure at the displayed temperature.
-4. **Port sense.**
-   - Vapours leave from tops and liquids from bottoms.
-   - Feeds enter above the liquid level.
-   - Utilities are on the correct side (§10).
-   - Instrument taps are in the correct phase.
-5. **Values that are not results.** Values not produced by a calculation are
-   labelled on the sheet as nominal or sample values. This is §6, restated here
-   because it is easy to forget for temperatures and pressures.
+- Fix continuation heights after placing the most constrained sheet,
+  or jointly with it. A height range chosen in advance for the
+  receiving sheet can put a column feed at the bottom tray, beside
+  the boil-up return — a process error no geometric check catches.
+- Store continuation heights in one shared file that every sheet
+  builder reads. Verify equality across sheets geometrically.
+- A continued stream keeps one number on both sheets and appears in
+  both stream tables with identical values. Verify that the rows are
+  identical.
 
-An independent reviewer found most of these errors. That reviewer had no part in
-the layout and was asked only for process plausibility. Use such a reviewer in
-addition to the verifier of §4, not in place of it.
+### 9.6 Parallel work: additions to Section 4
 
-## 12. Verifying the verifier
+- Freeze the drawing kit and the verifier along with the topology and
+  symbol selection, and issue them read-only (see also Section 4).
+- Coordinator re-verification before issue: rebuild every sheet from
+  source, confirm byte-identity with the delivered files, and inspect
+  the final renders directly (see also Section 4).
+- A split that has been shown to work for a drawing of 22 equipment
+  items and 41 streams on two sheets: one sub-agent per sheet, one
+  sub-agent for new S5 symbols, one independent verifier; the
+  coordinator owned the topology, the model, the kit, the verifier
+  and the continuation heights.
 
-A verifier that reports zero failures proves nothing until it has failed on purpose.
+### 9.7 Drafts and issued revisions
 
-- **Planted-defect tests.** Keep these as a test suite run on every delivery. Each
-  takes a copy of the delivered sheets, plants one defect, and requires the
-  matching failure code:
-  - a displayed value changed by one unit of its last digit (A5);
-  - a stream-table row deleted (A4);
-  - a stream-number marker deleted (A4);
-  - a stream end moved off its port (A1);
-  - a label placed on a line (L3).
+Read the fresh-filename rule of Section 3 step 7 together with this
+convention:
 
-  The deleted-row test exposed a crash in the balance step that would otherwise
-  have masked every other result.
-- **Re-derive topology from geometry.** Do not trust metadata written by the
-  builder. Match each drawn line end to a transformed library port, then compare
-  the resulting edge list with the topology.
-- **Multi-sheet balances.** Join continued streams across sheets before forming
-  balances. Otherwise the receiving unit appears to have no inlet.
-- **Exact closure under rounding (A5).** To make every balance close exactly on
-  displayed values, compute the balance twice:
-  - once in floating point, as the reference;
-  - once in integer units of the displayed precision, rounding every split and
-    taking its last outlet by difference.
-
-  Display the integer result and test that it stays within a stated tolerance of
-  the reference. On the HDA case the two agreed within 0.8 kmol/h.
-
-## 13. Sheet continuations (R9) in a multi-sheet set
-
-- Fix continuation heights **after** placing the most constrained sheet, or
-  jointly with it. A height range chosen in advance for the receiving sheet put
-  a column feed at the bottom tray, beside the boil-up return. That is a process
-  error, and no check caught it. It was found on rendered inspection.
-- Store continuation heights in one shared file that every sheet builder reads.
-  Verify equality across sheets geometrically.
-- A continued stream keeps one number on both sheets, and appears in both stream
-  tables with identical values. Verify that the rows are identical.
-
-## 14. Parallel work: additions to Section 4
-
-- Freeze more than the topology and symbol selection. Freeze the drawing kit
-  (placement, stroke rescaling, marker, arrow and table helpers) and the verifier
-  as well, and issue them read-only to every sub-agent. Two sheet agents then
-  produce sheets that integrate without rework.
-- A sub-agent's report that it "inspected the render" often refers to an earlier
-  draft. Before issue, the coordinator rebuilds every sheet from source, checks
-  that the delivered file is byte-identical to the fresh build, and inspects the
-  final renders itself.
-- The split that worked for 22 items and 41 streams on two sheets:
-  - one sub-agent per sheet;
-  - one sub-agent for new S5 symbols;
-  - one independent verifier.
-
-  The coordinator owned the topology, the model, the kit, the verifier and the
-  continuation heights.
-
-## 15. Drafts and issued revisions
-
-Under §3 step 7, changed content is never re-delivered under a previous filename.
-Read that rule together with this convention:
-
-- Build iterations write `<sheet>-draft.*`, which are not delivered.
-- The first issued sheet is `<sheet>-r1.*`.
-- Any change after issue becomes `-r2`, and so on.
-- A sheet that has not left the project can be corrected before issue without
-  bumping the revision.
-
-## 16. Proposed corrections for the next release
-
-**Library (v2):**
-
-- `flash_1`: add port `bottom: [308, 518]` to `pfd_symbols.py` and `symbols.json`.
-- `scds_1`:
-  - either move the `overhead` and `bottoms` ports onto the head apexes,
-    (560, 220) and (560, 505);
-  - or keep them and include the nozzle stubs in the glyph.
-  - Add named side-entry ports, or document the side-entry convention of §9.
-- `control_valve_1`: either set the frame top to the dome apex (y = 507), or add an
-  `actuator` port at (605, 507).
-- `symbols.json`: record each symbol's native main stroke width, so that users can
-  rescale it at placement.
-- Annex A gains entries for a **fired heater** and a **fixed-bed (packed)
-  reactor**, which most reaction sections need.
-  - They were drawn here as provisional S5 additions. They were not verified
-    against ISO 10628-2.
-  - Their geometry and ports are in `symbols_ext.py` of the worked case:
-    - fired heater: frame 100 × 268, `coil_in` and `coil_out` at mid-height on
-      the box walls, `fuel` at the bottom;
-    - reactor: frame 116 × 268, 2:1 heads, ports `top` and `bottom` at the
-      apexes.
-
-**Specification (v2.1):**
-
-- R5: state the strict inequality and the reference (centre distance minus
-  line widths).
-- A.6: state the utility port rule of §10.
-- A.9: state the tray-relative entry rule.
-- L4: quantify "clear of arrowheads".
-- L3: state that title, notes and captions are labels.
-- Section 12: add the process-sense review (§11) as a recorded step.
-- Section 12: add the planted-defect requirement on the verifier (§12).
-
-**Worked example (`example/`):**
-
-- Its sheet uses a 3.4 px main line (0.85 mm) where L1 requires 1.0 mm, and
-  1.3 px utility lines (0.33 mm) where L1 requires 0.5 mm. Equipment tags are
-  16 px (4.0 mm), above the 3.5 mm maximum of L2.
-- Symbol strokes vary between 0.39 and 0.97 mm (§9).
-- The column top and bottom show the port gap (§9).
-- Re-issue the example with these corrected, so that it demonstrates the
-  specification it accompanies.
-
-*End of Addendum A.*
+- Build iterations write `<sheet>-draft.*`; drafts are not delivered.
+- The first issued sheet is `<sheet>-r1.*`; any change after issue
+  becomes `-r2`, and so on.
+- A sheet that has not left the project can be corrected before issue
+  without bumping the revision.

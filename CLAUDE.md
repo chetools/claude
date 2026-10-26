@@ -152,8 +152,8 @@ These complement the rules above. They apply to every project.
 ## Chemical process pages and flow diagrams (skills in `.claude/skills/`)
 
 - **Process flow diagrams:** follow `.claude/skills/process-flow-diagram-drawing/SKILL.md` and its specification
-  PFD-SPEC-001 (`specification/`). Addendum A at the end of that file (library corrections, strict readings of
-  the spec, the process-sense review, verifier tests) is part of the skill.
+  PFD-SPEC-001 (`specification/`). Section 9 of that file (library corrections, strict readings of the spec, the
+  process-sense review, verifier tests) is part of the skill.
 - **Process pages** (an interactive page about a plant or process unit: PFD at the centre, live Python balance model,
   subunit breakdown, economics, safety): follow `.claude/skills/chemical-process-wasm-page/SKILL.md`. It is the
   process-page counterpart of the teaching-page rules above. Reference build: `pfd-hda-example/page/`.

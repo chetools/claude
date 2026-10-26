@@ -7,7 +7,7 @@ every stream endpoint is a transformed library port coordinate, asserted
 in code. Layout rules and stream data are unchanged from revision 0;
 measured layout scores are recomputed and printed.
 Stream data are illustrative sample values; every unit balance closes
-(verified in check_balance). Units are stated in every table heading,
+(verified by the bal balance-check function). Units are stated in every table heading,
 so no symbol is used before it is defined in words.
 """
 import html, pathlib, sys
