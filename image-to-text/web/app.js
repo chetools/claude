@@ -43,6 +43,16 @@
   let modelsReady = Promise.resolve();
   let tesseractWorker = null;
   let probeHint = null;
+  let shared = {}; // shared ranking from other visitors: id -> { median, tests, refused, last }
+
+  // A model's score: this browser's own test first, else the shared median. undefined = untested, null = failed.
+  function scoreOf(id) {
+    if (id in scores.s) return scores.s[id];
+    const g = shared[id];
+    if (g && g.tests) return g.median;
+    if (g && g.refused) return null;
+    return undefined;
+  }
 
   function status(msg, kind) {
     const el = $("status");
@@ -51,7 +61,30 @@
   }
 
   // ---------- models ----------
+  async function loadShared() {
+    if (!ITT_PROBE.ranking) return;
+    try {
+      const r = await fetch(ITT_PROBE.ranking + "/ranking", { signal: AbortSignal.timeout(6000) });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      shared = {};
+      for (const m of (await r.json()).models) shared[m.model] = m;
+    } catch (e) {
+      console.warn("Shared ranking unavailable:", e);
+    }
+  }
+
+  // Send this browser's test-card result to the shared ranking (the server scores the raw answer itself).
+  function reportShared(model, text) {
+    if (!ITT_PROBE.ranking) return;
+    fetch(ITT_PROBE.ranking + "/report", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(text === null ? { model } : { model, text }),
+    }).catch((e) => console.warn("Could not report to the shared ranking:", e));
+  }
+
   async function loadModels(force) {
+    const sharedReady = loadShared();
     try {
       const c = JSON.parse(store.get("itt.scores") || "null");
       if (c && Date.now() - c.t < SCORE_TTL_MS) scores = { busy: {}, ...c };
@@ -60,7 +93,7 @@
     if (!force && cached) {
       try {
         const c = JSON.parse(cached);
-        if (Date.now() - c.t < MODEL_TTL_MS && c.models.length) { setModels(c.models, c.t); return; }
+        if (Date.now() - c.t < MODEL_TTL_MS && c.models.length) { await sharedReady; setModels(c.models, c.t); return; }
       } catch (e) { /* refetch */ }
     }
     $("modelInfo").textContent = "Loading free models…";
@@ -70,6 +103,7 @@
       const models = ImgText.pickFreeVisionModels((await r.json()).data);
       const t = Date.now();
       store.set("itt.models", JSON.stringify({ t, models }));
+      await sharedReady;
       setModels(models, t);
     } catch (e) {
       $("modelInfo").textContent = "Could not load the model list (" + e.message + "); OpenRouter's free router will be used.";
@@ -79,15 +113,19 @@
 
   // Best test-card score first; untested models next (newest first), models that failed the test last.
   function rankedModels() {
-    const key = (m) => (m.id in scores.s ? (scores.s[m.id] === null ? -2 : scores.s[m.id]) : -1);
+    const key = (m) => { const x = scoreOf(m.id); return x === undefined ? -1 : x === null ? -2 : x; };
     return freeModels.slice().sort((a, b) => key(b) - key(a) || b.created - a.created);
   }
 
   function setModels(models, t) {
     freeModels = models;
     const sel = $("model"), keep = store.get("itt.model") || "auto";
-    const label = (m) => m.id in scores.s ? (scores.s[m.id] === null ? " (failed test)" : " (score " + Math.round(scores.s[m.id]) + ")")
-      : m.id in scores.busy ? " (busy when tested)" : "";
+    const label = (m) => {
+      const x = scoreOf(m.id), g = shared[m.id];
+      if (x === null) return " (failed test)";
+      if (x === undefined) return m.id in scores.busy ? " (busy when tested)" : "";
+      return " (score " + Math.round(x) + (m.id in scores.s ? ", your test" : ", " + g.tests + " shared tests") + ")";
+    };
     sel.length = 1;
     for (const m of rankedModels()) sel.add(new Option(m.name + label(m) + " — " + m.id, m.id));
     sel.add(new Option("OpenRouter free router — openrouter/free", "openrouter/free"));
@@ -96,15 +134,16 @@
     $("modelInfo").textContent = !models.length
       ? "No free vision models listed; OpenRouter's free router will be used."
       : models.length + " free vision models (list from " + new Date(t).toLocaleTimeString() + "). " +
-        (top && typeof scores.s[top.id] === "number"
-          ? "Auto picks " + top.id + ", test score " + Math.round(scores.s[top.id]) + "/100 (tested " + new Date(scores.t).toLocaleString() + ")."
+        (top && typeof scoreOf(top.id) === "number"
+          ? "Auto picks " + top.id + ", test score " + Math.round(scoreOf(top.id)) + "/100 (" +
+            (top.id in scores.s ? "your test, " + new Date(scores.t).toLocaleString() : "median of " + shared[top.id].tests + " tests by visitors, last 7 days") + ")."
           : "Not tested yet: they are tested on the first read (needs your key).");
   }
 
   function candidateBatches() {
     const sel = $("model").value;
     if (sel !== "auto") return [[sel], ["openrouter/free"]].filter((b, i) => i === 0 || sel !== "openrouter/free");
-    const usable = (id) => !(id in scores.s) || (scores.s[id] !== null && scores.s[id] >= MIN_SCORE);
+    const usable = (id) => { const x = scoreOf(id); return x === undefined || (x !== null && x >= MIN_SCORE); };
     const ids = rankedModels().map((m) => m.id).filter(usable);
     const batches = [];
     for (let i = 0; i < Math.min(ids.length, 9); i += 3) batches.push(ids.slice(i, i + 3));
@@ -184,7 +223,10 @@
   // Ranking: every untested free vision model reads the built-in test card at once; scores are kept for a day.
   async function testModels(key, all) {
     if (all || Date.now() - scores.t >= SCORE_TTL_MS) scores = { t: Date.now(), s: {}, busy: {} };
-    const todo = freeModels.filter((m) => !(m.id in scores.s) && !(Date.now() - (scores.busy[m.id] || 0) < BUSY_RETRY_MS));
+    // Skip models someone already tested in the last day (shared ranking), unless re-testing everything.
+    const sharedFresh = (id) => !all && shared[id] && Date.now() - shared[id].last < SCORE_TTL_MS;
+    const todo = freeModels.filter((m) => !(m.id in scores.s) && !sharedFresh(m.id) &&
+      !(Date.now() - (scores.busy[m.id] || 0) < BUSY_RETRY_MS));
     if (!todo.length) return;
     status("Testing " + todo.length + " free models on a sample card to find the best one (once a day)…", "busy");
     if (probeHint === null) probeHint = await tesseractText(ITT_PROBE.png);
@@ -192,6 +234,7 @@
       const res = await callModels([m.id], key, ITT_PROBE.png, hintPrompt(probeHint));
       if (res.fatal) return { id: m.id, fatal: res.msg };
       if (res.busy) return { id: m.id, busy: true };
+      reportShared(m.id, res.ok ? res.text : null);
       return { id: m.id, score: res.ok ? ImgText.scoreTranscription(window.markdownit, res.text, ITT_PROBE.spec).total : null };
     }));
     const fatal = results.find((r) => r.fatal);

@@ -1,2 +1,4 @@
 .buildtools/
 tests/out/
+worker/node_modules/
+worker/.wrangler/

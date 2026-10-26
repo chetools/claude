@@ -1,0 +1,7 @@
+{
+  "name": "image-to-text-ranking",
+  "private": true,
+  "type": "module",
+  "dependencies": { "markdown-it": "14.1.0" },
+  "devDependencies": { "wrangler": "4.40.0" }
+}

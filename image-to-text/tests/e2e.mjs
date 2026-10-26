@@ -2,6 +2,7 @@
 // Needs `python3 -m http.server 8765` running in image-to-text/ and network access to openrouter.ai.
 // OpenRouter calls are forwarded from Node (TLS verified, through the environment's proxy):
 //   NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt node tests/e2e.mjs
+// The page must be built with the local Worker: `python3 build.py http://localhost:8787`, Worker running (see worker.test.mjs).
 // Set OPENROUTER_API_KEY to use a real key; otherwise a dummy key is sent (the container proxy injects one).
 import { createRequire } from "module";
 import fs from "fs";
@@ -18,6 +19,8 @@ const URL_ = "http://localhost:8765/dist/image-to-text-standalone.html";
 const KEY = process.env.OPENROUTER_API_KEY || "sk-or-test-dummy";
 const failures = [];
 let cdnBytes = 0;
+let firstProbes = 0;
+const RANKING = process.env.RANKING_URL || "http://localhost:8787";
 const check = (cond, msg) => { console.log((cond ? "ok   " : "FAIL ") + msg); if (!cond) failures.push(msg); };
 
 // Fixture document: rendered to PNG on every run, so it can never go stale.
@@ -142,9 +145,15 @@ async function ocrRun(label, opts) {
   console.log("character error rate (plain vs expected): " + (100 * e).toFixed(1) + "%");
   check(e < 0.1, "plain text CER < 10%");
   check(r.calls.some((c) => c.startsWith("probe:")), "free models were tested on the sample card first");
+  firstProbes = r.calls.filter((c) => c.startsWith("probe:")).length;
+  await new Promise((res) => setTimeout(res, 1500)); // reports are fire-and-forget
+  const rank = await (await fetch(RANKING + "/ranking")).json();
+  const reported = rank.models.filter((m) => r.calls.includes("probe:" + m.model));
+  console.log("shared ranking: " + JSON.stringify(reported.map((m) => [m.model, m.median, m.tests, m.refused])));
+  check(reported.some((m) => m.tests > 0), "test-card answers reached the shared ranking");
   console.log("jsDelivr download for Tesseract (first use): " + (cdnBytes / 1e6).toFixed(1) + " MB");
   check(/<h1/.test(r.res.html) && /<strong>very well<\/strong>/.test(r.res.html) && /<em>basil<\/em>/.test(r.res.html), "Gmail HTML has heading, bold, italic");
-  check(/<table/.test(r.res.html) && /<ol/.test(r.res.html) && /<ul/.test(r.res.html) && /<pre/.test(r.res.html), "Gmail HTML has table, lists, code block");
+  check(/<table/.test(r.res.html) && /<ol/.test(r.res.html) && /<ul/.test(r.res.html) && /<code/.test(r.res.html), "Gmail HTML has table, lists, code (block or inline: the one-line block is read either way)");
   check(/\*\*very well\*\*/.test(r.res.discord) && /```/.test(r.res.discord), "Discord text keeps bold and code blocks");
 
   if (!/Done/.test(r.st)) { await browser.close(); console.log("\nOCR failed; skipping the remaining checks"); process.exit(1); }
@@ -175,6 +184,8 @@ async function ocrRun(label, opts) {
 {
   const r = await ocrRun("failover", { fail429: true });
   check(r.calls.filter((c) => c.startsWith("read:")).length >= 2 && /Done/.test(r.st), "after a 429 the next model batch is tried and succeeds");
+  const probes = r.calls.filter((c) => c.startsWith("probe:")).length;
+  check(probes < firstProbes, `a new visitor skips models already in the shared ranking (${probes} vs ${firstProbes} tests)`);
   await r.ctx.close();
 }
 

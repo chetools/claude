@@ -28,7 +28,8 @@
   </div>
   <p class="hint" id="modelInfo">Loading free models…</p>
   <p class="hint">"Auto" ranks the free vision models by how well each reads a built-in sample card (text, bold,
-    italic, strikethrough, emoji, table), tested once a day with your key; models scoring under 50 are skipped. If a model is busy, the next ones are
+    italic, strikethrough, emoji, table), tested once a day; models scoring under 50 are skipped. Results are pooled with other visitors (only the sample
+    card's answers, never your images or text), so models someone tested in the last day are not re-tested. If a model is busy, the next ones are
     tried, then OpenRouter's own free router. Tesseract's plain reading is sent along as a draft.</p>
 </aside>
 
@@ -85,7 +86,7 @@
 @@MARKDOWN_IT@@
 </script>
 <script>
-window.ITT_PROBE = { png: "data:image/png;base64,@@PROBE_PNG_B64@@", spec: @@PROBE_JSON@@ };
+window.ITT_PROBE = { png: "data:image/png;base64,@@PROBE_PNG_B64@@", spec: @@PROBE_JSON@@, ranking: "@@RANKING_URL@@" };
 </script>
 <script>
 @@CONVERT_JS@@
