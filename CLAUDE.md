@@ -17,12 +17,7 @@
 - **Editable code.** Whenever Python code is shown on a page, link an editable MoLab (marimo) notebook of it (rule below).
 - **Validate numerics independently.** Check results against a second method or an exact solution, not only
   against my own code. Check derivatives (AD vs. finite differences) on both sides of any steep region.
-- **Verify like a user before delivering.**
-  - Run every test suite.
-  - Load the real page in a browser with Playwright: no console errors, every tab works, no horizontal scroll at phone width.
-  - Look at screenshots.
-  - Confirm the published URL serves the new content.
-  - Only then hand over the shareable link.
+- **Verify like a user before delivering:** follow the "Verification checklist" below, and only then hand over the link.
 - **Make builds fail loudly.** Guard against silent no-ops, such as unfilled template placeholders.
 - **Survive usage-limit stops (auto-resume).** A session cannot see or react to its own usage limit, so arm the
   restart before it is needed:
@@ -57,7 +52,6 @@ These complement the rules above. They apply to every project.
 - **Sweep the whole input range before shipping.** Cover the extremes, crossovers between regimes and limits, and
   the largest and smallest sizes. Bugs hide exactly there: NaNs appeared only at large grids, and instability only
   where two time-step limits crossed.
-- **Test the UI at two viewport widths** with a headless browser, and read the screenshots before reporting done.
 - **Look at screenshots of the realistic case, not only the test case.** Small grids at early times hid that trails
   saturated to white on a real GPU at N = 64, N_z = 32; reproduce the user's settings before judging a visual.
 - **Rule out the test before the code.** False failures came from a test that read a canvas without redrawing it, a
@@ -122,8 +116,8 @@ These complement the rules above. They apply to every project.
     "The MoLab notebook is editable; run all cells once after opening". Also add a button next to the breakdown's
     controls and a download link to the `.py` file.
   - Reference implementation: `packed-bed-runaway/` (`python/make_molab.py`, `notebook/walkthrough_molab.py`).
-- **When done,** give the user the shareable `https://chetools.github.io/claude/<page-dir>/` link, after confirming
-  that it serves.
+- **When done,** give the user the shareable `https://chetools.github.io/claude/<page-dir>/` link, after the
+  verification checklist below (including confirming that it serves).
 
 ## Chemical process pages and flow diagrams (skills in `.claude/skills/`)
 
@@ -169,15 +163,17 @@ These complement the rules above. They apply to every project.
   - Pushing the branch switched Pages on by itself.
   - Push a placeholder early, so the URL exists while building.
 
-## Verification checklist (before publishing)
+## Verification checklist (before publishing and delivering)
 - Run every test suite the project has.
-- **Playwright on the built page.** Use `$(npm root -g)/playwright` with the preinstalled Chromium, served by
-  `python -m http.server`. Check:
+- **Playwright on the real, built page.** Use `$(npm root -g)/playwright` with the preinstalled Chromium, served by
+  `python -m http.server`. Test at two viewport widths, a phone (390 px) and a wide monitor (2560 px). Check:
   - no page or console errors;
-  - every tab renders;
-  - at 390 px wide there is no horizontal scroll (let the tabs wrap).
-- Take screenshots and look at them.
-- Confirm the gh-pages URL serves the new content before handing over the link.
+  - every tab renders and works;
+  - at 390 px wide there is no horizontal scroll (let the tabs wrap);
+  - at 2560 px the header and body share left and right edges (see "The page header matches the body text width").
+- Take screenshots at both widths and look at them before reporting done.
+- Confirm the gh-pages URL serves the new content (compare bytes, see "Publishing") before handing over the
+  shareable link.
 
 ## Topic skills (load only when the project needs them)
 - `webgpu-page`: WebGPU compute/rendering, headless testing, tracers and trails.
@@ -200,7 +196,8 @@ project gets a new top-level directory.
 
 - Treat that directory as the project root and use absolute paths.
 - Read only this file, the directory's own files (including its own `CLAUDE.md`, if it has one), and the style
-  reference when needed. Do not explore sibling projects.
+  reference when needed. Do not explore sibling projects. The skills in `.claude/skills/` and the named reference
+  implementations (`cylinder-cavity-3d/`, `packed-bed-runaway/`) may be read when the task calls for them.
 - Scope every Grep/Glob to the directory. Never edit outside it. Shared code outside the directory is read-only context.
 - Project-specific lessons go in `<dir>/CLAUDE.md`, not in this file. Only rules that apply to every project go here.
 - Install toolchains (pip/npm, Rust with the `wasm32-unknown-unknown` target, a headless browser) once at session
