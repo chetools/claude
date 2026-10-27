@@ -185,6 +185,20 @@ These complement the rules above. They apply to every project.
 - `webgpu-page`: WebGPU compute/rendering, headless testing, tracers and trails.
 - `rust-wasm-numerics-page`: Rust to WASM solver, Pyodide, AD sensitivities, stiff ODEs, marimo generation.
 
+## Shared routine library (chetools/agent_tools)
+- Before writing a routine another project could reuse (ODE/PDE solvers, roots, optimisation, linear algebra, AD,
+  interpolation, quadrature, signal processing, statistics and fitting, units, property and cost correlations, data
+  formats), read `AGENTS.md` and `library/catalog.toml` in https://github.com/chetools/agent_tools (public; a
+  read-only `git clone --depth 1` works). Its `AGENTS.md` binds routine work; this file still governs pages and publishing.
+- Use a fitting `verified` routine instead of rewriting it (Rust crate by git tag, prebuilt wasm, or `library/python/`
+  as the page's reference and MoLab code). Say so when using an `experimental` one. Never patch a copy here.
+- No fit and the need is general: write it for the task, then promote it per the library's promotion checklist
+  (PR on `routine/<name>`, status `experimental`). Without push access, put the code and a filled-in
+  `templates/library-candidate.md` in `<dir>/library-candidates/<name>/` and say so. Problem-specific code stays here.
+- Document units on every routine input and output; cite source, valid range and units of property data.
+- Never set `verified` or merge a library PR without my explicit approval of that specific PR.
+- The final message lists library routines used, added or proposed, and any left in `library-candidates/`.
+
 ## Working alongside other sessions
 - Another session may edit the same project directory (for example the Theory text). Never revert or overwrite its
   work: `git pull --rebase origin master` before rebuilding, then rebuild, because the built page includes every
