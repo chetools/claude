@@ -8,6 +8,13 @@
   (coding, verification, reference search, theory writing) and hand each to its own subagent. Use Sonnet 5.5 for
   substantial sections and Haiku 5.5 for simpler ones (searches, checks, boilerplate). The coordinator integrates
   and verifies the results.
+  - **Weakest agent for fetching, strongest for interpreting.** Always give downloads, fetches and file extraction to
+    the weakest available subagent (Haiku). Give interpretation (explaining papers, analysis, synthesis) to the
+    highest model the plan offers without additional credits (Opus 5.5 ran without a credits prompt).
+  - **Reaching paper links.** `WebFetch` on an x.com post fails with HTTP 402. Read the post through the mirror
+    `https://api.fxtwitter.com/<user>/status/<id>` instead, which returns the text and linked URLs. arXiv PDFs
+    (`https://arxiv.org/pdf/<id>`) download with `curl -L` through the proxy, then `pdftotext -layout` gives the text.
+    Check the arXiv ID of a cited paper before assuming it is a typo (an ID that looked wrong was a real 2026 paper).
 - **Build only what was asked for.** No unrequested extras: derived verdicts, benchmark tabs, criteria, or "see also"
   notes. When a request says "X or Y", ask which one. Extras added on my own initiative get removed later.
 - **Surgical changes.** Edit only what the task needs and match the existing style. No refactoring or reformatting of
