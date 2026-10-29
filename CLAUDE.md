@@ -8,9 +8,9 @@
   (coding, verification, reference search, theory writing) and hand each to its own subagent. Use Sonnet 5.5 for
   substantial sections and Haiku 5.5 for simpler ones (searches, checks, boilerplate). The coordinator integrates
   and verifies the results.
-  - **Weakest agent for fetching, strongest for interpreting.** Always give downloads, fetches and file extraction to
-    the weakest available subagent (Haiku). Give interpretation (explaining papers, analysis, synthesis) to the
-    highest model the plan offers without additional credits (Opus 5.5 ran without a credits prompt).
+  - **Haiku for the simplest work, Opus 5.5 for interpretation (fixed).** Downloads, fetches, file extraction and
+    similar simple tasks go to Haiku 5.5. Any interpretation of papers or knowledge goes to Opus 5.5. Credits cannot
+    be checked from a session, so this is hard-coded rather than chosen by availability.
   - **Reaching paper links.** `WebFetch` on an x.com post fails with HTTP 402. Read the post through the mirror
     `https://api.fxtwitter.com/<user>/status/<id>` instead, which returns the text and linked URLs. arXiv PDFs
     (`https://arxiv.org/pdf/<id>`) download with `curl -L` through the proxy, then `pdftotext -layout` gives the text.
