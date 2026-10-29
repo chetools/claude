@@ -1,0 +1,13 @@
+name = "seb-exams"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[vars]
+# Pages allowed to call the API (CORS). Local test origin included for the Playwright suite.
+ALLOWED_ORIGINS = "https://chetools.github.io,http://localhost:8765"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "seb-exams"
+database_id = "a99d3036-239c-411b-99e7-e39fa6851b33"

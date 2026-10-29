@@ -1,0 +1,129 @@
+# Example exam. Everything a student sees comes from this file; the answer fields
+# (correct, answers, model_answer) are stripped by build.py and stored only in the database.
+# This example is committed to a public repository, so its answers are public too.
+# Keep real exams in seb_exams/private/<exam-id>/ (gitignored), see README.md.
+id: mccabe-thiele
+title: "Example exam: McCabe–Thiele distillation"
+duration_minutes: 45
+require_seb: true
+seb:
+  # SHA-256 (hex) of the proctor's quit password; the password itself is not stored anywhere in the repo.
+  quit_password_sha256: cfa56bae4f052f56b66d310562def2d6d39f673009b488f954f39e6c9b5dcc87
+  # Config Keys of other SEB configurations to accept as well (e.g. an encrypted .seb made with the
+  # SEB Config Tool; copy the key from its Exam pane). The key of the generated .seb is always accepted.
+  extra_config_keys: []
+intro: |
+  Binary distillation with constant molar overflow (CMO). Mole fractions refer to the more
+  volatile component. Answer all questions; your answers are saved on this computer as you type.
+  Submit once, at the end. The exam submits itself when the time is up.
+questions:
+  # ---------------------------------------------------------------- multiple choice
+  - id: mc-rectifying
+    type: mc
+    points: 2
+    text: |
+      **Rectifying operating line.** A component balance around the envelope that encloses the total
+      condenser and stages $1,\dots,n$ gives
+
+      $$V\,y_{n+1} = L\,x_n + D\,x_D, \qquad V = L + D .$$
+
+      Dividing by $V$ and introducing the reflux ratio $R = L/D$, which equation follows?
+    options:
+      - id: a
+        text: "$y_{n+1} = \\dfrac{R}{R+1}\\,x_n + \\dfrac{x_D}{R+1}$"
+        correct: true
+      - id: b
+        text: "$y_{n+1} = \\dfrac{R}{R+1}\\,x_n + \\dfrac{x_D}{R}$"
+      - id: c
+        text: "$y_{n+1} = \\dfrac{R+1}{R}\\,x_n - \\dfrac{x_D}{R}$"
+      - id: d
+        text: "$y_{n+1} = \\dfrac{1}{R+1}\\,x_n + \\dfrac{R\\,x_D}{R+1}$"
+
+  - id: mc-qline
+    type: mc
+    points: 2
+    text: |
+      **Feed condition and the q-line.** For a feed whose liquid fraction is $q$, the flows below the
+      feed stage are $\bar L = L + qF$ and $\bar V = V - (1-q)F$. Subtracting the rectifying and
+      stripping balances and using the overall balance $F z_F = D x_D + B x_B$ gives the q-line
+
+      $$y = \frac{q}{q-1}\,x - \frac{z_F}{q-1}.$$
+
+      The feed is a vapour–liquid mixture that is **40 mol % vapour**. What is the slope of the q-line?
+    options:
+      - id: a
+        text: "$-1.5$"
+        correct: true
+      - id: b
+        text: "$-0.67$"
+      - id: c
+        text: "$+1.5$"
+      - id: d
+        text: "Infinite (a vertical line)"
+
+  - id: mc-stages
+    type: mc
+    points: 2
+    figure: fig_stages.svg
+    text: |
+      **Stepping off stages.** The diagram shows a column with relative volatility $\alpha = 3$,
+      a saturated-liquid feed $z_F = 0.5$, $x_D = 0.9$, $x_B = 0.1$ and $R = 1.2$, stepped off from
+      the top. The column has a total condenser and a partial reboiler. How many equilibrium stages
+      are needed (the partial reboiler counts as a stage), and which stage, counted from the top, is
+      the optimal feed stage?
+    options:
+      - id: a
+        text: "7 stages, feed on stage 3"
+        correct: true
+      - id: b
+        text: "6 stages, feed on stage 3"
+      - id: c
+        text: "7 stages, feed on stage 4"
+      - id: d
+        text: "8 stages, feed on stage 2"
+
+  # ---------------------------------------------------------------- fill in the blank
+  - id: fill-cmo
+    type: fill
+    points: 2
+    text: |
+      **Constant molar overflow.** CMO assumes that the two components have nearly equal molar heats
+      of [blank], so that every mole of vapour condensed on a stage vaporises one mole of liquid.
+    answers: [vaporization, vaporisation]
+
+  - id: fill-total-reflux
+    type: fill
+    points: 2
+    text: |
+      **Total reflux.** At total reflux ($R \to \infty$) both operating lines lie on the [blank] of the
+      $x$–$y$ diagram, and stepping between it and the equilibrium curve gives the minimum number of
+      stages (the Fenske equation for constant $\alpha$).
+    answers: [diagonal]
+
+  # ---------------------------------------------------------------- open ended
+  - id: open-rmin
+    type: open
+    points: 5
+    text: |
+      **Minimum reflux.** For the column in the stepping question ($\alpha = 3$, saturated-liquid feed
+      $z_F = 0.5$, $x_D = 0.9$), explain what happens to the McCabe–Thiele construction as $R$ is lowered
+      toward the minimum reflux ratio, and why the number of stages becomes infinite. Then compute
+      $R_{\min}$. Show your working.
+    model_answer: |
+      The operating lines move toward the equilibrium curve; at R_min they meet it at the q-line
+      (pinch at x = z_F = 0.5, y* = 3(0.5)/(1 + 2(0.5)) = 0.75). Steps become infinitesimal near the
+      pinch, so infinitely many are needed. Slope R/(R+1) = (x_D - y*)/(x_D - x) = 0.15/0.4 = 0.375,
+      so R_min = (x_D - y*)/(y* - z_F) = 0.15/0.25 = 0.6. (R = 1.2 in the diagram is 2 R_min.)
+
+  - id: open-stripping
+    type: open
+    points: 5
+    text: |
+      **Stripping section.** Derive the stripping-section operating line from component and total
+      balances around the envelope that encloses the partial reboiler and the stages below stage $m$.
+      State the assumptions you use, write the result in terms of $\bar L$, $\bar V$, $B$ and $x_B$,
+      and show that the line passes through the point $(x_B, x_B)$.
+    model_answer: |
+      Total: L̄ = V̄ + B. Component: L̄ x_m = V̄ y_{m+1} + B x_B, so y_{m+1} = (L̄/V̄) x_m - (B/V̄) x_B.
+      Assumptions: steady state, CMO (L̄, V̄ constant in the section), equilibrium stages.
+      At x = x_B: y = (L̄ - B) x_B / V̄ = V̄ x_B / V̄ = x_B, so the line passes through (x_B, x_B).

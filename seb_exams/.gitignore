@@ -1,0 +1,9 @@
+.buildtools/
+.wrangler/
+worker/.wrangler/
+worker/.keys.sql
+worker/.dev.vars
+private/
+dist/*/key.json
+.cf_account
+__pycache__/
