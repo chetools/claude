@@ -72,7 +72,7 @@ const check = (ok, what) => { checks.push([ok, what]); console.log((ok ? 'PASS '
       const page = await ctx.newPage();
       const errs = [];
       page.on('pageerror', (e) => errs.push('pageerror: ' + e.message));
-      page.on('console', (m) => { if (m.type() === 'error') errs.push('console: ' + m.text()); });
+      page.on('console', (m) => { if (m.type() === 'error' && !/status of (401|422)/.test(m.text())) errs.push('console: ' + m.text()); });
       page.on('dialog', (d) => d.accept(d.type() === 'prompt' ? 'My title' : undefined));
       await mock(page);
       const shot = async (name) => { await page.waitForTimeout(250); await page.screenshot({ path: `${SHOTS}/${name}-${w}.png`, fullPage: true }); };

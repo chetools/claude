@@ -103,7 +103,7 @@ export async function render(root, ex) {
       } });
       const alt = h('input', { value: q.image_alt || '', placeholder: 'Describe the image (required)', oninput: (e) => { q.image_alt = e.target.value; markDirty(); } });
       imgRow.replaceChildren(h('div', { class: 'row' }, h('label', { class: 'inl' }, 'Image ', sel), h('button', { class: 'secondary small', onclick: () => up.click() }, 'Upload image …'), up),
-        q.image ? h('div', { class: 'row top' }, setImg(h('img', { class: 'thumb', alt: '' }), examId, q.image), h('label', { class: 'grow' }, 'Image description (alt text)', alt)) : null);
+        ...[q.image ? h('div', { class: 'row top' }, setImg(h('img', { class: 'thumb', alt: '' }), examId, q.image), h('label', { class: 'grow' }, 'Image description (alt text)', alt)) : null].filter(Boolean));
     };
     drawImg(); card.append(imgRow);
 
