@@ -170,13 +170,12 @@ api "$A" GET "/api/exams/$ID/results"
 check "regraded auto score" 3 "$(j '.submissions[0].auto_score')"
 check "manual grade kept" 4 "$(j '.submissions[0].manual["q-open"].points')"
 api "$A" GET "/api/exams/$ID"; check "regraded_at set" true "$(j '.regraded_at != null')"
-jq '{content: (.content | .questions[0].options[0].correct=true)}' "$TMP/out" > /dev/null
 echo '{"content":{"format":"seb-exam/1","title":"x","duration_minutes":0,"questions":[]}}' > "$TMP/c.json"
 api "$A" PUT "/api/exams/$ID/content" "$(cat "$TMP/c.json")"; check "invalid content -> 422" 422 "$CODE"
 # content change that turns the open question into mc drops the manual grade
 api "$A" GET "/api/exams/$ID"; jq '{content: (.content | .questions[2] = {id:"q-open",type:"mc",points:5,text:"now mc",options:[{text:"a",correct:true},{text:"b"}]})}' "$TMP/out" > "$TMP/c.json"
 api "$A" PUT "/api/exams/$ID/content" "$(cat "$TMP/c.json")"; check "open -> mc" 200 "$CODE"
-api "$A" GET "/api/exams/$ID/results"; check "manual dropped" '{}' "$(j -c '.submissions[0].manual')"
+api "$A" GET "/api/exams/$ID/results"; check "manual dropped" '{}' "$(jq -c '.submissions[0].manual' "$TMP/out")"
 
 echo "== export and round trip"
 api "$A" GET "/api/exams/$ID/export"; check "export" 200 "$CODE"
@@ -224,8 +223,8 @@ api "$A" DELETE "/api/exams/$ID3"; check "delete exam" 200 "$CODE"
 echo "== rate limit"
 for i in $(seq 7); do curl -s -o "$TMP/o" -w '%{http_code} ' -X POST -H 'Content-Type: application/json' -d '{"email":"admin@example.com"}' "$B/auth/request"; done | tr -d '\n'; echo
 check "login_requests capped at 5/hour" 5 "$(sql "SELECT COUNT(*) AS n FROM login_requests WHERE email='admin@example.com'" | jq '.[0].n')"
-check "all answers identical (200)" 200 "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json' -d '{"email":"admin@example.com"}' "$B/auth/request')"
-api "$A" POST /api/auth/logout; curl -s -o /dev/null -b "$A" -X POST "$B/auth/logout"
+check "all answers identical (200)" 200 "$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json' -d '{"email":"admin@example.com"}' "$B/auth/request")"
+curl -s -o /dev/null -b "$A" -X POST "$B/auth/logout"
 api "$A" GET /api/me; check "logout" 401 "$CODE"
 
 echo

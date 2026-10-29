@@ -61,9 +61,9 @@ export function questionBody(ex, q, n) {
       h('li', { class: 'opt' + (o.correct ? ' correct' : '') }, h('div', { class: 'md', html: renderMd(o.text) }), o.correct ? h('span', { class: 'tick' }, '✓ correct') : null))),
     h('p', { class: 'hint' }, q.shuffle_options === false ? 'Options are shown in this order.' : 'Options are shuffled for each student.'));
   } else if (q.type === 'fill') {
-    card.append(h('table', { class: 'blanktable' }, h('thead', {}, h('tr', {}, ['Blank', 'Answer', 'Also accepted', 'Clue'].map((c) => h('th', {}, c)))),
+    card.append(h('div', { class: 'tablewrap' }, h('table', { class: 'blanktable' }, h('thead', {}, h('tr', {}, ['Blank', 'Answer', 'Also accepted', 'Clue'].map((c) => h('th', {}, c)))),
       h('tbody', {}, blanks.map((b, i) => h('tr', {}, h('td', {}, String(i + 1)), h('td', {}, h('strong', {}, b.answer)),
-        h('td', {}, (b.variants || []).join(', ') || '–'), h('td', { html: b.clue ? boxesHtml(b.clue) : '<span class="hint">none</span>' }))))),
+        h('td', {}, (b.variants || []).join(', ') || '–'), h('td', { html: b.clue ? boxesHtml(b.clue) : '<span class="hint">none</span>' })))))),
     h('p', { class: 'hint' }, 'Graded all-or-nothing: every blank must be right (case-insensitive).'));
   } else {
     card.append(q.model_answer && q.model_answer.trim()

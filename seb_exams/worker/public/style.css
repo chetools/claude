@@ -73,7 +73,7 @@ ol.opts { list-style-type: upper-alpha; padding-left: 28px; display: grid; gap: 
 li.opt { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; } li.opt .md p:last-child { margin: 0; }
 li.opt.correct { border-color: var(--ok); background: var(--okbg); } li.opt .tick { color: var(--ok); font-weight: 700; font-size: .85rem; }
 .model { border-left: 4px solid var(--ok); background: var(--okbg); padding: 8px 12px; border-radius: 4px; } .label { font-size: .8rem; font-weight: 700; color: var(--ok); text-transform: uppercase; letter-spacing: .05em; }
-.boxes { display: inline-flex; flex-wrap: nowrap; gap: 2px; vertical-align: middle; margin: 0 3px; }
+.boxes { display: inline-flex; flex-wrap: wrap; gap: 2px; vertical-align: middle; max-width: 100%; margin: 0 3px; }
 .bx { display: inline-block; min-width: 1.5em; height: 1.7em; line-height: 1.6em; text-align: center; border: 1px solid #9aa5b5; border-radius: 3px; background: #fff; font-weight: 600; font-size: .92rem; }
 .bx.ans { background: var(--okbg); border-color: var(--ok); color: var(--ok); } .bx.fixed { background: #eceff3; color: var(--muted); } .bx.err { color: var(--bad); border-color: var(--bad); }
 .bx-gap { width: .8em; } .bx-sep { padding: 0 2px; font-weight: 700; line-height: 1.6em; }
