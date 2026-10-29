@@ -68,3 +68,24 @@ def test_exam_column():
     s1 = m.smoker_stages(a, R / (R + 1), xD / (R + 1), xD, xs[2])
     assert abs(s1 - 3) < 1e-9
     assert np.all(np.diff(xs) < 0)
+
+
+def _stages_with_feed_on(fs, a=3.0, xD=0.9, xB=0.1, R=1.2):
+    """Stages needed when the switch to the stripping line is forced after stage fs-1 (None if infeasible)."""
+    xi, yi = m.intersection(R, 0.5, xD, 1.0)
+    y, n = xD, 0
+    while True:
+        x = m.x_eq(y, a)
+        n += 1
+        if x <= xB:
+            return n
+        y = R / (R + 1) * x + xD / (R + 1) if n < fs else xB + (yi - xB) / (xi - xB) * (x - xB)
+        if y > m.y_eq(x, a) + 1e-12:
+            return None
+
+
+def test_exam_distractors_are_wrong():
+    """Option 'feed on stage 5' needs 8 stages and 'feed on stage 2' is infeasible, so neither gives 7."""
+    assert _stages_with_feed_on(3) == 7
+    assert _stages_with_feed_on(5) == 8
+    assert _stages_with_feed_on(2) is None

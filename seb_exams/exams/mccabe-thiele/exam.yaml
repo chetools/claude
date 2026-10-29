@@ -78,7 +78,7 @@ questions:
       - id: b
         text: "6 stages, feed on stage 3"
       - id: c
-        text: "7 stages, feed on stage 4"
+        text: "7 stages, feed on stage 5"
       - id: d
         text: "8 stages, feed on stage 2"
 
@@ -88,8 +88,8 @@ questions:
     points: 2
     text: |
       **Constant molar overflow.** CMO assumes that the two components have nearly equal molar heats
-      of [blank], so that every mole of vapour condensed on a stage vaporises one mole of liquid.
-    answers: [vaporization, vaporisation]
+      of [blank], so that the molar liquid and vapour flows stay constant within each column section.
+    answers: [vaporization, vaporisation, vapourization, vapourisation]
 
   - id: fill-total-reflux
     type: fill
@@ -98,7 +98,7 @@ questions:
       **Total reflux.** At total reflux ($R \to \infty$) both operating lines lie on the [blank] of the
       $x$–$y$ diagram, and stepping between it and the equilibrium curve gives the minimum number of
       stages (the Fenske equation for constant $\alpha$).
-    answers: [diagonal]
+    answers: [diagonal, diagonal line]
 
   # ---------------------------------------------------------------- open ended
   - id: open-rmin
