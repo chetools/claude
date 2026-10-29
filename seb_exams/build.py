@@ -237,7 +237,7 @@ def build_exam(d, out):
     (od / f"{eid}.seb").write_bytes(plistlib.dumps(settings, fmt=plistlib.FMT_XML, sort_keys=True))
     (od / "key.json").write_text(json.dumps(key, indent=1))
     print(f"built {eid}: {len(pub_q)} questions, Config Key {config_key}")
-    return eid
+    return eid, exam["title"]
 
 
 def fill(template, dest, values):
@@ -260,6 +260,8 @@ def main(args):
     fill(ROOT / "web" / "results.html", DIST / "results" / "index.html", {
         "CSS": (ROOT / "web" / "style.css").read_text(), "JS": (ROOT / "web" / "results.js").read_text(),
         "API": WORKER_URL})
+    items = "".join(f'<li><a href="{e}/">{html.escape(t)}</a></li>' for e, t in built)
+    fill(ROOT / "web" / "index.html", DIST / "index.html", {"CSS": (ROOT / "web" / "style.css").read_text(), "ITEMS": items})
     return built
 
 
