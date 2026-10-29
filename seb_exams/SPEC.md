@@ -79,7 +79,8 @@ put it in `worker/public/shared/validate.js` as an ES module that the Worker als
   evaluate|work out|sketch|draw|plot)\b/i or contains display math `$$`: "Open questions should ask for an explanation
   in words; students cannot type equations or attach drawings."
 - Images: referenced files must exist in the zip; unreferenced files → warning. SVG is rejected if it contains
-  `<script`, `on[a-z]+=`, `javascript:`, `<foreignObject`, or `href`/`xlink:href` to anything but `#…` or `data:image/`.
+  `<script`, an event-handler attribute inside a tag (`/<[^>]*\son[a-z]+\s*=/i`; a bare `on[a-z]+=` would
+  match `standalone=` in every matplotlib SVG header), `javascript:`, `<foreignObject`, or `href`/`xlink:href` to anything but `#…` or `data:image/`.
   Images are always shown with `<img src="data:...">`, never inlined.
 - Limits: ≤ 100 questions, ≤ 20 images, text fields ≤ 20 000 chars.
 

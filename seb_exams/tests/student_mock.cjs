@@ -38,7 +38,7 @@ async function setup(browser, { seb = false, width = 1280, clockTime = null, dur
   page.on("pageerror", (e) => page.errors.push(String(e)));
   page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource/.test(m.text())) page.errors.push(m.text()); });
   const cors = { "access-control-allow-origin": `http://localhost:${PORT}`, "access-control-allow-headers": "Content-Type", "access-control-allow-methods": "GET, POST, OPTIONS", "content-type": "application/json" };
-  let fails = failSubmit; const T0 = Date.parse("2026-06-01T10:00:00Z"); const started = new Date(T0).toISOString();
+  let fails = failSubmit; const T0 = clockTime ? Date.parse("2026-06-01T10:00:00Z") : Date.now(); const started = new Date(T0).toISOString();
   await page.route(API + "/**", async (r) => {
     const req = r.request(), u = new URL(req.url());
     if (req.method() === "OPTIONS") return r.fulfill({ status: 204, headers: cors });
@@ -119,7 +119,8 @@ const noHScroll = (page) => page.evaluate(() => document.documentElement.scrollW
     check(await b1.first().getAttribute("autocapitalize") === "off" && await b1.first().getAttribute("inputmode") === "text" && await b1.first().getAttribute("spellcheck") === "false", "mobile attributes");
     const focusLabel = () => page.evaluate(() => document.activeElement.getAttribute("aria-label"));
     await b1.first().click();
-    await page.keyboard.type("va");
+    await page.keyboard.type("v"); console.log("DBG1", await val(page, "q3", 0), await focusLabel());
+    await page.keyboard.type("a");
     check(await val(page, "q3", 0) === "vaa_________", "typing skips clue box: " + await val(page, "q3", 0));
     check(await focusLabel() === "Blank 1, letter 4 of 12", "focus advanced past clue");
     await page.keyboard.press("Backspace");
