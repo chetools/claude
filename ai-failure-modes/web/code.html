@@ -1,0 +1,35 @@
+<h2>1. Step-by-step breakdown</h2>
+<p>Each step writes out the key equations of one case and calls the reference function in <code>cases.py</code>.
+Every output below was produced by actually running the cell (CPython, when this page was built). The same steps,
+with the same explanations, are in the editable MoLab notebook.</p>
+<div class="controls">
+  <a class="btn primary" href="@@MOLAB_URL@@" target="_blank" rel="noopener">Open in MoLab</a>
+  <a class="btn" href="@@NB_NAME@@" download>Download the notebook (.py)</a>
+</div>
+<p>Shared helper (run before the steps): <code>report()</code> prints both answers and plots them over the sweep variable.</p>
+<details class="wt-code"><summary>Code</summary>@@SETUP_SRC@@</details>
+<!--STEPS-->
+<h2>2. Editable notebook</h2>
+<p class="caption">The MoLab notebook is editable; run all cells once after opening.</p>
+<div class="controls">
+  <a class="btn primary" href="@@MOLAB_URL@@" target="_blank" rel="noopener">Open in MoLab</a>
+  <a class="btn" href="@@NB_NAME@@" download>Download @@NB_NAME@@</a>
+</div>
+<p>The notebook is generated from the same source as the breakdown above (<code>python/make_molab.py</code>), with
+<code>cases.py</code> and its property tables embedded, so it runs on its own.</p>
+<h2>3. Self-test: Pyodide vs CPython</h2>
+<p>The App tab runs <code>cases.py</code> in your browser with Pyodide (CPython compiled to WebAssembly). This check
+runs every case at its default inputs, and its whole sweep, in Pyodide, and compares each value with the result
+CPython produced at build time. Tolerance: relative difference below 1e-10.</p>
+<div class="controls"><button class="btn primary" id="b-selftest">Run the self-test</button>
+  <span class="status" id="selftest-status"></span></div>
+<div id="selftest-out"></div>
+<h2>4. Source listings</h2>
+<h3>4.1 cases.py (reference implementation)</h3>
+@@CASES_SRC@@
+<h3>4.2 test_cases.py (independent checks)</h3>
+<p>Checks against CoolProp (IAPWS-95, propane, Span–Wagner CO2 and its own Peng–Robinson backend), the
+<code>iapws</code> package (IF97), Swamee–Jain, the ε-NTU method and hand calculations. Run by every build.</p>
+@@TEST_SRC@@
+<h3>4.3 make_props.py (property tables)</h3>
+@@PROPS_SRC@@

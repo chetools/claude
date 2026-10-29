@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Where an AI Gets Chemical Engineering Wrong</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+@@BASE_CSS@@
+/* --- additions for this page --- */
+.main{max-width:1240px}
+.intro{max-width:none}
+.m-sub{font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.metric .m-value.bad{color:#b35c00}.metric .m-value.good{color:#1a7f37}
+.controls{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;margin:.6rem 0 .9rem}
+.btn{display:inline-block;text-decoration:none;background:#fff;border:1px solid #d0d3d9;border-radius:.5rem;
+  padding:.45rem .9rem;font-size:.95rem;cursor:pointer;color:var(--text);font-family:inherit}
+.btn:hover{border-color:var(--st-red);color:var(--st-red)}
+.btn.primary{background:var(--st-red);border-color:var(--st-red);color:#fff}
+.btn.primary:hover{background:#e03c3c;color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.small{padding:.15rem .55rem;font-size:.8rem}
+.status{font-size:.88rem;color:var(--muted)}
+.pill{display:inline-block;font-size:.78rem;padding:.12rem .55rem;border-radius:1rem;
+  background:#eef0f4;color:var(--muted);vertical-align:middle;margin-left:.2rem}
+.pill.ready{background:#dcf5e3;color:#1a7f37}.pill.busy{background:#fff1d6;color:#8a5a00}
+.pill.fail{background:#fdecea;color:#8f2b22}
+table.data{border-collapse:collapse;font-size:.92rem;margin:.6rem 0}
+table.data th,table.data td{border-bottom:1px solid var(--card-border);padding:.35rem .7rem;text-align:right}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{font-weight:600;background:#fafbfc}
+td.pass{color:#1a7f37;font-weight:600}td.fail{color:#cf222e;font-weight:600}
+.theory table{border-collapse:collapse;font-size:.93rem;margin:.8rem 0}
+.theory th,.theory td{border-bottom:1px solid var(--card-border);padding:.3rem .6rem;text-align:left;vertical-align:top}
+.theory th{background:#fafbfc}
+.theory code{background:#f3f4f6;padding:.05rem .3rem;border-radius:.25rem;font-size:.9em}
+.theory h2,.theory h3{scroll-margin-top:.8rem}
+.prob-md h3{font-size:1.12rem;margin:1.3rem 0 .35rem}
+pre.prompt{background:#f7f9fc;border:1px solid #d9e2f1;border-left:3px solid #4a7bd0;border-radius:.4rem;
+  padding:2.1rem 1rem .7rem;white-space:pre-wrap;font-size:.86rem;line-height:1.45;margin:.5rem 0 1rem;position:relative}
+pre.prompt .copy{position:absolute;top:.35rem;right:.35rem}
+.theory pre.prompt code{padding:0;background:none;font-size:1em}
+.theory-layout{display:grid;grid-template-columns:15.5rem minmax(0,78ch);gap:2rem;align-items:start}
+.theory-layout.wide{grid-template-columns:15.5rem minmax(0,1fr)}
+.toc-box{position:sticky;top:.8rem;max-height:calc(100vh - 1.6rem);overflow-y:auto;font-size:.86rem;
+  border-right:1px solid var(--card-border);padding-right:.6rem}
+.toc-box summary{cursor:pointer;font-weight:600;font-size:.95rem;margin-bottom:.3rem}
+.toc a{display:block;color:var(--muted);text-decoration:none;padding:.12rem .4rem;line-height:1.3;
+  border-left:2px solid transparent}
+.toc a.toc2{margin-top:.45rem;font-weight:600;color:var(--text)}
+.toc a.toc3{padding-left:1.1rem}
+.toc a:hover{color:var(--st-red)}
+.toc a.active{color:var(--st-red);border-left-color:var(--st-red);background:#fff5f5}
+.code-body h2,.code-body h3{scroll-margin-top:.8rem}
+.wt-out pre{background:#fff;border:1px dashed #d0d3d9;border-radius:.5rem;padding:.7rem 1rem;
+  margin:.4rem 0;font-size:.84rem;overflow-x:auto;white-space:pre}
+.wt-step{margin:1.6rem 0 2rem}
+.wt-stepnum{font-size:.82rem;font-weight:600;color:var(--st-red);text-transform:uppercase;letter-spacing:.04em}
+.wt-title{font-size:1.2rem;font-weight:600;margin:.1rem 0 .3rem}
+.wt-prose{max-width:78ch}
+.wt-prose .eq{text-align:center;margin:.8rem 0;overflow-x:auto}
+.wt-code summary{cursor:pointer;color:var(--muted);font-size:.88rem}
+.wt-plot{min-width:0;max-width:820px}
+.details-list{font-size:.92rem;margin:.3rem 0 0;padding-left:1.2rem}
+.case-head{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+.case-head h2{margin:.4rem 0 .2rem}
+#chart{min-height:360px}
+@media (max-width: 900px){
+  .sidebar{position:static;width:auto}
+  .main{margin-left:0;padding:1rem 16px 3rem}
+  .tabs{flex-wrap:wrap}
+  .wt-plot,table.data{max-width:100%;overflow-x:auto}
+  .theory-layout,.theory-layout.wide{grid-template-columns:minmax(0,1fr)}
+  .toc-box{position:static;max-height:50vh;border-right:none;border-bottom:1px solid var(--card-border);padding:0 0 .5rem}
+  .theory table,.prob-md table{display:block;max-width:100%;overflow-x:auto}
+  h1{font-size:1.8rem}
+}
+@@PYGMENTS_CSS@@
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="field"><label for="in-case">Problem</label>
+    <select id="in-case">
+@@CASE_OPTIONS@@
+    </select></div>
+  <div class="side-h">Inputs</div>
+  <div id="inputs"></div>
+  <div class="controls"><button class="btn" id="b-reset">Reset to defaults</button></div>
+  <div class="side-cap">Each change re-runs <code>cases.py</code> in your browser (Python via Pyodide / WebAssembly).</div>
+  <div class="side-foot">Python engine <span id="py-pill" class="pill">loading</span><br>
+    Property tables computed with CoolProp at build time. Teaching material, not a design tool.</div>
+</aside>
+<main class="main">
+  <div id="fatal" class="err" hidden></div>
+  <h1>Where an AI gets chemical engineering wrong</h1>
+  <p class="intro">Ten problems where I (Claude) have a real chance of giving a confident but wrong answer, and where an
+  engineer with years of plant experience would spot the mistake. Each one shows the answer I am likely to give
+  without guidance, the corrected answer, where my uncertainty sits, my own estimate of how likely I am to get it
+  wrong, and a prompt that makes the mistake less likely. The calculations run live in your browser.</p>
+  <div class="tabs" role="tablist">
+    <button class="active" data-tab="app">App</button>
+    <button data-tab="prompts">Prompting guide</button>
+    <button data-tab="code">Code</button>
+  </div>
+
+  <!-- ============================== APP ============================== -->
+  <section id="panel-app" class="tpanel">
+    <div class="case-head"><h2 id="case-title"></h2><span class="pill" id="res-src">build-time result</span></div>
+    <div class="metrics">
+      <div class="metric"><div class="m-label">Naive answer</div><div class="m-value bad" id="m-naive">–</div>
+        <div class="m-sub" id="m-naive-sub"></div></div>
+      <div class="metric"><div class="m-label">Corrected answer</div><div class="m-value good" id="m-correct">–</div>
+        <div class="m-sub" id="m-correct-sub"></div></div>
+      <div class="metric"><div class="m-label">Naive vs corrected</div><div class="m-value" id="m-diff">–</div>
+        <div class="m-sub">(naive − corrected) / corrected</div></div>
+    </div>
+    <ul class="details-list" id="details"></ul>
+    <div id="chart"></div>
+    <p class="caption" id="chart-cap"></p>
+    <div class="note">The percentages under “Self-estimated uncertainty” are my own subjective estimates of how often I
+      would get this wrong. They are not measured error rates. The numbers in the cards above are computed.</div>
+    <div class="theory">
+@@PROBLEMS@@
+    </div>
+  </section>
+
+  <!-- ============================== PROMPTS ============================== -->
+  <section id="panel-prompts" class="tpanel" hidden>
+    <div class="theory-layout">
+      <details class="toc-box" id="toc-box" open>
+        <summary>Contents</summary>
+        <nav class="toc" id="toc" aria-label="Prompting guide contents">@@PROMPTS_TOC@@</nav>
+      </details>
+      <div class="theory">@@PROMPTS@@</div>
+    </div>
+  </section>
+
+  <!-- ============================== CODE ============================== -->
+  <section id="panel-code" class="tpanel" hidden>
+    <div class="theory-layout wide">
+      <details class="toc-box" id="toc-box-code" open>
+        <summary>Contents</summary>
+        <nav class="toc" id="toc-code" aria-label="Code contents"><!--CODE_TOC--></nav>
+      </details>
+      <div class="code-body theory" style="max-width:none"><!--CODE_BODY--></div>
+    </div>
+  </section>
+</main>
+
+<script>@@PLOTLY@@</script>
+<script>
+window.META = @@META@@;
+window.REF = @@REF@@;
+window.WT_PLOTS = @@WT_PLOTS@@;
+window.PY_FILES = @@PY_FILES@@;
+</script>
+<script>@@APP_JS@@</script>
+<script>
+/* Tables of contents: open on wide screens, closed on phones; highlight the section being read. */
+function tocSpy(boxId, navId, panelId) {
+  var box = document.getElementById(boxId), links = [].slice.call(document.querySelectorAll('#' + navId + ' a'));
+  if (!box || !links.length) return;
+  box.open = window.matchMedia('(min-width: 901px)').matches;
+  var heads = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+  var cur = -1;
+  function spy() {
+    if (document.getElementById(panelId).hidden) return;
+    var k = 0;
+    for (var i = 0; i < heads.length; i++) { if (heads[i].getBoundingClientRect().top <= 80) k = i; else break; }
+    if (k === cur) return;
+    if (cur >= 0) links[cur].classList.remove('active');
+    links[k].classList.add('active'); cur = k;
+    var r = links[k].getBoundingClientRect(), b = box.getBoundingClientRect();
+    if (box.open && (r.top < b.top || r.bottom > b.bottom)) box.scrollTop += r.top - b.top - b.height / 3;
+  }
+  window.addEventListener('scroll', spy, { passive: true });
+  document.querySelector('.tabs').addEventListener('click', function () { setTimeout(spy, 0); });
+  spy();
+}
+tocSpy('toc-box', 'toc', 'panel-prompts');
+tocSpy('toc-box-code', 'toc-code', 'panel-code');
+</script>
+</body>
+</html>

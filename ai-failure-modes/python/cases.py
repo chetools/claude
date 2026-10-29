@@ -80,7 +80,7 @@ def propane_sat(P_bar):
 
 
 # ---------------------------------------------------------------- 1. gauge vs absolute pressure
-def compressor(P1_psig=5.0, P2_psig=100.0, T1_C=27.0, k=1.4, Patm_psia=14.696):
+def compressor(P1_psig=5.0, P2_psig=100.0, T1_C=27.0, k=1.4, Patm_psia=14.696, eta=0.75):
     """Isentropic discharge temperature [deg C] of an ideal-gas compressor.
     Naive: pressure ratio from gauge pressures.  Corrected: ratio of absolute pressures."""
     T1 = T1_C + 273.15
@@ -90,7 +90,9 @@ def compressor(P1_psig=5.0, P2_psig=100.0, T1_C=27.0, k=1.4, Patm_psia=14.696):
     return {"naive": T1 * r_naive ** e - 273.15, "correct": T1 * r_abs ** e - 273.15, "unit": "°C",
             "details": [f"ratio from gauge pressures = {r_naive:.2f}",
                         f"ratio from absolute pressures = {r_abs:.2f}",
-                        f"isentropic exponent (k-1)/k = {e:.4f}"]}
+                        f"isentropic exponent (k-1)/k = {e:.4f}",
+                        f"actual discharge with isentropic efficiency {eta:g}: "
+                        f"{T1 + (T1 * r_abs ** e - T1) / eta - 273.15:.0f} °C"]}
 
 
 # ---------------------------------------------------------------- 2. pipe pressure drop
@@ -119,7 +121,8 @@ def pipe_dp(Q_m3h=50.0, D_mm=102.3, L_m=100.0, rough_mm=0.046, K_fittings=8.0, r
     dp_fit = K_fittings * head / 1e3
     return {"naive": dp_pipe, "correct": dp_pipe + dp_fit, "unit": "kPa",
             "details": [f"velocity = {u:.2f} m/s, Re = {Re:.3g}",
-                        f"Darcy f = {f:.5f} (Fanning f = {f / 4:.5f})",
+                        f"Darcy f = {f:.5f} (Fanning f = {f / 4:.5f})"
+                        + (" -- transitional flow, Colebrook is uncertain here" if 2300 <= Re < 4000 else ""),
                         f"if a Fanning f is put into the Darcy formula: {dp_pipe / 4:.1f} kPa (4x low)",
                         f"fittings add {dp_fit:.1f} kPa = {K_fittings * D / f:.0f} m of equivalent pipe"]}
 
@@ -141,10 +144,11 @@ def npsh(T_C=90.0, P_surf_kPa=101.325, z_m=2.0, hf_m=0.5):
 
 
 # ---------------------------------------------------------------- 4. control valve: choked / flashing liquid
-def valve(Q_m3h=50.0, P1_bar=6.0, P2_bar=1.5, T_C=130.0, FL=0.9):
+def valve(Q_m3h=50.0, P1_bar=6.0, P2_bar=1.5, T_C=130.0, FL=0.9, xFz=0.4):
     """Required Kv [m3/h at 1 bar] of a liquid control valve (IEC 60534-2-1, SI form).
     Naive: Kv = Q sqrt(SG/dP) with the full pressure drop.  Corrected: dP limited to the choked value
-    FL^2 (P1 - FF Pv), FF = 0.96 - 0.28 sqrt(Pv/Pc)."""
+    FL^2 (P1 - FF Pv), FF = 0.96 - 0.28 sqrt(Pv/Pc).
+    Incipient cavitation is flagged when dP > xFz (P1 - Pv)."""
     T = T_C + 273.15
     Pv = water_psat_kpa(T) / 100.0  # bar
     Pc = 220.64                      # bar, water critical pressure
@@ -156,7 +160,9 @@ def valve(Q_m3h=50.0, P1_bar=6.0, P2_bar=1.5, T_C=130.0, FL=0.9):
     kv_naive = Q_m3h * math.sqrt(SG / dP)
     kv = Q_m3h * math.sqrt(SG / min(dP, dP_ch))
     state = "flashing (P2 below vapour pressure)" if P2_bar < Pv else (
-        "choked, cavitating" if dP >= dP_ch else "not choked")
+        "choked, cavitating" if dP >= dP_ch else
+        "not choked, but cavitation likely (dP > xFz (P1 - Pv))" if dP > xFz * (P1_bar - Pv) else
+        "not choked, no cavitation expected")
     return {"naive": kv_naive, "correct": kv, "unit": "Kv",
             "details": [f"vapour pressure = {Pv:.3f} bar, FF = {FF:.3f}, SG = {SG:.3f}",
                         f"actual dP = {dP:.2f} bar, choked dP = {dP_ch:.2f} bar",
@@ -194,7 +200,7 @@ def bubble(x1, P_kpa, ideal):
     return T, x1 * g1 * ethanol_psat_kpa(T) / P_kpa
 
 
-def vle(x1=0.85, P_kPa=101.325):
+def vle(x1=0.95, P_kPa=101.325):
     """Vapour composition y1 [mol % ethanol] in equilibrium with liquid x1 at P.
     Naive: Raoult's law (ideal solution).  Corrected: van Laar activity coefficients."""
     Tn, yn = bubble(x1, P_kPa, True)
@@ -256,7 +262,7 @@ def cubic_real_roots(a, b, c):
     return [r * math.cos((phi - 2 * math.pi * k) / 3) - a / 3 for k in range(3)]
 
 
-def co2_density(P_bar=80.0, T_C=37.0):
+def co2_density(P_bar=100.0, T_C=37.0):
     """CO2 density [kg/m3].  Naive: ideal gas.  Corrected: Peng-Robinson
     (itself a few % off near the critical point; see the reference table)."""
     T = T_C + 273.15
@@ -346,7 +352,7 @@ def relief_fire(A_wet_ft2=500.0, F_env=1.0, C_fire=21000.0, set_psig=250.0, over
                         f"heat input = {Q / 1e6:.3f} MMBtu/h",
                         f"latent heat: at 1 atm {nbp['lam']:.0f} kJ/kg, at relief {sat['lam']:.0f} kJ/kg",
                         f"relief rate: naive {W_n:.0f} lb/h, corrected {W_c:.0f} lb/h; Z = {sat['Z']:.3f}, k = {k:.3f}",
-                        "near the critical point (42.5 bar): latent heat goes to zero, use a supercritical method"
+                        "near the critical point (42.5 bar): latent heat goes to zero; use API 520 Annex B (direct integration)"
                         if P1_bar > 35 else ""]}
 
 
@@ -370,7 +376,8 @@ def scaleup(V_plant_m3=10.0, V_lab_L=1.0, HD=1.0, q_kJ_L=300.0, U=400.0, dT_K=30
                         f"plant vessel D = {D_pl:.2f} m; lab shortest dosing time = {t_lab:.2f} min",
                         f"with the lab dosing time the plant heat release is {t_pl / t_lab_min:.1f}x the jacket duty"
                         if t_pl > t_lab_min else "lab dosing time is within the plant jacket duty",
-                        f"adiabatic temperature rise of the full charge = {q_kJ_L / rho_cp_kJ_LK:.0f} K"]}
+                        f"adiabatic temperature rise of the full charge = {q_kJ_L / rho_cp_kJ_LK:.0f} K",
+                        "uses the full-batch area: early in the feed the wetted area is smaller, so this time is optimistic"]}
 
 
 # ---------------------------------------------------------------- 10. flash steam in condensate return
@@ -384,7 +391,7 @@ def flash_steam(P1_barg=10.0, P2_barg=0.0, m_kg_h=1000.0, Patm_bar=1.01325):
     x = (s1["h_l"] - s2["h_l"]) / (s2["h_v"] - s2["h_l"])
     V_liq = m_kg_h / s1["rho_l"]
     V_mix = m_kg_h * (x / s2["rho_v"] + (1 - x) / s2["rho_l"])
-    T1g = water_tsat(P1_barg * 100) if P1_barg > 0.62 else float("nan")
+    T1g = water_tsat(P1_barg * 100) if P1_barg * 100 > 0.7 else float("nan")
     return {"naive": V_liq, "correct": V_mix, "unit": "m³/h",
             "details": [f"saturation T: {T1 - 273.15:.1f} °C at {P1_barg:g} barg, {T2 - 273.15:.1f} °C at {P2_barg:g} barg",
                         f"flash fraction = {100 * x:.1f} % by mass, {100 * x / s2['rho_v'] / (V_mix / m_kg_h):.1f} % by volume",
@@ -397,7 +404,8 @@ CASES = [
     {"id": "compressor", "fn": compressor, "title": "Gauge vs absolute pressure in a compression ratio",
      "quantity": "Isentropic discharge temperature", "naive": "Ratio of gauge pressures", "correct": "Ratio of absolute pressures",
      "inputs": [("P1_psig", "Suction pressure [psig]", 1), ("P2_psig", "Discharge pressure [psig]", 5),
-                ("T1_C", "Suction temperature [°C]", 1), ("k", "cp/cv k [-]", 0.01), ("Patm_psia", "Atmospheric pressure [psia]", 0.1)],
+                ("T1_C", "Suction temperature [°C]", 1), ("k", "cp/cv k [-]", 0.01), ("Patm_psia", "Atmospheric pressure [psia]", 0.1),
+                ("eta", "Isentropic efficiency (detail only) [-]", 0.05)],
      "sweep": ("P1_psig", 1.0, 40.0)},
     {"id": "pipe", "fn": pipe_dp, "title": "Pipe pressure drop: friction factor and fittings",
      "quantity": "Frictional pressure drop", "naive": "Straight pipe only", "correct": "Pipe + fittings and valves",
@@ -413,7 +421,8 @@ CASES = [
     {"id": "valve", "fn": valve, "title": "Control valve on a hot liquid: choked and flashing flow",
      "quantity": "Required Kv", "naive": "Full pressure drop", "correct": "Choked pressure drop (IEC 60534)",
      "inputs": [("Q_m3h", "Flow [m³/h]", 5), ("P1_bar", "Inlet pressure [bar abs]", 0.1), ("P2_bar", "Outlet pressure [bar abs]", 0.1),
-                ("T_C", "Water temperature [°C]", 1), ("FL", "Liquid recovery factor FL [-]", 0.05)],
+                ("T_C", "Water temperature [°C]", 1), ("FL", "Liquid recovery factor FL [-]", 0.05),
+                ("xFz", "Incipient cavitation factor xFz [-]", 0.05)],
      "sweep": ("P2_bar", 0.2, 5.5)},
     {"id": "vle", "fn": vle, "title": "Non-ideal VLE: ethanol-water near the azeotrope",
      "quantity": "Vapour ethanol content y", "naive": "Raoult's law", "correct": "van Laar activity coefficients",
