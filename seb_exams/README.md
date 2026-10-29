@@ -1,143 +1,116 @@
-# seb_exams: Safe Exam Browser exams on GitHub Pages with a Cloudflare database
+# seb_exams: Safe Exam Browser exams with a teacher app and a Cloudflare database
 
-- Student page: `https://chetools.github.io/claude/seb_exams/<exam-id>/`. It opens only in Safe Exam Browser (SEB).
-- Teacher results: `https://chetools.github.io/claude/seb_exams/results/`. Needs the teacher password.
-- API: Cloudflare Worker `seb-exams` (`https://seb-exams.carloscomail.workers.dev`) with the D1 database `seb-exams`.
+- **Teacher app:** <https://seb-exams.carloscomail.workers.dev/>. Teachers sign in with an emailed link; there are no passwords.
+- **Student page:** `https://chetools.github.io/claude/seb_exams/exam/?id=<exam-id>`. Students open it through the
+  exam's `sebs://` link, which starts Safe Exam Browser (SEB).
+
+## Where things are stored
+
+Questions, answers, images and results exist only in the Cloudflare D1 database `seb-exams`. Only signed-in
+teachers of an exam can see them: its owner, the co-teachers the owner adds, and admins.
+
+The repository and GitHub Pages hold code only. The student page receives the questions only after:
+- the SEB check passes;
+- the exam is open (between its opening and closing times).
+
+The `examples/` exam is deliberately public; it shows teachers and AI tools the format.
+
+## Making an exam
+
+1. In the teacher app, open **Write an exam with AI** and press **Copy prompt**.
+2. Paste the prompt into ChatGPT, Claude or another AI tool, together with a description of the exam you want.
+3. The AI tool writes `exam.yaml` and SVG figures, checks them with the script included in the prompt, and gives
+   you a zip file.
+4. **Import zip** in the teacher app. Any errors are listed with a **Copy errors** button; paste them back to the
+   AI tool to get a fixed zip.
+5. Read the exam with its answers on the **Questions** tab, and change it on the **Edit** tab if needed. Changing
+   an answer key re-grades the submissions already received.
+6. **Settings:** set opening and closing times (or press **Open now**). Then give students the `sebs://` link or
+   the `.seb` file.
+7. **Results:** automatic marks for multiple-choice and fill-in-the-blank questions, a points box and comment for
+   each open answer, and a CSV download.
+
+The format and rules are in `docs/AI_EXAM_GUIDE.md`. In short:
+- Fill-in-the-blank answers are typed one character per box. The exam decides which letters, if any, are shown
+  as clues. Accepted spelling variants must fit the same boxes.
+- A fill-in-the-blank question gives full points or zero.
+- Open questions ask for explanations in words only.
+
+## Layout
 
 ```
-exams/<id>/exam.yaml     questions + answer key (public example exams)
-exams/<id>/figures.py    optional; draws figures into the directory given as argv[1]
-private/<id>/exam.yaml   real exams: gitignored, so their answers never reach the public repo
-build.py                 exam.yaml -> dist/<id>/{index.html, done.html, <id>.seb, key.json}
-deploy.py                schema + answer keys -> D1, Worker code -> Cloudflare
-worker/                  the API (submit, SEB check, grading, results)
-web/                     page templates, exam.js, results.js, style.css
-tests/                   test_mccabe.py (numbers in the example), e2e.cjs (browser + Worker + D1)
+worker/src/          the Worker: sign-in (auth.js), teacher API (teacher.js), student API (student.js), SEB (seb.js)
+worker/public/       teacher app (bundled into the Worker by tools/bundle_public.mjs)
+worker/public/shared/validate.js   exam validation and grading, used by the Worker and the browser
+worker/schema.sql    database schema
+student/             the student exam page (published to gh-pages:seb_exams/exam/)
+apps-script/Code.gs  sends the sign-in emails from the admin's Gmail
+docs/                SETUP.md (email sender setup), AI_EXAM_GUIDE.md
+examples/            public example exam and its zip
+python/mccabe.py     McCabe–Thiele stepping used to draw and check the example figure
+private/             gitignored: real exams with answers
+tests/               test_validate.mjs, api_smoke.sh, e2e_v2.cjs, ui_mock.cjs, student_mock.cjs, test_mccabe.py
+SPEC.md              the full specification
 ```
 
-## How it works
+## Deploying
 
-1. The student opens the `sebs://…/<id>.seb` link (or the downloaded `.seb` file). SEB starts locked down on the exam page.
-2. The student enters their name and ID. The page asks the Worker (`/check`) whether this SEB configuration is
-   accepted before the timer starts.
-3. Answers are autosaved in the browser every few seconds. After a reload or an SEB restart the exam resumes with
-   the same timer.
-4. On Submit, or automatically when the time is up, the page sends everything to `/submit`. The Worker then:
-   - checks the SEB Config Key again;
-   - refuses a second submission for the same student ID (IDs are compared in upper case);
-   - grades the multiple-choice and fill-in-the-blank questions against the key held in D1;
-   - stores the submission.
-5. The student sees only "Submitted ✓" and a receipt code, then the "Finish and quit" link (SEB's `quitURL`).
-6. The teacher signs in on the results page. It shows one row per student (automatic score, every answer, open
-   answers in full) and has a CSV download.
-
-The public page contains no answers; `build.py` fails if any answer text or answer field would reach it.
-
-Fill-in-the-blank grading ignores case, spacing and punctuation, but not spelling. List every accepted form,
-for example `[vaporization, vaporisation]`. The hint shows the second letter of the word, so all accepted answers
-must share that letter (the build checks this).
-
-## Writing a new exam
-
-Copy `exams/mccabe-thiele/exam.yaml` to `private/<new-id>/exam.yaml`; the directory name is the exam id. Then:
-
-- **Questions.** Use `type: mc` (exactly one option `correct: true`), `type: fill` (one `[blank]` in the text,
-  `answers: [...]`) or `type: open` (with an optional `model_answer`, shown only to the teacher). Each question
-  needs `points`.
-- **Text.** Write Markdown, with `$…$` and `$$…$$` for maths. Inside YAML double quotes, write `\\` for one backslash.
-- **Order.** Questions are shuffled per student within each section (multiple choice, fill in the blank, open).
-  Options are shuffled too, unless the question sets `shuffle: false`.
-- **Exam settings.** `duration_minutes`, `require_seb`, `seb.quit_password_sha256`, `seb.extra_config_keys`.
+The node tools (wrangler) go in `.buildtools/`; the Worker's own dependencies are installed with `npm install` in
+`worker/`.
 
 ```bash
-python build.py private/<new-id>
+node tools/bundle_public.mjs
 ```
+
+Then run this in `worker/`:
 
 ```bash
-python deploy.py --keys
+npx wrangler deploy
 ```
 
-Then publish `dist/<new-id>/` (without `key.json`) to `gh-pages:seb_exams/<new-id>/`.
-Run `python build.py` (all exams) before publishing, so `dist/index.html` lists the new exam.
-
-`deploy.py` needs `npm i katex wrangler` in `.buildtools/` and Cloudflare credentials in the environment
-(`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`).
-
-## Safe Exam Browser settings
-
-`build.py` writes an unencrypted `.seb` with these settings:
-- start page: the exam;
-- URL filter: only pages under the exam's URL;
-- quit password: the proctor's, stored as a SHA-256 hash (`seb.quit_password_sha256`);
-- quit link: `done.html`;
-- `browserWindowWebView = 3`, "Prefer Modern", so the SEB JavaScript API is available;
-- Config Key also sent in headers, for older SEB versions.
-
-The build computes the file's **Config Key** with the published algorithm
-(<https://safeexambrowser.org/developer/seb-config-key.html>) and stores it in D1.
-
-How the Worker checks a submission:
-- It accepts a submission only if `SHA256(page URL + Config Key)` matches either:
-  - the value SEB exposes to the page (`SafeExamBrowser.security.configKey`), or
-  - SEB's `X-SafeExamBrowser-ConfigKeyHash` header.
-- This needs SEB 3.3.2+ on Windows, or 3.0+ on macOS/iOS, for the JavaScript API (per the SEB page above).
-
-To change the quit password:
+To apply the database schema, also in `worker/` (it drops and recreates the tables):
 
 ```bash
-python -c "import hashlib,getpass;print(hashlib.sha256(getpass.getpass().encode()).hexdigest())"
+npx wrangler d1 execute seb-exams --remote --file schema.sql
 ```
 
-Put the output in `seb.quit_password_sha256`, then rebuild, redeploy the keys and republish. The Config Key changes with it.
+Run that only for a new database.
 
-**Using an encrypted `.seb` made with the SEB Config Tool:**
-1. Copy its Config Key (Exam pane) into `seb.extra_config_keys`.
-2. Rebuild and run `python deploy.py --keys`.
-3. Give students that file instead.
+To publish the student page, copy `student/index.html` and `student/done.html` to `gh-pages:seb_exams/exam/`.
 
-**What this protects and what it does not.**
-- The check stops students from submitting from an ordinary browser by accident or casually.
-- The Config Key is a hash of the settings. Anyone holding the **unencrypted** `.seb` file can compute it and forge
-  the check from an ordinary browser with some effort.
-- For real exams, use an encrypted `.seb` from the SEB Config Tool (see above) and do not publish the plain file.
-- None of this replaces a proctor.
-
-## Passwords
-
-- **Teacher password:** a Worker secret. To change it, run this in `worker/`:
-
-  ```bash
-  npx wrangler secret put TEACHER_PASSWORD
-  ```
-
-- **Proctor quit password:** only its hash is in `exam.yaml`. It was handed over in the chat, not stored in the repository.
-
-## Cloudflare free plan
-
-Quoted from the Cloudflare docs on 2026-10-29:
-- Workers Free: "100,000 requests/day", "CPU time 10 ms" per request.
-- D1 Free: "Rows written: 100,000 / day", "Rows read: 5 million / day", "Maximum database size: 500 MB".
-
-One exam submission is one Worker request and one row written. Two requests per student (check + submit) is far
-below these limits for any class.
+Worker secrets are `MAIL_URL` and `MAIL_SECRET` (see `docs/SETUP.md`). `ADMIN_EMAIL` is only needed for an empty
+database.
 
 ## Tests
 
 ```bash
-python -m pytest -q tests
+node --test tests/test_validate.mjs
 ```
-
-The end-to-end test runs against a local Worker; setup steps are in the header of `tests/e2e.cjs`:
 
 ```bash
-node tests/e2e.cjs
+bash tests/api_smoke.sh
 ```
 
-It covers:
-- the page outside SEB;
-- a wrong SEB configuration;
-- a full exam with a reload;
-- a duplicate student ID;
-- the automatic submission at time-out;
-- results and CSV;
-- layout at 390 px and 2560 px.
+```bash
+node tests/e2e_v2.cjs
+```
+
+`e2e_v2.cjs` runs the whole system locally in a browser, with SEB simulated through its JavaScript API. Pass an
+exam zip as the second argument to test with that exam instead of the example.
+
+## Limits of the protection
+
+- **The Config Key can be forged.** The SEB check compares the Config Key of the exam's generated `.seb` file. Anyone
+  holding that unencrypted file can compute the key and send it from an ordinary browser, with some effort.
+- **An encrypted `.seb` is stronger.** Make one with the SEB Config Tool, paste its Config Key into the exam's
+  Settings, and give students that file instead.
+- **None of this replaces a proctor.**
+- **The answer keys of the old v1 example** (McCabe–Thiele) are still in the git history from before v2.
+
+## Cloudflare free plan
+
+Quoted from the Cloudflare docs on 2026-10-29:
+- Workers Free: "100,000 requests/day".
+- D1 Free: "Rows written: 100,000 / day", "Maximum database size: 500 MB".
+
+A class sitting an exam uses a few requests and rows per student.

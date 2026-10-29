@@ -11,6 +11,7 @@ TMP="$(mktemp -d)"
 FAILS=0
 export NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt
 
+node "$ROOT/tools/bundle_public.mjs" >/dev/null || exit 1
 printf 'ADMIN_EMAIL=admin@example.com\nMAIL_SECRET=x\nDEV=1\nAPP_ORIGIN=%s\n' "$B" > "$W/.dev.vars"
 cd "$W"
 rm -rf .wrangler/state/v3/d1

@@ -39,16 +39,22 @@ If you change the code later: **Deploy** > **Manage deployments** > pencil icon 
 
 ## 4. Give the secrets to the Worker
 
-In a terminal, in the `seb_exams/worker` folder, run each command and paste the value when asked:
+In the Cloudflare dashboard (<https://dash.cloudflare.com>): **Workers & Pages** > **seb-exams** > **Settings** >
+**Variables and Secrets** > **Add**. Add two entries, each with **Type: Secret**:
 
-```
-npx wrangler secret put MAIL_URL       # the /exec URL from step 3
-npx wrangler secret put MAIL_SECRET    # the same secret as in step 2
-npx wrangler secret put ADMIN_EMAIL    # the address of the first administrator (can be the same Gmail)
-```
+| Variable name | Value |
+|---|---|
+| `MAIL_URL` | the `/exec` URL from step 3 |
+| `MAIL_SECRET` | the same secret you stored in the Apps Script in step 2 |
 
-(You must be logged in to Cloudflare: `npx wrangler login`.) Secrets take effect immediately; no redeploy is needed
-unless wrangler says so.
+Click **Deploy** (or **Save**) to apply them. The menu names are as of 2026; if they have moved, search the
+Cloudflare docs for "Workers secrets dashboard".
+
+`ADMIN_EMAIL` is only needed for an empty database (it makes that address the first administrator on first use).
+The live database already has its first administrator, so you can skip it.
+
+Developers can set the same secrets from a terminal in `seb_exams/worker` instead:
+`npx wrangler secret put MAIL_URL` and `npx wrangler secret put MAIL_SECRET`.
 
 ## 5. Test
 

@@ -9,11 +9,7 @@ ALLOWED_ORIGINS = "https://chetools.github.io,http://localhost:8765"
 APP_ORIGIN = "https://seb-exams.carloscomail.workers.dev"
 # Secrets (wrangler secret put): MAIL_URL, MAIL_SECRET, ADMIN_EMAIL. Local dev: worker/.dev.vars (DEV = "1").
 
-# Teacher app. Only these paths run code; everything else is served from ./public.
-[assets]
-directory = "./public"
-binding = "ASSETS"
-run_worker_first = ["/auth/*", "/api/*", "/s/*", "/exam.seb"]
+# The teacher app (./public) is bundled into the code by tools/bundle_public.mjs (see src/static.js).
 
 [[d1_databases]]
 binding = "DB"

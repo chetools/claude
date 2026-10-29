@@ -35,7 +35,7 @@ label.field input, label.field textarea { display: block; width: 100%; margin-to
 .field > label { display: block; margin-bottom: 4px; }
 input.num { width: 6em; }
 .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; } .row.between { justify-content: space-between; } .row.tight { gap: 6px; } .row.top { align-items: flex-start; }
-.grid2 > * { flex: 1 1 14rem; } .grow { flex: 1; }
+.grow { flex: 1; } .grid2 > * { flex: 1 1 14rem; }
 .inl { font-weight: 400; } .check { display: block; margin-bottom: 12px; }
 .msg { border-radius: 8px; padding: 12px 14px; margin: 0 0 14px; overflow-wrap: anywhere; }
 .msg.err { background: #fdecea; color: var(--bad); } .msg.warn { background: var(--warn-bg); } .msg.ok { background: var(--okbg); color: var(--ok); }

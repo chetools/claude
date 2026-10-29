@@ -53,39 +53,3 @@ def test_total_reflux_matches_fenske():
     nmin = math.log(xD / (1 - xD) * (1 - xB) / xB) / math.log(a)
     _, n, _ = m.step_off(a, 0.5, xD, xB, 1.0, 1e9)
     assert n == math.ceil(nmin), (n, nmin)
-
-
-def test_exam_column():
-    """The diagram question: alpha=3, zF=0.5 (q=1), xD=0.9, xB=0.1, R=2*Rmin -> 7 stages, feed stage 3."""
-    a, z, xD, xB = 3.0, 0.5, 0.9, 0.1
-    R = 2 * m.r_min(a, z, xD, 1.0)
-    pts, n, feed = m.step_off(a, z, xD, xB, 1.0, R)
-    assert (n, feed) == (7, 3)
-    xs = [p[0] for p in pts[1::2]]  # liquid leaving each stage
-    assert xs[-2] > xB + 0.04 and xs[-1] < xB - 0.03  # last step clearly crosses xB
-    assert xs[1] > 0.5 > xs[2]  # stage 3 straddles xi = 0.5
-    # second, independent count: Smoker on each section, the feed stage switches lines
-    s1 = m.smoker_stages(a, R / (R + 1), xD / (R + 1), xD, xs[2])
-    assert abs(s1 - 3) < 1e-9
-    assert np.all(np.diff(xs) < 0)
-
-
-def _stages_with_feed_on(fs, a=3.0, xD=0.9, xB=0.1, R=1.2):
-    """Stages needed when the switch to the stripping line is forced after stage fs-1 (None if infeasible)."""
-    xi, yi = m.intersection(R, 0.5, xD, 1.0)
-    y, n = xD, 0
-    while True:
-        x = m.x_eq(y, a)
-        n += 1
-        if x <= xB:
-            return n
-        y = R / (R + 1) * x + xD / (R + 1) if n < fs else xB + (yi - xB) / (xi - xB) * (x - xB)
-        if y > m.y_eq(x, a) + 1e-12:
-            return None
-
-
-def test_exam_distractors_are_wrong():
-    """Option 'feed on stage 5' needs 8 stages and 'feed on stage 2' is infeasible, so neither gives 7."""
-    assert _stages_with_feed_on(3) == 7
-    assert _stages_with_feed_on(5) == 8
-    assert _stages_with_feed_on(2) is None

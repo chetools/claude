@@ -8,3 +8,5 @@ dist/*/key.json
 .cf_account
 __pycache__/
 worker/node_modules/
+worker/src/public_files.js
+worker/public/docs/

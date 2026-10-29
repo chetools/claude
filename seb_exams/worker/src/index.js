@@ -1,9 +1,10 @@
 // seb_exams Worker: teacher sign-in (/auth/*), teacher API (/api/*), student API (/s/*); every other path
-// is the teacher app, served from ./public through the ASSETS binding.
+// is the teacher app, bundled from ./public into the Worker (see static.js).
 import { handleAuth } from "./auth.js";
 import { handleApi } from "./teacher.js";
 import { handleS } from "./student.js";
 import { json } from "./util.js";
+import { serveStatic } from "./static.js";
 
 export default {
   async fetch(req, env, ctx) {
@@ -17,6 +18,6 @@ export default {
       console.error(e);
       return json({ error: "Server error." }, 500);
     }
-    return env.ASSETS.fetch(req);
+    return serveStatic(req, url);
   },
 };
