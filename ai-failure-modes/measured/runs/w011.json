@@ -1,0 +1,13 @@
+{
+ "answer": "From the Antoine equation, water's vapour pressure at 180 °C is about **9.97 bar (0.997 MPa, 7,480 mmHg)**. The IAPWS-IF97 steam tables give 10.03 bar, so this is about 0.5% low. I ran all three calculations below in Python.\n\n**Constants used:** the standard high-temperature set for water, valid from 99 to 374 °C. Pressure P is in mmHg and temperature T in °C.\n\nlog10 P = A − B / (C + T), with A = 8.14019, B = 1810.94, C = 244.485\n\n- P = 10^(8.14019 − 1810.94 / 424.485) ≈ 7,480 mmHg ≈ 9.97 bar\n\n**Which constants you use matters:**\n\n| Method | Pressure at 180 °C | Compared with steam tables |\n|---|---|---|\n| Antoine, high-temperature set (99–374 °C) | 9.97 bar | −0.5% |\n| Antoine, NIST Bridgeman–Aldrich set (A = 3.55959, B = 643.748, C = −198.043; P in bar, T in K; valid 379–573 K) | 10.87 bar | +8% |\n| IAPWS-IF97 steam tables (`iapws` package) | 10.03 bar | reference |\n\nUse the first set: its stated range covers 180 °C and it agrees with the steam tables. The NIST set is off by 8% at this temperature, even though 453 K is inside the range it is listed for. The common 1–100 °C constants (A = 8.07131, B = 1730.63, C = 233.426) are not valid at 180 °C.\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nT=180.0\\np1=10**(8.14019-1810.94/(244.485+T))*133.322368/1e5\\nTK=T+273.15\\np2=10**(3.55959-643.748/(TK-198.043))\\nprint('high-range mmHg set (99-374C):',p1,'bar')\\nprint('NIST Bridgeman-Aldrich (379-573K):',p2,'bar')\\n\\\"\\npython3 -c \\\"\\nimport iapws; print('IAPWS97:', iapws.IAPWS97(T=453.15,x=0).P*10,'bar')\\\" 2>&1 | tail -1\", \"description\": \"Compute water vapour pressur"
+  }
+ ],
+ "leak": false,
+ "run": "w011",
+ "qid": "antoine",
+ "round": 1
+}

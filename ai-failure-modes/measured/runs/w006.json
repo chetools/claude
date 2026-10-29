@@ -1,0 +1,17 @@
+{
+ "answer": "At 100 bar and 37 °C (310.15 K), CO2 has a density of about **683.4 kg/m³** (0.6834 g/cm³). I calculated it and checked it against a second source:\n\n| Source | Density (kg/m³) |\n|---|---|\n| CoolProp (Span–Wagner reference equation of state) | 683.403 |\n| NIST Chemistry WebBook, fluid data query | 683.403 |\n\nBoth sources agree to every digit shown. NIST reports the phase as supercritical, because the conditions are above CO2's critical point (31.0 °C, 73.8 bar).\n\nThis is close to the critical region, where density changes sharply with temperature and pressure. NIST gives a heat capacity cp of about 4.49 J/(g·K) here, roughly five times its usual value, which is a sign of that. So a small change in T or P will shift the density a lot; for example, at slightly higher temperatures it falls off quickly.\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport CoolProp.CoolProp as C\\nprint(C.PropsSI('D','P',100e5,'T',310.15,'CO2'), C.PropsSI('Phase','P',100e5,'T',310.15,'CO2'))\\n\\\" 2>&1 || (pip install -q CoolProp 2>&1 | tail -1; python3 -c \\\"\\nimport CoolProp.CoolProp as C\\nprint(C.PropsSI('D','P',100e5,'T',310.15,'CO2'))\\\")\", \"description\": \"Compute CO2 density with CoolProp\"}"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"curl -sS \\\"https://webbook.nist.gov/cgi/fluid.cgi?Action=Data&Wide=on&ID=C124389&Type=IsoTherm&Digits=6&PLow=100&PHigh=100&PInc=1&T=37&RefState=DEF&TUnit=C&PUnit=bar&DUnit=kg%2Fm3&HUnit=kJ%2Fkg&WUnit=m%2Fs&VisUnit=uPa*s&STUnit=N%2Fm\\\" | head -3\", \"description\": \"Cross-check density against NIST WebBook\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w006",
+ "qid": "co2",
+ "round": 1
+}

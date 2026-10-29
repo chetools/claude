@@ -1,0 +1,17 @@
+{
+ "answer": "**Specify an API 526 \"J\" orifice (1.287 in²).** The required effective area comes out at about 0.93 in², which is too big for the next size down, the \"H\" orifice (0.785 in²).\n\nI calculated this with a short Python script using CoolProp propane properties. I have not checked it against a vendor sizing program.\n\n**1. Fire heat input (API 521, adequate drainage and firefighting):**\n- Q = 21,000 · F · A^0.82\n- With F = 1.0 (bare vessel) and A = 500 ft²: **Q ≈ 3.43 × 10⁶ Btu/h**\n\n**2. Relieving conditions (API 520, fire case allows 21% overpressure):**\n- P1 = 1.21 × 250 + 14.7 = **317.2 psia**\n- Saturation temperature at that pressure is about **143 °F**, and the latent heat there is **109.5 Btu/lb**.\n\n**3. Relief load:** W = Q / λ ≈ **31,300 lb/h** of propane vapour.\n\n**4. Required orifice area (API 520 vapour, critical flow):**\n- A = W / (C · Kd · P1 · Kb) · √(T·Z/M)\n- Inputs: Kd = 0.975, Kb = 1, T = 602.6 °R, M = 44.1, Z = 0.673 (saturated vapour)\n- With the ideal-gas ratio k ≈ 1.13 (C ≈ 330): **A ≈ 0.93 in²**\n- If k is unknown and you use the conservative default C = 315: A ≈ 0.97 in²\n- Using the real-gas cp/cv right at saturation (k = 1.57) gives 0.83 in². That ratio is not the right exponent for nozzle flow, so I did not use it to choose the size.\n\nIn every case the area is above 0.785 in² (\"H\") and well below 1.287 in² (\"J\").\n\n**Assumptions to confirm:**\n- **Wetted area:** I took 500 ft² as already limited to the liquid-wetted surface within 25 ft of grade, at the maximum normal fill level.\n- **No insulation credit:** F = 1.0 assumes a bare vessel. Fireproofing or insulation would lower F and the load.\n- **No backpressure correction:** Kb = 1 assumes a conventional valve discharging to atmosphere with negligible backpressure.\n- **Rated Kd:** 0.975 is the preliminary value. Final sizing should use the manufacturer's certified coefficient and orifice area, or check them against the \"J\" size.\n\nThe calculation script is at /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w033/calc.py.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w033 && python3 -c \\\"import CoolProp\\\" 2>&1 || pip install -q CoolProp 2>&1 | tail -1\", \"description\": \"Check for CoolProp property library\"}"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w033 && cat > calc.py <<'EOF'\\nimport math\\nfrom CoolProp.CoolProp import PropsSI\\nA=500.0; F=1.0\\nQ=21000*F*A**0.82  # Btu/h, API 521 eq. adequate drainage+firefighting\\nPset=250.0; P1=Pset*1.21+14.696  # psia, 21% fire overpressure\\nPpa=P1*6894.757\\nT=PropsSI('T','P',Ppa,'Q',0,'Propane')\\nhv=Prop"
+  }
+ ],
+ "leak": false,
+ "run": "w033",
+ "qid": "relief",
+ "round": 2
+}

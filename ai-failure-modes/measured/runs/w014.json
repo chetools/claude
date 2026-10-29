@@ -1,0 +1,13 @@
+{
+ "answer": "1000 SCFM of natural gas is about 1607 Nm³/h. This assumes the US gas-industry standard of 60 °F and 14.696 psia, and the usual normal conditions of 0 °C and 101.325 kPa.\n\nCalculation (ideal gas, computed):\n- 1000 ft³/min × 60 min/h × 0.0283168 m³/ft³ = 1699.0 m³/h at 60 °F\n- × (273.15 K / 288.706 K) = 1607.5 Nm³/h\n\nThe result depends on which \"standard\" the SCFM uses. All values below were computed the same way:\n\n| SCFM reference | Nm³/h |\n|---|---|\n| 60 °F, 14.696 psia | 1607.5 |\n| 60 °F, 14.73 psia (AGA/US gas contracts) | 1611.2 |\n| 68 °F, 14.696 psia | 1583.1 |\n| 70 °F, 14.7 psia | 1577.6 |\n\nThese are ideal-gas numbers. I did not apply a compressibility correction. My expectation, not checked, is that natural gas is near-ideal at both reference states (Z about 0.998), so the result would change by well under 0.1%. No files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nf=0.3048**3*60\\nfor name,T,P in [('60F,14.696',288.7056,101.325),('60F,14.73',288.7056,101.5598),('68F,14.696',293.15,101.325),('70F,14.7',294.261,101.3529)]:\\n  print(name, 1000*f*(273.15/T)*(P/101.325))\\n\\\"\", \"description\": \"Compute SCFM to Nm3/h for several standard conditions\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w014",
+ "qid": "scfm",
+ "round": 1
+}

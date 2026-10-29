@@ -1,0 +1,13 @@
+{
+ "answer": "The vapour pressure of water at 180 °C from the Antoine equation is about **9.97 bar (7480 mmHg, 0.997 MPa)**.\n\nI used the high-temperature constants for water, valid from 99 to 374 °C, with P in mmHg and T in °C:\nlog10 P = 8.14019 − 1810.94 / (244.485 + T)\nAt T = 180 °C this gives P = 7481 mmHg = 9.97 bar.\n\n**Check against an independent value:** CoolProp, which uses the IAPWS reference equation for water, gives 10.03 bar at 453.15 K. The Antoine result is about 0.5 % low.\n\n**Which constants you use matters a lot at this temperature:**\n\n| Antoine constant set | Result | Error vs 10.03 bar |\n|---|---|---|\n| 99–374 °C set (above) | 9.97 bar | −0.5 % |\n| Common 1–100 °C set (A = 8.07131, B = 1730.63, C = 233.426), used outside its range | 10.24 bar | +2 % |\n| NIST WebBook set for 379–573 K (A = 3.55959, B = 643.748, C = −198.043; bar, K), within its stated range | 10.87 bar | +8 % |\n\nI computed all these numbers with a single Python one-liner and created no files. If you need better accuracy than about 1 %, use the steam-table / IAPWS value of 10.03 bar rather than any Antoine fit.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nT=180.0\\np1=10**(3.55959-643.748/((T+273.15)-198.043)); print('NIST bar',p1)\\np2=10**(8.14019-1810.94/(244.485+T)); print('mmHg high-range',p2, p2*101325/760/1e5,'bar')\\np3=10**(8.07131-1730.63/(233.426+T)); print('mmHg 1-100C set',p3*101325/760/1e5,'bar')\\n\\\"; python3 -c \\\"import CoolProp.CoolProp as C; print(C.PropsSI('P','T',453.15,'Q',0,'Water')/1e5)\\\" 2>&1 | tail -"
+  }
+ ],
+ "leak": false,
+ "run": "w036",
+ "qid": "antoine",
+ "round": 2
+}

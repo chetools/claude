@@ -1,0 +1,13 @@
+{
+ "answer": "At t = 40, starting from pure A (y_A = 1, y_B = y_C = 0), the mole fractions are:\n\n- **A: 0.7158270687**\n- **B: 9.185534765 × 10⁻⁶**\n- **C: 0.2841637457**\n\nThese are also the concentrations. Each reaction keeps the total number of moles the same (1 mol → 1, 2 → 2, 2 → 2). So A + B + C stays at 1, and each concentration equals its mole fraction.\n\nHow I checked it: I solved the stiff ODE system with three different integrators (scipy Radau, BDF and LSODA), giving each the exact Jacobian and tight tolerances (rtol 1e-12, B's atol 1e-20). All three agree to about 10 significant figures. A + B + C − 1 stayed within 3e-15. The numbers also match the published reference values for Robertson's problem at t = 40 (y_A ≈ 0.7158, y_B ≈ 9.185e-6, y_C ≈ 0.2842). I ran a one-off script in the shell and did not save any files.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w045 && python3 -c \\\"\\nfrom scipy.integrate import solve_ivp\\nimport numpy as np\\ndef f(t,y):\\n    a,b,c=y; return [-0.04*a+1e4*b*c, 0.04*a-1e4*b*c-3e7*b*b, 3e7*b*b]\\ndef J(t,y):\\n    a,b,c=y; return [[-0.04,1e4*c,1e4*b],[0.04,-1e4*c-6e7*b,-1e4*b],[0,6e7*b,0]]\\nfor m in ['Radau','BDF','LSODA']:\\n  "
+  }
+ ],
+ "leak": false,
+ "run": "w045",
+ "qid": "robertson",
+ "round": 2
+}

@@ -1,0 +1,13 @@
+{
+ "answer": "Size the return line for two-phase flow. About 16% of the condensate flashes to steam when it drops from 10 barg to atmospheric pressure, and that flash steam takes up about 270 m³/h. The remaining water takes up only about 0.9 m³/h. So the line is sized by the steam, and the volume to design for is roughly **270 m³/h**, almost all of it vapour.\n\nThese numbers come from an energy balance across the trap, using IAPWS-95 water properties from CoolProp. I assumed 10 barg means 11.01 bar absolute, that the condensate enters as saturated liquid, and that the return line is at 1.013 bar absolute.\n\n- **Upstream (11.01 bar a):** saturation temperature is 184.1 °C and saturated liquid enthalpy h_f is 781.3 kJ/kg.\n- **Downstream (1.013 bar a, 100 °C):** h_f is 419.1 kJ/kg and h_g is 2675.5 kJ/kg, so the latent heat h_fg is 2256.5 kJ/kg.\n- **Flash fraction:** x = (781.3 − 419.1) / 2256.5 = **0.1605**.\n- **Flash steam:** 160.5 kg/h × 1.673 m³/kg = **268.6 m³/h**.\n- **Remaining water:** 839.5 kg/h × 0.001043 m³/kg = **0.88 m³/h**.\n- **For comparison:** 1000 kg/h of water at the inlet would take up only about 1.13 m³/h. Sizing the line as if it carried water alone would make it about 240 times too small by volume.\n\nWhat I did not work out:\n- **Real line pressure.** If the return line runs above atmospheric pressure because of back-pressure or lift, less steam flashes and its specific volume is smaller, so 270 m³/h is the worst case.\n- **Subcooled condensate.** If the condensate arrives below saturation temperature, less steam flashes.\n- **Pipe diameter.** That needs a design velocity, which is usually set by a two-phase method such as a flash-steam line chart or a homogeneous model; I did not choose one.\n- **Heat loss.** Nothing along the line is included.\n\nI created no files.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nfrom CoolProp.CoolProp import PropsSI as P\\np1=11.01325e5;p2=1.01325e5\\nh1=P('H','P',p1,'Q',0,'Water');hf=P('H','P',p2,'Q',0,'Water');hg=P('H','P',p2,'Q',1,'Water')\\nx=(h1-hf)/(hg-hf);m=1000/3600\\nvg=1/P('D','P',p2,'Q',1,'Water');vf=1/P('D','P',p2,'Q',0,'Water')\\nprint(P('T','P',p1,'Q',0,'Water')-273.15,h1/1e3,hf/1e3,hg/1e3,x,vg,vf)\\nprint('steam kg/h',1000*x,'m3/h',100"
+  }
+ ],
+ "leak": false,
+ "run": "w035",
+ "qid": "flash",
+ "round": 2
+}

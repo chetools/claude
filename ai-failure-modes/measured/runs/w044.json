@@ -1,0 +1,13 @@
+{
+ "answer": "The answer is **U_mf ≈ 0.04 m/s (about 4 cm/s)**. Treat the second digit as rough: the result depends on the bed voidage at minimum fluidization and on the particle shape, neither of which was given.\n\nI computed it with a short Python run; no files were created.\n\n**Inputs**\n- Air at 20 °C and 1 atm: density 1.204 kg/m³ (ideal gas), viscosity 1.81e-5 Pa·s (Sutherland's law).\n- Sand: diameter 200 µm, density 2650 kg/m³.\n- Archimedes number: Ar = d³ρ_g(ρ_p − ρ_g)g/μ² ≈ 761.\n\n**Results from standard correlations**\n\n| Method | Re_mf | U_mf (m/s) |\n|---|---|---|\n| Wen & Yu (C1 = 33.7, C2 = 0.0408) | 0.46 | 0.034 |\n| Grace (C1 = 27.2, C2 = 0.0408) | 0.56 | 0.043 |\n| Chitester (C1 = 28.7, C2 = 0.0494) | 0.65 | 0.049 |\n| Full Ergun, spheres, voidage 0.40 | – | 0.040 |\n| Full Ergun, spheres, voidage 0.45 | – | 0.062 |\n\n- **Flow regime:** Re_mf is well below 20, so the flow is in the viscous regime. In that limit U_mf ≈ d²(ρ_p − ρ_g)g·ε³/(150μ(1 − ε)), which gives 0.041 m/s at voidage 0.40 and agrees with the full Ergun equation. Doubling the particle size would roughly quadruple U_mf.\n- **Bed voidage:** this is the biggest uncertainty. Going from 0.40 to 0.45 raises U_mf by about 50%. A measured value of this voidage, or a measured U_mf, is the reliable number to use.\n- **Behaviour:** this is Geldart group B sand, so it should start bubbling at about the minimum fluidization velocity.\n\nAll numbers above are from my calculation. I did not compare them against experimental data for this sand.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport math\\nd=200e-6;rp=2650;P=101325;T=293.15;rho=P*0.028965/(8.314462*T);mu=1.825e-5*0+1.8e-5;g=9.80665\\nmu=1.716e-5*(T/273.15)**1.5*(273.15+110.4)/(T+110.4)\\nAr=d**3*rho*(rp-rho)*g/mu**2\\nfor n,(C1,C2) in {'Wen-Yu':(33.7,0.0408),'Grace':(27.2,0.0408),'Chitester':(28.7,0.0494)}.items():\\n  Re=math.sqrt(C1**2+C2*Ar)-C1; print(n,Re,Re*mu/(rho*d))\\nfor eps in (0.40,0.45"
+  }
+ ],
+ "leak": false,
+ "run": "w044",
+ "qid": "umf",
+ "round": 2
+}

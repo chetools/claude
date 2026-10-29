@@ -1,0 +1,17 @@
+{
+ "answer": "m-xylene (1,3-dimethylbenzene, CAS 108-38-3):\n\n- Critical temperature Tc ≈ 617.0 K (343.9 °C)\n- Critical pressure Pc ≈ 3.54 MPa (35.4 bar, about 34.9 atm)\n- Acentric factor ω ≈ 0.326 to 0.331\n\nI looked these up in the Python `chemicals` library and compared the data sources it bundles. They agree:\n\n| Source | Tc (K) | Pc (MPa) | ω |\n|---|---|---|---|\n| CoolProp (HEOS) | 616.89 | 3.5346 | 0.326 |\n| IUPAC | 617.0 | 3.541 | – |\n| CRC Handbook | 616.9 | 3.540 | – |\n| Yaws | 617.0 | 3.541 | 0.327 |\n| Passut-Danner (PD) | 617.05 | 3.5411 | 0.3311 |\n| PSRK | 617.0 | 3.5464 | 0.331 |\n| NIST WebBook | 618.0 | 3.5364 | – |\n| ω from its definition, using the library's vapour pressure at 0.7 Tc | – | – | 0.3264 |\n\nω varies more between sources (0.326 to 0.331) than Tc or Pc do. If you're using an equation of state, take the value that goes with your parameter set, for example 0.326 to match CoolProp.\n\nThese values come from the library's tables, not from the original papers. No files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w037 && python3 -I -c \\\"\\nfrom chemicals import Tc, Pc, omega\\nc='108-38-3'\\nfor m in ['IUPAC','PSRK','PD','YAWS','HEOS','MATTHEWS','CRC']:\\n  pass\\nfrom chemicals.critical import Tc_all_methods, Pc_all_methods\\nprint(Tc_all_methods(c)); print({m:Tc(c,method=m) for m in Tc_all_methods(c)})\\nprint({"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w037 && python3 -I -c \\\"\\nfrom chemicals import Tc, Pc, omega, Tc_methods, Pc_methods, omega_methods\\nc='108-38-3'\\nprint({m:Tc(c,method=m) for m in Tc_methods(c)})\\nprint({m:Pc(c,method=m) for m in Pc_methods(c)})\\nprint({m:omega(c,method=m) for m in omega_methods(c)})\\n\\\"\", \"description\": \"Query "
+  }
+ ],
+ "leak": false,
+ "run": "w037",
+ "qid": "xylene",
+ "round": 2
+}

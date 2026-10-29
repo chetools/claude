@@ -1,0 +1,13 @@
+{
+ "answer": "**1000 SCFM of natural gas is about 1607 Nm³/h.** This assumes US gas-industry standard conditions (60 °F, 14.696 psia) and normal conditions of 0 °C and 1.01325 bar (101.325 kPa, DIN 1343).\n\nMethod (calculated with Python, not taken from a table):\n- 1000 ft³/min × 60 min/h × 0.0283168 m³/ft³ = 1699.0 m³/h at 60 °F, 14.696 psia\n- To get to 0 °C at the same pressure, multiply by 273.15 / 288.706 = 0.94612, which gives **1607.5 Nm³/h**\n\nThe answer depends on which \"standard\" the SCFM figure uses:\n\n| SCFM basis | Nm³/h (0 °C, 1.01325 bar) |\n|---|---|\n| 60 °F, 14.696 psia | 1607.5 |\n| 60 °F, 14.73 psia (AGA gas-contract basis) | 1611.2 |\n| 68 °F, 14.696 psia | 1583.1 |\n| 70 °F, 14.7 psia | 1577.6 |\n\nSome sources define Nm³ at 20 °C instead of 0 °C. On that basis the 60 °F result becomes about 1725 m³/h; this value was worked out by hand, not run.\n\nI assumed ideal-gas scaling. The slight difference in natural gas compressibility (Z) between 60 °F and 0 °C was not included; I expect it to change the result by about 0.1% or less, but I did not calculate it.\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nv=1000*60*0.028316846592\\nfor name,T,P in [('60F,14.696psia',288.705556,101.325),('60F,14.73psia (AGA)',288.705556,14.73*6.894757293),('68F,14.696',293.15,101.325),('70F,14.7',294.261111,14.7*6.894757293)]:\\n  print(name, v*(273.15/T)*(P/101.325))\\nprint(v)\\\"\", \"description\": \"Compute SCFM to Nm3/h for common standard conditions\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w039",
+ "qid": "scfm",
+ "round": 2
+}

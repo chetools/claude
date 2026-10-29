@@ -1,0 +1,13 @@
+{
+ "answer": "**Answer: you need a Kv of about 28.8 m³/h. Size for about 29, and check that the selected valve gives it at around 70–80 % travel.** The flow is choked, and in fact flashing, so the usual formula Kv = Q·√(SG/ΔP) gives about 22.8. That is roughly 20 % too small.\n\n**Method:** IEC 60534-2-1 for liquids. I assumed the valve is the same size as the line (F_P = 1) and used 1000 kg/m³ as the reference density. Water properties at 130 °C come from CoolProp and are computed, not recalled.\n\n- Vapour pressure P_v = 2.703 bar(a).\n- Density ρ₁ = 935.0 kg/m³ at 6 bar, so ρ₁/ρ₀ = 0.935.\n- Critical pressure P_c = 220.64 bar.\n- Liquid critical pressure ratio factor: F_F = 0.96 − 0.28·√(P_v/P_c) = 0.929.\n- Choked pressure drop: ΔP_choked = F_L²·(P₁ − F_F·P_v) = 0.81 × (6 − 2.511) = **2.83 bar**.\n- The actual drop is 4.5 bar. That is more than 2.83 bar, so the flow is **choked**. Use 2.83 bar as the sizing drop.\n- **Kv = Q·√((ρ₁/ρ₀)/ΔP_choked) = 50 × √(0.935/2.826) = 28.8 m³/h.** Using 15 °C water (999.1 kg/m³) as the reference gives 28.77, so the choice makes no difference.\n\n**Engineering points:**\n- **This is flashing, not just cavitation.** The outlet pressure (1.5 bar(a)) is below the vapour pressure (2.70 bar(a)), so the water partly turns to vapour and the outlet stream stays two-phase.\n  - Downstream of the valve you get high-velocity two-phase flow, which erodes the plug, seat and body.\n  - Hardened trim (for example Stellite) is usually needed. An angle body that discharges straight into a larger outlet pipe or a vessel is often preferred to a globe valve.\n  - Size the outlet piping for the two-phase velocity.\n  - Anti-cavitation trim does not prevent flashing.\n- **The F_L = 0.9 you gave is the value for the bare valve.** If the valve ends up smaller than the line and needs reducers, use F_LP and F_P instead. Choked flow then sets in at a different pressure drop, and Kv changes.\n- **What I did not check:** that F_L = 0.9 holds for the actual valve, its travel, its rangeability and its noise. Those depend on which valve you choose.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\ntry:\\n    from CoolProp.CoolProp import PropsSI as P\\n    pv=P('P','T',403.15,'Q',0,'Water')/1e5; rho=P('D','T',403.15,'P',6e5,'Water'); rho0=P('D','T',288.15,'P',1.013e5,'Water'); pc=P('Pcrit','Water')/1e5; src='CoolProp'\\nexcept Exception as e:\\n    import iapws; s=iapws.IAPWS97(T=403.15,x=0); pv=s.P*10; rho=iapws.IAPWS97(T=403.15,P=0.6).rho; rho0=iapws.IAPWS97(T=288."
+  }
+ ],
+ "leak": false,
+ "run": "w029",
+ "qid": "valve",
+ "round": 2
+}

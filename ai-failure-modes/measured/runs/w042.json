@@ -1,0 +1,8 @@
+{
+ "answer": "About **750 kW** of heat is released, or roughly 2.7 GJ/h.\n\n**The key point:** ΔH = −92 kJ is for the reaction as written. That reaction makes **2 mol** of NH3, so the heat per mole of ammonia is 92 / 2 = **46 kJ/mol NH3**. If you use 92 kJ per mole of NH3, you get twice the right answer (about 1500 kW).\n\n**Calculation:**\n1. Molar flow: 1000 kg/h ÷ 17.031 kg/kmol = 58.72 kmol/h, which is 58,716 mol/h.\n2. Heat per hour: 58,716 mol/h × 46 kJ/mol = 2.70 × 10^6 kJ/h.\n3. Convert to kW: 2.70 × 10^6 kJ/h ÷ 3600 s/h = **750 kW** (750.3 kW before rounding).\n\n**Assumptions:**\n- ΔH is taken as constant. −92 kJ/mol is the standard value at 25 °C. At real converter temperatures (about 400–500 °C) the magnitude is somewhat larger, roughly −100 to −110 kJ per mol of reaction. I did not compute that correction.\n- The result is the heat of reaction only. It leaves out sensible heat and the latent heat from condensing the ammonia.\n\nI did this by hand and created no files.",
+ "tools": [],
+ "leak": false,
+ "run": "w042",
+ "qid": "nh3_heat",
+ "round": 2
+}

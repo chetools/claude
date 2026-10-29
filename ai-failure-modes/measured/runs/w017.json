@@ -1,0 +1,8 @@
+{
+ "answer": "About 750 kW of heat is released (≈ 2.7 GJ/h).\n\nI worked this by hand and did not run any code. The arithmetic is short enough to check directly.\n\nThe −92 kJ is per mole of reaction as written, and one mole of reaction makes 2 mol of NH3. That gives 46 kJ released per mol of NH3.\n\n- Molar flow of NH3: 1000 kg/h ÷ 17.031 kg/kmol = 58.72 kmol/h, which is 16.31 mol/s.\n- Heat released: 16.31 mol/s × 46 kJ/mol = 750 kJ/s, which is 750 kW.\n\nA common mistake is to treat −92 kJ as per mole of NH3. That doubles the answer to about 1500 kW.\n\nThis uses the standard ΔH at about 25 °C as given. At real converter conditions (around 400–500 °C) the heat of reaction is somewhat larger in magnitude, roughly −100 to −110 kJ per mol of reaction. I am recalling that figure from memory and did not compute it.\n\nNo files were created.",
+ "tools": [],
+ "leak": false,
+ "run": "w017",
+ "qid": "nh3_heat",
+ "round": 1
+}

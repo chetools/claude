@@ -1,0 +1,8 @@
+{
+ "answer": "This comes from memory of API 521 (and the matching API 2000 / API 520 fire-case equations). I did not check it against a copy of the standard, so please compare it with your edition before using it in a design.\n\n**API 521, pool fire, with adequate drainage and firefighting, SI units:**\n\nQ = 43 200 · F · A_ws^0.82\n\n- **Q**: total heat absorbed by the wetted surface, in W.\n- **F**: environment factor (dimensionless).\n  - 1.0 for a bare vessel.\n  - Lower values apply for insulation, water spray, earth cover and similar protection. The standard gives these in a table.\n- **A_ws**: total wetted surface area, in m².\n  - Only the area up to 7.6 m (25 ft) above the fire source (usually grade) counts.\n\n**Related forms, for comparison:**\n- **US customary units:** Q = 21 000 · F · A^0.82, with Q in Btu/h and A in ft².\n- **Without adequate drainage and firefighting:**\n  - SI: Q = 70 900 · F · A_ws^0.82 (W, m²).\n  - US units: 34 500 · F · A^0.82 (Btu/h, ft²).\n- **Scope:** these equations are for wetted surfaces of liquid-containing vessels in a pool fire. API 521 handles jet fires and unwetted (gas-filled) vessels differently.",
+ "tools": [],
+ "leak": false,
+ "run": "w047",
+ "qid": "api521",
+ "round": 2
+}

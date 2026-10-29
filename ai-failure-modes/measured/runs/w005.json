@@ -1,0 +1,21 @@
+{
+ "answer": "At 1 atm, a liquid with 95 mol% ethanol is in equilibrium with a vapour of about **94.7 mol% ethanol and 5.3 mol% water**. The boiling (bubble) point is about **78.2 °C**.\n\nThe vapour has slightly less ethanol than the liquid. That is because this liquid is past the ethanol–water azeotrope, which sits near 89–90 mol% ethanol at 1 atm. Above that point ethanol is the less volatile component, so ordinary distillation at 1 atm can't purify a 95% liquid any further. The vapour is pushed back toward the azeotrope.\n\nI computed this rather than recalling it. The method was modified Raoult's law (gas phase treated as ideal) with Antoine vapour pressures, which reproduce the pure boiling points of 78.32 °C and 100.00 °C. I checked it with two activity-coefficient models:\n\n| Model | T at x = 0.95 | y ethanol | Predicted azeotrope |\n|---|---|---|---|\n| Wilson (Λ12 = 0.1782, Λ21 = 0.8681) | 78.19 °C | 0.9467 | x ≈ 0.90, 78.15 °C |\n| Van Laar (A12 = 1.6798, A21 = 0.9227) | 78.24 °C | 0.9481 | x ≈ 0.89–0.90, 78.22 °C |\n\nThe two models agree to about 0.0015 in y. Both place the azeotrope close to the commonly quoted value of 89.4 mol% ethanol at 78.15 °C.\n\nLimitations:\n- I recalled the model parameters from memory and did not check them against a primary data source. Their main support is that both sets reproduce the known azeotrope.\n- I did not compare against measured VLE data at x = 0.95. Expect an uncertainty of roughly ±0.005 in y.\n- A first attempt with recalled NRTL parameters predicted no azeotrope at all. The parameters were evidently wrong, so I discarded that result.\n\nThe script is `/tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w005/vle.py` (scratch only; nothing in the repo was changed).",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cat > /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w005/vle.py <<'EOF'\\nimport numpy as np\\nfrom scipy.optimize import brentq\\nR=1.98721\\ndef Psat(T):  # mmHg, T in C\\n    return 10**(8.20417-1642.89/(230.300+T)), 10**(8.07131-1730.63/(233.426+T))\\ndef g_nrtl(x1,T,A12=-55.1693,A21=670.441,a=0.3031):\\n    TK=T+273.15; t12=A12/(R*TK); t21=A21/(R*T"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w005 && python3 -I -c \\\"\\nexec(open('vle.py').read().split('for name')[0])\\nfor name,g in [('NRTL',g_nrtl),('Wilson',g_wilson)]:\\n    for x in [0.8,0.85,0.88,0.9,0.92,0.95,0.97]:\\n        T,y,gs=bubble(x,g); print(name,x,'T=%.2f y=%.4f g=%.4f %.4f'%(T,y,*gs))\\nprint([brentq(lambda T:Psat(T)[i]-760,"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w005 && python3 -I -c \\\"\\nexec(open('vle.py').read().split('for name')[0])\\ndef g_vl(x1,T,A=1.6798,B=0.9227):\\n    x2=1-x1; return np.exp(A*(B*x2/(A*x1+B*x2))**2), np.exp(B*(A*x1/(A*x1+B*x2))**2)\\nfor x in [0.88,0.89,0.9,0.95]:\\n    T,y,gs=bubble(x,g_vl); print('VanLaar',x,'T=%.2f y=%.4f'%(T,y))\\n\\"
+  }
+ ],
+ "leak": false,
+ "run": "w005",
+ "qid": "vle",
+ "round": 1
+}

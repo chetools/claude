@@ -1,0 +1,13 @@
+{
+ "answer": "The OSHA PSM threshold quantity for chlorine (CAS 7782-50-5) is 1,500 lb. That value is from 29 CFR 1910.119, Appendix A, which lists toxic and reactive highly hazardous chemicals. I checked it against the current eCFR text.\n\nThe chlorine compounds in the same table have lower thresholds:\n- Chlorine dioxide (10049-04-4): 1,000 lb\n- Chlorine pentafluoride (13637-63-3): 1,000 lb\n- Chlorine trifluoride (7790-91-2): 1,000 lb\n\nThis is the threshold amount of chlorine in a process. At or above it, the PSM standard applies to that process. EPA's Risk Management Program rule (40 CFR 68.130) sets its own threshold for chlorine. I recall it as 2,500 lb, but I did not check that number.\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"curl -sL \\\"https://www.ecfr.gov/api/renderer/v1/content/enhanced/current/title-29?part=1910&section=1910.119\\\" | sed 's/<[^>]*>/ /g' | grep -i -A2 \\\"chlorine\\\" | head -30\", \"description\": \"Fetch OSHA PSM Appendix A and grep chlorine\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w023",
+ "qid": "psm",
+ "round": 1
+}

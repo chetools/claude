@@ -1,0 +1,8 @@
+{
+ "answer": "In SI units, the API 521 pool-fire heat input with adequate drainage and firefighting is:\n\n**Q = 43,200 · F · A_ws^0.82**\n\n- **Q**: total heat absorbed by the wetted surface, in W.\n- **F**: environment factor, dimensionless. It is 1.0 for a bare vessel. Lower values are allowed for insulation, water spray and similar protection, per the API 521 table.\n- **A_ws**: wetted surface area exposed to the fire, in m². It normally counts only the wetted area up to 7.6 m (25 ft) above the fire's base, usually grade.\n\nThe US customary version is Q = 21,000 · F · A_ws^0.82, with Q in Btu/h and A_ws in ft².\n\nWithout adequate drainage and firefighting, the coefficient rises to 70,900 in SI (34,500 in US units).\n\nI worked the equation and constants out from memory, not from the standard itself. I checked the unit conversion: 21,000 × 0.29307 W per Btu/h × (0.092903 m² per ft²)^−0.82 ≈ 43,190, which matches 43,200. Confirm the exact edition and the F-factor table in API 521 before using these numbers in a design.",
+ "tools": [],
+ "leak": false,
+ "run": "w022",
+ "qid": "api521",
+ "round": 1
+}

@@ -1,0 +1,13 @@
+{
+ "answer": "The NPSH available is about 4.8 m.\n\nI used NPSHa = (P_atm − P_v)/(ρg) + z_s − h_f,suction. The water properties at 90 °C come from CoolProp, which uses the IAPWS formulation:\n- P_atm = 101.325 kPa (standard sea-level pressure)\n- P_v = 70.18 kPa (saturation pressure at 90 °C)\n- ρ = 965.3 kg/m³ (saturated liquid at 90 °C), g = 9.807 m/s²\n- Pressure head term: (101,325 − 70,182) / (965.3 × 9.807) = 3.29 m\n- NPSHa = 3.29 + 2.0 − 0.5 = **4.79 m**\n\nAt 90 °C the water is close to boiling, so the vapour pressure cancels about 70% of the atmospheric head. Most of the margin comes from the 2 m of liquid above the suction. Compare this value with the pump's NPSH required at the operating flow, plus a safety margin (often 0.5–1 m, or a ratio of about 1.1–1.3). The result changes directly with:\n- **Temperature:** at 95 °C the vapour pressure is about 84.6 kPa, which takes roughly 1.5 m off NPSHa.\n- **Air pressure:** a low-pressure day lowers NPSHa by the same amount.\n- **Suction line losses:** these grow with flow rate, so the 0.5 m figure only holds near your design flow.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\ntry:\\n    from CoolProp.CoolProp import PropsSI as P\\n    pv=P('P','T',363.15,'Q',0,'Water'); rho=P('D','T',363.15,'Q',0,'Water'); src='CoolProp'\\nexcept Exception as e:\\n    import iapws; s=iapws.IAPWS97(T=363.15,x=0); pv=s.P*1e6; rho=s.rho; src='iapws'\\ng=9.80665; patm=101325\\nhp=(patm-pv)/(rho*g)\\nprint(src,pv,rho,hp, hp+2-0.5)\\n\\\" 2>&1 || pip install -q CoolProp 2>&"
+  }
+ ],
+ "leak": false,
+ "run": "w003",
+ "qid": "npsh",
+ "round": 1
+}

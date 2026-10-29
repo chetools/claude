@@ -1,0 +1,17 @@
+{
+ "answer": "**Specify a J orifice (1.287 in² effective area, API 526).** The required area works out to 0.93 in², which is more than an H (0.785 in²) can pass.\n\n**Inputs and assumptions:**\n- I treated the 500 ft² as the fire-exposed wetted area already: liquid surface up to 25 ft above grade.\n- The vessel is bare, so F = 1.0. No credit is taken for insulation.\n- The valve is a conventional spring-loaded PSV with low back pressure (Kb = 1), no rupture disk upstream (Kc = 1), and preliminary-sizing Kd = 0.975.\n\n**1. Heat input (API 521, adequate drainage and firefighting)**\n- Q = 21,000 · F · A^0.82 = 21,000 × 1.0 × 500^0.82 = **3.43 × 10⁶ Btu/h**\n\n**2. Relieving conditions**\n- Fire case allows 21% overpressure: P1 = 250 × 1.21 + 14.7 = **317.2 psia**.\n- Propane saturates at **142.9 °F** at that pressure.\n- Latent heat there is **109.5 Btu/lb**. This and the next values come from CoolProp's reference equation of state.\n- Vapour Z = 0.673. Molecular weight M = 44.10.\n\n**3. Relief load**\n- W = Q / λ = 3.43 × 10⁶ / 109.5 = **31,300 lb/h** of propane vapour.\n\n**4. Orifice area (API 520 Part I, critical vapour flow)**\n- With ideal-gas k = 1.13, C = 330.0.\n- A = W·√(T·Z/M) / (C·Kd·P1·Kb·Kc) = **0.93 in²**.\n- The real-gas cp/cv at relief conditions is 1.57. That would give C = 370.6 and A = 0.83 in². It is still above an H (0.785 in²), so a J is required either way. The ideal-gas k is the usual conservative basis.\n\n**Before you issue the datasheet:**\n- Once a valve is chosen, re-rate it with the vendor's certified Kd and the actual Kb.\n- Make sure the 500 ft² follows the 25 ft height rule for this bullet's elevation and liquid level.\n- I took the ideal-gas k = 1.13 from memory of propane data at about 140 °F; I did not compute it. All other values were computed.\n\nThe script is `/tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w008/fire.py`.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"import CoolProp\\\" 2>&1 || pip install -q CoolProp 2>&1 | tail -1\", \"description\": \"Check for CoolProp availability\"}"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"mkdir -p /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w008 && cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w008 && cat > fire.py <<'EOF'\\nimport math\\nfrom CoolProp.CoolProp import PropsSI as P\\npsi=6894.757\\nA=500.0; F=1.0\\nQ=21000*F*A**0.82                      # Btu/h, API 521 eq. (adequate drainage "
+  }
+ ],
+ "leak": false,
+ "run": "w008",
+ "qid": "relief",
+ "round": 1
+}

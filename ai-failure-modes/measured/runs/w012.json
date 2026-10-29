@@ -1,0 +1,17 @@
+{
+ "answer": "m-xylene (1,3-dimethylbenzene, CAS 108-38-3):\n\n- **Critical temperature:** Tc = 617.0 K (343.9 °C)\n- **Critical pressure:** Pc = 3.541 MPa (35.41 bar)\n- **Acentric factor:** ω = 0.326 to 0.331. ω = 0.326 is the CoolProp/HEOS value. The value from its definition, ω = −log10(Psat/Pc) − 1 at T = 0.7 Tc, is 0.3264.\n\nI didn't take these from memory. I looked them up in the Python `chemicals` library (installed with pip into the session), which collects several independent data sources. The experimental sources agree closely:\n\n| Source | Tc (K) | Pc (MPa) | ω |\n|---|---|---|---|\n| IUPAC | 617.0 | 3.541 | n/a |\n| CRC Handbook | 616.9 | 3.540 | n/a |\n| CoolProp (HEOS) | 616.89 | 3.5346 | 0.326 |\n| NIST WebBook | 618.0 | 3.536 | n/a |\n| Yaws | 617.0 | 3.541 | 0.327 |\n| PSRK / Poling (Properties of Gases and Liquids) | 617.0 / 617.05 | 3.546 / 3.541 | 0.331 / 0.3311 |\n\nGroup-contribution estimates (Joback, Wilson-Jasperson) give a higher Tc of about 625 K and a Pc of about 3.59 to 3.62 MPa. I left them out of the recommended values. No files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w012 && python3 -I -c \\\"\\nimport chemicals as c\\ncas='108-38-3'\\nprint(c.Tc(cas), c.Pc(cas), c.omega(cas))\\nprint(c.critical.Tc_methods(cas)); print(c.acentric.omega_methods(cas))\\nfor m in c.critical.Tc_methods(cas): print('Tc',m,c.Tc(cas,method=m))\\nfor m in c.critical.Pc_methods(cas): print('Pc'"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w012 && python3 -I -c \\\"\\nimport chemicals as c\\ncas='108-38-3'\\nfor m in c.critical.Tc_methods(cas): print('Tc',m,c.Tc(cas,method=m))\\nfor m in c.critical.Pc_methods(cas): print('Pc',m,c.Pc(cas,method=m))\\nfor m in c.acentric.omega_methods(cas): print('w',m,c.omega(cas,method=m))\\n\\\" 2>&1\", \"descr"
+  }
+ ],
+ "leak": false,
+ "run": "w012",
+ "qid": "xylene",
+ "round": 1
+}

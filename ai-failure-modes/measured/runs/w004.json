@@ -1,0 +1,13 @@
+{
+ "answer": "You need a Kv of about 29 m³/h (Cv ≈ 33). The flow is choked and in fact flashing, because the outlet pressure is below the vapour pressure. If you sized it with the full 4.5 bar drop you would get Kv ≈ 22.8, which is too small by about 26%.\n\nI used the IEC 60534-2-1 liquid sizing equations, with water properties at 130 °C and 6 bar(a) taken from CoolProp. I computed every number below.\n\n**Inputs**\n- Density ρ = 935.0 kg/m³, so ρ/ρ₀ = 0.936 (with ρ₀ = 999.1 kg/m³).\n- Vapour pressure Pv = 2.703 bar(a).\n- Critical pressure Pc = 220.64 bar.\n\n**Step 1: liquid critical pressure ratio factor**\nFF = 0.96 − 0.28·√(Pv/Pc) = 0.929\n\n**Step 2: choked pressure drop**\nΔP_choked = FL²·(P1 − FF·Pv) = 0.81 × (6 − 0.929 × 2.703) = 2.83 bar\n\nThis is less than the actual drop P1 − P2 = 4.5 bar, so the flow is choked.\n\n**Step 3: flashing check**\nP2 = 1.5 bar(a) is below Pv = 2.70 bar(a), so the liquid flashes. It does not just cavitate.\n\n**Step 4: required Kv**\nKv = Q·√((ρ/ρ₀)/ΔP_choked) = 50 × √(0.936 / 2.83) = **28.8 m³/h**, which is Cv ≈ 33.3 (Cv = 1.156·Kv).\n\n**Practical notes**\n- **Selection:** apply your usual margin and choose a valve that gives Kv ≈ 29 at about 70–80% of its travel. Its rated Kv will be roughly 40.\n- **Flashing service:** expect a two-phase mixture leaving the valve and a lot of erosion. Use hardened trim, an angle body discharging straight downstream if possible, and an enlarged outlet pipe. Check the outlet velocity of that two-phase mixture separately, because the Kv equation does not cover it.\n- **Assumptions:** I took the valve to be the same size as the line (no piping geometry factor) and the flow to be turbulent (no Reynolds correction). With 50 m³/h of water, the turbulent-flow assumption is safe. If reducers are fitted, recompute with the piping geometry factor and the combined pressure recovery factor (FLP) in place of FL.\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp && python3 -c \\\"\\ntry:\\n  from CoolProp.CoolProp import PropsSI as P\\n  rho=P('D','T',403.15,'P',6e5,'Water'); pv=P('P','T',403.15,'Q',0,'Water')/1e5; print('CoolProp',rho,pv)\\nexcept Exception as e:\\n  print('no coolprop',e)\\n  try:\\n    from iapws import IAPWS97 as W; w=W(T=403.15,P=0.6); s=W(T=403.15,x=0); rho=w.rho; pv=s.P*10; print('iapws',rho,pv)\\n  except Exception as e"
+  }
+ ],
+ "leak": false,
+ "run": "w004",
+ "qid": "valve",
+ "round": 1
+}

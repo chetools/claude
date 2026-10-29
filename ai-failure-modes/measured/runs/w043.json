@@ -1,0 +1,13 @@
+{
+ "answer": "The bubble-point pressure is about **96.3 kPa** (0.963 bar, about 722 mmHg). It is not the Raoult's-law average.\n\n**Why it's not Raoult's law:** water and n-hexane are almost completely immiscible. A 50/50 liquid at 60 °C splits into two nearly pure liquid layers, one water and one hexane. Each layer exerts its own full vapour pressure, so at the bubble point:\n\nP_bubble = P_sat(water) + P_sat(n-hexane)\n\nThis holds for any overall composition where both liquid layers are present, so the 50/50 split does not change the answer.\n\n**Values at 60 °C (333.15 K), calculated:**\n\n| | Antoine (NIST) | CoolProp |\n|---|---|---|\n| P_sat water | 19.93 kPa | 19.95 kPa |\n| P_sat n-hexane | 76.36 kPa | 76.41 kPa |\n| **Bubble-point pressure** | **96.29 kPa** | **96.36 kPa** |\n\nThe Antoine water value also matches the Buck correlation (19.945 kPa).\n\n**First vapour composition:** about 79.3 mol% hexane and 20.7 mol% water. That comes from 76.4/96.3 for hexane.\n\n**Common wrong answer:** treating the mixture as ideal (Raoult's law) gives 0.5·19.9 + 0.5·76.4 ≈ 48.1 kPa. That is roughly half the real value, because it ignores the phase split.\n\n**Not checked:** I assumed the two liquids are fully immiscible. I did not calculate the small mutual solubilities; they are expected to lower the result by much less than 1%. I made no files.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nT=333.15\\nph=10**(4.00266-1171.53/(T-48.784))*100  # NIST hexane, bar->kPa\\npw=10**(5.0768-1659.793/(T-45.854))*100 # NIST water (Bridgeman 1964, 304-333 K)\\nimport math\\npw2=0.61121*math.exp((18.678-(T-273.15)/234.5)*((T-273.15)/(257.14+T-273.15)))  # Buck\\nprint(ph,pw,pw2,ph+pw, 0.5*ph+0.5*pw, ph/(ph+pw))\\n\\\"; python3 -c \\\"import CoolProp.CoolProp as C;print(C.PropsSI"
+  }
+ ],
+ "leak": false,
+ "run": "w043",
+ "qid": "immiscible",
+ "round": 2
+}

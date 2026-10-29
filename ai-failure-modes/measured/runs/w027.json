@@ -1,0 +1,13 @@
+{
+ "answer": "The pressure drop is about 33 kPa (0.33 bar, about 4.8 psi), which is about 3.4 m of water head. This assumes a horizontal run with no elevation change and no entrance or exit losses. I computed it with a script; it has not been checked against an independent tool.\n\n**Inputs**\n- Pipe: 4\" schedule 40 has an inside diameter of 4.026 in (102.3 mm). Carbon steel roughness is 0.045 mm.\n- Water at 20 °C: density 998.2 kg/m³, viscosity 1.002 mPa·s.\n\n**Flow**\n- Velocity is 1.69 m/s.\n- Reynolds number is about 1.72 × 10⁵, so the flow is turbulent.\n- The Colebrook friction factor is 0.0188. The Swamee–Jain approximation gives 0.0189, which agrees.\n\n**Straight pipe (100 m)**\n- Using f·(L/D)·ρv²/2, the loss is about 26.2 kPa.\n\n**Fittings (Crane TP-410 K = (L/D)·f_T method)**\n- Equivalent lengths: standard 90° elbow L/D = 30, gate valve L/D = 8, swing check valve L/D = 100.\n- Total K = (6×30 + 2×8 + 100)·f_T = 296·f_T.\n- With f_T = 0.0162 from fully rough Colebrook, K is about 4.8 and the loss is about 6.9 kPa.\n- With Crane's tabulated f_T = 0.017 for 4\", the total is about 33.4 kPa.\n\n**Total: about 33.1–33.4 kPa.** About 80% of this comes from the pipe and 20% from the fittings.\n\nThe result depends on which method and values you use:\n- If the swing check valve is the clearway type (L/D = 50), the total falls to about 32 kPa.\n- The 3-K or 2-K fitting methods would give somewhat different fitting losses; I did not calculate those.\n\nThe script is at /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w027/dp.py.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w027 && cat > dp.py <<'EOF'\\nimport math\\nfrom scipy.optimize import brentq\\nQ=50/3600; D=4.026*0.0254; L=100; eps=0.045e-3\\nrho=998.21; mu=1.0016e-3\\nA=math.pi*D**2/4; v=Q/A; Re=rho*v*D/mu\\ncw=lambda f: 1/math.sqrt(f)+2*math.log10(eps/D/3.7+2.51/(Re*math.sqrt(f)))\\nf=brentq(cw,1e-4,0.1)\\nsw=0.25/m"
+  }
+ ],
+ "leak": false,
+ "run": "w027",
+ "qid": "pipe",
+ "round": 2
+}

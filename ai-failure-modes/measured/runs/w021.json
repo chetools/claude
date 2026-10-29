@@ -1,0 +1,13 @@
+{
+ "answer": "At 700 bar and 25 °C, hydrogen has a density of about **39.2 kg/m³**.\n\nI computed this with CoolProp 6.x, which uses the Leachman et al. (2009) equation of state for hydrogen:\n- Normal hydrogen: ρ = 39.22 kg/m³, compressibility factor Z = 1.451.\n- Para- and ortho-hydrogen give the same value to within 0.01 kg/m³ (39.217 and 39.218 kg/m³).\n\nAs a consistency check, the ideal-gas density is P/(RT) = 70×10⁶ / (4124.2 × 298.15) ≈ 56.9 kg/m³. Dividing that by Z = 1.451 gives 39.2 kg/m³, so the two numbers agree.\n\nBecause Z is about 1.45, the ideal-gas law would overestimate the density by about 45% at this pressure, so a real-gas equation of state is needed.\n\nI did not compare the result against NIST REFPROP or Webbook tables. No files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport CoolProp.CoolProp as CP\\nfor f in ['Hydrogen','ParaHydrogen','OrthoHydrogen']:\\n    print(f, CP.PropsSI('D','T',298.15,'P',700e5,f), CP.PropsSI('Z','T',298.15,'P',700e5,f))\\n\\\" 2>&1 || pip install -q CoolProp 2>&1 | tail -1\", \"description\": \"Compute hydrogen density with CoolProp\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w021",
+ "qid": "h2",
+ "round": 1
+}

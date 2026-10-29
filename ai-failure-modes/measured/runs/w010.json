@@ -1,0 +1,13 @@
+{
+ "answer": "Size the return line for flash steam plus condensate, about **270 m³/h** in total. Nearly all of that is flash steam. I computed this with CoolProp's water properties (IAPWS-95) and assumed an isenthalpic flash from saturated liquid at 10 barg down to 1.013 bara.\n\n**Flash calculation**\n- **Upstream:** 10 barg is 11.01 bara. Saturated liquid there is at 184.1 °C.\n- **Downstream:** the line is at atmospheric pressure, 1.013 bara and 100.0 °C.\n- **Flash fraction:** x = (h_f,upstream − h_f,downstream) / h_fg,downstream = 0.1605, so 16.1 % of the condensate flashes to steam.\n\n| Phase | Mass flow | Specific volume | Volumetric flow |\n|---|---|---|---|\n| Flash steam | 160.5 kg/h | 1.673 m³/kg | **268.6 m³/h** (0.0746 m³/s) |\n| Condensate | 839.5 kg/h | 0.001043 m³/kg | 0.88 m³/h |\n| Total | 1000 kg/h | — | **≈ 269.5 m³/h** |\n\n**Conclusions**\n- About 99.7 % of the volume is flash steam, so the line is a two-phase line sized on the vapour flow. A line sized for 1 m³/h of water would be far too small.\n- These numbers assume the condensate reaches the traps at saturation and the return line is at exactly atmospheric pressure. Any subcooling before the traps gives less flash. Any back-pressure in the return line gives a smaller steam volume.\n- **Typical practice (not verified here):** condensate return lines are usually sized on the flash-steam volume. Common velocity limits are about 15–25 m/s for flash steam in return lines, or the equivalent from a vendor chart. For example, 0.0746 m³/s at 20 m/s needs roughly a 69 mm bore, so DN80 is a likely size. Check this against your own design velocity and back-pressure limit.\n\nNo project files were changed and no library routines were used.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\ntry:\\n  from CoolProp.CoolProp import PropsSI as P\\nexcept ImportError:\\n  import subprocess;subprocess.run(['pip','install','-q','CoolProp']);from CoolProp.CoolProp import PropsSI as P\\np1=10e5+101325;p2=101325\\nh1=P('H','P',p1,'Q',0,'Water');T1=P('T','P',p1,'Q',0,'Water')-273.15\\nx=P('Q','P',p2,'H',h1,'Water');T2=P('T','P',p2,'Q',0,'Water')-273.15\\nvg=1/P('D','P',p2,'"
+  }
+ ],
+ "leak": false,
+ "run": "w010",
+ "qid": "flash",
+ "round": 1
+}

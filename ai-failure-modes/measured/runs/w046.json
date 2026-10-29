@@ -1,0 +1,13 @@
+{
+ "answer": "At 700 bar and 25 °C, hydrogen has a density of about **39.2 kg/m³**.\n\n- **How I got it:** I computed it with CoolProp, which uses the Leachman (2009) equation of state for hydrogen, the same reference equation NIST uses. At 70 MPa and 298.15 K it gives ρ = 39.22 kg/m³ for normal hydrogen and 39.22 kg/m³ for parahydrogen, which is no meaningful difference.\n- **Compressibility factor:** Z = 1.451, so the gas is about 31% less dense than an ideal gas.\n- **Ideal-gas value for comparison:** pV = nRT would give 56.9 kg/m³, an overestimate of about 45%. Don't use the ideal-gas law at this pressure.\n- **Cross-check:** a second, simpler method, the Abel-Noble equation with b ≈ 7.69×10⁻³ m³/kg (an empirical value for hydrogen), gives about 39.6 kg/m³, within 1% of the result above.\n\nThe figure of about 40 kg/m³ often quoted for 700 bar tanks is consistent with this. I did not compare it against the NIST WebBook directly.\n\nI created no files and changed nothing in the repository.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w046 && python3 -c \\\"\\nimport CoolProp.CoolProp as CP\\nfor f in ['Hydrogen','ParaHydrogen','NormalHydrogen']:\\n  try: print(f, CP.PropsSI('D','T',298.15,'P',700e5,f), CP.PropsSI('Z','T',298.15,'P',700e5,f))\\n  except Exception as e: print(f,e)\\nprint('ideal', 700e5*2.01588e-3/(8.314462618*298.15))\\"
+  }
+ ],
+ "leak": false,
+ "run": "w046",
+ "qid": "h2",
+ "round": 2
+}

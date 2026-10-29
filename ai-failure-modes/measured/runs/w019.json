@@ -1,0 +1,13 @@
+{
+ "answer": "The minimum fluidization velocity is about **3.4 cm/s (0.034 m/s)**. Depending on which correlation you use, it falls between about 2 and 5 cm/s.\n\n**Inputs**\n- Air at 20 °C and 1 atm: density ρ_g = 1.204 kg/m³ (ideal gas) and viscosity μ = 1.81×10⁻⁵ Pa·s. I took the viscosity from standard tables; I did not compute it.\n- Sand: particle diameter d_p = 200 µm and particle density ρ_p = 2650 kg/m³.\n\n**Archimedes number**\nAr = d_p³ ρ_g (ρ_p − ρ_g) g / μ² = **761**.\n\n**Main result (Wen–Yu)**\nRe_mf = √(33.7² + 0.0408·Ar) − 33.7 = 0.458, which gives U_mf = Re_mf·μ/(ρ_g d_p) = **0.0345 m/s**.\n\nRe_mf is well under 20, so the flow is in the viscous (Carman–Kozeny-like) regime. This is Geldart group B sand: it starts to bubble as soon as it fluidizes.\n\n**Other correlations (computed in the same run)**\n\n| Method | U_mf |\n|---|---|\n| Grace (C1 = 27.2, C2 = 0.0408) | 0.043 m/s |\n| Chitester (C1 = 28.7, C2 = 0.0494) | 0.049 m/s |\n| Ergun, ε_mf = 0.45, sphericity φ = 1 | 0.034 m/s |\n| Ergun, ε_mf = 0.45, φ = 0.86 (typical for sand) | 0.026 m/s |\n| Ergun, ε_mf = 0.42, φ = 0.86 | 0.021 m/s |\n\nThe Ergun results are very sensitive to the voidage at minimum fluidization (ε_mf) and to sphericity (φ). If you know those for your sand, the Ergun equation is the better estimate; if not, use about 3.5 cm/s. These figures are calculations only and were not checked against measured data.\n\nI created no files.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport math\\nfrom scipy.optimize import brentq\\nd=200e-6;rp=2650;P=101325;T=293.15;rho=P*0.028965/(8.314462*T);mu=1.813e-5;g=9.80665\\nAr=d**3*rho*(rp-rho)*g/mu**2\\nprint('rho',rho,'Ar',Ar)\\nfor name,C1,C2 in [('Wen-Yu',33.7,0.0408),('Grace',27.2,0.0408),('Chitester',28.7,0.0494)]:\\n  Re=math.sqrt(C1**2+C2*Ar)-C1; print(name,Re,Re*mu/(rho*d))\\n# Ergun with eps_mf=0.45, p"
+  }
+ ],
+ "leak": false,
+ "run": "w019",
+ "qid": "umf",
+ "round": 1
+}

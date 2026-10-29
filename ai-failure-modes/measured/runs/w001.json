@@ -1,0 +1,13 @@
+{
+ "answer": "The isentropic discharge temperature is about **496.5 K, or about 223 °C (434 °F)**. I computed this with a short Python check.\n\n**Method**\n- **Convert gauge readings to absolute pressure.** Your gauges read relative to the atmosphere, so I added standard sea-level pressure, 14.7 psi:\n  - Suction: P1 = 5 + 14.7 = 19.7 psia\n  - Discharge: P2 = 100 + 14.7 = 114.7 psia\n  - Pressure ratio: P2/P1 = 5.822\n- **Inlet temperature:** T1 = 27 °C = 300.15 K\n- **Isentropic relation:** T2 = T1 · (P2/P1)^((k−1)/k) = 300.15 × 5.822^0.2857 = 300.15 × 1.654 ≈ 496.5 K\n\n**Things to keep in mind**\n- **Atmospheric pressure:** I assumed sea level. Using 14.696 instead of 14.7 psi changes the answer by less than 0.03 K. If the plant is at high altitude, put the local pressure in its place. A lower atmospheric pressure raises the ratio and so raises T2.\n- **Gauge vs. absolute:** if the gauge readings were used directly as absolute pressures (ratio 20), the result would be about 706 K (433 °C). That is wrong.\n- **Real discharge temperature:** this is the ideal isentropic value. A real compressor with an isentropic efficiency below 100% discharges hotter than this.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nT1=300.15;k=1.4\\nfor pa in (14.696,14.7):\\n  r=(100+pa)/(5+pa);T2=T1*r**((k-1)/k);print(pa,r,T2,T2-273.15)\\nr=100/5;T2=T1*r**((k-1)/k);print('gauge-as-abs',T2,T2-273.15)\\\"\", \"description\": \"Compute isentropic discharge temperature\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w001",
+ "qid": "compressor",
+ "round": 1
+}

@@ -1,0 +1,13 @@
+{
+ "answer": "Under OSHA's Process Safety Management standard, the threshold quantity for chlorine (CAS 7782-50-5) is 1,500 lb. That figure comes from 29 CFR 1910.119, Appendix A. I looked it up in the current eCFR text of the standard today (https://www.ecfr.gov, section 1910.119) rather than going from memory.\n\nThe PSM standard applies to any process that holds chlorine at or above 1,500 lb. Under 1910.119(a)(1)(i), \"process\" covers all interconnected vessels, plus nearby vessels where one release could spread to the others.\n\nI didn't create any files apart from the downloaded page: /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w048/dl/psm.html",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"mkdir -p /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w048/dl && cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w048/dl && curl -sSL \\\"https://www.ecfr.gov/api/renderer/v1/content/enhanced/current/title-29?part=1910&section=1910.119\\\" -o psm.html; ls -la psm.html; python3 -I -c \\\"\\nimport re,html,sys\\nt=h"
+  }
+ ],
+ "leak": false,
+ "run": "w048",
+ "qid": "psm",
+ "round": 2
+}

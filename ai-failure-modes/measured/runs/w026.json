@@ -1,0 +1,13 @@
+{
+ "answer": "The discharge temperature for isentropic compression is about 496.5 K, which is 223 °C or 434 °F.\n\nGauge readings have to be converted to absolute pressure first. I assumed a sea-level atmosphere of 14.7 psi, since the question doesn't give one.\n- Suction: P1 = 5 + 14.7 = 19.7 psia\n- Discharge: P2 = 100 + 14.7 = 114.7 psia\n- Pressure ratio: P2/P1 = 5.822\n- Inlet temperature: T1 = 27 °C = 300.15 K\n\nFor isentropic compression of an ideal gas:\n\nT2 = T1 · (P2/P1)^((k−1)/k) = 300.15 × 5.822^0.2857 ≈ 496.5 K, so T2 ≈ 223 °C.\n\nI checked the arithmetic numerically. Using 14.696 psi instead of 14.7 changes the answer by less than 0.03 K. If you plug the gauge readings in directly (a ratio of 20), you get about 433 K (160 °C), which is wrong.\n\nThis is the ideal isentropic value. A real compressor runs hotter because its efficiency is below 100%. If your plant is at high altitude, put your local atmospheric pressure in place of 14.7 psi.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nT1=300.15;k=1.4\\nfor pa in (14.696,14.7):\\n  r=(100+pa)/(5+pa);T2=T1*r**((k-1)/k);print(pa,r,T2,T2-273.15)\\nr=100/5;T2=T1*r**((k-1)/k);print('gauge-as-abs',T2-273.15)\\\"\", \"description\": \"Compute isentropic discharge temperature\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w026",
+ "qid": "compressor",
+ "round": 2
+}

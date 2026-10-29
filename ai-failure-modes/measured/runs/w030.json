@@ -1,0 +1,21 @@
+{
+ "answer": "At 1 atm, a liquid of 95 mol% ethanol and 5 mol% water is in equilibrium with a vapour of about **94.6 mol% ethanol and 5.4 mol% water**. The bubble point is about **78.3 °C**.\n\nThe vapour holds slightly less ethanol than the liquid because 95% is past the ethanol–water azeotrope. Above that point water is the more volatile component, so ordinary distillation cannot push ethanol beyond the azeotrope.\n\nI computed this, not recalled it. I used a bubble-point calculation with modified Raoult's law (ideal vapour, liquid activity coefficients) in the `thermo` Python package, which supplied the vapour pressures. Three activity models agree:\n\n| Model | Bubble T (°C) | y ethanol | γ ethanol | γ water |\n|---|---|---|---|---|\n| NRTL (ChemSep parameters) | 78.26 | 0.9455 | 1.001 | 2.50 |\n| Modified UNIFAC (Dortmund) | 78.30 | 0.9467 | 1.001 | 2.44 |\n| Original UNIFAC | 78.22 | 0.9449 | 1.003 | 2.53 |\n\nAs a sanity check, the NRTL model puts the azeotrope at about x = y ≈ 0.885–0.89 ethanol and 78.18 °C. From memory, the usual literature value is 0.894 at 78.15 °C; I did not check that against a source, and I did not compare the 95% point against measured data. The spread between the three models (about ±0.001 in y) gives a rough idea of the uncertainty.\n\nThe script is `/tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w030/vle.py`. No project files were changed and no shared library routines were used.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python -c \\\"import thermo, chemicals; print(thermo.__version__)\\\" 2>&1 | tail -1; pip download thermo >/dev/null 2>&1 && echo ok\", \"description\": \"Check whether the thermo package is available\"}"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w030 && python -m venv v >/dev/null && v/bin/pip -q install thermo 2>&1 | tail -1; cat > vle.py <<'EOF'\\nfrom thermo import ChemicalConstantsPackage, PropertyCorrelationsPackage, CEOSGas, PRMIX, GibbsExcessLiquid, FlashVL\\nfrom thermo.unifac import UNIFAC, UFSG, UFIP, DOUFSG, DOUFIP2016\\nfrom therm"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/w030 && sed -i '/from chemicals import Psat/d' vle.py && v/bin/python vle.py 2>&1 | grep -v Warning\", \"description\": \"Rerun VLE script\", \"timeout\": 300000}"
+  }
+ ],
+ "leak": false,
+ "run": "w030",
+ "qid": "vle",
+ "round": 2
+}
