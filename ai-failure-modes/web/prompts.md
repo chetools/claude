@@ -136,3 +136,7 @@ inputs you choose.
 | 8. Fire-case relief | 30–50 % (properties); scenario: not estimable | ~ 15 % | latent heat: ± 10–30 % |
 | 9. Semi-batch scale-up | 20–35 % | ~ 5 % | U: ± 30–50 % |
 | 10. Flash steam | 25–40 % | < 5 % | steam enthalpies: ± 3–10 % of the flash fraction |
+
+**Measured since:** in [[m_runs_per]] fresh Opus 5.5 runs of each of these ten cases (normal tools, this repository's
+`CLAUDE.md` loaded), [[m_app_correct]] of [[m_app_graded]] answers avoided the trap. The estimates above were far too
+pessimistic for that setting; the Measured tab has the details and the errors that did occur.

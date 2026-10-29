@@ -67,6 +67,9 @@
     $('case-title').textContent = META.indexOf(c) + 1 + '. ' + c.title;
     $('res-src').textContent = src;
     $('res-src').className = 'pill' + (src.indexOf('live') === 0 ? ' ready' : '');
+    var ms = c.measured;
+    $('m-measured').textContent = 'Measured: ' + ms.correct + '/' + ms.graded + ' Opus 5.5 runs correct' +
+      (ms.side_runs ? ', side error in ' + ms.side_runs : '');
     $('m-naive').textContent = fmt(r.naive) + ' ' + r.unit;
     $('m-correct').textContent = fmt(r.correct) + ' ' + r.unit;
     $('m-naive-sub').textContent = c.naive; $('m-naive-sub').title = c.naive;

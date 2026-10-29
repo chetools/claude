@@ -157,15 +157,17 @@ def main():
 
     import cases
     import make_molab
+    import measured_page
     import runner
     import walkthrough
 
     # ---- case metadata, build-time results (self-test reference)
     meta, ref = [], {}
+    msum = measured_page.case_summary()
     for c in cases.CASES:
         d = cases.defaults(c)
         meta.append({"id": c["id"], "title": c["title"], "quantity": c["quantity"], "naive": c["naive"],
-                     "correct": c["correct"], "sweep": c["sweep"][0],
+                     "correct": c["correct"], "sweep": c["sweep"][0], "measured": msum[c["id"]],
                      "inputs": [{"name": n, "label": lab, "step": st, "value": d[n]} for n, lab, st in c["inputs"]]})
         ref[c["id"]] = {"run": cases.run(c["id"]), "sweep": cases.sweep(c["id"])}
         if not os.path.exists(os.path.join(ROOT, "web", "problems", f"{c['id']}.md")):
@@ -175,6 +177,10 @@ def main():
     kx = Katex(mods)
     x_az, T_az = cases.azeotrope()
     fills = {"co2_table": cases.co2_table(), "azeo_x": f"{100 * x_az:.1f}", "azeo_T": f"{T_az - 273.15:.1f}"}
+    fills.update(measured_page.stats())
+    app = [msum[c["id"]] for c in cases.CASES]
+    fills["m_app_correct"] = str(sum(s["correct"] for s in app))
+    fills["m_app_graded"] = str(sum(s["graded"] for s in app))
 
     def fill(text, name):
         def sub(m):
@@ -185,6 +191,7 @@ def main():
 
     prob_md = [kx.md(fill(read("web", "problems", f"{c['id']}.md"), c["id"])) for c in cases.CASES]
     prompts_md = kx.md(fill(read("web", "prompts.md"), "prompts.md"))
+    measured_md = kx.md(fill(read("web", "measured_intro.md"), "measured_intro.md"))
 
     # ---- step-by-step breakdown
     print("running the step-by-step breakdown (CPython)")
@@ -195,10 +202,11 @@ def main():
             fail(f"breakdown step {i + 1} failed:\n{r['error']}")
         steps_md.append(kx.md(cell["md"]))
         wt_plots[f"wt-{i}"] = r["figs"][0]
-    rendered = kx.finish(prob_md + [prompts_md] + steps_md)
+    rendered = kx.finish(prob_md + [prompts_md, measured_md] + steps_md)
     prob_html = rendered[:len(prob_md)]
     prompts_html = rendered[len(prob_md)]
-    steps_html = rendered[len(prob_md) + 1:]
+    measured_html = rendered[len(prob_md) + 1]
+    steps_html = rendered[len(prob_md) + 2:]
 
     blocks = []
     for i, (cell, r, prose) in enumerate(zip(walkthrough.CELLS, results, steps_html)):
@@ -213,6 +221,7 @@ def main():
     code_body = read("web", "code.html")
     code_body = code_body.replace("<!--STEPS-->", "\n".join(blocks))
     prompts_body, prompts_toc = add_toc(prompts_html, "p-", "the prompting guide")
+    measured_body, measured_toc = add_toc(measured_html + measured_page.blocks(), "m-", "the Measured tab")
 
     print("generating the MoLab notebook")
     nb = os.path.join(ROOT, "notebook", NB_NAME)
@@ -225,6 +234,11 @@ def main():
         "PYGMENTS_CSS": HtmlFormatter().get_style_defs(".codehilite"),
         "PROMPTS": prompts_body,
         "PROMPTS_TOC": prompts_toc,
+        "MEASURED": measured_body,
+        "MEASURED_TOC": measured_toc,
+        "MREF_SRC": code_html(read("python", "measured_ref.py")),
+        "EXTRACT_SRC": code_html(read("python", "extract_runs.py")),
+        "GRADING_MD": html.escape(read("measured", "GRADING.md")),
         "PROBLEMS": "\n".join(f'<div class="prob-md" data-case="{c["id"]}" hidden>{h}</div>'
                               for c, h in zip(cases.CASES, prob_html)),
         "CASE_OPTIONS": "\n".join(f'<option value="{c["id"]}">{i + 1}. {html.escape(c["title"])}</option>'
@@ -253,7 +267,10 @@ def main():
     if set(parts) - found:
         fail(f"content without a placeholder: {set(parts) - found}")
     page = re.sub(r"@@([A-Z0-9_]+)@@", lambda m: parts[m.group(1)], tpl)
-    left = re.findall(r"@@[A-Z0-9_]+@@|\[\[[a-z0-9_]+\]\]|MATHX\d+X", page.replace(parts["PLOTLY"], ""))
+    left = re.findall(r"@@[A-Z0-9_]+@@|\[\[[a-z0-9_]+\]\]|MATHX\d+X",
+                      page.replace(parts["PLOTLY"], "").replace(parts["MEASURED"], ""))
+    if re.search(r"@@[A-Z0-9_]+@@|MATHX\d+X", parts["MEASURED"]) or re.search(r"\[\[[a-z0-9_]+\]\]", measured_html):
+        fail("unfilled markers in the Measured tab")
     if left:
         fail(f"unfilled markers in the page: {sorted(set(left))[:5]}")
     dst = os.path.join(ROOT, "dist", "ai-failure-modes-standalone.html")
