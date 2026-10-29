@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Example exam: McCabe–Thiele distillation</title>
+<style>:root {
+  --bg: #f6f7f9; --card: #ffffff; --ink: #1d2330; --muted: #5d6675; --line: #dde1e7;
+  --accent: #1f5fae; --accent-ink: #ffffff; --ok: #237a45; --bad: #b3261e; --warn-bg: #fff6e0;
+  --col: 46rem;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.wrap { max-width: var(--col); margin: 0 auto; padding: 0 16px; }
+header.top { background: var(--card); border-bottom: 1px solid var(--line); }
+header.top .wrap { padding-top: 18px; padding-bottom: 14px; }
+h1 { font-size: 1.45rem; line-height: 1.25; margin: 0 0 4px; }
+.sub { color: var(--muted); font-size: .95rem; }
+.bar { position: sticky; top: 0; z-index: 5; background: var(--card); border-bottom: 1px solid var(--line); }
+.bar .wrap { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; padding-top: 8px; padding-bottom: 8px; }
+.bar .who { font-weight: 600; overflow-wrap: anywhere; }
+.bar .grow { flex: 1; }
+.timer { font-variant-numeric: tabular-nums; font-weight: 700; padding: 2px 10px; border-radius: 6px; background: #eef3fa; white-space: nowrap; }
+.timer.low { background: #fde7e5; color: var(--bad); }
+.saved { color: var(--muted); font-size: .85rem; white-space: nowrap; }
+main { padding: 18px 0 60px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin: 0 0 16px; }
+.card h2 { font-size: 1.05rem; margin: 0 0 10px; display: flex; gap: 10px; justify-content: space-between; }
+.card h2 .pts { color: var(--muted); font-weight: 500; font-size: .9rem; white-space: nowrap; }
+.section-title { font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 26px 0 10px; }
+.q p { margin: 0 0 10px; }
+.eq { overflow-x: auto; overflow-y: hidden; margin: 6px 0 12px; }
+.figure { margin: 6px 0 14px; text-align: center; }
+.figure svg { width: 100%; max-width: 480px; height: auto; }
+.opts { display: grid; gap: 8px; margin-top: 6px; }
+.opt { display: flex; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; cursor: pointer; }
+.opt:hover { border-color: #b8c3d3; }
+.opt input { margin: 0; flex: none; width: 18px; height: 18px; }
+.opt.sel { border-color: var(--accent); background: #f1f6fd; }
+.opt .lab { overflow-x: auto; }
+input.blank { font: inherit; width: 11em; max-width: 100%; padding: 2px 6px; border: 0; border-bottom: 2px solid var(--accent); background: #f4f7fb; }
+input.blank:focus { outline: 2px solid #9bbbe6; }
+.hint { color: var(--muted); font-size: .9rem; }
+textarea { width: 100%; min-height: 12em; font: inherit; padding: 10px; border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
+.count { color: var(--muted); font-size: .85rem; text-align: right; }
+label.field { display: block; margin: 0 0 12px; font-weight: 600; }
+label.field input { display: block; width: 100%; margin-top: 4px; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font-weight: 400; }
+button, .btn { font: inherit; font-weight: 600; border: 0; border-radius: 8px; padding: 10px 18px; cursor: pointer; background: var(--accent); color: var(--accent-ink); text-decoration: none; display: inline-block; }
+button.secondary, .btn.secondary { background: #e7ecf3; color: var(--ink); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.msg { border-radius: 8px; padding: 12px 14px; margin: 0 0 14px; }
+.msg.err { background: #fdecea; color: var(--bad); }
+.msg.warn { background: var(--warn-bg); }
+.msg.ok { background: #e7f5ec; color: var(--ok); }
+.receipt { font: 700 1.6rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
+dialog { border: 1px solid var(--line); border-radius: 10px; max-width: min(30rem, calc(100vw - 32px)); }
+.hidden { display: none !important; }
+/* results page */
+.wide { --col: 100rem; }
+.tablewrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; font-size: .9rem; min-width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #f0f3f7; position: sticky; top: 0; white-space: nowrap; }
+td.ok { color: var(--ok); } td.bad { color: var(--bad); }
+td .open { max-width: 28em; white-space: pre-wrap; max-height: 6.5em; overflow: hidden; cursor: pointer; }
+td .open.full { max-height: none; }
+details.key { margin: 0 0 16px; } details.key pre { white-space: pre-wrap; }
+#table td:nth-child(2), #table td:nth-child(3), #table td:nth-child(5) { white-space: nowrap; }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><h1>Example exam: McCabe–Thiele distillation</h1></div></header>
+<main><div class="wrap"><div class="card">Exam finished. Safe Exam Browser is closing; if it does not, ask the proctor.</div></div></main>
+</body>
+</html>
