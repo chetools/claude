@@ -64,6 +64,7 @@ span.sep { flex: none; color: var(--muted); font-weight: 700; padding: 0 1px; }
   .bword { gap: 2px; }
   .blank { gap: 8px 12px; }
 }
+.bref { font-weight: 700; color: var(--accent); white-space: nowrap; }
 .note { color: var(--muted); font-size: .9rem; margin: 0 0 8px; }
 textarea { width: 100%; min-height: 12em; font: inherit; padding: 10px; border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
 .count { color: var(--muted); font-size: .85rem; text-align: right; }
@@ -269,7 +270,7 @@ dialog { border: 1px solid var(--line); border-radius: 10px; max-width: min(30re
       return last;
     }
     inputs.forEach((el, k) => {
-      el.addEventListener("focus", () => setTimeout(() => { try { el.select(); } catch (e) {} }, 0));
+      el.addEventListener("focus", () => setTimeout(() => { try { if (document.activeElement === el) el.select(); } catch (e) {} }, 0));
       el.addEventListener("click", () => { try { el.select(); } catch (e) {} });
       el.addEventListener("input", () => {
         const chars = strip(el.value);
@@ -285,8 +286,7 @@ dialog { border: 1px solid var(--line); border-radius: 10px; max-width: min(30re
         const chars = strip(txt);
         if (!chars) return;
         const last = fillFrom(k, chars);
-        const nx = nextEmpty(last);
-        (nx || inputs[last]).focus();
+        (nextEmpty(last) || inputs[Math.min(last + 1, inputs.length - 1)]).focus();
         onChange();
       });
       const back = () => {
@@ -397,7 +397,7 @@ dialog { border: 1px solid var(--line); border-radius: 10px; max-width: min(30re
         row.appendChild(lab); row.appendChild(place(bi));
         // the boxes are block-level, so lift the slot out of its paragraph and put the row after it
         const p = s.closest("p") || s.parentNode;
-        s.remove();
+        s.className = "bref"; s.textContent = "(" + (bi + 1) + ")";  // inline marker; the boxes follow the paragraph
         const at = tail.get(p) || p;
         at.parentNode.insertBefore(row, at.nextSibling);
         tail.set(p, row);
@@ -414,6 +414,7 @@ dialog { border: 1px solid var(--line); border-radius: 10px; max-width: min(30re
       note.className = "note"; note.textContent = "Answer in words; equations and drawings are not needed.";
       const ta = document.createElement("textarea");
       ta.value = typeof ans[q.id] === "string" ? ans[q.id] : "";
+      ans[q.id] = ta.value;
       ta.setAttribute("aria-label", "Answer to question " + n);
       const cnt = document.createElement("div");
       cnt.className = "count";

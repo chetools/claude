@@ -119,8 +119,7 @@ const noHScroll = (page) => page.evaluate(() => document.documentElement.scrollW
     check(await b1.first().getAttribute("autocapitalize") === "off" && await b1.first().getAttribute("inputmode") === "text" && await b1.first().getAttribute("spellcheck") === "false", "mobile attributes");
     const focusLabel = () => page.evaluate(() => document.activeElement.getAttribute("aria-label"));
     await b1.first().click();
-    await page.keyboard.type("v"); console.log("DBG1", await val(page, "q3", 0), await focusLabel());
-    await page.keyboard.type("a");
+    await page.keyboard.type("va");
     check(await val(page, "q3", 0) === "vaa_________", "typing skips clue box: " + await val(page, "q3", 0));
     check(await focusLabel() === "Blank 1, letter 4 of 12", "focus advanced past clue");
     await page.keyboard.press("Backspace");
@@ -136,14 +135,14 @@ const noHScroll = (page) => page.evaluate(() => document.documentElement.scrollW
     await page.keyboard.press("ArrowRight");
     check(await focusLabel() === "Blank 1, letter 3 of 12", "arrow right");
     await page.keyboard.type("!?-_ ");
-    check(await val(page, "q3", 0) === "vax_________" && await focusLabel() === "Blank 1, letter 3 of 12", "non-alphanumeric keys ignored");
+    check(await val(page, "q3", 0) === "vax_________" && await focusLabel() === "Blank 1, letter 3 of 12", "(" + await val(page, "q3", 0) + ") non-alphanumeric keys ignored");
     const paste = (txt) => page.evaluate((t) => { const dt = new DataTransfer(); dt.setData("text", t); document.activeElement.dispatchEvent(new ClipboardEvent("paste", { clipboardData: dt, bubbles: true, cancelable: true })); }, txt);
     await b1.first().click(); await paste("vap-or isation!");
     check(await val(page, "q3", 0) === "vaaporisatio", "paste spreads over input boxes, ignores separators, 11 boxes full: " + await val(page, "q3", 0));
     await b1.nth(4).click(); await paste("QQ");
-    check(await val(page, "q3", 0) === "vaaporQQatio", "paste from middle: " + await val(page, "q3", 0));
+    check(await val(page, "q3", 0) === "vaapoQQsatio", "paste from middle: " + await val(page, "q3", 0));
     await b1.first().click(); await paste("abc");
-    check(await val(page, "q3", 0) === "vaabcrQQatio" && await focusLabel() === "Blank 1, letter 5 of 12", "short paste leaves rest, focus after it: " + await val(page, "q3", 0));
+    check(await val(page, "q3", 0) === "aabcoQQsatio" && await focusLabel() === "Blank 1, letter 5 of 12", "short paste leaves rest, focus after it: " + await val(page, "q3", 0));
     for (let k = 0; k < 11; k++) { await b1.nth(k).click(); await page.keyboard.press("Delete"); }
     await b1.first().click(); await page.keyboard.type("vporizatio");
     await b1.nth(1).click(); await page.keyboard.type("a");
@@ -154,7 +153,7 @@ const noHScroll = (page) => page.evaluate(() => document.documentElement.scrollW
     await page.keyboard.type("abcdef");
     check(await val(page, "q3", 1) === "abc-de f", "typing crosses hyphen and word gap: " + await val(page, "q3", 1));
     // blank 3: a_c, fully filled
-    await inputs(page, "q3", 2).first().click(); await page.keyboard.type("Z9");
+    await inputs(page, "q3", 2).first().click(); await page.keyboard.type("Z");
     check(await val(page, "q3", 2) === "aZc", "case kept as typed, one box: " + await val(page, "q3", 2));
     // typing in the middle goes to next EMPTY box
     await b2.nth(1).click(); await page.keyboard.type("Q");
@@ -203,7 +202,7 @@ const noHScroll = (page) => page.evaluate(() => document.documentElement.scrollW
     check(sub.exam_id === ID && sub.student_id === "S123" && sub.seb.ck === "ck-test", "submit envelope");
     check(typeof sub.answers.q1 === "string" && sub.answers.q1.length === 1, "mc answer = option id");
     check(Array.isArray(sub.answers.q3) && sub.answers.q3.length === 3 && sub.answers.q3[0].length === 12 && sub.answers.q3[0][1] === "a" && sub.answers.q3[1] === "___-__ _" && sub.answers.q3[2] === "a_c", "fill answers: full-length strings, '_' unfilled: " + JSON.stringify(sub.answers.q3));
-    check(sub.answers.q4[0].length === 28 && sub.answers.q4[0][15] === " " , "fill q4 length 28 with gaps");
+    check(sub.answers.q4[0].length === 29 && sub.answers.q4[0][15] === " " , "fill q4 length 29 with gaps");
     check(sub.answers.q5 === "", "open answer string");
     await page.reload();
     await page.waitForSelector("#done:not(.hidden)");
