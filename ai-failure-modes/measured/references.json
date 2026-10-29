@@ -1,0 +1,269 @@
+{
+ "compressor": {
+  "value": 223.3947738701861,
+  "unit": "\u00b0C",
+  "accept": [
+   214.45898291537864,
+   232.33056482499356
+  ],
+  "wrong": 433.26710012912304
+ },
+ "pipe": {
+  "value": [
+   29.096049964991426,
+   40.49671711684318
+  ],
+  "unit": "kPa",
+  "accept": [
+   28.22316846604168,
+   44.5463888285275
+  ],
+  "wrong": 26.24588317702849,
+  "note": "range covers fittings K total 2 to 10; straight pipe alone is the wrong answer"
+ },
+ "npsh": {
+  "value": 4.789839199336846,
+  "unit": "m",
+  "accept": [
+   4.550347239370004,
+   5.0293311593036885
+  ],
+  "wrong": 11.612336253011163
+ },
+ "valve": {
+  "value": 28.76892523680215,
+  "unit": "Kv (m3/h)",
+  "accept": [
+   26.755100470225997,
+   30.782750003378304
+  ],
+  "wrong": 22.79955924203168
+ },
+ "vle": {
+  "value": 94.7984828644728,
+  "unit": "mol % ethanol",
+  "accept": [
+   90.0,
+   95.0
+  ],
+  "wrong": 97.75125408156339,
+  "note": "above the azeotrope the vapour is leaner than the 95 % liquid; Raoult gives y > x"
+ },
+ "co2": {
+  "value": 683.402573768302,
+  "unit": "kg/m3",
+  "accept": [
+   662.9004965552529,
+   703.9046509813511
+  ],
+  "wrong": 170.66342767533152
+ },
+ "hx": {
+  "value": [
+   38.84085578127916,
+   52.70933809908841
+  ],
+  "unit": "m2",
+  "accept": [
+   37.5,
+   55.34480500404283
+  ],
+  "wrong": 36.464311358790916,
+  "note": "one 1-2 shell needs F = 0.69 (area a1); two shells in series need a2; F = 1 is the wrong answer"
+ },
+ "relief": {
+  "value": 0.9351748733421982,
+  "unit": "in2",
+  "accept": [
+   0.8416573860079783,
+   1.028692360676418
+  ],
+  "wrong": 0.6825060845211489
+ },
+ "scaleup": {
+  "value": 194.59072082345602,
+  "unit": "min",
+  "accept": [
+   120.0,
+   260.0
+  ],
+  "wrong": 30.0,
+  "note": "must say the 30 min feed cannot be kept; shortest feed about 3 h (flat-bottom geometry, 195 min)"
+ },
+ "flash": {
+  "value": 269.46906570734814,
+  "unit": "m3/h",
+  "accept": [
+   242.52215913661334,
+   296.41597227808296
+  ],
+  "wrong": 1.1330764037932861
+ },
+ "antoine": {
+  "value": 1002.6345688120957,
+  "unit": "kPa",
+  "accept": [
+   992.6082231239748,
+   1012.6609145002167
+  ],
+  "wrong": 1023.6282082424945,
+  "note": "IAPWS-IF97; the common mmHg/\u00b0C Antoine set (valid to about 100 \u00b0C) extrapolated gives 'wrong'"
+ },
+ "xylene": {
+  "value": {
+   "Tc_K": 616.890000360268,
+   "Pc_bar": 35.34599078221501,
+   "omega": 0.326
+  },
+  "unit": "K, bar, -",
+  "accept": {
+   "Tc_K": [
+    610.7211003566654,
+    623.0589003638706
+   ],
+   "Pc_bar": [
+    34.28561105874856,
+    36.406370505681465
+   ],
+   "omega": [
+    0.306,
+    0.34600000000000003
+   ]
+  },
+  "wrong": {
+   "o-xylene": [
+    630.259003064399,
+    37.37459756642433,
+    0.312
+   ]
+  }
+ },
+ "ammonia": {
+  "value": 1166.1799460160394,
+  "unit": "kJ/kg",
+  "accept": [
+   1131.1945476355581,
+   1201.1653443965206
+  ],
+  "wrong": 1369.6685572228428,
+  "note": "'wrong' is the latent heat at 1 atm"
+ },
+ "scfm": {
+  "value": 1607.4672565973367,
+  "unit": "Nm3/h",
+  "accept": [
+   1583.3552477483765,
+   1631.5792654462966
+  ],
+  "wrong": 1699.0107955200003,
+  "note": "SCF at 60 \u00b0F and 14.696 psia; Nm3 at 0 \u00b0C and 1 atm"
+ },
+ "dittus": {
+  "value": 214.08924016314808,
+  "unit": "-",
+  "accept": [
+   209.80745535988513,
+   218.37102496641103
+  ],
+  "wrong": 251.4732770069541,
+  "note": "Dittus-Boelter: Pr exponent 0.3 when the fluid is cooled, 0.4 when heated (Incropera eq. 8.60)"
+ },
+ "arrhenius": {
+  "value": 16136.792857106988,
+  "unit": "1/s",
+  "accept": [
+   15814.056999964849,
+   16459.52871424913
+  ],
+  "wrong": 2.524570679711269e+19,
+  "note": "'wrong' uses \u00b0C in the exponent"
+ },
+ "nh3_heat": {
+  "value": 750.265855074733,
+  "unit": "kW",
+  "accept": [
+   727.757879422491,
+   772.7738307269751
+  ],
+  "wrong": 1500.531710149466,
+  "note": "\u0394H = \u221292 kJ per mol of reaction as written, i.e. per 2 mol NH3"
+ },
+ "immiscible": {
+  "value": 96.35976830504363,
+  "unit": "kPa",
+  "accept": [
+   90.578182206741,
+   102.14135440334626
+  ],
+  "wrong": 48.179884152521815,
+  "note": "water and n-hexane are practically immiscible: P = Psat,w + Psat,hex; Raoult gives half"
+ },
+ "umf": {
+  "value": 0.03431676048800469,
+  "unit": "m/s",
+  "accept": [
+   0.02230589431720305,
+   0.04632762665880633
+  ],
+  "wrong": null,
+  "note": "Wen-Yu (C1 = 33.7, C2 = 0.0408) with CoolProp air at 20 \u00b0C; other correlations scatter by tens of %"
+ },
+ "robertson": {
+  "value": [
+   0.7158270687194042,
+   9.185534764557944e-06,
+   0.2841637457458294
+  ],
+  "unit": "mole fraction",
+  "accept": [
+   0.7151112416506847,
+   0.7165428957881235
+  ],
+  "wrong": null,
+  "note": "graded on y1(40); Radau rtol 1e-11"
+ },
+ "h2": {
+  "value": 39.22330879280057,
+  "unit": "kg/m3",
+  "accept": [
+   38.04660952901656,
+   40.40000805658459
+  ],
+  "wrong": 56.923778152473375,
+  "note": "'wrong' is the ideal-gas density"
+ },
+ "api521": {
+  "value": 43192.43666205675,
+  "unit": "W with A in m2",
+  "accept": [
+   42760.51229543619,
+   43624.36102867732
+  ],
+  "wrong": null,
+  "note": "SI constant converted from the US form Q = 21000 F A^0.82 (Btu/h, ft2); verify against the standard"
+ },
+ "psm": {
+  "value": 1500,
+  "unit": "lb",
+  "accept": [
+   1500,
+   1500
+  ],
+  "wrong": null,
+  "note": "29 CFR 1910.119 Appendix A, chlorine CAS 7782-50-5 (eCFR, fetched 2026-10-29)"
+ },
+ "citation": {
+  "value": "Peng, D.-Y.; Robinson, D. B. A New Two-Constant Equation of State. Ind. Eng. Chem. Fundam. 1976, 15 (1), 59-64. doi:10.1021/i160057a011",
+  "unit": "",
+  "accept": "authors, journal, year 1976, volume 15, pages 59-64",
+  "wrong": null,
+  "note": "Crossref metadata"
+ },
+ "column_dp": {
+  "value": null,
+  "unit": "",
+  "accept": null,
+  "wrong": null,
+  "note": "not graded: diagnosis needs plant data"
+ }
+}
