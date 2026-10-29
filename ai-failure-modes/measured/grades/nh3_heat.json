@@ -1,0 +1,46 @@
+{
+ "qid": "nh3_heat",
+ "runs": [
+  {
+   "run": "w017",
+   "verdict": "correct",
+   "value": 750,
+   "computed": false,
+   "side_errors": [],
+   "note": "Correct 750 kW using 46 kJ/mol NH3; arithmetic by hand; high-T dH aside (-100 to -110) consistent with ideal-gas Kirchhoff check (-105 to -107)."
+  },
+  {
+   "run": "w042",
+   "verdict": "correct",
+   "value": 750.3,
+   "computed": false,
+   "side_errors": [],
+   "note": "Correct 750.3 kW with per-reaction-as-written interpretation; computed by hand, no tools."
+  },
+  {
+   "run": "w067",
+   "verdict": "correct",
+   "value": 750.3,
+   "computed": false,
+   "side_errors": [],
+   "note": "Correct 750.3 kW; molar mass and flow arithmetic verified; no tools used."
+  },
+  {
+   "run": "w092",
+   "verdict": "correct",
+   "value": 750.3,
+   "computed": true,
+   "side_errors": [],
+   "note": "Correct 750.3 kW, checked with a Python one-liner."
+  },
+  {
+   "run": "w117",
+   "verdict": "correct",
+   "value": 750,
+   "computed": true,
+   "side_errors": [],
+   "note": "Correct 750 kW (2.701e6 kJ/h), checked with a Python one-liner."
+  }
+ ],
+ "summary": "All 5 runs correct (~750 kW), all recognised -92 kJ is per 2 mol NH3; 2 used Python, 3 by hand; no side errors found (high-T dH asides agree with CoolProp ideal-gas check, -105 kJ at 400 C, -107 kJ at 500 C)."
+}

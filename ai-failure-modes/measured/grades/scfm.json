@@ -1,0 +1,46 @@
+{
+ "qid": "scfm",
+ "runs": [
+  {
+   "run": "w014",
+   "verdict": "correct",
+   "value": 1607.5,
+   "computed": true,
+   "side_errors": [],
+   "note": "1607.5 Nm3/h from 60 F/14.696 psia to 0 C/1 atm, computed; alternate-basis table checked correct."
+  },
+  {
+   "run": "w039",
+   "verdict": "correct",
+   "value": 1607.5,
+   "computed": true,
+   "side_errors": [],
+   "note": "1607.5 Nm3/h, computed; table and the 20 C aside (1725) verified correct."
+  },
+  {
+   "run": "w064",
+   "verdict": "correct",
+   "value": 1607.5,
+   "computed": true,
+   "side_errors": [],
+   "note": "1607.5 Nm3/h, computed with temperature correction; table values verified."
+  },
+  {
+   "run": "w089",
+   "verdict": "correct",
+   "value": 1607.5,
+   "computed": true,
+   "side_errors": [],
+   "note": "1607.5 Nm3/h, computed; all table values verified."
+  },
+  {
+   "run": "w114",
+   "verdict": "correct",
+   "value": 1607.5,
+   "computed": true,
+   "side_errors": [],
+   "note": "1607.5 Nm3/h, computed; table including 70 F/14.696 psia (1577.1) verified."
+  }
+ ],
+ "summary": "All five runs applied the 60 F to 0 C temperature correction and gave 1607.5 Nm3/h (inside accept); all were computed with Python; no side errors found."
+}

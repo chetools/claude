@@ -1,0 +1,7 @@
+{"qid": "vle", "runs": [
+ {"run": "w005", "verdict": "correct", "value": 94.7, "computed": true, "side_errors": [], "note": "Wilson/van Laar bubble point gives y = 94.7 mol% (< x), inside accept; re-running its Antoine and model numbers reproduces 78.32/100.00 C, y = 0.9467 and 0.9481."},
+ {"run": "w030", "verdict": "correct", "value": 94.6, "computed": true, "side_errors": [], "note": "thermo NRTL/UNIFAC bubble point gives y = 94.6 mol%, inside accept, correctly below x."},
+ {"run": "w055", "verdict": "correct", "value": 94.5, "computed": true, "side_errors": [], "note": "thermo UNIFAC/NRTL bubble point gives y = 94.5 mol%, inside accept, correctly below x."},
+ {"run": "w080", "verdict": "correct", "value": 94.5, "computed": true, "side_errors": [], "note": "Wilson/UNIFAC bubble point gives y = 94.5 mol%, inside accept; stated model spread is consistent with its table."},
+ {"run": "w105", "verdict": "correct", "value": 94.5, "computed": true, "side_errors": [], "note": "Wilson bubble point gives y = 94.5 mol%, inside accept; re-running its Wilson parameters reproduces y = 0.9454 at 78.15 C."}
+], "summary": "All five runs computed a modified-Raoult bubble point and gave y = 94.5-94.7 mol% ethanol (below x, inside 90-95); none fell for the Raoult's-law y > x trap; no checkable side errors found."}

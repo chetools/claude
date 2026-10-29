@@ -1,0 +1,48 @@
+{
+ "qid": "ammonia",
+ "runs": [
+  {
+   "run": "w013",
+   "verdict": "correct",
+   "value": 1166,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp; 9.9/10.1 bar sensitivities (1167.5/1164.8) and Tsat 24.9 C check out."
+  },
+  {
+   "run": "w038",
+   "verdict": "correct",
+   "value": 1166.2,
+   "computed": true,
+   "side_errors": [],
+   "note": "CoolProp h_v-h_l at 10 bar = 1166.2 kJ/kg, inside accept range."
+  },
+  {
+   "run": "w063",
+   "verdict": "correct",
+   "value": 1166.2,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp; 25 C cross-check (1165.8 kJ/kg, 10.03 bar) verified."
+  },
+  {
+   "run": "w088",
+   "verdict": "correct",
+   "value": 1166.18,
+   "computed": true,
+   "side_errors": [
+    "Says CoolProp uses the Tillner-Roth EOS for ammonia; CoolProp 8.0.0 uses Gao et al. 2020 (JPCRD) (BibTeX-EOS = Gao-JPCRD-2020)."
+   ],
+   "note": "Value computed correctly with CoolProp, but EOS attribution is wrong for the installed version."
+  },
+  {
+   "run": "w113",
+   "verdict": "correct",
+   "value": 1166.18,
+   "computed": true,
+   "side_errors": [],
+   "note": "CoolProp h_v-h_l at 10 bar = 1166.2 kJ/kg, inside accept range. Gao 2020 EOS attribution verified."
+  }
+ ],
+ "summary": "All 5 runs computed 1166 kJ/kg with CoolProp (correct); one side error (w088 names Tillner-Roth EOS, CoolProp 8.0.0 uses Gao 2020)."
+}

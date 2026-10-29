@@ -1,0 +1,68 @@
+{
+ "qid": "xylene",
+ "runs": [
+  {
+   "run": "w012",
+   "verdict": "correct",
+   "value": {
+    "Tc_K": 617.0,
+    "Pc_bar": 35.41,
+    "omega": 0.326
+   },
+   "computed": true,
+   "side_errors": [
+    "Labels the chemicals 'PD' entry (617.05 K, 3.541 MPa, 0.3311) as 'Poling (Properties of Gases and Liquids)'; in the chemicals library PD is the Passut-Danner compilation (critical_data_PassutDanner)."
+   ],
+   "note": "Looked up m-xylene in the chemicals library; Tc 617.0 K, Pc 35.41 bar, omega 0.326-0.331 all inside the accepted ranges."
+  },
+  {
+   "run": "w037",
+   "verdict": "correct",
+   "value": {
+    "Tc_K": 617.0,
+    "Pc_bar": 35.4,
+    "omega": 0.326
+   },
+   "computed": true,
+   "side_errors": [],
+   "note": "Library lookup with per-source table; all three values inside accept, conversions (343.9 C, 34.9 atm) check out."
+  },
+  {
+   "run": "w062",
+   "verdict": "correct",
+   "value": {
+    "Tc_K": 617.0,
+    "Pc_bar": 35.41,
+    "omega": 0.326
+   },
+   "computed": true,
+   "side_errors": [],
+   "note": "Library lookup; Tc 617.0 K, Pc 35.41 bar, omega 0.326-0.331, all inside accept and source values match the library."
+  },
+  {
+   "run": "w087",
+   "verdict": "correct",
+   "value": {
+    "Tc_K": 617.0,
+    "Pc_bar": 35.4,
+    "omega": 0.326
+   },
+   "computed": true,
+   "side_errors": [],
+   "note": "Library lookup recommending the HEOS set (616.89 K, 3.5346 MPa, 0.326), which equals the reference."
+  },
+  {
+   "run": "w112",
+   "verdict": "correct",
+   "value": {
+    "Tc_K": 617.0,
+    "Pc_bar": 35.41,
+    "omega": 0.326
+   },
+   "computed": true,
+   "side_errors": [],
+   "note": "Library lookup; Tc 617.0 K, Pc 35.41 bar, omega 0.326 inside accept; the Poling recollection is labelled unverified so not graded as a side error."
+  }
+ ],
+ "summary": "All 5 runs correct (m-xylene, not o-xylene), all computed via the chemicals library; 1 side error (w012 attributes the Passut-Danner entry to Poling)."
+}

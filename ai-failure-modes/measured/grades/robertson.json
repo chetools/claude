@@ -1,0 +1,46 @@
+{
+ "qid": "robertson",
+ "runs": [
+  {
+   "run": "w020",
+   "verdict": "correct",
+   "value": 0.7158270687,
+   "computed": true,
+   "side_errors": [],
+   "note": "Radau/BDF/LSODA with analytic Jacobian at rtol 1e-12; y_A matches the reference to 10 digits."
+  },
+  {
+   "run": "w045",
+   "verdict": "correct",
+   "value": 0.7158270687,
+   "computed": true,
+   "side_errors": [],
+   "note": "Three stiff solvers with exact Jacobian; y_A matches the reference, mole-conservation argument correct."
+  },
+  {
+   "run": "w070",
+   "verdict": "correct",
+   "value": 0.71582707,
+   "computed": true,
+   "side_errors": [],
+   "note": "Three stiff solvers with exact Jacobian at rtol 1e-12; y_A matches the reference."
+  },
+  {
+   "run": "w095",
+   "verdict": "correct",
+   "value": 0.715827,
+   "computed": true,
+   "side_errors": [],
+   "note": "Three stiff solvers without Jacobian at rtol 1e-12, atol 1e-16; y_A matches (re-run confirms agreement)."
+  },
+  {
+   "run": "w120",
+   "verdict": "correct",
+   "value": 0.7158270687,
+   "computed": true,
+   "side_errors": [],
+   "note": "Three stiff solvers with exact Jacobian and per-component atol; y_A matches the reference."
+  }
+ ],
+ "summary": "All 5 runs computed the answer with implicit stiff solvers and tight tolerances; all give y_A(40)=0.715827 inside the accepted range; no side errors found."
+}

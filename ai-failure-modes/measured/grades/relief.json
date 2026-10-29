@@ -1,0 +1,46 @@
+{
+ "qid": "relief",
+ "runs": [
+  {
+   "run": "w008",
+   "verdict": "correct",
+   "value": 0.93,
+   "computed": true,
+   "side_errors": [],
+   "note": "Uses latent heat 109.5 Btu/lb and Z=0.673 at 317.2 psia relieving conditions; area 0.93 in2 in range (k=1.13 vs computed 1.115 is labelled as unverified recollection)."
+  },
+  {
+   "run": "w033",
+   "verdict": "correct",
+   "value": 0.93,
+   "computed": true,
+   "side_errors": [],
+   "note": "Relieving-condition properties from CoolProp; 0.93 in2 in range, side cases (C=315 -> 0.97, k=1.57 -> 0.83) verified."
+  },
+  {
+   "run": "w058",
+   "verdict": "correct",
+   "value": 0.935,
+   "computed": true,
+   "side_errors": [],
+   "note": "Relieving-condition properties, k=1.115, C=328; 0.935 in2 in range, critical pressure 184 psia and C=315 case 0.975 verified."
+  },
+  {
+   "run": "w083",
+   "verdict": "correct",
+   "value": 0.935,
+   "computed": true,
+   "side_errors": [],
+   "note": "Relieving-condition properties, C=328.4; 0.935 in2 in range, all intermediate values verified."
+  },
+  {
+   "run": "w108",
+   "verdict": "correct",
+   "value": 0.94,
+   "computed": true,
+   "side_errors": [],
+   "note": "Relieving-condition properties; 0.94 in2 in range, Pc 616.6 psia and Z=1/C=315 case 1.19 in2 verified."
+  }
+ ],
+ "summary": "All five runs evaluated latent heat (109.5 Btu/lb) and Z (0.673) at the 317.2 psia relieving pressure via CoolProp, giving 0.93-0.94 in2 (reference 0.935, J orifice); no checkable side errors found."
+}

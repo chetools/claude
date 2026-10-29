@@ -1,0 +1,46 @@
+{
+ "qid": "api521",
+ "runs": [
+  {
+   "run": "w022",
+   "verdict": "correct",
+   "value": 43200,
+   "computed": false,
+   "side_errors": [],
+   "note": "Gave Q = 43 200 F A^0.82 (W, m2), inside accept; no tools, but the hand conversion check (about 43 190) is correct."
+  },
+  {
+   "run": "w047",
+   "verdict": "correct",
+   "value": 43200,
+   "computed": false,
+   "side_errors": [],
+   "note": "Gave Q = 43 200 F A^0.82 (W, m2), inside accept; answered from memory with no tools; the US-form and no-drainage constants are consistent."
+  },
+  {
+   "run": "w072",
+   "verdict": "correct",
+   "value": 43200,
+   "computed": false,
+   "side_errors": [],
+   "note": "Gave Q = 43 200 F A^0.82 (W, m2), inside accept; no tools; the inline conversion 21000*0.2931/0.0929^0.82 is about 43 198, which checks."
+  },
+  {
+   "run": "w097",
+   "verdict": "correct",
+   "value": 43200,
+   "computed": false,
+   "side_errors": [],
+   "note": "Gave Q = 43 200 F A^0.82 (W, m2), inside accept; no tools; the conversion 21000*0.29307*10.7639^0.82 is about 43 190, which checks."
+  },
+  {
+   "run": "w122",
+   "verdict": "correct",
+   "value": 43200,
+   "computed": false,
+   "side_errors": [],
+   "note": "Gave Q = 43 200 F A^0.82 (W, m2), inside accept; no tools; the conversion check of about 43 190 is correct."
+  }
+ ],
+ "summary": "5/5 correct (43 200 W, m2 vs reference 43 192); all answered from memory without tools; no side errors (34 500 to 70 900 SI matches the standard's rounded value, exact conversion 70 959)."
+}

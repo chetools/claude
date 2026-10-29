@@ -1,0 +1,11 @@
+{
+  "qid": "compressor",
+  "runs": [
+    {"run": "w001", "verdict": "correct", "value": 223.4, "computed": true, "side_errors": [], "note": "Converted gauge to absolute (14.7 psi), ratio 5.822, T2 = 496.5 K = 223 C; gauge-as-absolute aside correctly given as 706 K (433 C)."},
+    {"run": "w026", "verdict": "correct", "value": 223.4, "computed": true, "side_errors": ["Gauge-as-absolute aside says 'about 433 K (160 C)'; the correct value is 706.4 K = 433.3 C (433 is the Celsius figure, mislabelled as kelvin)."], "note": "Correct absolute-pressure answer of 223 C, but the aside on the gauge-as-absolute mistake mislabels 433 C as 433 K."},
+    {"run": "w051", "verdict": "correct", "value": 223.4, "computed": true, "side_errors": ["Gauge-as-absolute aside says 'about 433 K (160 C)'; the correct value is 706.4 K = 433.3 C.", "Says the gauge-as-absolute answer is 'about 63 K too low'; it is actually about 210 K too high (706.4 K vs 496.5 K)."], "note": "Correct 223 C, but the gauge-as-absolute aside has the wrong unit and the wrong direction and size of the error."},
+    {"run": "w076", "verdict": "correct", "value": 223.4, "computed": true, "side_errors": [], "note": "Correct 223 C with absolute pressures; gauge-as-absolute aside correctly given as 433 C."},
+    {"run": "w101", "verdict": "correct", "value": 223.4, "computed": true, "side_errors": ["Gauge-as-absolute aside says 'about 433 K (160 C)'; the correct value is 706.4 K = 433.3 C.", "Says the gauge-as-absolute mistake 'understates the temperature by about 63 K'; it overstates it by about 210 K (706.4 K vs 496.5 K)."], "note": "Correct 223 C, but the gauge-as-absolute aside has the wrong unit and the wrong direction and size of the error."}
+  ],
+  "summary": "All five runs converted gauge to absolute pressure, computed with Python, and got 223 C (reference 223.4 C). Three runs (w026, w051, w101) misreport the gauge-as-absolute comparison as 433 K (160 C) instead of 706 K (433 C); two of them also say it is 63 K too low when it is about 210 K too high. That gives 5 side errors in total."
+}

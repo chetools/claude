@@ -1,0 +1,48 @@
+{
+ "qid": "hx",
+ "runs": [
+  {
+   "run": "w007",
+   "verdict": "correct",
+   "value": 52.7,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed F = 0.692 for a single 1-2 shell, giving 52.7 m2, and flagged the temperature cross with a two-shell suggestion."
+  },
+  {
+   "run": "w032",
+   "verdict": "correct",
+   "value": 52.7,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed F = 0.692 for a single 1-2 shell, giving 52.7 m2, and flagged the temperature cross with a two-shell suggestion."
+  },
+  {
+   "run": "w057",
+   "verdict": "correct",
+   "value": 52.7,
+   "computed": true,
+   "side_errors": [
+    "States NTU = 3.69 for the 1-2 effectiveness-NTU check; the correct value is NTU = UA/C_min = 1.845 (3.69 with C_min = 14.29 kW/K would give A = 105 m2, not 52.71 m2)."
+   ],
+   "note": "Computed F = 0.692 for a single 1-2 shell, giving 52.7 m2, and flagged the temperature cross with a two-shell suggestion."
+  },
+  {
+   "run": "w082",
+   "verdict": "correct",
+   "value": 52.7,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed F = 0.692 for a single 1-2 shell, giving 52.7 m2, and flagged the temperature cross with a two-shell suggestion."
+  },
+  {
+   "run": "w107",
+   "verdict": "correct",
+   "value": 52.7,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed F = 0.692 for a single 1-2 shell, giving 52.7 m2, and flagged the temperature cross with a two-shell suggestion."
+  }
+ ],
+ "summary": "All 5 runs correct at 52.7 m2 (single 1-2 shell, F = 0.692), all computed with Python and all flag the temperature cross and low F; one side error (w057 misquotes NTU as 3.69 instead of 1.845)."
+}

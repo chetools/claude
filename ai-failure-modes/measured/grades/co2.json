@@ -1,0 +1,46 @@
+{
+ "qid": "co2",
+ "runs": [
+  {
+   "run": "w006",
+   "verdict": "correct",
+   "value": 683.403,
+   "computed": true,
+   "side_errors": [],
+   "note": "CoolProp and NIST WebBook both give 683.403 kg/m3; cp 4.49 J/(g K) checks out."
+  },
+  {
+   "run": "w031",
+   "verdict": "correct",
+   "value": 683.4,
+   "computed": true,
+   "side_errors": [],
+   "note": "CoolProp and live NIST fetch give 683.4 kg/m3; critical constants correct."
+  },
+  {
+   "run": "w056",
+   "verdict": "correct",
+   "value": 683.4,
+   "computed": true,
+   "side_errors": [],
+   "note": "CoolProp Span-Wagner 683.4 kg/m3; Z=0.250 and PR 619 kg/m3 verified."
+  },
+  {
+   "run": "w081",
+   "verdict": "correct",
+   "value": 683.4,
+   "computed": true,
+   "side_errors": [],
+   "note": "CoolProp Span-Wagner 683.4 kg/m3; PR 619 kg/m3 aside verified."
+  },
+  {
+   "run": "w106",
+   "verdict": "correct",
+   "value": 683.4,
+   "computed": true,
+   "side_errors": [],
+   "note": "CoolProp 683.40 kg/m3; 691 to 675 kg/m3 sensitivity over 36.5-37.5 C verified."
+  }
+ ],
+ "summary": "All five runs computed 683.4 kg/m3 with CoolProp (Span-Wagner), inside the accepted range; no verifiable side errors found."
+}

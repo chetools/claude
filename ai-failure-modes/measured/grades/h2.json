@@ -1,0 +1,46 @@
+{
+ "qid": "h2",
+ "runs": [
+  {
+   "run": "w021",
+   "verdict": "correct",
+   "value": 39.22,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp (Leachman EOS): 39.22 kg/m3, Z=1.45, ideal-gas 56.9 noted; side figures check out."
+  },
+  {
+   "run": "w046",
+   "verdict": "correct",
+   "value": 39.22,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp: 39.22 kg/m3, Z=1.451; Abel-Noble cross-check (39.6) and '31% less dense' verified."
+  },
+  {
+   "run": "w071",
+   "verdict": "correct",
+   "value": 39.22,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp (Leachman EOS): 39.22 kg/m3, Z=1.45, ideal-gas 56.9 noted; side figures check out."
+  },
+  {
+   "run": "w096",
+   "verdict": "correct",
+   "value": 39.22,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp (Leachman EOS): 39.22 kg/m3, Z=1.45, ideal-gas 56.9 noted; side figures check out."
+  },
+  {
+   "run": "w121",
+   "verdict": "correct",
+   "value": 39.22,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp (Leachman EOS): 39.22 kg/m3, Z=1.45, ideal-gas 56.9 noted; side figures check out."
+  }
+ ],
+ "summary": "All five runs computed 39.22 kg/m3 with CoolProp (reference 39.22, accept 38.05-40.40), all correct, no verifiable side errors (para/ortho values, ideal-gas 56.9, Z=1.451, Abel-Noble 39.6 all verified)."
+}

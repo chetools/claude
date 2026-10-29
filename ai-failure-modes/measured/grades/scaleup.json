@@ -1,0 +1,7 @@
+{"qid": "scaleup", "runs": [
+ {"run": "w009", "verdict": "correct", "value": 192.0, "computed": true, "side_errors": [], "note": "Says no; shortest feed 3.0 GJ / 257 kW = 3.2 h (flat bottom), with heel cases 4.1-4.8 h that check out under a ramped-feed model."},
+ {"run": "w034", "verdict": "correct", "value": 195.0, "computed": true, "side_errors": [], "note": "Says no; at least about 3.25 h with wall plus flat bottom, and longer for wall only or a rising level (5.4 h and 7.4 h verified for constant feed)."},
+ {"run": "w059", "verdict": "correct", "value": 195.0, "computed": true, "side_errors": [], "note": "Says no; computes 195 min (wall plus bottom) or 243 min (wall only) and headlines 3.5-4 h; all of these are inside the accepted range."},
+ {"run": "w084", "verdict": "correct", "value": 192.0, "computed": true, "side_errors": [], "note": "Says no; shortest feed 3.2 h (4.05 h wall only), headline 3.5-4 h, recommends over 4 h."},
+ {"run": "w109", "verdict": "correct", "value": 192.0, "computed": true, "side_errors": [], "note": "Says no; full-level shortest feed 3.2 h (4.0 h wall only), headline 3.5-5 h, and the rising-level 5.4 h and 7.4 h figures verified."}
+], "summary": "All 5 runs correctly say the 30 min feed cannot be kept and computed a shortest feed of about 3.2 h (195 min, flat-bottom, full level), inside the 120-260 min range; the side figures checked (A/V of about 48 vs 2.1 m^-1, 139 m2 of area needed, a 195 K delta-T, the heel cases, and the adiabatic rise estimates) contain no errors."}

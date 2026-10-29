@@ -1,0 +1,46 @@
+{
+ "qid": "dittus",
+ "runs": [
+  {
+   "run": "w015",
+   "verdict": "correct",
+   "value": 214.1,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used n=0.3 for cooling and computed 214.1 in Python; the intermediate 50000^0.8 shown as 5744 (actual 5743.49) is an acceptable approximation."
+  },
+  {
+   "run": "w040",
+   "verdict": "correct",
+   "value": 214.09,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used n=0.3 for cooling, computed 214.09 in Python, and noted 251 for heating."
+  },
+  {
+   "run": "w065",
+   "verdict": "correct",
+   "value": 214.09,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used n=0.3 for cooling and computed 214.09 in Python; intermediates and range statements check out."
+  },
+  {
+   "run": "w090",
+   "verdict": "correct",
+   "value": 214.1,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used n=0.3 for cooling and computed 214.1 in Python; heating alternative 251 is correct."
+  },
+  {
+   "run": "w115",
+   "verdict": "correct",
+   "value": 214.09,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used n=0.3 for cooling and computed 214.09; intermediates 5743 and 1.621 are correct."
+  }
+ ],
+ "summary": "All five runs applied the cooling exponent n=0.3, computed Nu ~ 214.1 with Python (inside the accepted range 209.8-218.4), and correctly noted ~251 for heating; no side errors found."
+}

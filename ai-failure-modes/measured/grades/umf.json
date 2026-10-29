@@ -1,0 +1,50 @@
+{
+ "qid": "umf",
+ "runs": [
+  {
+   "run": "w019",
+   "verdict": "correct",
+   "value": 0.034,
+   "computed": true,
+   "side_errors": [
+    "Ergun results wrong: viscous term apparently used (1-eps) once too often; full Ergun (eps_mf=0.45, phi=1) gives 0.062 m/s not 0.034; (0.45, 0.86) gives 0.046 not 0.026; (0.42, 0.86) gives 0.036 not 0.021"
+   ],
+   "note": "Wen-Yu 0.0345 m/s with correct Ar 761; Grace/Chitester right, but the Ergun table entries are low by about 45%."
+  },
+  {
+   "run": "w044",
+   "verdict": "correct",
+   "value": 0.04,
+   "computed": true,
+   "side_errors": [],
+   "note": "Headline 0.04 m/s within range; Wen-Yu, Grace, Chitester, Ergun and laminar-limit values all check."
+  },
+  {
+   "run": "w069",
+   "verdict": "correct",
+   "value": 0.034,
+   "computed": true,
+   "side_errors": [],
+   "note": "Wen-Yu 0.034 m/s; Ar 755 with mu 1.82e-5 and all Ergun/laminar values verified."
+  },
+  {
+   "run": "w094",
+   "verdict": "correct",
+   "value": 0.04,
+   "computed": true,
+   "side_errors": [],
+   "note": "Answer given as 0.035-0.045 m/s (Wen-Yu 0.0345), inside range; all table values verified."
+  },
+  {
+   "run": "w119",
+   "verdict": "correct",
+   "value": 0.035,
+   "computed": true,
+   "side_errors": [
+    "Ergun results wrong (phi=0.86): eps_mf=0.42/0.45/0.48 give 0.036/0.046/0.059 m/s, not 0.021/0.026/0.031; the stated 2-4 cm/s overall range follows from this error"
+   ],
+   "note": "Wen-Yu 0.0345 m/s correct; Ergun sensitivity values are low by about 40-50%."
+  }
+ ],
+ "summary": "All 5 runs correct (Wen-Yu about 0.034-0.035 m/s, all computed). Two runs (w019, w119) report full-Ergun values about 40-50% too low, consistent with a misformulated viscous term."
+}

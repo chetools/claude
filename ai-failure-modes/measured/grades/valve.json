@@ -1,0 +1,9 @@
+{"qid": "valve",
+ "runs": [
+  {"run": "w004", "verdict": "correct", "value": 28.8, "computed": true, "side_errors": [], "note": "IEC 60534-2-1 choked-flow sizing with CoolProp properties; flags flashing (P2 < Pv = 2.70 bar) and the 22.8 unchoked trap."},
+  {"run": "w029", "verdict": "correct", "value": 28.8, "computed": true, "side_errors": [], "note": "Choked/flashing check done, dP_choked = 2.83 bar, Kv = 28.8; all intermediate values verified."},
+  {"run": "w054", "verdict": "correct", "value": 28.8, "computed": true, "side_errors": [], "note": "Correct choked-flow sizing with flashing identified; numbers match CoolProp recomputation."},
+  {"run": "w079", "verdict": "correct", "value": 28.8, "computed": true, "side_errors": [], "note": "Uses equivalent Kv = (Q/FL)·sqrt(SG/(P1-FF·Pv)) form with saturated-liquid density; result 28.8 verified."},
+  {"run": "w104", "verdict": "correct", "value": 28.8, "computed": true, "side_errors": [], "note": "Correct choked/flashing sizing, Kv 28.8 (Cv ~33), all values verified."}
+ ],
+ "summary": "All five runs computed Kv = 28.8 m3/h via IEC 60534-2-1 with a choked-flow check (dP_choked = 2.83 bar < 4.5 bar) and noted flashing; none fell for the unchoked 22.8. Verified with CoolProp: rho = 935.0 kg/m3, Pv = 2.703 bar, FF = 0.929, Kv = 28.77, Cv = 33.3. The '26% too small' phrasing (w004, w054) is the required increase (28.77/22.80 = 1.26), not counted as an error."}

@@ -1,0 +1,46 @@
+{
+ "qid": "pipe",
+ "runs": [
+  {
+   "run": "w002",
+   "verdict": "correct",
+   "value": 33.2,
+   "computed": true,
+   "side_errors": [],
+   "note": "Colebrook Darcy f=0.0188 labelled, Crane K=(L/D)f_T per fitting (total K 4.82); 33.2 kPa inside accept."
+  },
+  {
+   "run": "w027",
+   "verdict": "correct",
+   "value": 33.1,
+   "computed": true,
+   "side_errors": [],
+   "note": "Darcy-Weisbach with Colebrook f, Crane L/D per fitting (296 f_T); 33.1-33.4 kPa inside accept."
+  },
+  {
+   "run": "w052",
+   "verdict": "correct",
+   "value": 33.1,
+   "computed": true,
+   "side_errors": [],
+   "note": "Darcy f labelled, Crane K per fitting (K=4.80); 33.1 kPa inside accept."
+  },
+  {
+   "run": "w077",
+   "verdict": "correct",
+   "value": 33.4,
+   "computed": true,
+   "side_errors": [],
+   "note": "Darcy f labelled, Crane K per fitting with f_T=0.017 (K=5.03); 33.4 kPa inside accept."
+  },
+  {
+   "run": "w102",
+   "verdict": "correct",
+   "value": 33.4,
+   "computed": true,
+   "side_errors": [],
+   "note": "Colebrook Darcy f with Haaland check, Crane K table (K=5.03); 33.4 kPa inside accept."
+  }
+ ],
+ "summary": "All five runs give 33.1-33.4 kPa (pipe 26.2 kPa + fittings 6.9-7.2 kPa via Crane K=(L/D)f_T), inside accept [28.2, 44.5]; all computed with Python, all label the Darcy friction factor and give K for every fitting. Checked asides (velocity head, Swamee-Jain/Haaland/Churchill f, f_T, equivalent lengths, rho*g, clearway and entrance/exit deltas) with python3; no side errors found."
+}

@@ -1,0 +1,11 @@
+{
+ "qid": "psm",
+ "runs": [
+  {"run": "w023", "verdict": "correct", "value": 1500, "computed": true, "side_errors": [], "note": "Fetched eCFR; chlorine dioxide/pentafluoride/trifluoride at 1000 lb verified; RMP 2500 lb labelled unverified."},
+  {"run": "w048", "verdict": "correct", "value": 1500, "computed": true, "side_errors": [], "note": "Fetched eCFR Appendix A; 1500 lb matches reference."},
+  {"run": "w073", "verdict": "correct", "value": 1500, "computed": true, "side_errors": [], "note": "Fetched eCFR; quoted row and pentafluoride 1000 lb verified."},
+  {"run": "w098", "verdict": "correct", "value": 1500, "computed": true, "side_errors": [], "note": "Fetched eCFR; related compounds at 1000 lb and 'Pentrafluoride' spelling verified."},
+  {"run": "w123", "verdict": "correct", "value": 1500, "computed": true, "side_errors": [], "note": "Fetched eCFR; RMP 2500 lb aside labelled unchecked, so not graded."}
+ ],
+ "summary": "All five runs fetched 29 CFR 1910.119 Appendix A from eCFR and gave 1500 lb; no verifiable side errors."
+}

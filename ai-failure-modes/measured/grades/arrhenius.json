@@ -1,0 +1,46 @@
+{
+ "qid": "arrhenius",
+ "runs": [
+  {
+   "run": "w016",
+   "verdict": "correct",
+   "value": 16137,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used kelvin; 16,137 s^-1 inside accept range; asides check out."
+  },
+  {
+   "run": "w041",
+   "verdict": "correct",
+   "value": 16137,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used kelvin; 16,137 s^-1 inside accept range; asides check out."
+  },
+  {
+   "run": "w066",
+   "verdict": "correct",
+   "value": 16137,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used kelvin; 16,137 s^-1 inside accept range; asides check out."
+  },
+  {
+   "run": "w091",
+   "verdict": "correct",
+   "value": 16137,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used kelvin; 16,137 s^-1 inside accept range; asides check out."
+  },
+  {
+   "run": "w116",
+   "verdict": "correct",
+   "value": 16137,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used kelvin; 16,137 s^-1 inside accept range; Ea/R with R=8.314 is 9020.9 (shown as 9,020), a negligible rounding, not counted."
+  }
+ ],
+ "summary": "5/5 correct (all ~16,137 s^-1 with kelvin temperatures, all computed with Python); no side errors."
+}

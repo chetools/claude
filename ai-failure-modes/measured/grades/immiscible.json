@@ -1,0 +1,46 @@
+{
+ "qid": "immiscible",
+ "runs": [
+  {
+   "run": "w018",
+   "verdict": "correct",
+   "value": 96.3,
+   "computed": true,
+   "side_errors": [],
+   "note": "Sums Antoine vapour pressures for immiscible liquids (76.4 + 19.9 kPa); correct."
+  },
+  {
+   "run": "w043",
+   "verdict": "correct",
+   "value": 96.3,
+   "computed": true,
+   "side_errors": [],
+   "note": "Sums pure-component vapour pressures (Antoine and CoolProp, 96.29/96.36 kPa); correct."
+  },
+  {
+   "run": "w068",
+   "verdict": "correct",
+   "value": 96.4,
+   "computed": true,
+   "side_errors": [],
+   "note": "Uses immiscible-liquid sum with CoolProp and Antoine cross-check; correct."
+  },
+  {
+   "run": "w093",
+   "verdict": "correct",
+   "value": 96.3,
+   "computed": true,
+   "side_errors": [],
+   "note": "Sums NIST Antoine hexane and IAPWS water vapour pressures; correct."
+  },
+  {
+   "run": "w118",
+   "verdict": "correct",
+   "value": 96.3,
+   "computed": true,
+   "side_errors": [],
+   "note": "Sums Antoine/CoolProp vapour pressures for two liquid phases; correct."
+  }
+ ],
+ "summary": "All 5 runs recognised immiscibility and gave about 96.3 kPa (accept 90.6-102.1 kPa), all computed with tools; no verifiable side errors (checked vapour pressures, unit conversions, and the 1-atm boiling point of about 61.4 C)."
+}

@@ -1,0 +1,48 @@
+{
+ "qid": "npsh",
+ "runs": [
+  {
+   "run": "w003",
+   "verdict": "correct",
+   "value": 4.79,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp at 90 C; 95 C aside (84.6 kPa, ~1.5 m drop) checks out."
+  },
+  {
+   "run": "w028",
+   "verdict": "correct",
+   "value": 4.79,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp; 10.7 m atmospheric head and 95 C aside verified."
+  },
+  {
+   "run": "w053",
+   "verdict": "correct",
+   "value": 4.79,
+   "computed": true,
+   "side_errors": [
+    "Says the pressure margin for cold water would be roughly 10.5 m; (P_atm - P_v)/(rho g) is 10.11 m at 20 C and at most 10.25 m at 4 C (CoolProp)."
+   ],
+   "note": "Correct 4.79 m from CoolProp; cold-water comparison slightly overstated."
+  },
+  {
+   "run": "w078",
+   "verdict": "correct",
+   "value": 4.79,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp; head terms 10.70 m and 7.41 m verified."
+  },
+  {
+   "run": "w103",
+   "verdict": "correct",
+   "value": 4.79,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp and cross-checked with IF97; 1 kPa ~ 0.106 m aside verified."
+  }
+ ],
+ "summary": "All five runs computed NPSHa = 4.79 m with vapour pressure at 90 C (70.18 kPa) via CoolProp; all correct. One side error (w053: cold-water pressure margin quoted as ~10.5 m, actual ~10.1-10.25 m)."
+}

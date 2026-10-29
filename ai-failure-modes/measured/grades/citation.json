@@ -1,0 +1,46 @@
+{
+ "qid": "citation",
+ "runs": [
+  {
+   "run": "w024",
+   "verdict": "correct",
+   "value": null,
+   "computed": true,
+   "side_errors": [],
+   "note": "Gave Peng & Robinson, Ind. Eng. Chem. Fundam. 1976, 15(1), 59-64, doi:10.1021/i160057a011, matching the reference; looked up on Crossref, and the full names and February 1976 date it adds agree with the Crossref record."
+  },
+  {
+   "run": "w049",
+   "verdict": "correct",
+   "value": null,
+   "computed": true,
+   "side_errors": [],
+   "note": "Gave Peng & Robinson, Ind. Eng. Chem. Fundam. 1976, 15(1), 59-64, doi:10.1021/i160057a011, matching the reference; looked up on Crossref, and the full names and February 1976 date it adds agree with the Crossref record."
+  },
+  {
+   "run": "w074",
+   "verdict": "correct",
+   "value": null,
+   "computed": true,
+   "side_errors": [],
+   "note": "Gave Peng & Robinson, Ind. Eng. Chem. Fundam. 1976, 15(1), 59-64, doi:10.1021/i160057a011, matching the reference; looked up on Crossref, and the full names and February 1976 date it adds agree with the Crossref record."
+  },
+  {
+   "run": "w099",
+   "verdict": "correct",
+   "value": null,
+   "computed": true,
+   "side_errors": [],
+   "note": "Gave Peng & Robinson, Ind. Eng. Chem. Fundam. 1976, 15(1), 59-64, doi:10.1021/i160057a011, matching the reference; looked up on Crossref, and the full names and February 1976 date it adds agree with the Crossref record."
+  },
+  {
+   "run": "w124",
+   "verdict": "correct",
+   "value": null,
+   "computed": true,
+   "side_errors": [],
+   "note": "Gave Peng & Robinson, Ind. Eng. Chem. Fundam. 1976, 15(1), 59-64, doi:10.1021/i160057a011, matching the reference; looked up on Crossref, and the full names and February 1976 date it adds agree with the Crossref record."
+  }
+ ],
+ "summary": "5/5 correct, all computed via a Crossref lookup; no side errors (author full names and February 1976 issue date verified against Crossref)."
+}

@@ -1,0 +1,46 @@
+{
+ "qid": "column_dp",
+ "runs": [
+  {
+   "run": "w025",
+   "verdict": "not_graded",
+   "value": null,
+   "computed": false,
+   "side_errors": [],
+   "note": "Qualitative answer: says probably not flooding, lists fouling, load creep, feed change, foaming, damage, instrument fault and suggests DP checks, load test and gamma scan; no checkable numbers."
+  },
+  {
+   "run": "w050",
+   "verdict": "not_graded",
+   "value": null,
+   "computed": false,
+   "side_errors": [],
+   "note": "Qualitative answer: favours fouling over flooding, recommends section DP, load trends, gamma scan and a boilup-cut test; no checkable numbers."
+  },
+  {
+   "run": "w075",
+   "verdict": "not_graded",
+   "value": null,
+   "computed": false,
+   "side_errors": [],
+   "note": "Qualitative answer: points to fouling with flooding as a later risk, suggests DP vs F-factor against the design curve and a gamma scan; no checkable numbers."
+  },
+  {
+   "run": "w100",
+   "verdict": "not_graded",
+   "value": null,
+   "computed": false,
+   "side_errors": [],
+   "note": "Qualitative answer: says load-driven flooding is unlikely at constant loads, lists fouling, foaming, hidden load changes, damage and instrument drift with diagnostics; no checkable numbers."
+  },
+  {
+   "run": "w125",
+   "verdict": "not_graded",
+   "value": null,
+   "computed": false,
+   "side_errors": [],
+   "note": "Qualitative answer: declines to decide without data, lists fouling, load creep, foaming, false reading and damage and suggests instrument check, gamma scan and design comparison; no checkable numbers."
+  }
+ ],
+ "summary": "Not graded. All 5 runs answered from memory (no tool calls), each saying a slow two-week rise at constant feed points more to fouling, foaming, hidden load changes or an instrument fault than to flooding, and each recommending plant data (sectional DP, load trends, gamma scan, foam test). This matches the reference note. No checkable side errors were found: the answers contain no numbers, and the physical statements (for example, lower pressure gives lower vapour density and higher velocity at the same mass rate) are correct."
+}

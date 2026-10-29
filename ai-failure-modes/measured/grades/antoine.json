@@ -1,0 +1,46 @@
+{
+ "qid": "antoine",
+ "runs": [
+  {
+   "run": "w011",
+   "verdict": "correct",
+   "value": 997.4,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used the 99-374 C Antoine set (8.14019/1810.94/244.485, mmHg, C) giving 7481 mmHg = 997.4 kPa, within accept; checked against IAPWS; all side figures verified."
+  },
+  {
+   "run": "w036",
+   "verdict": "correct",
+   "value": 997.4,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used the 99-374 C Antoine set (8.14019/1810.94/244.485, mmHg, C) giving 7481 mmHg = 997.4 kPa, within accept; checked against IAPWS; all side figures verified."
+  },
+  {
+   "run": "w061",
+   "verdict": "correct",
+   "value": 997.4,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used the 99-374 C Antoine set (8.14019/1810.94/244.485, mmHg, C) giving 7481 mmHg = 997.4 kPa, within accept; checked against IAPWS; all side figures verified."
+  },
+  {
+   "run": "w086",
+   "verdict": "correct",
+   "value": 997.4,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used the 99-374 C Antoine set (8.14019/1810.94/244.485, mmHg, C) giving 7481 mmHg = 997.4 kPa, within accept; checked against IAPWS; all side figures verified."
+  },
+  {
+   "run": "w111",
+   "verdict": "correct",
+   "value": 997.4,
+   "computed": true,
+   "side_errors": [],
+   "note": "Used the 99-374 C Antoine set (8.14019/1810.94/244.485, mmHg, C) giving 7481 mmHg = 997.4 kPa, within accept; checked against IAPWS; all side figures verified."
+  }
+ ],
+ "summary": "5/5 correct: every run used the high-temperature Antoine set (997.4 kPa, -0.5% vs IAPWS 1002.6-1002.8 kPa), computed it in Python and cross-checked with iapws/CoolProp; no side errors found (NIST-set 10.87 bar, 1-100 C set 1023.6 kPa, percentage deviations all verified)."
+}

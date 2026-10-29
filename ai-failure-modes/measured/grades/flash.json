@@ -1,0 +1,48 @@
+{
+ "qid": "flash",
+ "runs": [
+  {
+   "run": "w010",
+   "verdict": "correct",
+   "value": 269.5,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed isenthalpic flash with CoolProp: x=0.1605, 268.6 m3/h steam + 0.88 m3/h liquid = 269.5 m3/h; 69 mm bore at 20 m/s checks out."
+  },
+  {
+   "run": "w035",
+   "verdict": "correct",
+   "value": 270,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp; ~270 m3/h total, 240x-vs-water comparison (actual 238x) is fine."
+  },
+  {
+   "run": "w060",
+   "verdict": "correct",
+   "value": 269.5,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp; 269.5 m3/h and mixture density 3.7 kg/m3 correct; the 0.5 barg '~30% lower' aside (actual ~40%) is under a heading labelled not calculated, so not counted."
+  },
+  {
+   "run": "w085",
+   "verdict": "correct",
+   "value": 269.5,
+   "computed": true,
+   "side_errors": [
+    "Says CoolProp uses IAPWS-97; CoolProp's Water EOS is IAPWS-95 (Wagner & Pruss 2002), not IAPWS-97."
+   ],
+   "note": "Computed with CoolProp; 269.5 m3/h correct, but misnames the property formulation."
+  },
+  {
+   "run": "w110",
+   "verdict": "correct",
+   "value": 269.5,
+   "computed": true,
+   "side_errors": [],
+   "note": "Computed with CoolProp; 269.5 m3/h correct; the 70-80 mm bore range (actual 62-80 mm for 15-25 m/s) is labelled an unchecked rule of thumb, so not counted."
+  }
+ ],
+ "summary": "All 5 runs computed the flash fraction (0.1605) with CoolProp and answered ~269.5 m3/h, inside the accept range; 1 side error (w085 calls CoolProp's water EOS IAPWS-97 instead of IAPWS-95)."
+}
