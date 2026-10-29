@@ -1,0 +1,8 @@
+{
+  "name": "seb-exams-worker",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "js-yaml": "4.1.0"
+  }
+}

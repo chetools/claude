@@ -1,0 +1,88 @@
+format: seb-exam/1
+title: |
+  Example: vapour pressure and the Antoine equation
+duration_minutes: 20
+intro: |
+  A short example exam about the vapour pressure of water. Pressures are in mmHg and temperatures in °C.
+  The Antoine equation for water (valid 1 to 100 °C) is
+
+  $$\log_{10} P = A - \frac{B}{C + T}, \qquad A = 8.07131,\; B = 1730.63,\; C = 233.426 .$$
+questions:
+  - id: boiling-from-graph
+    type: mc
+    points: 2
+    text: |
+      **Boiling point from a graph.** The graph shows the vapour pressure of water calculated from the
+      Antoine equation. Water in an open pan at sea level is exposed to the atmospheric pressure of
+      760 mmHg. At which temperature does it boil?
+    image: vapour-pressure.svg
+    image_alt: |
+      Graph of the vapour pressure of water in mmHg against temperature in °C from 20 to 100 °C. The curve rises
+      steeply, from about 18 mmHg at 20 °C to about 760 mmHg at 100 °C, where it meets the dashed horizontal line
+      marked 760 mmHg (1 atm).
+    options:
+      - text: |
+          $100\ ^\circ\mathrm{C}$
+        correct: true
+      - text: |
+          $90\ ^\circ\mathrm{C}$
+      - text: |
+          $80\ ^\circ\mathrm{C}$
+      - text: |
+          $70\ ^\circ\mathrm{C}$
+
+  - id: solve-for-t
+    type: mc
+    points: 2
+    text: |
+      **Rearranging the Antoine equation.** Starting from
+
+      $$\log_{10} P = A - \frac{B}{C + T},$$
+
+      which expression gives the boiling temperature $T$ at a given pressure $P$?
+    options:
+      - text: |
+          $T = \dfrac{B}{A - \log_{10} P} - C$
+        correct: true
+      - text: |
+          $T = \dfrac{B}{A + \log_{10} P} - C$
+      - text: |
+          $T = \dfrac{B}{A - \log_{10} P} + C$
+      - text: |
+          $T = \dfrac{A - \log_{10} P}{B} - C$
+
+  - id: boiling-condition
+    type: fill
+    points: 3
+    text: |
+      **Boiling.** A liquid boils when its vapour pressure equals the [[1]] pressure above it.
+      For water at 1 atm this happens at [[2]] °C.
+    blanks:
+      - answer: atmospheric
+        clue: "_____p_____"
+      - answer: "100"
+
+  - id: enthalpy-of-vaporization
+    type: fill
+    points: 2
+    text: |
+      **Energy to evaporate.** The energy needed to turn one mole of liquid into vapour at constant
+      temperature and pressure is the molar [[1]].
+    blanks:
+      - answer: heat of vaporization
+        variants: [heat of vaporisation]
+        clue: "____ __ v__________n"
+
+  - id: why-altitude
+    type: open
+    points: 4
+    text: |
+      **Boiling on a mountain.** Explain in words why the vapour pressure of a liquid rises as it is
+      heated, and why water boils at a lower temperature on a high mountain than at sea level.
+    model_answer: |
+      Heating gives the molecules more kinetic energy, so a larger fraction of them can escape from the
+      liquid surface into the gas phase; at equilibrium more molecules are in the vapour, which means a
+      higher vapour pressure. A liquid boils when its vapour pressure equals the pressure of the
+      surrounding gas, so that vapour bubbles can form inside the liquid. On a high mountain the
+      atmospheric pressure is lower, so the vapour pressure only has to reach this lower value, which
+      happens at a lower temperature.

@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exam</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+<style>
+:root {
+  --bg: #f6f7f9; --card: #ffffff; --ink: #1d2330; --muted: #5d6675; --line: #dde1e7;
+  --accent: #1f5fae; --accent-ink: #ffffff; --ok: #237a45; --bad: #b3261e; --warn-bg: #fff6e0;
+  --col: 46rem;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; overflow-wrap: break-word; }
+.wrap { max-width: var(--col); margin: 0 auto; padding: 0 16px; }
+header.top { background: var(--card); border-bottom: 1px solid var(--line); }
+header.top .wrap { padding-top: 18px; padding-bottom: 14px; }
+h1 { font-size: 1.45rem; line-height: 1.25; margin: 0 0 4px; }
+.sub { color: var(--muted); font-size: .95rem; }
+.bar { position: sticky; top: 0; z-index: 5; background: var(--card); border-bottom: 1px solid var(--line); }
+.bar .wrap { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; padding-top: 8px; padding-bottom: 8px; }
+.bar .who { font-weight: 600; overflow-wrap: anywhere; }
+.bar .grow { flex: 1; }
+.bar .small { color: var(--muted); font-size: .85rem; white-space: nowrap; }
+.timer { font-variant-numeric: tabular-nums; font-weight: 700; padding: 2px 10px; border-radius: 6px; background: #eef3fa; white-space: nowrap; }
+.timer.low { background: #fde7e5; color: var(--bad); }
+main { padding: 18px 0 60px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin: 0 0 16px; }
+.card h2 { font-size: 1.05rem; margin: 0 0 10px; display: flex; gap: 10px; justify-content: space-between; }
+.card h2 .pts { color: var(--muted); font-weight: 500; font-size: .9rem; white-space: nowrap; }
+.section-title { font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 26px 0 10px; }
+.q p { margin: 0 0 10px; }
+.q .katex-display { overflow-x: auto; overflow-y: hidden; padding: 2px 0; }
+.figure { margin: 6px 0 14px; text-align: center; }
+.figure img { max-width: 100%; height: auto; }
+.opts { display: grid; gap: 8px; margin-top: 6px; }
+.opt { display: flex; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; cursor: pointer; }
+.opt:hover { border-color: #b8c3d3; }
+.opt input { margin: 0; flex: none; width: 18px; height: 18px; }
+.opt.sel { border-color: var(--accent); background: #f1f6fd; }
+.opt .lab { overflow-x: auto; min-width: 0; }
+.opt .lab p { margin: 0; }
+/* fill-in-the-blank boxes */
+.fillrow { margin: 10px 0 14px; }
+.fillrow .blabel { font-size: .8rem; color: var(--muted); margin: 0 0 4px; }
+.blank { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.bword { display: inline-flex; align-items: center; gap: 3px; max-width: 100%; }
+.box { flex: 0 1 2.1rem; min-width: 0; width: 2.1rem; height: 2.5rem; padding: 0; text-align: center;
+  font: 600 1.15rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; border-radius: 6px; }
+input.box { border: 1.5px solid #9aa8bd; background: #fff; color: var(--ink); caret-color: transparent; border-bottom-width: 3px; }
+input.box:focus { outline: none; border-color: var(--accent); background: #eef5ff; box-shadow: 0 0 0 3px #bcd5f5; }
+input.box:not(:placeholder-shown) { border-color: var(--accent); }
+span.box.clue { display: inline-flex; align-items: center; justify-content: center; background: #e3e8ef; color: #38414f;
+  border: 1.5px solid #c3ccd9; border-bottom-width: 3px; }
+span.sep { flex: none; color: var(--muted); font-weight: 700; padding: 0 1px; }
+@media (max-width: 480px) {
+  .card { padding: 14px; }
+  .box { font-size: 1rem; flex-basis: 1.9rem; width: 1.9rem; height: 2.4rem; }
+  .bword { gap: 2px; }
+  .blank { gap: 8px 12px; }
+}
+.note { color: var(--muted); font-size: .9rem; margin: 0 0 8px; }
+textarea { width: 100%; min-height: 12em; font: inherit; padding: 10px; border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
+.count { color: var(--muted); font-size: .85rem; text-align: right; }
+label.field { display: block; margin: 0 0 12px; font-weight: 600; }
+label.field input { display: block; width: 100%; margin-top: 4px; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font-weight: 400; }
+button, .btn { font: inherit; font-weight: 600; border: 0; border-radius: 8px; padding: 10px 18px; cursor: pointer; background: var(--accent); color: var(--accent-ink); text-decoration: none; display: inline-block; }
+button.secondary, .btn.secondary { background: #e7ecf3; color: var(--ink); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.msg { border-radius: 8px; padding: 12px 14px; margin: 0 0 14px; }
+.msg.err { background: #fdecea; color: var(--bad); }
+.msg.warn { background: var(--warn-bg); }
+.msg.ok { background: #e7f5ec; color: var(--ok); }
+.receipt { font: 700 1.6rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; overflow-wrap: anywhere; }
+dialog { border: 1px solid var(--line); border-radius: 10px; max-width: min(30rem, calc(100vw - 32px)); }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><h1 id="title">Exam</h1><div class="sub" id="sub">Loading…</div></div></header>
+<div class="bar hidden" id="bar"><div class="wrap">
+  <span class="who" id="who"></span><span class="grow"></span>
+  <span class="small" id="answered"></span><span class="small" id="saved"></span>
+  <span class="timer" id="timer" role="timer" aria-label="Time left">--:--</span>
+  <button id="submitbtn">Submit</button>
+</div></div>
+<main><div class="wrap">
+  <div id="msg" aria-live="polite"></div>
+
+  <section id="start" class="hidden">
+    <div class="card" id="infocard"></div>
+    <div id="sebgate" class="card hidden">
+      <p><strong>This exam must be taken in Safe Exam Browser.</strong> You are not in Safe Exam Browser now, so you cannot start.</p>
+      <div class="row"><a class="btn" id="seblink" href="#">Open in Safe Exam Browser</a><a class="btn secondary" id="sebfile" href="#">Download the .seb file</a></div>
+    </div>
+    <form id="startform" class="card" autocomplete="off">
+      <label class="field">Your name<input id="name" required autocomplete="off"></label>
+      <label class="field">Student ID<input id="sid" required autocomplete="off" autocapitalize="characters"></label>
+      <p class="note">You can submit only once. The timer starts when you press Start; reloading the page does not restart it.</p>
+      <button id="startbtn" type="submit">Start exam</button>
+    </form>
+  </section>
+
+  <section id="exam" class="hidden">
+    <div class="card hidden" id="introcard"></div>
+    <div id="questions"></div>
+    <div class="card"><div class="row"><button id="submitbtn2">Submit exam</button><span class="note" style="margin:0">You can submit only once.</span></div></div>
+  </section>
+
+  <section id="done" class="hidden">
+    <div class="card">
+      <div class="msg ok">Submitted ✓ Your answers have been received.</div>
+      <p>Your receipt (keep it as proof of submission):</p>
+      <div class="receipt" id="receipt"></div>
+      <p style="margin-top:18px"><a class="btn" id="quit" href="#">Quit exam</a></p>
+    </div>
+  </section>
+</div></main>
+
+<dialog id="confirm">
+  <p id="confirmtext"></p>
+  <div class="row"><button id="yes">Submit now</button><button id="no" class="secondary">Go back</button></div>
+</dialog>
+
+<script>
+(function () {
+  "use strict";
+  const WORKER = "https://seb-exams.carloscomail.workers.dev";
+  const QUIT_URL = "https://chetools.github.io/claude/seb_exams/exam/done.html";
+  const params = new URLSearchParams(location.search);
+  const isLocal = location.hostname === "localhost";
+  const API = (isLocal && params.get("api")) || WORKER;
+  const EXAM_ID = params.get("id") || "";
+  const $ = (id) => document.getElementById(id);
+
+  let info = null, exam = null, state = null, offset = 0, endsAt = 0;
+  let timerId = null, submitting = false, timeIsUp = false;
+
+  const md = window.markdownit({ html: false, linkify: false, breaks: false });
+  function storeKey(sid) { return "sebexam2:" + EXAM_ID + ":" + sid; }
+  function lsGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+
+  function message(text, kind) {
+    const m = $("msg");
+    m.innerHTML = "";
+    if (!text) return;
+    const d = document.createElement("div");
+    d.className = "msg " + (kind || "err");
+    d.textContent = text;
+    m.appendChild(d);
+  }
+
+  // ---------------------------------------------------------------- Safe Exam Browser
+  function sebPresent() { return !!(window.SafeExamBrowser && window.SafeExamBrowser.security); }
+  function sebKeys() {
+    return new Promise((resolve) => {
+      if (!sebPresent()) return resolve(null);
+      const s = window.SafeExamBrowser.security;
+      let fin = false;
+      const done = () => { if (fin) return; fin = true; resolve({ ck: s.configKey || "", url: location.href.split("#")[0] }); };
+      if (typeof s.updateKeys === "function") { s.updateKeys(done); setTimeout(done, 3000); }
+      else done();
+    });
+  }
+
+  async function call(method, path, body) {
+    const opt = { method, headers: {} };
+    if (body) { opt.headers["Content-Type"] = "application/json"; opt.body = JSON.stringify(body); }
+    const r = await fetch(API + path, opt);
+    let data = {};
+    try { data = await r.json(); } catch (e) { /* non-JSON error body */ }
+    return { status: r.status, data };
+  }
+
+  // ---------------------------------------------------------------- markdown + math
+  function renderMath(tex, display) {
+    try { return window.katex.renderToString(tex, { displayMode: display, throwOnError: false }); }
+    catch (e) { return ""; }
+  }
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  // Protect $…$ and $$…$$ (and the [[n]] blank markers), run markdown, then put the pieces back.
+  function mdRender(src, inline) {
+    const maths = [];
+    let t = String(src || "").replace(/\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g, (m, d, i) => {
+      maths.push(d !== undefined ? renderMath(d, true) : renderMath(i, false));
+      return "MATHTOKEN" + (maths.length - 1) + "X";
+    });
+    t = t.replace(/\[\[(\d+)\]\]/g, (m, n) => "BLANKTOKEN" + n + "X");
+    let html = inline ? md.renderInline(t) : md.render(t);
+    html = html.replace(/MATHTOKEN(\d+)X/g, (m, n) => maths[+n] || "");
+    html = html.replace(/BLANKTOKEN(\d+)X/g, (m, n) => '<span class="blankslot" data-blank="' + n + '"></span>');
+    return html;
+  }
+
+  // ---------------------------------------------------------------- per-student shuffle
+  function rng(seed) {
+    let h = 2166136261;
+    for (const c of seed) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+    h = h >>> 0 || 1;
+    return () => { h ^= h << 13; h >>>= 0; h ^= h >>> 17; h ^= h << 5; h >>>= 0; return (h % 1e9) / 1e9; };
+  }
+  function shuffle(a, r) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+  // ---------------------------------------------------------------- fill-in-the-blank boxes
+  const ALNUM = /[A-Za-z0-9]/;
+  const strip = (s) => String(s || "").replace(/[^A-Za-z0-9]/g, "");
+
+  // pattern: "_" = input box, other letter/digit = fixed clue box, space/hyphen = separator.
+  // value() returns the pattern-length string with "_" for empty input boxes.
+  function buildBlank(qid, bi, pattern, saved, onChange) {
+    const wrap = document.createElement("div");
+    wrap.className = "blank";
+    wrap.setAttribute("role", "group");
+    wrap.setAttribute("aria-label", "Blank " + (bi + 1));
+    const total = [...pattern].filter((c) => ALNUM.test(c) || c === "_").length;
+    const inputs = [];
+    const cells = [];  // {ch} for clue/sep text or {input}
+    let word = null, letter = 0;
+    const newWord = () => { word = document.createElement("span"); word.className = "bword"; wrap.appendChild(word); };
+    newWord();
+    [...pattern].forEach((ch, pos) => {
+      if (ch === " ") { if (word.childNodes.length) newWord(); cells.push({ ch: " " }); return; }
+      if (ch === "-") {
+        const s = document.createElement("span");
+        s.className = "sep"; s.textContent = "-"; s.setAttribute("aria-hidden", "true");
+        word.appendChild(s); newWord(); cells.push({ ch: "-" }); return;
+      }
+      letter++;
+      const label = "Blank " + (bi + 1) + ", letter " + letter + " of " + total;
+      if (ch === "_") {
+        const el = document.createElement("input");
+        el.className = "box"; el.type = "text"; el.maxLength = 1; el.placeholder = " ";
+        el.setAttribute("aria-label", label);
+        el.setAttribute("autocapitalize", "off"); el.setAttribute("autocomplete", "off");
+        el.setAttribute("autocorrect", "off"); el.setAttribute("inputmode", "text");
+        el.spellcheck = false;
+        const sv = saved && saved[pos];
+        if (sv && ALNUM.test(sv)) el.value = sv;
+        el.dataset.k = inputs.length;
+        inputs.push(el);
+        word.appendChild(el);
+        cells.push({ input: el });
+      } else {
+        const s = document.createElement("span");
+        s.className = "box clue"; s.textContent = ch;
+        s.setAttribute("role", "img"); s.setAttribute("aria-label", label + ", given: " + ch);
+        word.appendChild(s);
+        cells.push({ ch });
+      }
+    });
+    if (!word.childNodes.length) word.remove();
+
+    function value() { return cells.map((c) => (c.input ? (c.input.value || "_") : c.ch)).join(""); }
+    wrap.value = value;
+    wrap.typed = () => inputs.filter((i) => i.value).length;
+    wrap.size = () => inputs.length;
+
+    function nextEmpty(from) { for (let j = from + 1; j < inputs.length; j++) if (!inputs[j].value) return inputs[j]; return null; }
+    function fillFrom(k, chars) {
+      let j = k, last = k;
+      for (const c of chars) { if (j >= inputs.length) break; inputs[j].value = c; last = j; j++; }
+      return last;
+    }
+    inputs.forEach((el, k) => {
+      el.addEventListener("focus", () => setTimeout(() => { try { el.select(); } catch (e) {} }, 0));
+      el.addEventListener("click", () => { try { el.select(); } catch (e) {} });
+      el.addEventListener("input", () => {
+        const chars = strip(el.value);
+        if (!chars) { el.value = ""; onChange(); return; }
+        const last = fillFrom(k, chars);
+        const nx = nextEmpty(last);
+        (nx || inputs[last]).focus();
+        onChange();
+      });
+      el.addEventListener("paste", (e) => {
+        e.preventDefault();
+        const txt = (e.clipboardData || window.clipboardData).getData("text");
+        const chars = strip(txt);
+        if (!chars) return;
+        const last = fillFrom(k, chars);
+        const nx = nextEmpty(last);
+        (nx || inputs[last]).focus();
+        onChange();
+      });
+      const back = () => {
+        if (el.value) { el.value = ""; }
+        else if (k > 0) { inputs[k - 1].value = ""; inputs[k - 1].focus(); }
+        onChange();
+      };
+      el.addEventListener("keydown", (e) => {
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        const key = e.key;
+        if (key === "Backspace") { e.preventDefault(); back(); }
+        else if (key === "Delete") { e.preventDefault(); el.value = ""; onChange(); }
+        else if (key === "ArrowLeft") { e.preventDefault(); if (k > 0) inputs[k - 1].focus(); }
+        else if (key === "ArrowRight") { e.preventDefault(); if (k < inputs.length - 1) inputs[k + 1].focus(); }
+        else if (key === "Home") { e.preventDefault(); inputs[0].focus(); }
+        else if (key === "End") { e.preventDefault(); inputs[inputs.length - 1].focus(); }
+        else if (key.length === 1 && !ALNUM.test(key)) e.preventDefault();  // only [A-Za-z0-9]
+      });
+      // Mobile keyboards often send Backspace as beforeinput only.
+      el.addEventListener("beforeinput", (e) => {
+        if (e.inputType === "deleteContentBackward" && !el.value) { e.preventDefault(); back(); }
+      });
+    });
+    return wrap;
+  }
+
+  // ---------------------------------------------------------------- rendering
+  const SECTIONS = [["mc", "Multiple choice"], ["fill", "Fill in the blank"], ["open", "Open-ended"]];
+  let order = [];  // questions in display order, with their number
+
+  function render() {
+    const r = rng(EXAM_ID + "|" + state.student_id);
+    const box = $("questions");
+    box.innerHTML = "";
+    order = [];
+    let n = 0;
+    for (const [type, title] of SECTIONS) {
+      const qs = shuffle(exam.questions.filter((q) => q.type === type), r);
+      if (!qs.length) continue;
+      const h = document.createElement("div");
+      h.className = "section-title"; h.textContent = title;
+      box.appendChild(h);
+      for (const q of qs) { n++; order.push({ q, n }); box.appendChild(renderQ(q, n, r)); }
+    }
+    if (exam.intro) { $("introcard").innerHTML = mdRender(exam.intro); $("introcard").classList.remove("hidden"); }
+    countAnswered();
+  }
+
+  function renderQ(q, n, r) {
+    const card = document.createElement("div");
+    card.className = "card q"; card.dataset.q = q.id;
+    const h = document.createElement("h2");
+    h.innerHTML = '<span>Question ' + n + '</span><span class="pts"></span>';
+    h.lastChild.textContent = q.points + (q.points === 1 ? " point" : " points");
+    card.appendChild(h);
+    const body = document.createElement("div");
+    body.innerHTML = mdRender(q.text);
+    card.appendChild(body);
+    if (q.image) {
+      const f = document.createElement("div");
+      f.className = "figure";
+      const img = document.createElement("img");
+      img.alt = q.image_alt || "image"; img.src = q.image;
+      f.appendChild(img); card.appendChild(f);
+    }
+    const ans = state.answers;
+    if (q.type === "mc") {
+      const opts = document.createElement("div");
+      opts.className = "opts"; opts.setAttribute("role", "radiogroup");
+      const list = (q.shuffle_options === false || q.shuffle === false) ? q.options : shuffle(q.options, r);
+      for (const o of list) {
+        const lab = document.createElement("label");
+        lab.className = "opt";
+        lab.innerHTML = '<input type="radio"><span class="lab"></span>';
+        lab.querySelector(".lab").innerHTML = mdRender(o.text);
+        const inp = lab.querySelector("input");
+        inp.name = "q-" + q.id; inp.value = o.id;
+        inp.checked = ans[q.id] === o.id;
+        lab.classList.toggle("sel", inp.checked);
+        inp.addEventListener("change", () => {
+          ans[q.id] = o.id;
+          opts.querySelectorAll(".opt").forEach((l) => l.classList.toggle("sel", l.querySelector("input").checked));
+          changed();
+        });
+        opts.appendChild(lab);
+      }
+      card.appendChild(opts);
+    } else if (q.type === "fill") {
+      const saved = Array.isArray(ans[q.id]) ? ans[q.id] : [];
+      q._widgets = [];
+      const place = (bi) => {
+        const w = buildBlank(q.id, bi, q.blanks[bi].pattern, saved[bi] || "", () => {
+          ans[q.id] = q._widgets.map((x) => x.value()); changed();
+        });
+        q._widgets[bi] = w; return w;
+      };
+      const slots = card.querySelectorAll(".blankslot");
+      const used = new Set();
+      const tail = new Map();  // paragraph -> last row inserted after it, so rows keep blank order
+      slots.forEach((s) => {
+        const bi = (+s.dataset.blank) - 1;
+        if (!q.blanks[bi] || used.has(bi)) { s.remove(); return; }
+        used.add(bi);
+        const row = document.createElement("div");
+        row.className = "fillrow";
+        const lab = document.createElement("div");
+        lab.className = "blabel"; lab.textContent = "Blank " + (bi + 1);
+        row.appendChild(lab); row.appendChild(place(bi));
+        // the boxes are block-level, so lift the slot out of its paragraph and put the row after it
+        const p = s.closest("p") || s.parentNode;
+        s.remove();
+        const at = tail.get(p) || p;
+        at.parentNode.insertBefore(row, at.nextSibling);
+        tail.set(p, row);
+      });
+      q.blanks.forEach((b, bi) => {  // any blank without a [[n]] marker goes at the end
+        if (used.has(bi)) return;
+        const row = document.createElement("div"); row.className = "fillrow";
+        const lab = document.createElement("div"); lab.className = "blabel"; lab.textContent = "Blank " + (bi + 1);
+        row.appendChild(lab); row.appendChild(place(bi)); card.appendChild(row);
+      });
+      ans[q.id] = q._widgets.map((x) => x.value());
+    } else {
+      const note = document.createElement("p");
+      note.className = "note"; note.textContent = "Answer in words; equations and drawings are not needed.";
+      const ta = document.createElement("textarea");
+      ta.value = typeof ans[q.id] === "string" ? ans[q.id] : "";
+      ta.setAttribute("aria-label", "Answer to question " + n);
+      const cnt = document.createElement("div");
+      cnt.className = "count";
+      const words = () => { const w = ta.value.trim().split(/\s+/).filter(Boolean).length; cnt.textContent = w + (w === 1 ? " word" : " words"); };
+      ta.addEventListener("input", () => { ans[q.id] = ta.value.slice(0, 20000); words(); changed(); });
+      words();
+      card.appendChild(note); card.appendChild(ta); card.appendChild(cnt);
+    }
+    return card;
+  }
+
+  // status of a question: "done" | "partial" | "empty"
+  function status(q) {
+    const a = state.answers[q.id];
+    if (q.type === "mc") return a ? "done" : "empty";
+    if (q.type === "open") return String(a || "").trim() ? "done" : "empty";
+    const ws = q._widgets || [];
+    const typed = ws.reduce((s, w) => s + w.typed(), 0), size = ws.reduce((s, w) => s + w.size(), 0);
+    return typed === 0 ? "empty" : typed < size ? "partial" : "done";
+  }
+  function countAnswered() {
+    const done = exam.questions.filter((q) => status(q) === "done").length;
+    $("answered").textContent = done + " of " + exam.questions.length + " answered";
+  }
+  let lastSave = 0;
+  function save() {
+    const ok = lsSet(storeKey(state.student_id), state);
+    $("saved").textContent = ok ? "Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "Not saved on this computer";
+  }
+  function changed() { countAnswered(); save(); }
+
+  // ---------------------------------------------------------------- timer (server-authoritative)
+  function now() { return Date.now() + offset; }
+  function tick() {
+    const ms = Math.max(0, endsAt - now());
+    const s = Math.ceil(ms / 1000);
+    const h = Math.floor(s / 3600);
+    $("timer").textContent = (h ? h + ":" + String(Math.floor(s / 60) % 60).padStart(2, "0") : Math.floor(s / 60)) + ":" + String(s % 60).padStart(2, "0");
+    $("timer").classList.toggle("low", ms < 5 * 60000);
+    if (ms <= 0 && !timeIsUp) { timeIsUp = true; timeUp(); }
+  }
+  function timeUp() {
+    $("confirm").open && $("confirm").close();
+    document.querySelectorAll("#questions input, #questions textarea").forEach((el) => (el.disabled = true));
+    message("Time is up. Your answers are being submitted.", "warn");
+    submit();
+  }
+
+  // ---------------------------------------------------------------- flow
+  function show(which) {
+    for (const id of ["start", "exam", "done"]) $(id).classList.toggle("hidden", id !== which);
+    $("bar").classList.toggle("hidden", which !== "exam");
+  }
+  function fmt(iso) { try { return new Date(iso).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }); } catch (e) { return iso; } }
+
+  async function begin(name, sid, auto) {
+    $("startbtn").disabled = true;
+    message("");
+    let res;
+    try { res = await call("POST", "/s/start", { exam_id: EXAM_ID, name, student_id: sid, seb: await sebKeys() }); }
+    catch (e) {
+      message("Cannot reach the exam server. Your answers are kept; check the network connection and press Start again.");
+      $("startbtn").disabled = !startAllowed(); show("start"); return;
+    }
+    const { status, data } = res;
+    if (status !== 200) {
+      const prev = lsGet(storeKey(sid));
+      if (status === 409 && prev && prev.receipt) { state = prev; return finish(); }
+      message(data.error || "Could not start the exam (error " + status + ").");
+      $("startbtn").disabled = !startAllowed(); show("start"); return;
+    }
+    exam = data.exam;
+    offset = Date.parse(data.server_now) - Date.now();
+    endsAt = Date.parse(data.ends_at);
+    const prev = lsGet(storeKey(sid));
+    state = prev && prev.started_at === data.started_at ? prev : { name, student_id: sid, started_at: data.started_at, answers: {} };
+    state.name = name; state.student_id = sid; state.answers = state.answers || {};
+    lsSet("sebexam2:" + EXAM_ID + ":session", { name, student_id: sid });
+    if (state.receipt) return finish();
+    $("title").textContent = exam.title || info.title;
+    $("sub").textContent = exam.questions.length + " questions · " + exam.duration_minutes + " minutes";
+    $("who").textContent = name + " · " + sid;
+    render();
+    save();
+    show("exam");
+    tick();
+    timerId = setInterval(tick, 500);
+    window.scrollTo(0, 0);
+  }
+
+  function askSubmit() {
+    const empty = [], partial = [];
+    for (const { q, n } of order) { const s = status(q); if (s === "empty") empty.push(n); else if (s === "partial") partial.push(n); }
+    let t = "";
+    if (empty.length) t += "Not answered: question" + (empty.length > 1 ? "s " : " ") + empty.join(", ") + ". ";
+    if (partial.length) t += "Only partly filled: question" + (partial.length > 1 ? "s " : " ") + partial.join(", ") + ". ";
+    $("confirmtext").textContent = t + "You can submit only once. Submit your exam now?";
+    $("confirm").showModal();
+  }
+
+  async function submit() {
+    if (submitting || state.receipt) return;
+    submitting = true;
+    $("submitbtn").disabled = true; $("submitbtn2").disabled = true;
+    save();
+    try {
+      const { status, data } = await call("POST", "/s/submit", { exam_id: EXAM_ID, student_id: state.student_id, answers: state.answers, seb: await sebKeys() });
+      if (status === 200) { state.receipt = data.receipt; save(); finish(); }
+      else {
+        message(data.error || "Submission failed (error " + status + ").");
+        if (status !== 409) retryable();
+      }
+    } catch (e) {
+      message("Cannot reach the exam server; your answers are kept on this computer. Check the connection and press Submit again.");
+      retryable();
+    } finally { submitting = false; }
+  }
+  function retryable() {
+    $("submitbtn").disabled = false; $("submitbtn2").disabled = false;
+    if (timeIsUp) setTimeout(() => { if (!state.receipt && !submitting) submit(); }, 10000);
+  }
+
+  function finish() {
+    clearInterval(timerId);
+    $("receipt").textContent = state.receipt;
+    $("quit").href = QUIT_URL;
+    show("done");
+    message("");
+  }
+
+  function startAllowed() { return info && info.status === "open" && !(info.require_seb && !sebPresent()); }
+
+  async function init() {
+    if (!EXAM_ID) { $("sub").textContent = ""; message("This page needs an exam link (…/?id=…). Ask your teacher for the link."); return; }
+    try {
+      const r = await call("GET", "/s/info?id=" + encodeURIComponent(EXAM_ID));
+      if (r.status !== 200) { $("sub").textContent = ""; message(r.data.error || "Exam not found."); return; }
+      info = r.data;
+    } catch (e) { $("sub").textContent = "Cannot reach the exam server."; message("Cannot reach the exam server. Check the network connection and reload the page."); return; }
+    $("title").textContent = info.title;
+    document.title = info.title;
+    $("sub").textContent = info.duration_minutes + " minutes";
+    const lines = ['<p style="margin:0 0 6px"><strong>Duration:</strong> ' + info.duration_minutes + ' minutes</p>'];
+    if (info.opens_at) lines.push('<p style="margin:0 0 6px"><strong>Opens:</strong> ' + esc(fmt(info.opens_at)) + '</p>');
+    if (info.closes_at) lines.push('<p style="margin:0"><strong>Closes:</strong> ' + esc(fmt(info.closes_at)) + '</p>');
+    $("infocard").innerHTML = lines.join("");
+    $("quit").href = QUIT_URL;
+    $("startform").addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      const name = $("name").value.trim(), sid = $("sid").value.trim().toUpperCase();
+      if (name && sid && startAllowed()) begin(name, sid);
+    });
+    $("submitbtn").addEventListener("click", askSubmit);
+    $("submitbtn2").addEventListener("click", askSubmit);
+    $("yes").addEventListener("click", () => { $("confirm").close(); submit(); });
+    $("no").addEventListener("click", () => $("confirm").close());
+    show("start");
+    if (info.require_seb && !sebPresent()) {
+      $("sebgate").classList.remove("hidden");
+      $("seblink").href = info.seb_link || "#";
+      $("sebfile").href = info.seb_file_url || "#";
+    }
+    if (info.status !== "open") {
+      message(info.status === "closed" ? "This exam is closed." : "This exam is not open yet." , "warn");
+    }
+    $("startbtn").disabled = !startAllowed();
+    const sess = lsGet("sebexam2:" + EXAM_ID + ":session");
+    if (sess) {
+      $("name").value = sess.name || ""; $("sid").value = sess.student_id || "";
+      const prev = lsGet(storeKey(sess.student_id));
+      if (prev && prev.receipt) { state = prev; return finish(); }
+      if (prev && prev.started_at && startAllowed()) return begin(sess.name, sess.student_id, true);  // resume after reload / SEB restart
+    }
+  }
+  init();
+})();
+</script>
+</body>
+</html>
