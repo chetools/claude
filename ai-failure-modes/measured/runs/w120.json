@@ -1,0 +1,13 @@
+{
+ "answer": "At t = 40, starting from pure A (y_A = 1, y_B = y_C = 0), the mole fractions are:\n\n- **A: 0.7158270687**\n- **B: 9.185534765e-6**\n- **C: 0.2841637457**\n\nThe three always sum to 1 (the reactions only move moles between A, B and C), so the concentrations are the mole fractions. At the end of the run the sum differed from 1 by less than 5e-15.\n\n**How I checked it:** I solved the system with three independent stiff solvers in SciPy: Radau, BDF and LSODA. Each used the exact Jacobian, rtol 1e-12, and absolute tolerances of 1e-14 for A and C and 1e-18 for B. All three agree to about 1e-11 absolute. These values also match the published reference result for this problem (A ≈ 0.7158, B ≈ 9.185e-6, C ≈ 0.2842).\n\nThe script is /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x120/r.py. No project files were changed.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x120 && cat > r.py <<'EOF'\\nimport numpy as np\\nfrom scipy.integrate import solve_ivp\\ndef f(t,y):\\n    a,b,c=y\\n    return [-0.04*a+1e4*b*c, 0.04*a-1e4*b*c-3e7*b*b, 3e7*b*b]\\ndef J(t,y):\\n    a,b,c=y\\n    return [[-0.04,1e4*c,1e4*b],[0.04,-1e4*c-6e7*b,-1e4*b],[0,6e7*b,0]]\\nfor m in [\\\"Radau\\\",\\\"BD"
+  }
+ ],
+ "leak": false,
+ "run": "w120",
+ "qid": "robertson",
+ "round": 5
+}

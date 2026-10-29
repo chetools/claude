@@ -1,0 +1,13 @@
+{
+ "answer": "At 700 bar and 25 °C (298.15 K), hydrogen has a density of about 39.2 kg/m³ (0.0392 g/cm³). I computed this with CoolProp, which uses the Leachman et al. (2009) equation of state for hydrogen.\n\n- **Normal hydrogen:** 39.22 kg/m³.\n- **Para-hydrogen:** 39.22 kg/m³ as well. At room temperature the spin form makes almost no difference.\n- **Compressibility factor:** Z = 1.45. An ideal-gas estimate would give 56.9 kg/m³, which is about 45% too high, so a real-gas equation of state is needed at this pressure.\n\nThis agrees with the figure of about 39–40 kg/m³ commonly quoted for 700-bar fuel-cell vehicle tanks, though I am going by recall for that and did not check it against a second source.\n\nNo project files were created or changed.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x121 && (python -c \\\"import CoolProp\\\" 2>/dev/null || pip install -q CoolProp 2>&1 | tail -1); python -c \\\"\\nfrom CoolProp.CoolProp import PropsSI\\nT=298.15;P=700e5\\nfor f in ['Hydrogen','ParaHydrogen','NormalHydrogen']:\\n  d=PropsSI('D','T',T,'P',P,f); print(f,d, 'Z=',P/(d/2.01588e-3*8.314462618*T"
+  }
+ ],
+ "leak": false,
+ "run": "w121",
+ "qid": "h2",
+ "round": 5
+}

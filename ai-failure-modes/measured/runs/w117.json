@@ -1,0 +1,13 @@
+{
+ "answer": "About 750 kW of heat is released, or 2.70 × 10^6 kJ/h. I checked the arithmetic with a quick Python calculation.\n\nThe key point is that ΔH = −92 kJ is for one mole of reaction as written, and each mole of reaction makes 2 mol of NH3. That is 46 kJ released per mol of NH3.\n\n1. Molar mass of NH3: 14.007 + 3(1.008) = 17.031 g/mol.\n2. Moles of NH3 per hour: 1,000,000 g/h ÷ 17.031 g/mol = 58,716 mol/h.\n3. Heat released per hour: 58,716 mol/h × 46 kJ/mol = 2.701 × 10^6 kJ/h.\n4. Convert to kW: 2.701 × 10^6 kJ/h ÷ 3600 s/h = 750 kW.\n\nIf you take the −92 kJ as per mol of NH3, you get 1500 kW, which is twice the right value.\n\nThis uses the standard-state ΔH and ignores how ΔH changes with temperature at real reactor conditions.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"M=14.007+3*1.008; n=1e6/M; print(M, n, n*92/2/3600, n*92/3600)\\\"\", \"description\": \"Compute heat release for ammonia production\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w117",
+ "qid": "nh3_heat",
+ "round": 5
+}
