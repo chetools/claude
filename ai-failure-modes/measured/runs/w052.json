@@ -1,0 +1,13 @@
+{
+ "answer": "**Answer: the pressure drop is about 33 kPa (0.33 bar, 4.8 psi), or about 3.4 m of water column.** This is the friction loss only. Pipe entrance, pipe exit and elevation change are not included, because none were given.\n\n**Inputs**\n- 4\" Sch 40 pipe: inside diameter 102.26 mm (4.026 in).\n- Water at 20 °C: density 998.2 kg/m³, viscosity 1.002 mPa·s.\n- Commercial steel roughness: ε = 0.045 mm.\n- Fitting resistances use the Crane TP-410 K = n·f_T method:\n  - standard 90° elbow: 30 f_T\n  - gate valve (fully open): 8 f_T\n  - swing check valve (conventional): 100 f_T\n\n**Results** (Colebrook equation, solved by iteration)\n\n| Quantity | Value |\n|---|---|\n| Velocity | 1.69 m/s |\n| Reynolds number | 1.72 × 10⁵ (turbulent) |\n| Darcy friction factor, f | 0.0188 |\n| f_T (fully turbulent, from roughness) | 0.0162 (Crane's table gives 0.017 for 4\") |\n| Velocity head, ρV²/2 | 1.427 kPa |\n| Straight pipe: f·L/D = 18.4 velocity heads | **26.2 kPa** |\n| Fittings: total K = 296·f_T = 4.80 | **6.9 kPa** |\n| **Total** | **≈ 33.1 kPa (0.33 bar, 4.8 psi, 3.38 m H₂O)** |\n\n**Notes**\n- With Crane's tabulated f_T = 0.017 instead of 0.0162, the fittings come to 7.2 kPa and the total to 33.4 kPa.\n- If the check valve is a clearway type (50 f_T), the total drops by about 1.2 kPa.\n- If the run includes a sharp-edged pipe entrance (K = 0.5), add about 0.7 kPa. If it includes an exit into a tank (K = 1), add about 1.4 kPa.\n\nThe numbers above were computed with a short Python calculation. I did not cross-check them against a second method.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport math\\nQ=50/3600;D=0.10226;L=100;rho=998.2;mu=1.0016e-3;eps=4.5e-5\\nA=math.pi*D**2/4;V=Q/A;Re=rho*V*D/mu\\nf=0.02\\nfor i in range(50): f=(-2*math.log10(eps/D/3.7+2.51/(Re*math.sqrt(f))))**-2\\nfT=(-2*math.log10(eps/D/3.7))**-2\\nKf=fT*(6*30+2*8+100)\\nq=rho*V**2/2\\ndpp=f*L/D*q; dpf=Kf*q\\nprint(V,Re,f,fT,Kf,dpp,dpf,dpp+dpf,(dpp+dpf)/(rho*9.80665))\\n# Kf with Crane fT=0"
+  }
+ ],
+ "leak": false,
+ "run": "w052",
+ "qid": "pipe",
+ "round": 3
+}

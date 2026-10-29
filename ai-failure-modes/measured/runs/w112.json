@@ -1,0 +1,13 @@
+{
+ "answer": "m-xylene (1,3-dimethylbenzene, CAS 108-38-3):\n\n- Critical temperature Tc = 617.0 K (343.9 °C)\n- Critical pressure Pc = 35.41 bar (3.541 MPa, about 34.9 atm)\n- Acentric factor ω = 0.326 (sources give 0.326 to 0.331)\n\n**Where the numbers come from.** I looked these up in the `chemicals` Python library (Caleb Bell), which brings together several published data sets. Here is what each one gives:\n\n| Source | Tc (K) | Pc (MPa) | ω |\n|---|---|---|---|\n| IUPAC | 617.0 | 3.541 | n/a |\n| Yaws | 617.0 | 3.541 | 0.327 |\n| CRC Handbook | 616.9 | 3.540 | n/a |\n| CoolProp (HEOS) | 616.89 | 3.5346 | 0.326 |\n| PSRK | 617.0 | 3.546 | 0.331 |\n| Passut-Danner | 617.05 | 3.541 | 0.3311 |\n| NIST WebBook | 618.0 | 3.536 | n/a |\n\nI also worked out ω from its definition, using the library's vapour-pressure data with the Tc and Pc above. That gave 0.3264, which agrees with 0.326. The Joback and Wilson-Jasperson estimation methods give Tc of about 625 K and Pc of about 3.59 to 3.62 MPa. Those are predictions from group contributions rather than measurements, so I did not use them.\n\nThese values match the commonly used set in Poling, Prausnitz and O'Connell, *The Properties of Gases and Liquids*: 617.0 K, 35.41 bar and ω ≈ 0.326 to 0.327. I took that from memory and did not check it against the book itself. All the other numbers above came from the library lookup.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x112 && (python -I -c \\\"import chemicals\\\" 2>/dev/null || pip install -q chemicals 2>&1 | tail -1); python -I -c \\\"\\nfrom chemicals import Tc, Pc, omega, CAS_from_any\\nc=CAS_from_any('m-xylene'); print(c)\\nfrom chemicals.critical import Tc_methods, Pc_methods\\nfrom chemicals.acentric import omega_m"
+  }
+ ],
+ "leak": false,
+ "run": "w112",
+ "qid": "xylene",
+ "round": 5
+}

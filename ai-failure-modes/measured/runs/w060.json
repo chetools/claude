@@ -1,0 +1,13 @@
+{
+ "answer": "Size the return line for about 270 m3/h, almost all of it flash steam. Only about 0.9 m3/h is liquid.\n\nThe figures come from a steam-table calculation (CoolProp, IAPWS water properties). I took 10 barg as 11.01 bara and assumed saturated condensate at the trap inlet.\n\n**Flash fraction**\n- Condensate at 11.01 bara is at 184.1 °C, with a liquid enthalpy of 781.3 kJ/kg.\n- At atmospheric pressure (1.013 bara) the liquid enthalpy is 419.1 kJ/kg and the latent heat is 2256.5 kJ/kg.\n- Flash fraction = (781.3 − 419.1) / 2256.5 = 0.161, so about 16 %.\n\n**Mass and volume at 1.013 bara**\n\n| Phase | Mass flow | Specific volume | Volumetric flow |\n|---|---|---|---|\n| Flash steam | 160.5 kg/h | 1.673 m3/kg | 268.6 m3/h |\n| Liquid at 100 °C | 839.5 kg/h | 0.001043 m3/kg | 0.88 m3/h |\n| Total | 1000 kg/h | | ≈ 269.5 m3/h |\n\nThe steam takes up about 99.7 % of the volume, so the mixture density is only about 3.7 kg/m3. That means the return line is sized as a two-phase or steam line using the flash-steam volume, not the 1 m3/h a water-only estimate would give.\n\n**Caveats (not calculated here)**\n- If the return line runs slightly above atmospheric pressure, the steam volume falls. For example, at 0.5 barg it would be roughly 30 % lower. Sizing at atmospheric pressure is the conservative case.\n- Condensate that is subcooled before the trap, or heat lost along the line, would reduce the flash fraction.\n- The pipe diameter depends on the velocity limit you choose. Something like 15–25 m/s is commonly used for flash-steam return lines, but I did not evaluate that.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nfrom CoolProp.CoolProp import PropsSI as P\\np1=11.01325e5;p2=1.01325e5\\nh1=P('H','P',p1,'Q',0,'Water');hf=P('H','P',p2,'Q',0,'Water');hg=P('H','P',p2,'Q',1,'Water')\\nx=(h1-hf)/(hg-hf);vg=1/P('D','P',p2,'Q',1,'Water');vf=1/P('D','P',p2,'Q',0,'Water')\\nprint(P('T','P',p1,'Q',0,'Water')-273.15,h1/1e3,hf/1e3,(hg-hf)/1e3,x,vg,vf,1000*x*vg,1000*(1-x)*vf,1/(x*vg+(1-x)*vf))\\n\\\""
+  }
+ ],
+ "leak": false,
+ "run": "w060",
+ "qid": "flash",
+ "round": 3
+}

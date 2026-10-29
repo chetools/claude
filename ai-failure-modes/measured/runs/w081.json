@@ -1,0 +1,17 @@
+{
+ "answer": "At 100 bar and 37 °C (310.15 K), CO2 has a density of about 683 kg/m³ (683.4 kg/m³).\n\n- **How I got it:** I computed it with CoolProp, which uses the Span–Wagner reference equation of state for CO2. That equation is accurate to roughly 0.1% in this region.\n- **Phase:** CoolProp reports the state as supercritical. The critical point is about 31.0 °C and 73.8 bar, so these conditions are just above it.\n- **Cross-check:** Peng–Robinson gives 619 kg/m³, about 9% lower. A cubic equation of state like Peng–Robinson is known to be inaccurate near the critical point, so this is not a real second confirmation. I did not check the value against a second accurate source such as the NIST tables.\n- **Sensitivity:** Close to the critical point the density changes sharply with temperature and pressure, so small changes in either condition shift it noticeably.\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"import CoolProp.CoolProp as C; print(C.PropsSI('D','P',100e5,'T',310.15,'CO2'))\\\" 2>&1 || pip install -q CoolProp 2>&1 | tail -1\", \"description\": \"Compute CO2 density with CoolProp\"}"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport CoolProp.CoolProp as C\\nprint(C.PhaseSI('P',100e5,'T',310.15,'CO2'))\\nprint(C.PropsSI('D','P',100e5,'T',310.15,'PR::CO2'))\\n\\\"\", \"description\": \"Check phase and Peng-Robinson cross-check\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w081",
+ "qid": "co2",
+ "round": 4
+}

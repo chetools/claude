@@ -1,0 +1,17 @@
+{
+ "answer": "**Specify an API 526 \"J\" orifice, 1.287 in² effective area.** The calculation needs 0.94 in². The next size down, \"H\" (0.785 in²), is too small.\n\nI worked it out with the API 521 fire-case method and the API 520 vapour sizing equation. I ran it as a script, using CoolProp for the propane properties. I did not compare the result against a second independent source.\n\n**1. Heat input** (API 521, adequate drainage and firefighting, bare vessel so F = 1):\n- Q = 21,000 · F · A^0.82 = 21,000 × 500^0.82 ≈ **3.43 × 10⁶ BTU/h**\n\n**2. Relieving conditions** (21% overpressure is allowed for fire):\n- P₁ = 250 × 1.21 + 14.7 = **317.2 psia**\n- That is well below propane's critical pressure (616.6 psia), so the normal latent-heat method applies.\n- Saturation temperature at P₁ is **143 °F**.\n- Latent heat is **109.5 BTU/lb**.\n\n**3. Relief load:**\n- W = Q / λ ≈ **31,300 lb/h** of propane vapour.\n\n**4. Orifice area** (API 520 critical-flow vapour equation, conventional valve):\n- Inputs:\n  - Kd = 0.975\n  - Kb = 1, because I assumed atmospheric back pressure\n  - Kc = 1, because there is no rupture disk\n  - M = 44.1\n  - Z = 0.673 at the relieving point\n  - k = 1.115 (ideal-gas Cp/Cv at the relieving temperature, which gives C ≈ 328)\n- A = W / (C · Kd · P₁ · Kb) · √(T·Z/M) ≈ **0.94 in²**\n\nThe J size holds even on conservative inputs. With Z = 1 and C = 315, the required area is 1.19 in², which still fits a J (1.287 in²).\n\n**Assumptions to confirm before you finalise:**\n- The 500 ft² wetted area counts only surface up to 25 ft above grade (or above the fire source).\n- The vessel is uninsulated. Credit for fireproofing would lower F and the load.\n- There is a single PSV whose only sizing case is fire. That is what permits 21% overpressure.\n- Back pressure is close to atmospheric. A high built-up back pressure on a closed flare header would change Kb, or would call for a balanced-bellows valve.\n- Inlet and outlet piping still need checking: the 3% inlet pressure-loss rule and the built-up back pressure.\n\nThe calculation script is /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x108/fire.py",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"import CoolProp\\\" 2>&1 || pip install -q CoolProp 2>&1 | tail -1\", \"description\": \"Check or install CoolProp\"}"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cat > /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x108/fire.py <<'EOF'\\nfrom CoolProp.CoolProp import PropsSI as P\\nimport math\\npsi=6894.757\\nA=500.0; F=1.0\\nQ=21000*F*A**0.82   # BTU/h, API 521 eq. adequate drainage + firefighting\\nPset=250; Prel=Pset*1.21+14.696  # psia\\np=Prel*psi\\nT=P('T','P',p,'Q',1,'Propane')\\nhv=P('H','P',p,'Q',1,'Propa"
+  }
+ ],
+ "leak": false,
+ "run": "w108",
+ "qid": "relief",
+ "round": 5
+}

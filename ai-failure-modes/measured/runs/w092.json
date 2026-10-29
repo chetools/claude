@@ -1,0 +1,13 @@
+{
+ "answer": "About 750 kW of heat is released (exactly 750.3 kW). I checked the arithmetic with a short Python calculation.\n\nThe −92 kJ/mol is per mole of reaction as written, and that reaction makes 2 mol of NH3. So it works out to 46 kJ per mol of NH3.\n\n- Molar mass of NH3 = 14.007 + 3 × 1.008 = 17.031 g/mol\n- Molar flow = 1,000,000 g/h ÷ 17.031 g/mol ÷ 3600 s/h = 16.31 mol/s\n- Heat released = 16.31 mol/s × 46 kJ/mol = 750.3 kJ/s, which is about 750 kW\n\nA common mistake is to apply the full 92 kJ to each mole of NH3. That gives about 1500 kW, twice the correct value.\n\nThis assumes the −92 kJ/mol holds at the reactor conditions. It is the standard value near 25 °C, and at real synthesis temperatures (about 400–500 °C) the heat of reaction is somewhat larger in magnitude. I did not correct for that.\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"M=14.007+3*1.008;n=1e6/M/3600;print(M,n,n*92/2,n*92)\\\"\", \"description\": \"Compute heat release for ammonia production\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w092",
+ "qid": "nh3_heat",
+ "round": 4
+}

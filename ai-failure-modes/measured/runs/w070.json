@@ -1,0 +1,13 @@
+{
+ "answer": "I solved Robertson's problem numerically. Starting from pure A (y = 1, 0, 0), the mole fractions at t = 40 are:\n\n- **A:** y_A = 0.71582707\n- **B:** y_B = 9.1855348 × 10⁻⁶\n- **C:** y_C = 0.28416375\n\n**Equations solved:**\n- dA/dt = −0.04 A + 10⁴ B C\n- dB/dt = 0.04 A − 10⁴ B C − 3×10⁷ B²\n- dC/dt = 3×10⁷ B²\n\n**Check:** I used three stiff solvers from SciPy (Radau, BDF and LSODA), each with the exact Jacobian and a relative tolerance of 1e-12. They agree to about 10 significant figures. In every case the three fractions add up to 1 within about 3e-15. I did not check against a published reference table.\n\nThe calculation was a one-off command, so there are no files. The scratch folder was not used.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp && python3 -c \\\"\\nfrom scipy.integrate import solve_ivp\\nimport numpy as np\\ndef f(t,y):\\n    a,b,c=y\\n    return [-0.04*a+1e4*b*c, 0.04*a-1e4*b*c-3e7*b*b, 3e7*b*b]\\ndef J(t,y):\\n    a,b,c=y\\n    return [[-0.04,1e4*c,1e4*b],[0.04,-1e4*c-6e7*b,-1e4*b],[0,6e7*b,0]]\\nfor m in ['Radau','BDF','LSODA']:\\n    s=solve_ivp(f,[0,40],[1,0,0],method=m,jac=J,rtol=1e-12,atol=[1e-14,1e-20,1e"
+  }
+ ],
+ "leak": false,
+ "run": "w070",
+ "qid": "robertson",
+ "round": 3
+}

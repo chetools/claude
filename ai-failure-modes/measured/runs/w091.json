@@ -1,0 +1,13 @@
+{
+ "answer": "At 120 °C, k is about 1.6 × 10⁴ s⁻¹ (16,137 s⁻¹, about 13.4 times the 80 °C value). I computed this with a short Python calculation.\n\nI used the two-temperature form of the Arrhenius equation:\n\nln(k₂/k₁) = (Ea/R)(1/T₁ − 1/T₂)\n\n- **Inputs:** T₁ = 353.15 K, T₂ = 393.15 K, Ea = 75,000 J/mol, R = 8.314 J/(mol·K)\n- **Exponent:** ln(k₂/k₁) = 2.5988, so k₂/k₁ = e^2.5988 = 13.447\n- **Result:** k₂ = 1.2 × 10³ × 13.447 ≈ 1.61 × 10⁴ s⁻¹\n\nThis assumes Ea stays constant between 80 and 120 °C, which is the usual Arrhenius assumption.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport math\\nR=8.314462618;Ea=75e3;T1=353.15;T2=393.15;k1=1.2e3\\nx=Ea/R*(1/T1-1/T2);print(x,math.exp(x),k1*math.exp(x))\\\"\", \"description\": \"Compute Arrhenius rate constant at 120 C\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w091",
+ "qid": "arrhenius",
+ "round": 4
+}

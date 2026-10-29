@@ -1,0 +1,13 @@
+{
+ "answer": "Size the return line for about **270 m³/h** of two-phase flow. Almost all of that volume is flash steam, not liquid. I computed it with CoolProp (IAPWS-97 water properties).\n\n**Basis:** saturated condensate at 10 barg (11.01 bara) flashes adiabatically to 0 barg (1.013 bara). No subcooling and no pressure drop in the return line.\n\n| Quantity | Value |\n|---|---|\n| Saturation temperature at 11.01 bara | 184.1 °C |\n| Enthalpy of saturated liquid at 11.01 bara | 781.3 kJ/kg |\n| Enthalpy of saturated liquid at 1.013 bara | 419.1 kJ/kg |\n| Heat of vaporisation at 1.013 bara | 2256.5 kJ/kg |\n| Flash fraction, x = (781.3 − 419.1)/2256.5 | 0.161 (16.1 %) |\n| Flash steam | 160.5 kg/h × 1.673 m³/kg = **268.6 m³/h** |\n| Residual liquid at 100 °C | 839.5 kg/h → **0.88 m³/h** |\n| **Total volumetric flow** | **≈ 269.5 m³/h (0.075 m³/s)** |\n\n**Why this matters:** the flash steam takes up about 99.7 % of the volume. The liquid alone, about 0.9 m³/h, would suggest a line roughly 300 times too small. Size the line as a two-phase (flash steam) line. A common practice is to keep the steam velocity at about 15 m/s or below, which avoids water hammer and erosion. That points to roughly DN 80. This velocity limit and the line size are typical design practice, not something I calculated in detail.\n\n**Not checked:**\n- If the line runs above atmospheric pressure (back-pressure or line losses), less condensate flashes and the steam is denser, so the volumetric flow will be lower.\n- If the condensate leaves the traps subcooled, the flash fraction is also lower.\n\nSo 270 m³/h is the conservative, upper-bound basis.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nfrom CoolProp.CoolProp import PropsSI as P\\np1=11.01325e5;p2=1.01325e5\\nh1=P('H','P',p1,'Q',0,'Water');T1=P('T','P',p1,'Q',0,'Water')-273.15\\nhf=P('H','P',p2,'Q',0,'Water');hg=P('H','P',p2,'Q',1,'Water')\\nx=(h1-hf)/(hg-hf);vg=1/P('D','P',p2,'Q',1,'Water');vf=1/P('D','P',p2,'Q',0,'Water')\\nprint(T1,h1/1e3,hf/1e3,(hg-hf)/1e3,x,1000*x*vg,1000*(1-x)*vf,vg)\\nd=P('D','P',p2,'"
+  }
+ ],
+ "leak": false,
+ "run": "w085",
+ "qid": "flash",
+ "round": 4
+}

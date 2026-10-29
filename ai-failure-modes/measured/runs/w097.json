@@ -1,0 +1,8 @@
+{
+ "answer": "API 521 (ISO 23251) pool-fire heat input, SI units, for a site with adequate drainage and firefighting:\n\n  Q = 43,200 · F · A_ws^0.82\n\n- Q = total heat absorbed by the wetted surface, in W\n- F = environment factor (dimensionless). It is 1.0 for a bare vessel. It is lower for insulated, water-sprayed, buried or earth-covered vessels, and the values are tabulated in API 521.\n- A_ws = total wetted surface area, in m². This is normally the wetted area within the fire zone, conventionally up to 7.6 m (25 ft) above grade or the pool-fire source.\n\nIf drainage and firefighting are not adequate, the constant becomes 70,900: Q = 70,900 · F · A_ws^0.82 (W).\n\nThe US-customary form is Q = 21,000 · F · A^0.82, with Q in Btu/h and A in ft².\n\nCheck: I converted the US-customary constant to SI by hand: 21,000 Btu/h × 0.29307 W per Btu/h × 10.7639^0.82 ≈ 43,190, which matches 43,200. I did not run any code. I also did not check the API 521 text itself, so the equation and the notes on F and the 7.6 m height are recalled from memory. Confirm them against your edition (API 521, 7th ed., section 4.4.13.2) before using them in design.\n\nNo files were created.",
+ "tools": [],
+ "leak": false,
+ "run": "w097",
+ "qid": "api521",
+ "round": 4
+}

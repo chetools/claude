@@ -1,0 +1,21 @@
+{
+ "answer": "**Specify a J orifice (API 526, 1.287 in² effective area).** The required effective area comes out at about **0.94 in²** for a fire-case relief load of about **31,300 lb/h**. The next smaller standard size, H (0.785 in²), is too small.\n\n| Step | Basis | Result |\n|---|---|---|\n| Heat input | API 521, adequate drainage and firefighting: Q = 21,000·F·A^0.82, with A = 500 ft² and F = 1.0 | **3.43 × 10⁶ BTU/h** |\n| Relieving pressure | 250 psig × 1.21 (21% fire accumulation) + 14.7 | **317.2 psia** |\n| Relieving temperature | Propane saturation temperature at 317.2 psia | **142.9 °F** |\n| Latent heat | At relieving conditions | **109.5 BTU/lb** |\n| Relief load | W = Q / λ | **≈ 31,300 lb/h** |\n| Vapour properties | M = 44.1; compressibility Z = 0.673 | |\n| Orifice area | API 520 critical-flow vapour sizing: Kd = 0.975, Kb = 1, Kc = 1 (no rupture disk), k = 1.115 so C = 328 | **0.935 in²** |\n\n- **Flow is critical:** the critical pressure is about 184 psia, well above the back pressure.\n- **Margin on the J orifice is large.** Using C = 315 (the most conservative value, for k close to 1) instead gives 0.975 in². That would still be a J. If k is taken as the real-gas ratio (1.57), the area drops to 0.83 in².\n\n**How it was checked:** I computed the propane properties with CoolProp's reference equation of state. I cross-checked them with the Peng-Robinson and SRK equations of state, which agree within about 1% on temperature, latent heat and Z. I did not compare them against published tables.\n\n**Assumptions I made that you should confirm:**\n- **Bare vessel (F = 1).** If the bullet has fire-rated insulation or water spray credit, F is lower and the load drops.\n- **The 500 ft² is already the wetted area within 25 ft of grade.** API 521 counts only the wetted surface up to 25 ft above grade.\n- **Conventional valve with built-up back pressure only (Kb = 1).** A balanced-bellows valve or a high back pressure would change Kb.\n- **API 526 effective areas.** Check the vendor's certified area and Kd for the actual valve.\n- **Single valve with the set pressure at the vessel MAWP.** That is what allows the 21% fire accumulation.\n\nEverything is in /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x058/psv.py.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"import CoolProp; print(CoolProp.__version__)\\\" 2>&1 || pip install CoolProp -q 2>&1 | tail -1\", \"description\": \"Check for CoolProp property library\"}"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"mkdir -p /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x058 && cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x058 && cat > psv.py <<'EOF'\\nimport math\\nfrom CoolProp.CoolProp import PropsSI as P\\npsi=6894.757\\nF=1.0; A=500.0\\nQ=21000*F*A**0.82            # BTU/h, API 521 eq. adequate drainage+firefighting"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nfrom CoolProp.CoolProp import PropsSI as P\\npr=317.196*6894.757\\nfor b in ('PR::Propane','SRK::Propane'):\\n  T=P('T','P',pr,'Q',1,b); l=(P('H','P',pr,'Q',1,b)-P('H','P',pr,'Q',0,b))/2326; Z=P('Z','P',pr,'Q',1,b)\\n  print(b, (T-273.15)*1.8+32, l, Z)\\n\\\"\", \"description\": \"Cross-check properties with cubic equations of state\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w058",
+ "qid": "relief",
+ "round": 3
+}

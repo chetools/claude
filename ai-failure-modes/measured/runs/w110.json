@@ -1,0 +1,13 @@
+{
+ "answer": "Answer: size the return line for about 270 m³/h of two-phase flow, which is almost entirely flash steam. The liquid share is only about 0.9 m³/h. I computed this with CoolProp (IAPWS-95 water), assuming an adiabatic, isenthalpic flash of saturated condensate.\n\n**Flash calculation**\n- Upstream: 10 barg is 11.01 bara. Saturated condensate there is at 184.1 °C.\n- Downstream: 1.013 bara, saturation temperature 100.0 °C.\n- Flash fraction: x = 0.1605. So 160.5 kg/h flashes to steam and 839.5 kg/h stays as liquid.\n\n**Volumetric flow at atmospheric pressure**\n- Flash steam: 160.5 kg/h × 1.673 m³/kg ≈ 268.6 m³/h\n- Liquid: 839.5 kg/h × 0.00104 m³/kg ≈ 0.88 m³/h\n- Total: about 269.5 m³/h, of which about 99.7 % by volume is vapour.\n\n**What this means for sizing**\n- Sizing the line for 1 m³/h of water would undersize it by roughly 300 times.\n- Size it as a two-phase or flash-steam line, using typical flash-steam velocities of about 15–25 m/s.\n- At those velocities, 270 m³/h needs a bore of about 70–80 mm (DN80). This bore range is a rule-of-thumb estimate; I have not checked it against a pressure-drop calculation.\n\n**Assumptions**\n- The condensate leaves the traps saturated at 10 barg. If it is subcooled, the flash fraction is lower.\n- No heat loss.\n- The line is at atmospheric pressure. Any back-pressure in the return line reduces the steam volume roughly in proportion to absolute pressure.\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nfrom CoolProp.CoolProp import PropsSI as P\\np1=10e5+101325; p2=101325\\nh=P('H','P',p1,'Q',0,'Water'); T1=P('T','P',p1,'Q',0,'Water')\\nx=P('Q','P',p2,'H',h,'Water'); T2=P('T','P',p2,'Q',0,'Water')\\nvg=1/P('D','P',p2,'Q',1,'Water'); vl=1/P('D','P',p2,'Q',0,'Water')\\nm=1000\\nprint(T1-273.15,T2-273.15,x, m*x*vg, m*(1-x)*vl, m*x*vg+m*(1-x)*vl)\\n\\\" 2>&1 || pip install -q Cool"
+  }
+ ],
+ "leak": false,
+ "run": "w110",
+ "qid": "flash",
+ "round": 5
+}

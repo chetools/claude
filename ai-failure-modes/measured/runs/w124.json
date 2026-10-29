@@ -1,0 +1,13 @@
+{
+ "answer": "Here is the full citation for the original Peng–Robinson paper. I checked it against the Crossref record for its DOI.\n\nPeng, D.-Y.; Robinson, D. B. A New Two-Constant Equation of State. *Industrial & Engineering Chemistry Fundamentals* **1976**, *15* (1), 59–64. https://doi.org/10.1021/i160057a011\n\n- **Authors:** Ding-Yu Peng and Donald B. Robinson\n- **Journal:** Industrial & Engineering Chemistry Fundamentals, volume 15, issue 1, pages 59–64\n- **Published:** February 1976\n- **DOI:** 10.1021/i160057a011\n\nI made no files or other changes.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"curl -sS https://api.crossref.org/works/10.1021/i160057a011 | python3 -c \\\"import sys,json;m=json.load(sys.stdin)['message'];print(m['title'],[a['given']+' '+a['family'] for a in m['author']],m['container-title'],m.get('volume'),m.get('issue'),m.get('page'),m['issued'])\\\"\", \"description\": \"Look up the Peng-Robinson paper metadata on Crossref\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w124",
+ "qid": "citation",
+ "round": 5
+}

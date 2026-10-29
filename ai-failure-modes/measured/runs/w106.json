@@ -1,0 +1,13 @@
+{
+ "answer": "CO2 at 100 bar and 37 °C (310.15 K) has a density of about **683 kg/m³** (683.40 kg/m³ calculated). At these conditions it is a supercritical fluid, since the critical point is 73.8 bar and 31.0 °C.\n\n**How I got it:** I ran CoolProp's `PropsSI('D','P',100e5,'T',310.15,'CO2')` in Python. CoolProp uses the Span–Wagner equation of state, which is the reference equation for CO2. I did not check it against a second, independent source such as the NIST WebBook or REFPROP.\n\n**Sensitivity:** these conditions are close to the critical point, where density changes quickly with temperature. Over 36.5–37.5 °C the calculated density goes from 691 to 675 kg/m³, about −16 kg/m³ per °C. A small error in the temperature therefore moves the answer noticeably. A simple cubic equation such as Peng–Robinson would also be much less accurate here.\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python -c \\\"import CoolProp\\\" 2>&1 || pip install -q CoolProp 2>&1 | tail -1; python -c \\\"\\nfrom CoolProp.CoolProp import PropsSI\\nprint(PropsSI('D','P',100e5,'T',310.15,'CO2'))\\nprint(PropsSI('Phase','P',100e5,'T',310.15,'CO2'))\\nfor d in (0.5,-0.5):\\n  print(d, PropsSI('D','P',100e5,'T',310.15+d,'CO2'))\\n\\\"\", \"description\": \"Compute CO2 density with CoolProp\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w106",
+ "qid": "co2",
+ "round": 5
+}

@@ -1,0 +1,13 @@
+{
+ "answer": "Using the Antoine equation, water's vapour pressure at 180 °C is about **10.0 bar (about 997 kPa)**.\n\nI evaluated two constant sets that are valid at 180 °C:\n\n| Antoine constants | Valid range | P at 180 °C | vs. IAPWS-95 (1002.8 kPa) |\n|---|---|---|---|\n| A = 8.14019, B = 1810.94, C = 244.485 (log10 P in mmHg, T in °C) | 99–374 °C | 997.4 kPa (9.97 bar) | −0.5 % |\n| NIST: A = 3.55959, B = 643.748, C = −198.043 (log10 P in bar, T in K) | 379–573 K | 10.87 bar (1087 kPa) | +8.4 % |\n\n- **Use the first set.** It is the one to quote and is within 0.5 % of the reference value.\n- **The NIST set** is inside its stated range but still comes out 8 % high at 180 °C.\n- **The usual textbook set** (A = 8.07131, B = 1730.63, C = 233.426) only holds from 1 to 100 °C, so it shouldn't be used here. Pushed to 180 °C anyway, it gives 1023.6 kPa.\n- **Reference value:** 1002.8 kPa, which I computed with CoolProp (IAPWS-95, saturation pressure at 453.15 K).\n\nAll the figures above come from running each equation; none were recalled. No files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nT=180.0\\nprint('NIST 379-573K', 10**(3.55959-643.748/(T+273.15-198.043)),'bar')\\nprint('99-374C set', 10**(8.14019-1810.94/(244.485+T))*0.133322,'kPa')\\nprint('1-100C set (out of range)', 10**(8.07131-1730.63/(233.426+T))*0.133322,'kPa')\\n\\\"; python3 -c \\\"import CoolProp.CoolProp as C; print(C.PropsSI('P','T',453.15,'Q',0,'Water'))\\\" 2>&1 | tail -1\", \"description\": \"Eva"
+  }
+ ],
+ "leak": false,
+ "run": "w111",
+ "qid": "antoine",
+ "round": 5
+}

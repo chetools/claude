@@ -1,0 +1,13 @@
+{
+ "answer": "**You need Kv ≈ 28.8 m³/h.** At these conditions the flow is choked and the water flashes. I used the IEC 60534-2-1 liquid sizing method and ran the numbers in Python, with water properties from CoolProp (IAPWS).\n\n**Water at 130 °C:**\n- Vapour pressure Pv = 2.70 bar(a)\n- Density ρ = 935.0 kg/m³, so relative density ρ/ρ₀ = 0.936 (ρ₀ = 999.1 kg/m³)\n- Critical pressure Pc = 220.64 bar(a)\n\n**Calculation:**\n1. Liquid critical pressure ratio: FF = 0.96 − 0.28·√(Pv/Pc) = 0.929\n2. Choked pressure drop: ΔP_choked = FL²·(P1 − FF·Pv) = 0.81 × (6 − 0.929 × 2.70) = **2.83 bar**\n3. The actual pressure drop is 4.5 bar, which is more than 2.83 bar, so the flow is choked.\n4. P2 = 1.5 bar(a) is below Pv = 2.70 bar(a), so the water flashes. The outlet will be a two-phase mixture, not just cavitating liquid.\n5. Required Kv = Q·√((ρ/ρ₀)/ΔP_choked) = 50 × √(0.936 / 2.83) = **28.8 m³/h**\n\nIf you size with the full 4.5 bar drop instead, you get Kv ≈ 22.8. That valve would be about 26 % too small, because extra drop beyond 2.83 bar does not increase the flow.\n\n**Practical notes:**\n- These are general engineering expectations; I did not calculate them.\n- Pick a valve whose rated Kv puts 28.8 at roughly 60–80 % of travel.\n- The FL = 0.9 you gave is for a particular valve style. If the chosen valve's FL differs, or a fitting factor FLP applies because of pipe reducers, recompute ΔP_choked and Kv.\n- Flashing service needs hardened trim and body materials that resist erosion. The outlet piping must also be sized for the two-phase flow leaving the valve.\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp && python3 -c \\\"\\ntry:\\n  import CoolProp.CoolProp as CP; pv=CP.PropsSI('P','T',403.15,'Q',0,'Water')/1e5; rho=CP.PropsSI('D','T',403.15,'P',6e5,'Water'); print('coolprop')\\nexcept Exception as e:\\n  from iapws import IAPWS97 as W; pv=W(T=403.15,x=0).P*10; rho=W(T=403.15,P=0.6).rho; print('iapws')\\nimport math\\npc=220.64; FL=0.9; P1=6; P2=1.5; Q=50\\nFF=0.96-0.28*math.sqrt(pv/p"
+  }
+ ],
+ "leak": false,
+ "run": "w054",
+ "qid": "valve",
+ "round": 3
+}

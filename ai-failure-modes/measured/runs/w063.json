@@ -1,0 +1,13 @@
+{
+ "answer": "At 10 bar(a), ammonia boils at about 24.9 °C (298.06 K), and its latent heat of vaporisation there is **about 1166 kJ/kg** (h_vap − h_liq = 1166.2 kJ/kg). That is roughly 19.9 kJ/mol, using M = 17.03 g/mol.\n\nI computed this with CoolProp (Helmholtz equation of state for ammonia) rather than recalling it. CoolProp also gives 1165.8 kJ/kg at 25 °C, where the saturation pressure is 10.03 bar, so the value at 10 bar is consistent. I did not check it against a printed steam/refrigerant table, but standard ammonia tables list about 1166 kJ/kg at 25 °C, which agrees.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x063 && (python3 -c \\\"import CoolProp\\\" 2>/dev/null || pip install -q CoolProp 2>&1 | tail -1); python3 -c \\\"\\nfrom CoolProp.CoolProp import PropsSI as P\\np=10e5\\nT=P('T','P',p,'Q',0,'Ammonia')\\nhv=P('H','P',p,'Q',1,'Ammonia');hl=P('H','P',p,'Q',0,'Ammonia')\\nprint(T,T-273.15,(hv-hl)/1e3)\\nfor t in"
+  }
+ ],
+ "leak": false,
+ "run": "w063",
+ "qid": "ammonia",
+ "round": 3
+}

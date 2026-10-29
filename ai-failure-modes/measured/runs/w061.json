@@ -1,0 +1,13 @@
+{
+ "answer": "The Antoine equation gives about **1.00 MPa (7480 mmHg, 9.97 bar)** for water at 180 °C.\n\nI used the high-temperature Antoine set for water, which is valid from 99 to 374 °C:\nlog10(P / mmHg) = 8.14019 − 1810.94 / (244.485 + T / °C)\n- At T = 180 °C this gives P = 7481 mmHg = **997.4 kPa**.\n- As a check, CoolProp (which uses the IAPWS steam tables) gives 1002.8 kPa at 180 °C. The Antoine result is 0.5% low.\n\nA second coefficient set, the NIST WebBook one, does much worse here: log10(P / bar) = 3.55959 − 643.748 / (T / K − 198.043), quoted for 379–573 K. At 453.15 K it gives 10.87 bar, about 8% too high. Don't use it at this temperature.\n\nI computed all three values in a one-off Python run and created no files.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport math\\nT=180.0\\np1=10**(8.14019-1810.94/(244.485+T)); print('mmHg set',p1,'mmHg',p1*0.133322,'kPa')\\nTK=T+273.15\\np2=10**(3.55959-643.748/(TK-198.043)); print('NIST',p2,'bar')\\ntry:\\n import CoolProp.CoolProp as CP; print('IAPWS',CP.PropsSI('P','T',TK,'Q',0,'Water')/1e3,'kPa')\\nexcept Exception as e: print(e)\\n\\\"\", \"description\": \"Compute water vapour pressure via"
+  }
+ ],
+ "leak": false,
+ "run": "w061",
+ "qid": "antoine",
+ "round": 3
+}

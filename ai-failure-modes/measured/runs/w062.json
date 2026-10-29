@@ -1,0 +1,13 @@
+{
+ "answer": "m-xylene (1,3-dimethylbenzene, CAS 108-38-3). I looked these up in the `chemicals` Python database, not from memory:\n\n| Property | Value | Main sources (in the database) |\n|---|---|---|\n| Critical temperature, Tc | 617.0 K (343.9 °C) | IUPAC, CRC, Yaws, PSRK; CoolProp (HEOS) gives 616.89 K |\n| Critical pressure, Pc | 3.541 MPa (35.41 bar) | IUPAC, Yaws; CRC gives 3.540 MPa, CoolProp 3.5346 MPa |\n| Acentric factor, ω | 0.326 to 0.331 | CoolProp 0.326, Yaws 0.327, PSRK and PD 0.331 |\n\n- **Tc:** sources other than the estimation methods range from 616.89 to 618.0 K. The 618.0 K value is from NIST WebBook.\n- **Pc:** these sources range from 3.5346 to 3.546 MPa.\n- **ω:** calculating it from its definition, ω = −log10(Psat at 0.7 Tc / Pc) − 1, with the library's own vapour-pressure data gives 0.3264. That agrees with the 0.326 value. The commonly used value is about 0.326 to 0.327.\n\nValues from group-contribution estimates (Joback, Wilson-Jasperson: Tc ≈ 625 K, Pc ≈ 3.59 to 3.62 MPa) are not experimental, so I left them out of the table.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x062 && python3 -I -c \\\"\\nfrom chemicals import Tc,Pc,omega\\nfrom chemicals.critical import Tc_methods, Pc_methods\\nfrom chemicals.acentric import omega_methods\\nc='108-38-3'\\nfor m in Tc_methods(c): print('Tc',m,Tc(c,method=m))\\nfor m in Pc_methods(c): print('Pc',m,Pc(c,method=m))\\nfor m in omega_"
+  }
+ ],
+ "leak": false,
+ "run": "w062",
+ "qid": "xylene",
+ "round": 3
+}

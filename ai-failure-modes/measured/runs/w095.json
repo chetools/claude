@@ -1,0 +1,13 @@
+{
+ "answer": "At t = 40, starting from pure A (y_A = 1, y_B = y_C = 0):\n\n- **y_A = 0.715827**\n- **y_B = 9.1855 × 10⁻⁶**\n- **y_C = 0.284164**\n\nThese are mole fractions. Each of the three reactions keeps the total number of moles the same, so the concentrations always add up to 1 and equal the mole fractions.\n\nI solved the standard Robertson system with SciPy's `solve_ivp` (rtol = 1e-12, atol = 1e-16):\n- dA/dt = −0.04·A + 10⁴·B·C\n- dB/dt = 0.04·A − 10⁴·B·C − 3×10⁷·B²\n- dC/dt = 3×10⁷·B²\n\nThree different stiff solvers (Radau, BDF and LSODA) gave the same values to all digits shown. The sum stayed at 1 to within about 1e-15. The result also matches the widely published reference values (about 0.7158, 9.185e-6, 0.2842).\n\nI only wrote a throwaway script; no files were created or changed.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x095 && python3 -c \\\"\\nfrom scipy.integrate import solve_ivp\\nimport numpy as np\\ndef f(t,y):\\n  a,b,c=y; return [-0.04*a+1e4*b*c, 0.04*a-1e4*b*c-3e7*b*b, 3e7*b*b]\\nfor m in ['Radau','BDF','LSODA']:\\n  s=solve_ivp(f,[0,40],[1,0,0],method=m,rtol=1e-12,atol=1e-16)\\n  y=s.y[:,-1]; print(m, y, y.sum())"
+  }
+ ],
+ "leak": false,
+ "run": "w095",
+ "qid": "robertson",
+ "round": 4
+}

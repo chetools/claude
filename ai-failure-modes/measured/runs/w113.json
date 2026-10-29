@@ -1,0 +1,13 @@
+{
+ "answer": "At 10 bar(a), ammonia's latent heat of vaporisation is about 1166 kJ/kg, or about 19.9 kJ/mol using M = 17.03 g/mol. Its saturation temperature at that pressure is about 298.06 K (24.9 °C).\n\nI calculated this with CoolProp, which uses the Helmholtz-energy equation of state for ammonia (Gao et al. 2020 in current versions). I took the difference between the enthalpies of saturated vapour and saturated liquid at 10 bar(a): h_vap − h_liq = 1166.18 kJ/kg.\n\nI did not check the number against a second independent source in this session. From memory, standard ammonia tables give about 1166 kJ/kg at 25 °C, which agrees, but that is a recollection and was not computed here.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport CoolProp.CoolProp as CP\\nP=10e5\\nT=CP.PropsSI('T','P',P,'Q',0,'Ammonia')\\nhv=CP.PropsSI('H','P',P,'Q',1,'Ammonia');hl=CP.PropsSI('H','P',P,'Q',0,'Ammonia')\\nprint(T,T-273.15,(hv-hl)/1e3)\\n\\\" 2>&1 || pip install -q CoolProp 2>&1 | tail -1\", \"description\": \"Compute ammonia latent heat at 10 bar with CoolProp\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w113",
+ "qid": "ammonia",
+ "round": 5
+}

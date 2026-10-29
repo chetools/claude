@@ -1,0 +1,17 @@
+{
+ "answer": "The OSHA PSM threshold quantity (TQ) for chlorine (CAS 7782-50-5) is 1,500 lb. The source is 29 CFR 1910.119, Appendix A, \"List of Highly Hazardous Chemicals, Toxics and Reactives (Mandatory)\".\n\nI checked this against the current eCFR text of 1910.119, which I fetched today. The Appendix A row reads \"Chlorine 7782-50-5 1500\".\n\n- If a process holds 1,500 lb or more of chlorine, the PSM standard applies to it.\n- The related chlorine compounds on the list are separate entries: chlorine dioxide, chlorine pentafluoride and chlorine trifluoride. I confirmed that chlorine pentafluoride is 1,000 lb. My text extraction cut off the values for the other two, so I have not confirmed them.\n- This answer is for OSHA PSM only. EPA's RMP rule (40 CFR 68) sets its own threshold for chlorine, which I did not check here.\n\nI made no changes to the repository. The downloaded eCFR page is at /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x073/dl/psm.html.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"mkdir -p /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x073/dl && cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x073/dl && curl -sSL \\\"https://www.ecfr.gov/api/renderer/v1/content/enhanced/current/title-29?part=1910&section=1910.119\\\" -o psm.html; ls -la; python3 -I -c \\\"\\nimport re,html;t=html.unescape(r"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x073/dl && python3 -I -c \\\"\\nimport re,html;t=html.unescape(re.sub(r'<[^>]+>',' ',open('psm.html').read()));t=re.sub(r'\\\\s+',' ',t)\\nfor m in re.finditer(r'Chlorine.{0,40}',t):print(m.group(0))\\\"\", \"description\": \"Show chlorine rows with quantities\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w073",
+ "qid": "psm",
+ "round": 3
+}

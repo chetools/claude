@@ -1,0 +1,17 @@
+{
+ "answer": "At 1 atm, the vapour in equilibrium with a liquid of 95 mol% ethanol and 5 mol% water is about **94.5 mol% ethanol and 5.5 mol% water**. The bubble point is about **78.2 °C**.\n\nI found this by solving the bubble-point condition at 101.325 kPa (modified Raoult's law, ideal vapour, pure-component vapour pressures from the `thermo` library). I used three independent activity-coefficient models:\n\n| Model | T (°C) | y ethanol | y water | γ ethanol | γ water |\n|---|---|---|---|---|---|\n| Wilson (DECHEMA parameters) | 78.22 | 0.9441 | 0.0559 | 1.002 | 2.570 |\n| UNIFAC (original) | 78.22 | 0.9449 | 0.0551 | 1.003 | 2.533 |\n| UNIFAC (Dortmund) | 78.30 | 0.9467 | 0.0533 | 1.001 | 2.444 |\n\nThe three models agree to within ±0.15 mol% on y.\n\n**What this means:** the vapour has less ethanol than the liquid (y < x). That is because 95 mol% is past the ethanol–water azeotrope (about 89 mol% ethanol at 1 atm). So ordinary distillation at 1 atm cannot get from this liquid to purer ethanol.\n\n**Not verified:**\n- I did not compare the result against measured VLE data, so the answer is model-based.\n- The Wilson fit puts the azeotrope at x = 0.869. The value usually quoted from measurements is about 0.89, which I recalled and did not check. Expect the uncertainty in y to be a few tenths of a mol%.\n\nThe script is at /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x080/vle.py. It needs the `thermo` package, which I installed for this.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python -c \\\"import thermo; print(thermo.__version__)\\\" 2>&1; pip install thermo 2>&1 | tail -1\", \"description\": \"Check for thermo library and install it\"}"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x080 && cat > vle.py <<'EOF'\\nimport numpy as np\\nfrom scipy.optimize import brentq\\nfrom thermo import ChemicalConstantsPackage, PRMIX, CEOSGas, GibbsExcessLiquid, FlashVL, UNIFAC\\nfrom thermo.unifac import UFIP, UFSG, DOUFIP2006, DOUFSG\\nfrom thermo.interaction_parameters import IPDB\\nfrom chemic"
+  }
+ ],
+ "leak": false,
+ "run": "w080",
+ "qid": "vle",
+ "round": 4
+}

@@ -1,0 +1,13 @@
+{
+ "answer": "The pressure drop is about 33 kPa (0.33 bar, 4.8 psi), or about 3.4 m of water head. The straight pipe accounts for 26 kPa and the fittings for 7 kPa.\n\nI calculated it with Darcy–Weisbach plus the Crane TP-410 K-factor method, in Python with scipy. The script is /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x102/dp.py.\n\n**Inputs I assumed:**\n- **Pipe:** 4-inch schedule 40 has an inside diameter of 4.026 in (102.26 mm).\n- **Roughness:** 0.045 mm, a typical value for new commercial steel.\n- **Water at 20 °C:** density 998.2 kg/m³, viscosity 1.002 mPa·s.\n\n**Flow:**\n- Velocity is 1.691 m/s, which gives a velocity head of 1427 Pa.\n- Re = 1.72 × 10⁵, so the flow is turbulent.\n- The Colebrook friction factor is f = 0.01879. The Haaland formula gives 0.01858 as an independent check, about 1% lower.\n\n**Straight pipe:** f · (L/D) · ρV²/2 = **26.2 kPa**.\n\n**Fittings:** For 4-inch pipe, Crane's tabulated fully turbulent friction factor is f_T = 0.017.\n\n| Fitting | K each | Count | K total |\n|---|---|---|---|\n| Standard 90° elbow | 30 f_T | 6 | 3.06 |\n| Gate valve, fully open | 8 f_T | 2 | 0.27 |\n| Swing check valve | 100 f_T | 1 | 1.70 |\n| **Sum** | | | **5.03** |\n\nThat gives a fittings drop of **7.2 kPa**.\n\n**Total: 33.4 kPa.** If f_T is computed from the roughness (0.0162) instead of taken from Crane's table, the total is 33.1 kPa. So the answer is about 33 kPa either way.\n\n**Not included:**\n- Pipe entrance and exit losses, because they weren't specified. Together they would add about K = 1.5, or about 2 kPa.\n- Any change in elevation.\n- Ageing of the pipe. Corroded steel is rougher, which would increase the pipe friction loss noticeably.\n\nThe K values for the swing check valve vary by design and by source. Crane gives 100 f_T for a standard swing check valve, but some tables list 50 to 135 f_T, which would change the total by about ±1 kPa.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"mkdir -p /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x102 && cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x102 && cat > dp.py <<'EOF'\\nimport math\\nfrom scipy.optimize import brentq\\nrho,mu=998.2,1.002e-3      # water 20 C\\nD=4.026*0.0254; eps=0.045e-3; L=100.0\\nQ=50/3600; A=math.pi*D**2/4; V=Q/A; Re=r"
+  }
+ ],
+ "leak": false,
+ "run": "w102",
+ "qid": "pipe",
+ "round": 5
+}

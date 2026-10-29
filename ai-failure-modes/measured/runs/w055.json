@@ -1,0 +1,25 @@
+{
+ "answer": "At 1 atm, a liquid with 95 mol% ethanol and 5 mol% water is in equilibrium with a vapour of about **94.5 mol% ethanol and 5.5 mol% water**. The bubble point is about **78.2–78.3 °C**.\n\nThe vapour has slightly less ethanol than the liquid. That is because 95 mol% is past the ethanol–water azeotrope, so water is the more volatile component at this composition. This is why ordinary distillation cannot get past the azeotrope.\n\n**How I got it:** I calculated the bubble point with modified Raoult's law (ideal gas, activity coefficients in the liquid) using the `thermo` 0.6.1 package. I installed it in a scratch virtual environment and did not change anything in the repository. I used three independent activity-coefficient models:\n\n| Model | T_bubble (°C) | y ethanol | y water | γ ethanol | γ water | Azeotrope it predicts, x ethanol |\n|---|---|---|---|---|---|---|\n| UNIFAC (original) | 78.22 | 0.9449 | 0.0551 | 1.002 | 2.533 | about 0.892 |\n| UNIFAC (Dortmund) | 78.30 | 0.9467 | 0.0533 | 1.001 | 2.444 | about 0.894 |\n| NRTL (ChemSep parameters) | 78.26 | 0.9455 | 0.0545 | 1.001 | 2.501 | about 0.876 |\n\nThe three models agree to within about 0.002 in vapour mole fraction. Each one also predicts an azeotrope at about 88–89 mol% ethanol, which shows they behave correctly near this composition.\n\n**Not checked:** I did not compare against measured VLE data for this exact point. From memory, the literature azeotrope is about 89.4 mol% ethanol at 78.15 °C, which matches the models, but I have not confirmed it against a source.\n\nThe script is `/tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x055/vle.py`. No shared library routines were used, added or proposed.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python -c \\\"import thermo; print(thermo.__version__)\\\" 2>&1; pip download thermo -q -d /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x055/pkgs 2>&1 | tail -1\", \"description\": \"Check whether the thermo package is available\"}"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x055 && python -m venv venv -q && ./venv/bin/pip install -q thermo 2>&1 | tail -2; ./venv/bin/python -c \\\"import thermo;print(thermo.__version__)\\\"\", \"description\": \"Install thermo in a scratch venv\", \"timeout\": 300000}"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x055 && python -m venv venv && ./venv/bin/pip install -q thermo 2>&1 | tail -2; ./venv/bin/python -c \\\"import thermo;print(thermo.__version__)\\\"\", \"description\": \"Install thermo in a scratch venv\", \"timeout\": 300000}"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x055 && cat > vle.py <<'EOF'\\nfrom thermo import ChemicalConstantsPackage, PropertyCorrelationsPackage, CEOSGas, IdealGas, GibbsExcessLiquid, FlashVL, UNIFAC, NRTL\\nfrom thermo.unifac import UFSG, UFIP, DOUFSG, DOUFIP2006, UNIFAC_gammas\\nfrom thermo.interaction_parameters import IPDB\\nfrom chemical"
+  }
+ ],
+ "leak": false,
+ "run": "w055",
+ "qid": "vle",
+ "round": 3
+}

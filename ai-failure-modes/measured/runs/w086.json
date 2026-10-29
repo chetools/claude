@@ -1,0 +1,13 @@
+{
+ "answer": "From the Antoine equation, the vapour pressure of water at 180 °C is about 7480 mmHg, which is 997 kPa or 9.97 bar.\n\nThe equation is log10(P / mmHg) = A − B / (C + T / °C). I used the standard constants for water over 99–374 °C: A = 8.14019, B = 1810.94, C = 244.485. That gives P = 7481 mmHg = 997.4 kPa.\n\n**Check against a second method:** the IAPWS saturation pressure at 180 °C (453.15 K), computed with CoolProp, is 1002.8 kPa. The Antoine result is about 0.5% low.\n\n**Wrong constants:** the more often quoted 1–100 °C constants (8.07131, 1730.63, 233.426) are used outside their range at 180 °C. They give 7678 mmHg = 1023.6 kPa, about 2.1% high.\n\nI didn't create any files.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nT=180\\nfor A,B,C,l in [(8.07131,1730.63,233.426,'1-100C set'),(8.14019,1810.94,244.485,'99-374C set')]:\\n  p=10**(A-B/(C+T)); print(l, p,'mmHg', p*0.133322,'kPa')\\n\\\"; python3 -c \\\"import CoolProp.CoolProp as CP; print(CP.PropsSI('P','T',453.15,'Q',0,'Water')/1e3)\\\" 2>&1 | tail -1\", \"description\": \"Evaluate Antoine equation for water at 180 C\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w086",
+ "qid": "antoine",
+ "round": 4
+}

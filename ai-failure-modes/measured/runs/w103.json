@@ -1,0 +1,13 @@
+{
+ "answer": "The available NPSH is about **4.8 m** (4.79 m).\n\nNPSHa = (P_atm − P_v)/(ρg) + z − h_f\n\n- P_atm = 101.325 kPa (sea level, open tank)\n- P_v of water at 90 °C = 70.18 kPa. CoolProp gives 70.182 kPa and the IAPWS-IF97 saturation equation gives 70.182 kPa, so the two sources agree.\n- ρ = 965.3 kg/m³ (saturated liquid at 90 °C, CoolProp)\n- Pressure head minus vapour-pressure head: (101 325 − 70 182)/(965.3 × 9.80665) = 3.29 m\n- Static head z = +2.0 m (the liquid surface is above the pump suction)\n- Suction line losses h_f = −0.5 m\n\n**NPSHa = 3.29 + 2.0 − 0.5 = 4.79 m**\n\nAt 90 °C the vapour pressure takes up about 70% of the atmospheric pressure. This leaves only about 3.3 m of pressure head instead of the ~10.3 m you would have with cold water. The pump's required NPSH (NPSHr) needs to be comfortably below 4.8 m, usually with a margin of at least 0.5–1 m or a ratio of about 1.1–1.3.\n\nIf the site is not at standard atmospheric pressure, or the water is hotter than 90 °C, the result drops noticeably. For example, a 1 kPa change in pressure changes NPSHa by about 0.1 m.\n\nI didn't create any files.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\ntry:\\n  from CoolProp.CoolProp import PropsSI as P\\n  pv=P('P','T',363.15,'Q',0,'Water'); rho=P('D','T',363.15,'Q',0,'Water'); print('coolprop',pv,rho)\\nexcept Exception as e: print(e); pv=70183.; rho=965.3\\nh=(101325-pv)/(rho*9.80665); print(h, h+2-0.5)\\n# IAPWS-IF97 region 4 check\\nimport math\\nn=[0.11670521452767e4,-0.72421316703206e6,-0.17073846940092e2,0.1202082470"
+  }
+ ],
+ "leak": false,
+ "run": "w103",
+ "qid": "npsh",
+ "round": 5
+}

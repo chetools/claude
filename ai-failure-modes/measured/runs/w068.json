@@ -1,0 +1,13 @@
+{
+ "answer": "The bubble-point pressure is about 96.4 kPa (0.951 atm, about 723 mmHg).\n\nWater and n-hexane are practically immiscible. So a 50/50 liquid at 60 °C is two liquid layers, each nearly pure. Each layer exerts its full pure-component vapour pressure, regardless of the overall 50/50 split. The bubble point is reached when the total pressure equals the sum:\n\nP_bubble ≈ P_sat(water) + P_sat(n-hexane)\n\nI computed both vapour pressures at 60 °C two ways, and the two agree to within 0.1 kPa:\n\n| Component | CoolProp (reference equation of state) | Antoine equation |\n|---|---|---|\n| Water | 19.95 kPa | 19.87 kPa |\n| n-Hexane | 76.41 kPa | 76.39 kPa |\n| Sum = P_bubble | **96.36 kPa** | 96.26 kPa |\n\n- **Vapour at the bubble point:** about 79 mol% n-hexane and 21 mol% water (y_hexane = 76.4/96.4).\n- **Mistake to avoid:** applying Raoult's law as if the liquid were one ideal solution gives 0.5 × 96.4 ≈ 48 kPa. That is wrong by a factor of two, because the two liquids do not mix.\n- **Not computed:** I took the two layers as pure. In reality each holds a trace of the other, which would lower the answer slightly. Those trace amounts are tiny (n-hexane dissolves in water at only parts per million), so I expect the effect to be negligible, but I did not compute it.\n\nOne consequence of this physics: at about 1 atm (101.3 kPa) the mixture would boil a few degrees above 60 °C. That is well below the normal boiling points of hexane (69 °C) and water (100 °C).\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nT=60.0\\npw=10**(8.07131-1730.63/(T+233.426))*0.133322\\nph=10**(6.87601-1171.17/(T+224.41))*0.133322\\nprint(pw,ph,pw+ph,0.5*(pw+ph))\\ntry:\\n  import CoolProp.CoolProp as CP\\n  print(CP.PropsSI('P','T',333.15,'Q',0,'Water')/1e3, CP.PropsSI('P','T',333.15,'Q',0,'n-Hexane')/1e3)\\nexcept Exception as e: print(e)\\n\\\"\", \"description\": \"Compute vapor pressures with Antoine\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w068",
+ "qid": "immiscible",
+ "round": 3
+}

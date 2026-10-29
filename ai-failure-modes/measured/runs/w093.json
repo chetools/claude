@@ -1,0 +1,13 @@
+{
+ "answer": "The bubble-point pressure is about **96.3 kPa (0.963 bar)**.\n\n**Why:** water and n-hexane barely dissolve in each other. So a 50/50 liquid mixture is really two separate liquid layers: almost pure water and almost pure hexane. Each layer pushes with its full pure-component vapour pressure, whatever the overall composition. The bubble-point pressure is therefore the sum of the two:\n\nP_bubble = P_sat(water) + P_sat(n-hexane)\n\n**Values at 60 °C (333.15 K):**\n- **n-hexane:** NIST Antoine equation log10 P[bar] = 4.00266 − 1171.53/(T − 48.784), valid 286–343 K. This gives **76.4 kPa** (computed).\n- **Water:** 19.95 kPa, the IAPWS steam-table value (from memory, not looked up). As a check, a NIST Antoine fit gave 20.18 kPa, about 1% higher.\n- **Sum: about 96.3 kPa** (96.5 kPa using the Antoine value for water).\n\nThe 50/50 composition does not enter the result, as long as both liquid layers are present. The vapour that forms first is about 79 mol% hexane and 21 mol% water (76.4/96.3). Assuming one ideal mixed liquid (Raoult's law) would give about 48 kPa, roughly half the right answer, so that assumption must not be used here.\n\n**Limitation:** I ignored the small mutual solubility of the two liquids. It is tiny, so I expect this to change the result by well under 1%, but I did not calculate that.\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nT=333.15\\nph=10**(4.00266-1171.53/(T-48.784))*100\\n# water NIST Antoine (Bridgeman&Aldrich 304-333K? use 255.9-373 set) A=4.6543 B=1435.264 C=-64.848\\npw=10**(4.6543-1435.264/(T-64.848))*100\\nprint(ph,pw,ph+pw)\\n# ideal miscible (Raoult) for contrast\\nprint(0.5*ph+0.5*pw)\\n\\\"\", \"description\": \"Compute vapour pressures at 60 C\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w093",
+ "qid": "immiscible",
+ "round": 4
+}

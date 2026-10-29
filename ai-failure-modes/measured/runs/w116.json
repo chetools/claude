@@ -1,0 +1,13 @@
+{
+ "answer": "k at 120 °C ≈ 1.6×10⁴ s⁻¹ (16,100 s⁻¹). That is about 13.4 times the rate constant at 80 °C.\n\nI used the two-point Arrhenius equation:\nln(k₂/k₁) = (Eₐ/R)(1/T₁ − 1/T₂)\n\n- T₁ = 353.15 K and T₂ = 393.15 K, so 1/T₁ − 1/T₂ = 2.881×10⁻⁴ K⁻¹.\n- Eₐ/R = 75,000 / 8.314 = 9,020 K.\n- ln(k₂/k₁) = 2.599, so k₂/k₁ = 13.45.\n- k₂ = 1.2×10³ × 13.45 = 1.61×10⁴ s⁻¹.\n\nI checked the arithmetic with a short Python run, which gave a ratio of 13.447 and k₂ = 16,137 s⁻¹. This assumes the activation energy stays the same between 80 °C and 120 °C. I didn't create any files.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport math;R=8.314462618;T1=353.15;T2=393.15;r=math.exp(75000/R*(1/T1-1/T2));print(r,1.2e3*r)\\\"\", \"description\": \"Compute Arrhenius rate constant\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w116",
+ "qid": "arrhenius",
+ "round": 5
+}

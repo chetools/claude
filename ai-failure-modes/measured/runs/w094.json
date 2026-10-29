@@ -1,0 +1,13 @@
+{
+ "answer": "The minimum fluidization velocity is about **0.035 to 0.045 m/s (roughly 3.5 to 4.5 cm/s)**, depending on which correlation you use. The Wen–Yu value of about 0.034 m/s is the usual textbook answer.\n\nI calculated every value below in Python; none are recalled from memory.\n\n**Inputs:**\n- Particle size d_p = 200 µm and particle density ρ_p = 2650 kg/m³, as you gave.\n- Air at 20 °C and 1 atm: density ρ_g = 1.204 kg/m³ and viscosity µ = 1.813e-5 Pa·s.\n- Archimedes number: Ar = d_p³ ρ_g (ρ_p − ρ_g) g / µ² ≈ 761.\n\n| Method | Re_mf | U_mf |\n|---|---|---|\n| Wen & Yu (1966): Re_mf = √(33.7² + 0.0408 Ar) − 33.7 | 0.458 | **0.0345 m/s** |\n| Grace (1982): constants 27.2 and 0.0408 | 0.565 | 0.0426 m/s |\n| Full Ergun equation, voidage at minimum fluidization ε_mf = 0.45, sphericity φ = 0.86 (my assumed values for typical sand) | — | 0.046 m/s |\n| Full Ergun equation, ε_mf = 0.42, spheres (φ = 1) | — | 0.048 m/s |\n| Low-Reynolds limit: d_p² (ρ_p − ρ_g) g / (1650 µ) | — | 0.0347 m/s |\n\n**What this means:**\n- Re_mf is below 1, so the flow is viscous and the simple low-Reynolds form (U_mf ∝ d_p²) works.\n- 200 µm sand is a Geldart group B powder, so the bed starts bubbling as soon as it fluidizes.\n- The spread between methods comes mainly from the assumed voidage and sphericity, because U_mf depends very strongly on ε_mf.\n- For a real sand sample, a measured pressure-drop-versus-velocity curve would decide between these values. I did not run that comparison against measured data.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport math\\nd=200e-6;rp=2650;rg=1.204;mu=1.813e-5;g=9.81\\nAr=d**3*rg*(rp-rg)*g/mu**2\\nprint('Ar',Ar)\\nfor name,C1,C2 in [('Wen-Yu',33.7,0.0408),('Grace',27.2,0.0408)]:\\n  Re=math.sqrt(C1**2+C2*Ar)-C1; print(name,Re,Re*mu/(rg*d))\\n# Ergun, eps=0.45 phi=0.86\\nfrom scipy.optimize import brentq\\nfor eps,phi in [(0.45,0.86),(0.42,1.0)]:\\n  f=lambda u:150*(1-eps)/(eps**3*phi"
+  }
+ ],
+ "leak": false,
+ "run": "w094",
+ "qid": "umf",
+ "round": 4
+}

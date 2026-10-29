@@ -1,0 +1,17 @@
+{
+ "answer": "Specify an effective orifice area of at least 0.94 in², which means an API 526 **\"J\" orifice (1.287 in² effective)**. The next size down, \"H\" (0.785 in²), is too small.\n\nI calculated this with a script, using CoolProp 8.0.0 for the propane properties. It has not been checked against vendor sizing software.\n\n**1. Fire heat input (API 521, adequate drainage and firefighting)**\n- Q = 21,000 · F · A^0.82, with F = 1.0 (bare vessel) and A = 500 ft² wetted area.\n- **Q ≈ 3.43 × 10⁶ BTU/h**\n\n**2. Relieving conditions**\n- Fire cases allow 21% overpressure, so P₁ = 250 × 1.21 + 14.7 = **317.2 psia**.\n- Saturation temperature at that pressure: **142.9 °F**.\n- Latent heat: **109.5 BTU/lb**.\n\n**3. Relief load**\n- W = Q / λ ≈ **31,300 lb/h** of propane vapour.\n\n**4. Orifice area (API 520 Part I, critical vapour flow)**\n- A = W·√(TZ/M) / (C·K_d·P₁·K_b)\n- Inputs: T = 602.6 °R, Z = 0.673, M = 44.10, K_d = 0.975, K_b = 1.0 (conventional valve, no backpressure correction).\n- With the ideal-gas k = 1.115, C = 328.4 and **A ≈ 0.935 in²**. Use this value; it is the conservative one.\n- With the real-gas Cp/Cv at saturation (k ≈ 1.57), A would come out at 0.83 in². I didn't use it, because the ideal-gas k is standard practice and gives the larger area.\n- Either way the \"J\" orifice is the size.\n\n**Assumptions to confirm**\n- **Wetted area:** I took 500 ft² as the area already counted up to 25 ft above grade (as API 521 specifies).\n- **Valve type:** a conventional spring-loaded valve.\n- **Backpressure and inlet losses:** none included.\n- **Rupture disk:** none, so no K_c factor.\n- **Fire credits:** F = 1.0, so no credit for insulation or water spray.\n- **Propane composition:** pure propane. Commercial propane (HD-5) will shift the latent heat and temperature a little.\n- **Vapour vs. two-phase relief:** vapour-only relief, which is valid while the valve stays above the liquid level.\n\nThe vendor's certified K_d and their sizing sheet should be checked before you issue the specification.\n\nThe calculation script is at /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x083/fire.py.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"import CoolProp\\\" 2>&1 || pip install -q CoolProp 2>&1 | tail -1; python3 -c \\\"import CoolProp;print(CoolProp.__version__)\\\"\", \"description\": \"Check or install CoolProp\"}"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cat > /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x083/fire.py <<'EOF'\\nfrom CoolProp.CoolProp import PropsSI as P\\nimport math\\nA=500.0; F=1.0\\nQ=21000*F*A**0.82            # BTU/h, API 521 adequate drainage+firefighting\\nPset=250.0; Patm=14.696\\nP1=Pset*1.21+Patm            # psia, 21% fire overpressure\\nPa=P1*6894.757\\nT=P('T','P',Pa,'Q',1,'"
+  }
+ ],
+ "leak": false,
+ "run": "w083",
+ "qid": "relief",
+ "round": 4
+}

@@ -1,0 +1,17 @@
+{
+ "answer": "CO2 at 100 bar and 37 °C (310.15 K) has a density of about **683 kg/m³** (683.4 kg/m³ computed).\n\n- **How it was computed:** CoolProp 'HEOS' backend, which uses the Span–Wagner reference equation of state for CO2. That equation's stated uncertainty in this region is a few tenths of a percent at most.\n- **State:** this is supercritical CO2. The critical point is 31.0 °C and 73.8 bar, so the state is only about 6 K and 26 bar above it. Z = 0.250.\n- **Cross-check:** I also ran the Peng–Robinson cubic equation of state as a second method. It gives 619 kg/m³, about 9% low. That is the usual size of cubic-EOS error near the critical point, so I take the Span–Wagner value as the answer.\n- **Not verified:** I did not compare the result against NIST WebBook or REFPROP tables.\n\nNo files were created and no project directories were touched.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x056 && (python3 -c \\\"import CoolProp\\\" 2>/dev/null || pip install -q CoolProp 2>&1 | tail -1); python3 -c \\\"\\nfrom CoolProp.CoolProp import PropsSI as P\\nT=310.15;p=1e7\\nprint(P('D','T',T,'P',p,'CO2'), P('Z','T',T,'P',p,'CO2'), P('Phase','T',T,'P',p,'CO2'))\\nprint(P('Tcrit','CO2'),P('pcrit','CO2')"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport numpy as np\\nR=8.314462618;Tc=304.1282;pc=7.3773e6;w=0.22394;T=310.15;p=1e7;M=0.0440098\\nk=0.37464+1.54226*w-0.26992*w**2;a=0.45724*R**2*Tc**2/pc*(1+k*(1-np.sqrt(T/Tc)))**2;b=0.07780*R*Tc/pc\\nA=a*p/(R*T)**2;B=b*p/(R*T)\\nZ=np.roots([1,-(1-B),A-3*B**2-2*B,-(A*B-B**2-B**3)]);Z=Z[abs(Z.imag)<1e-9].real\\nprint('PR Z',Z,'rho',p*M/(Z*R*T))\\n\\\"\", \"description\": \"Cross-ch"
+  }
+ ],
+ "leak": false,
+ "run": "w056",
+ "qid": "co2",
+ "round": 3
+}

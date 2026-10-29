@@ -1,0 +1,13 @@
+{
+ "answer": "The Dittus–Boelter equation gives Nu ≈ 214.\n\nThe water is being cooled, so the Prandtl exponent is n = 0.3 (n = 0.4 is for heating):\n\nNu = 0.023 · Re^0.8 · Pr^0.3 = 0.023 · 50000^0.8 · 5^0.3 = 214.09\n\nA quick Python calculation confirms this value. For comparison, using n = 0.4 by mistake would give about 251.\n\nThe correlation applies here: the flow is fully turbulent (Re = 50,000 is well above 10,000) and Pr = 5 is inside its range of about 0.6 to 160. It also assumes a smooth tube, fully developed flow (L/D above about 10) and only moderate temperature differences.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"print(0.023*50000**0.8*5**0.3, 0.023*50000**0.8*5**0.4)\\\"\", \"description\": \"Compute Dittus-Boelter Nusselt number\"}"
+  }
+ ],
+ "leak": false,
+ "run": "w065",
+ "qid": "dittus",
+ "round": 3
+}

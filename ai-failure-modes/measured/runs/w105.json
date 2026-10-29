@@ -1,0 +1,17 @@
+{
+ "answer": "At 1 atm, the vapour in equilibrium with a liquid of 95 mol% ethanol and 5 mol% water is about **94.5 mol% ethanol and 5.5 mol% water**. The bubble point is about **78.15 °C**.\n\nThat liquid is past the ethanol–water azeotrope (about 89 mol% ethanol), so the vapour has slightly less ethanol than the liquid. Water is the more volatile component here, which is why plain distillation cannot get past the azeotrope.\n\n**How I got it.** I did a bubble-point calculation at 760 mmHg, combining vapour pressures (Antoine) with a liquid activity model that corrects for non-ideal mixing (modified Raoult's law). I didn't look the answer up from memory.\n- Main model: Wilson, with parameters a12 = 325.0 and a21 = 953.0 cal/mol and liquid molar volumes of 58.68 and 18.07 cm³/mol. It gives y_EtOH = 0.9454 at 78.15 °C.\n- Checks on the method:\n  - The vapour pressures give boiling points of 78.32 °C for ethanol and 100.00 °C for water.\n  - The Wilson model puts the azeotrope at x ≈ 0.886 and 78.08 °C. Handbooks give about 0.894 and 78.15 °C, which I recalled rather than checked.\n- Other models for comparison:\n\n| Model | y_EtOH | Azeotrope it predicts |\n|---|---|---|\n| Wilson, second parameter set | 0.9445 | 0.874 |\n| van Laar | 0.9481 | 0.915 |\n\nSo the models agree on y_EtOH between about 0.944 and 0.948. Treat the answer as 0.945 ± 0.003, which is accurate to roughly the third decimal place.\n\n**What I didn't verify.**\n- I did not compare the result with measured VLE data at x = 0.95.\n- The model parameters came from memory, not from a checked source. Their reasonable fit to the azeotrope and the agreement between models are the only validation.\n- One NRTL parameter set I tried predicted no azeotrope at all. I treated it as a bad recall and left it out.\n\nThe script is /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x105/w.py. I made no changes to the repository.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x105 && cat > v.py <<'EOF'\\nimport numpy as np\\nfrom scipy.optimize import brentq\\nR=1.98721\\ndef psat(T,A,B,C): return 10**(A-B/(T+C))  # mmHg, T in C\\nPe=lambda T:psat(T,8.20417,1642.89,230.300)  # ethanol (Antoine, 1-atm range)\\nPw=lambda T:psat(T,8.07131,1730.63,233.426)  # water\\ndef nrtl(x1,T"
+  },
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"cd /tmp/claude-0/-home-user-claude/7f32c98e-a938-56c1-bbe5-753958320d05/scratchpad/work/x105 && cat > w.py <<'EOF'\\nimport numpy as np\\nfrom scipy.optimize import brentq\\nR=1.98721\\nPe=lambda T:10**(8.20417-1642.89/(T+230.300)); Pw=lambda T:10**(8.07131-1730.63/(T+233.426))\\nprint(\\\"check Tb:\\\",brentq(lambda T:Pe(T)-760,60,100),brentq(lambda T:Pw(T)-760,80,120))\\nV1,V2=58.68,18.07\\nde"
+  }
+ ],
+ "leak": false,
+ "run": "w105",
+ "qid": "vle",
+ "round": 5
+}

@@ -1,0 +1,13 @@
+{
+ "answer": "No. In the 10 m³ reactor the jacket can remove only about one sixth of the heat that a 30-minute feed releases. The feed has to take at least about 3.5 to 4 hours, or the plant needs extra cooling.\n\n**Calculation** (run in Python and checked)\n- **Heat to remove:** 300 kJ/L × 10,000 L = 3.0 GJ. Over 30 min (1800 s) that is about **1.67 MW**.\n- **Vessel size:** with height equal to diameter, V = πD³/4, so D ≈ 2.34 m.\n- **Jacket area:** with the vessel full, the wall is πD² ≈ 17.1 m², and a flat bottom adds about 4.3 m². That gives about **21.4 m²**.\n- **Cooling capacity:** U·A·ΔT = 400 × 21.4 × 30 ≈ **257 kW**. It is about 206 kW if only the wall is jacketed.\n- **Shortest feed time the jacket allows:** 3.0 GJ / 257 kW ≈ **3.2 h**, or 4.05 h with the wall alone. That is 6.5 to 8 times longer than 30 min.\n\n**Why the flask copes and the reactor doesn't:** a 1 L flask has about 48 m² of cooling surface per m³ of liquid. The 10 m³ vessel has about 2.1 m²/m³, roughly 23 times less. Heat release grows with volume, but cooling grows only with surface area.\n\n**Why 3.2 h is a best case:**\n- The figure assumes the full jacket is wetted from the start. In semi-batch the level rises during the feed, so early on less area is available.\n- It also assumes the reaction keeps pace with the feed, so no unreacted reagent builds up. This is an assumption I have not verified.\n\nSo plan on something over 4 h. The exact figure depends on how much liquid is in the vessel before the feed starts, the head shape and how much of it is jacketed, and the real U.\n\n**To keep a short feed, you would need to:**\n- add cooling area (internal coils or an external loop heat exchanger);\n- use a colder coolant to get a larger ΔT;\n- or move to a continuous or flow reactor.\n\n**Before committing to any feed rate:**\n- Use reaction calorimetry to measure how much unreacted reagent builds up during the feed.\n- Work out the adiabatic temperature rise and the maximum temperature the reaction could reach if cooling failed. With 300 kJ/L the adiabatic rise could be large, but I haven't calculated it because the heat capacity isn't known.\n\nI created no files and used no library routines.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\nimport math\\nV=10;D=(4*V/math.pi)**(1/3);H=D\\nAw=math.pi*D*H;Ab=math.pi*D**2/4\\nU=400;dT=30;Q=300e3*V*1000\\nfor A,l in[(Aw,'wall only'),(Aw+Ab,'wall+flat bottom')]:\\n  q=U*A*dT;print(l,'D=%.3f A=%.2f cool=%.0f kW tmin=%.2f h'%(D,A,q/1e3,Q/q/3600))\\nprint('needed 30min: %.0f kW'%(Q/1800/1e3))\\n# lab flask 1 L sphere\\nd=(6*1e-3/math.pi)**(1/3);print('flask A/V',math.pi*d*"
+  }
+ ],
+ "leak": false,
+ "run": "w084",
+ "qid": "scaleup",
+ "round": 4
+}

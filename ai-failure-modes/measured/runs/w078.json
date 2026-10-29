@@ -1,0 +1,13 @@
+{
+ "answer": "NPSH available is about 4.8 m.\n\n**Calculation:**\n\nNPSHa = (P_atm − P_v) / (ρg) + z_s − h_f\n\n| Term | Value | Head |\n|---|---|---|\n| Atmospheric pressure at sea level | 101.325 kPa | +10.70 m |\n| Vapour pressure of water at 90 °C | 70.18 kPa | −7.41 m |\n| Static liquid level above the suction | 2 m | +2.00 m |\n| Suction line losses | 0.5 m | −0.50 m |\n| **NPSHa** | | **4.79 m** |\n\nI converted the pressures to head using the density of saturated liquid water at 90 °C, ρ = 965.3 kg/m³, and g = 9.80665 m/s². I computed the vapour pressure and density with CoolProp (IAPWS-95) instead of reading them from a table.\n\nAt 90 °C the vapour pressure takes up about 70% of atmospheric pressure, so most of the margin comes from the 2 m of liquid above the suction. To get the required margin, compare this 4.8 m with the NPSHr from the pump curve at the operating flow. A common practice is to keep NPSHa at least about 0.5 to 1 m above NPSHr, or at a ratio of 1.1 to 1.3. Two things would change the result. If the site is above sea level, atmospheric pressure is lower and NPSHa drops. If the suction line losses at the actual flow are higher than 0.5 m, NPSHa drops by the same amount.\n\nNo files were created.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\ntry:\\n  from CoolProp.CoolProp import PropsSI as P\\n  pv=P('P','T',363.15,'Q',0,'Water'); rho=P('D','T',363.15,'Q',0,'Water'); src='CoolProp'\\nexcept Exception as e:\\n  import math\\n  # Wagner-Pruss saturation pressure (IAPWS-95 aux eq.)\\n  Tc=647.096;Pc=22.064e6;T=363.15;t=1-T/Tc\\n  a=[-7.85951783,1.84408259,-11.7866497,22.6807411,-15.9618719,1.80122502]\\n  pv=Pc*math."
+  }
+ ],
+ "leak": false,
+ "run": "w078",
+ "qid": "npsh",
+ "round": 4
+}

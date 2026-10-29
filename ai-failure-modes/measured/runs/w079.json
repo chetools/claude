@@ -1,0 +1,13 @@
+{
+ "answer": "You need Kv of about 28.8 m³/h. The flow is choked: the outlet pressure (1.5 bar(a)) is below the vapour pressure of water at 130 °C (2.70 bar(a)), so the water flashes in the valve.\n\nI sized it with the IEC 60534-2-1 liquid equations and took the water properties from CoolProp (computed, not from memory):\n\n**Properties at 130 °C**\n- Vapour pressure: Pv = 2.703 bar(a)\n- Density: ρ = 934.8 kg/m³, so ρ/ρ₀ = 0.936 (ρ₀ = 999.1 kg/m³ at 15 °C)\n- Critical pressure: Pc = 220.64 bar\n\n**Choked-flow check**\n- Liquid critical pressure ratio factor: FF = 0.96 − 0.28·√(Pv/Pc) = 0.929\n- Largest pressure drop that still sizes: ΔP_choked = FL²·(P1 − FF·Pv) = 0.81 × (6 − 2.511) = **2.83 bar**\n- Your pressure drop is 4.5 bar, which is more than 2.83 bar, so the flow is choked.\n\n**Required Kv**\n- Kv = (Q/FL)·√[(ρ/ρ₀)/(P1 − FF·Pv)] = (50/0.9) × √(0.936/3.489) ≈ **28.8 m³/h**\n- If you use ρ₀ = 1000 kg/m³ you get 28.76, which rounds to the same value.\n\nThe usual non-choked formula with the full 4.5 bar drop gives Kv ≈ 22.8. That valve would be about 21% too small.\n\n**Practical notes**\n- Choose a valve whose rated Kv puts 28.8 at about 60–80% of travel, so a rated Kv of roughly 36–45. This range is a common rule of thumb, not something I calculated.\n- Because the water flashes, the outlet sees two-phase flow at high velocity. That causes erosion, so hardened trim and a larger outlet or downstream pipe are typical.\n- FL is taken as 0.9 at the operating opening. I used no piping geometry factor (FP = 1), so the answer assumes the valve is the same size as the line, with no reducers.\n\nI created no files.",
+ "tools": [
+  {
+   "name": "Bash",
+   "input": "{\"command\": \"python3 -c \\\"\\ntry:\\n  import CoolProp.CoolProp as CP; T=403.15\\n  pv=CP.PropsSI('P','T',T,'Q',0,'Water')/1e5; rho=CP.PropsSI('D','T',T,'Q',0,'Water'); rho0=CP.PropsSI('D','T',288.15,'P',101325,'Water'); pc=CP.PropsSI('Pcrit','Water')/1e5\\nexcept Exception as e:\\n  print('no coolprop',e); pv,rho,rho0,pc=2.7028,934.8,999.1,220.64\\nimport math\\nFL=0.9;P1=6;P2=1.5;Q=50\\nFF=0.96-0.28*math"
+  }
+ ],
+ "leak": false,
+ "run": "w079",
+ "qid": "valve",
+ "round": 4
+}
