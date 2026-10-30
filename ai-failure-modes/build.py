@@ -181,6 +181,14 @@ def main():
     app = [msum[c["id"]] for c in cases.CASES]
     fills["m_app_correct"] = str(sum(s["correct"] for s in app))
     fills["m_app_graded"] = str(sum(s["graded"] for s in app))
+    for c in cases.CASES:
+        s = msum[c["id"]]
+        fills[f"mc_{c['id']}"] = f"{s['correct']} of {s['graded']} correct" + \
+            (f"; false side statement in {s['side_runs']}" if s["side_runs"] else "")
+    mem = [(measured_page.TITLES[q], s) for q, s in measured_page.case_summary().items() if s["computed"] < s["n"]]
+    if not mem:
+        fail("study.md expects at least one question answered from memory")
+    fills["mem_list"] = "; ".join(f"{t} ({s['n'] - s['computed']} of {s['n']} runs)" for t, s in mem)
 
     def fill(text, name):
         def sub(m):
@@ -192,6 +200,7 @@ def main():
     prob_md = [kx.md(fill(read("web", "problems", f"{c['id']}.md"), c["id"])) for c in cases.CASES]
     prompts_md = kx.md(fill(read("web", "prompts.md"), "prompts.md"))
     measured_md = kx.md(fill(read("web", "measured_intro.md"), "measured_intro.md"))
+    study_md = kx.md(fill(read("web", "study.md"), "study.md"))
 
     # ---- step-by-step breakdown
     print("running the step-by-step breakdown (CPython)")
@@ -202,11 +211,12 @@ def main():
             fail(f"breakdown step {i + 1} failed:\n{r['error']}")
         steps_md.append(kx.md(cell["md"]))
         wt_plots[f"wt-{i}"] = r["figs"][0]
-    rendered = kx.finish(prob_md + [prompts_md, measured_md] + steps_md)
+    rendered = kx.finish(prob_md + [prompts_md, measured_md, study_md] + steps_md)
     prob_html = rendered[:len(prob_md)]
     prompts_html = rendered[len(prob_md)]
     measured_html = rendered[len(prob_md) + 1]
-    steps_html = rendered[len(prob_md) + 2:]
+    study_html = rendered[len(prob_md) + 2]
+    steps_html = rendered[len(prob_md) + 3:]
 
     blocks = []
     for i, (cell, r, prose) in enumerate(zip(walkthrough.CELLS, results, steps_html)):
@@ -221,6 +231,7 @@ def main():
     code_body = read("web", "code.html")
     code_body = code_body.replace("<!--STEPS-->", "\n".join(blocks))
     prompts_body, prompts_toc = add_toc(prompts_html, "p-", "the prompting guide")
+    study_body, study_toc = add_toc(study_html, "s-", "the Study tab")
     measured_body, measured_toc = add_toc(measured_html + measured_page.blocks(), "m-", "the Measured tab")
 
     print("generating the MoLab notebook")
@@ -235,6 +246,8 @@ def main():
         "PROMPTS": prompts_body,
         "PROMPTS_TOC": prompts_toc,
         "MEASURED": measured_body,
+        "STUDY": study_body,
+        "STUDY_TOC": study_toc,
         "MEASURED_TOC": measured_toc,
         "MREF_SRC": code_html(read("python", "measured_ref.py")),
         "EXTRACT_SRC": code_html(read("python", "extract_runs.py")),

@@ -107,21 +107,30 @@ pre.prompt{overflow-wrap:anywhere}
 <main class="main">
   <div id="fatal" class="err" hidden></div>
   <h1>Where an AI gets chemical engineering wrong</h1>
-  <p class="intro">Ten problems where I (Claude) have a real chance of giving a confident but wrong answer, and where an
-  engineer with years of plant experience would spot the mistake. Each one shows the answer I am likely to give
-  without guidance, the corrected answer, where my uncertainty sits, my own estimate of how likely I am to get it
-  wrong, and a prompt that makes the mistake less likely. The calculations run live in your browser.
-  <b>Measured since:</b> fresh Opus 5.5 sessions with normal tools avoided all ten traps; the errors they did make were in
-  side remarks (Measured tab).</p>
+  <p class="intro">A study of where an AI model (Claude, Opus 5.5) gives confident but wrong chemical-engineering answers
+  that an engineer with plant experience would catch. It sets ten classic traps as live calculations, measures how
+  fresh Opus 5.5 sessions actually answer 25 questions, and draws conclusions for how to prompt. Start with
+  <b>Study</b> for the summary; the calculations run live in your browser.</p>
   <div class="tabs" role="tablist">
-    <button class="active" data-tab="app">App</button>
+    <button class="active" data-tab="study">Study</button>
+    <button data-tab="app">App</button>
     <button data-tab="prompts">Prompting guide</button>
     <button data-tab="measured">Measured</button>
     <button data-tab="code">Code</button>
   </div>
 
   <!-- ============================== APP ============================== -->
-  <section id="panel-app" class="tpanel">
+  <section id="panel-study" class="tpanel">
+    <div class="theory-layout">
+      <details class="toc-box" id="toc-box-study" open>
+        <summary>Contents</summary>
+        <nav class="toc" id="toc-study" aria-label="Study contents">@@STUDY_TOC@@</nav>
+      </details>
+      <div class="theory">@@STUDY@@</div>
+    </div>
+  </section>
+
+  <section id="panel-app" class="tpanel" hidden>
     <div class="case-head"><h2 id="case-title"></h2><span class="pill" id="res-src">build-time result</span>
       <span class="pill meas" id="m-measured"></span></div>
     <div class="metrics">
@@ -210,6 +219,7 @@ function tocSpy(boxId, navId, panelId) {
 tocSpy('toc-box', 'toc', 'panel-prompts');
 tocSpy('toc-box-code', 'toc-code', 'panel-code');
 tocSpy('toc-box-meas', 'toc-meas', 'panel-measured');
+tocSpy('toc-box-study', 'toc-study', 'panel-study');
 </script>
 </body>
 </html>

@@ -244,21 +244,267 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <main class="main">
   <div id="fatal" class="err" hidden></div>
   <h1>Where an AI gets chemical engineering wrong</h1>
-  <p class="intro">Ten problems where I (Claude) have a real chance of giving a confident but wrong answer, and where an
-  engineer with years of plant experience would spot the mistake. Each one shows the answer I am likely to give
-  without guidance, the corrected answer, where my uncertainty sits, my own estimate of how likely I am to get it
-  wrong, and a prompt that makes the mistake less likely. The calculations run live in your browser.
-  <b>Measured since:</b> fresh Opus 5.5 sessions with normal tools avoided all ten traps; the errors they did make were in
-  side remarks (Measured tab).</p>
+  <p class="intro">A study of where an AI model (Claude, Opus 5.5) gives confident but wrong chemical-engineering answers
+  that an engineer with plant experience would catch. It sets ten classic traps as live calculations, measures how
+  fresh Opus 5.5 sessions actually answer 25 questions, and draws conclusions for how to prompt. Start with
+  <b>Study</b> for the summary; the calculations run live in your browser.</p>
   <div class="tabs" role="tablist">
-    <button class="active" data-tab="app">App</button>
+    <button class="active" data-tab="study">Study</button>
+    <button data-tab="app">App</button>
     <button data-tab="prompts">Prompting guide</button>
     <button data-tab="measured">Measured</button>
     <button data-tab="code">Code</button>
   </div>
 
   <!-- ============================== APP ============================== -->
-  <section id="panel-app" class="tpanel">
+  <section id="panel-study" class="tpanel">
+    <div class="theory-layout">
+      <details class="toc-box" id="toc-box-study" open>
+        <summary>Contents</summary>
+        <nav class="toc" id="toc-study" aria-label="Study contents"><a class="toc2" href="#s-1">1. Summary</a><a class="toc2" href="#s-2">2. Initial hypothesis</a><a class="toc2" href="#s-3">3. Method</a><a class="toc2" href="#s-4">4. What happened</a><a class="toc2" href="#s-5">5. Results</a><a class="toc2" href="#s-6">6. Conclusions</a></nav>
+      </details>
+      <div class="theory"><h2 id="s-1">1. Summary</h2>
+<p><strong>Question.</strong> Where does an AI model (here Claude, Opus 5.5) give confident but wrong chemical-engineering answers that
+an engineer with plant experience would catch, how large are the errors, and how should users prompt to avoid them?</p>
+<p><strong>What was done.</strong> First, ten classic traps were built as live calculations: gauge vs absolute pressure, choked
+flow, non-ideal VLE and others. Each shows the &quot;naive&quot; answer next to the corrected one, with my own estimate of how
+often I would fall into the trap (<a href="#case-compressor">App tab</a>). Then, instead of relying on that estimate, 25
+questions (the ten traps plus fifteen more) were put to fresh Opus 5.5 sessions, five times each, and every answer
+was graded against an independently computed reference (<a href="#m-1">Measured tab</a>).</p>
+<p><strong>Main result.</strong> Of 120 graded answers, <strong>120 were correct and 0 wrong</strong>. All 50 runs of
+the ten original traps avoided the trap. The errors that did occur were false <strong>side statements</strong> next to correct
+headline answers: 12 of them, in 10 of 125 runs. The commonest was a wrong unit label
+in an aside.</p>
+<p><strong>Conclusion.</strong> For well-posed questions in a session with tools and a <code>CLAUDE.md</code> that asks for computed numbers,
+the textbook traps were not the problem: my self-estimates (15–50 % wrong) were far too pessimistic. The problem was
+unchecked numbers in asides and comparisons. Check those, and do not read this result as covering ambiguous
+questions, sessions without tools, or problems I did not think to ask (<a href="#s-6">§6</a>).</p>
+<h2 id="s-2">2. Initial hypothesis</h2>
+<p>The starting assumption, stated on the first version of this page, was that in these ten problems I would often give
+the naive answer when the prompt did not warn about the trap. These were my subjective estimates of the chance of a
+wrong setup, written before any measurement:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Trap</th>
+<th>Self-estimate (prompt silent on the trap)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#case-compressor">1. Gauge vs absolute pressure</a></td>
+<td>compression ratio from gauge readings</td>
+<td>20–35 %</td>
+</tr>
+<tr>
+<td><a href="#case-pipe">2. Pipe pressure drop</a></td>
+<td>fittings left out; Darcy vs Fanning</td>
+<td>30–50 % / 10–20 %</td>
+</tr>
+<tr>
+<td><a href="#case-npsh">3. NPSH for a hot liquid</a></td>
+<td>vapour pressure at the wrong temperature</td>
+<td>30–50 % (margin, low level)</td>
+</tr>
+<tr>
+<td><a href="#case-valve">4. Control valve on hot water</a></td>
+<td>choked and flashing flow ignored</td>
+<td>30–50 %</td>
+</tr>
+<tr>
+<td><a href="#case-vle">5. Ethanol–water VLE</a></td>
+<td>Raoult's law misses the azeotrope</td>
+<td>15–30 %</td>
+</tr>
+<tr>
+<td><a href="#case-co2">6. Dense-phase CO₂</a></td>
+<td>ideal gas or cubic EOS near the critical point</td>
+<td>30–50 %</td>
+</tr>
+<tr>
+<td><a href="#case-hx">7. Shell-and-tube F factor</a></td>
+<td>LMTD without the 1-2 correction</td>
+<td>25–40 %</td>
+</tr>
+<tr>
+<td><a href="#case-relief">8. Fire-case relief valve</a></td>
+<td>latent heat and Z at 1 atm</td>
+<td>30–50 %</td>
+</tr>
+<tr>
+<td><a href="#case-scaleup">9. Semi-batch scale-up</a></td>
+<td>lab feed time kept at plant scale</td>
+<td>20–35 %</td>
+</tr>
+<tr>
+<td><a href="#case-flash">10. Flash steam</a></td>
+<td>return line sized for liquid only</td>
+<td>25–40 %</td>
+</tr>
+</tbody>
+</table>
+<p>A second, related hypothesis came from the brief for the study: that recalled numbers, textbook conventions, codes
+and citations would be weak points.</p>
+<h2 id="s-3">3. Method</h2>
+<p><strong>Phase 1: the ten problems as calculations</strong> (<a href="#case-compressor">App</a>, <a href="#c-1">Code</a>).</p>
+<ul>
+<li>Each problem is a Python model (<code>cases.py</code>) that runs in the browser through Pyodide. It computes the naive and the
+corrected answer over a range of inputs.</li>
+<li>Property data come from tables generated with CoolProp (reference equations of state); water vapour pressure
+uses IAPWS-IF97.</li>
+<li>Tests compare the models with independent methods: CoolProp, the <code>iapws</code> package, Swamee–Jain, the ε-NTU method
+and hand calculations. The in-browser results agree with CPython to 3e-16.</li>
+<li>An independent reviewer with a plant-engineer brief checked the formulas and the process sense.</li>
+<li><a href="#p-1">The prompting guide</a> collects prompts against each trap and against unknown unknowns.</li>
+</ul>
+<p><strong>Phase 2: measuring instead of estimating</strong> (<a href="#m-1">Measured</a>).</p>
+<ul>
+<li>25 questions in nine categories:
+<ul>
+<li>the ten traps;</li>
+<li>recalled data (Antoine constants, critical constants, latent heat);</li>
+<li>conventions (SCFM, Dittus–Boelter, Arrhenius, heat of reaction per mole);</li>
+<li>immiscible liquids, hydrogen density, fluidization, stiff kinetics;</li>
+<li>API 521, OSHA PSM, a citation, and one plant-floor diagnosis.</li>
+</ul>
+</li>
+<li>Each question was worded as a user would ask it and sent to 5 fresh Opus 5.5 sessions, 125 runs in all.</li>
+<li>Each session had normal tools and its own empty folder, with no hint that it was a test. The repository's
+<code>CLAUDE.md</code> was loaded.</li>
+<li>Transcripts were checked: no run read this project or its published page.</li>
+<li>References were computed independently: CoolProp, IAPWS, scipy (Radau), Crossref and eCFR.</li>
+<li>Each question's five answers went to an independent Opus 5.5 grader, which also listed every checkable side
+statement that was false. I re-checked those side errors with my own code.</li>
+</ul>
+<h2 id="s-4">4. What happened</h2>
+<ul>
+<li><strong>Phase 1.</strong> The reviewer found no formula errors. It flagged a misleading regime label (&quot;not choked&quot; where
+cavitation was likely) and optimistic default inputs; both were fixed before publication.</li>
+<li><strong>Phase 2, running.</strong> A usage limit stopped 20 of the 125 runs partway through. They were restarted fresh, not
+resumed, so every run started from the same state.</li>
+<li><strong>Phase 2, behaviour.</strong> In 112 of 125 runs the model computed or looked up the answer rather than
+answering from memory. Runs answered from memory on Heat of reaction: per mole of what? (3 of 5 runs); API 521 fire heat input in SI (5 of 5 runs); Rising column ΔP: flooding? (5 of 5 runs), and those answers were still correct.</li>
+<li><strong>Phase 2, a pattern.</strong> The same false aside appeared independently in 3 of the 5 compressor runs: the
+gauge-pressure mistake was described as &quot;433 K (160 °C)&quot; when it is 433 °C (706 K).</li>
+</ul>
+<h2 id="s-5">5. Results</h2>
+<p><strong>Overall</strong> (details in <a href="#m-2">Measured §2</a>):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Main answers correct</td>
+<td><strong>120 of 120</strong> (one question, the column diagnosis, not graded)</td>
+</tr>
+<tr>
+<td>Main answers wrong</td>
+<td>0; 95 % upper bound on the error rate about 2.5 % (about 45 % for any single question)</td>
+</tr>
+<tr>
+<td>Runs with a false side statement</td>
+<td>10 of 125 (12 statements)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The ten problems: hypothesis against measurement:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Self-estimate</th>
+<th>Measured (5 fresh runs)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#case-compressor">1. Gauge vs absolute pressure</a> · <a href="#mq-compressor">answers</a></td>
+<td>20–35 % wrong</td>
+<td>5 of 5 correct; false side statement in 3</td>
+</tr>
+<tr>
+<td><a href="#case-pipe">2. Pipe pressure drop</a> · <a href="#mq-pipe">answers</a></td>
+<td>30–50 %</td>
+<td>5 of 5 correct</td>
+</tr>
+<tr>
+<td><a href="#case-npsh">3. NPSH for a hot liquid</a> · <a href="#mq-npsh">answers</a></td>
+<td>30–50 %</td>
+<td>5 of 5 correct; false side statement in 1</td>
+</tr>
+<tr>
+<td><a href="#case-valve">4. Control valve on hot water</a> · <a href="#mq-valve">answers</a></td>
+<td>30–50 %</td>
+<td>5 of 5 correct</td>
+</tr>
+<tr>
+<td><a href="#case-vle">5. Ethanol–water VLE</a> · <a href="#mq-vle">answers</a></td>
+<td>15–30 %</td>
+<td>5 of 5 correct</td>
+</tr>
+<tr>
+<td><a href="#case-co2">6. Dense-phase CO₂</a> · <a href="#mq-co2">answers</a></td>
+<td>30–50 %</td>
+<td>5 of 5 correct</td>
+</tr>
+<tr>
+<td><a href="#case-hx">7. Shell-and-tube F factor</a> · <a href="#mq-hx">answers</a></td>
+<td>25–40 %</td>
+<td>5 of 5 correct; false side statement in 1</td>
+</tr>
+<tr>
+<td><a href="#case-relief">8. Fire-case relief valve</a> · <a href="#mq-relief">answers</a></td>
+<td>30–50 %</td>
+<td>5 of 5 correct</td>
+</tr>
+<tr>
+<td><a href="#case-scaleup">9. Semi-batch scale-up</a> · <a href="#mq-scaleup">answers</a></td>
+<td>20–35 %</td>
+<td>5 of 5 correct</td>
+</tr>
+<tr>
+<td><a href="#case-flash">10. Flash steam</a> · <a href="#mq-flash">answers</a></td>
+<td>25–40 %</td>
+<td>5 of 5 correct; false side statement in 1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The fifteen further questions</strong> (recalled data, conventions, thermodynamics, correlations, numerics, codes and
+citations; <a href="#m-3">Measured §3</a>) were also answered correctly in every graded run. <strong>Every false side statement found</strong>
+is listed in <a href="#m-2-2">Measured §2.2</a>.</p>
+<h2 id="s-6">6. Conclusions</h2>
+<ol>
+<li><strong>The hypothesis is rejected for this setting.</strong> With tools available and a <code>CLAUDE.md</code> that asks for computed
+rather than recalled numbers, Opus 5.5 avoided every textbook trap tested, and usually said so explicitly. It
+converted gauge to absolute, checked for choked flow, applied F, and summed the vapour pressures of immiscible
+liquids.</li>
+<li><strong>The observed failure mode is the unchecked aside.</strong> Headline numbers were computed and right. Comparisons,
+&quot;if you had done X&quot; examples, and attributions (which equation of state, which data source) were sometimes stated
+without checking, and some were wrong. A reader who checks only the headline will not catch these. The prompt in
+<a href="#m-2-4">Measured §2.4</a> targets them.</li>
+<li><strong>What this does not show.</strong>
+<ul>
+<li>The questions were mine, so they test traps I already knew. Finding the errors I do not know I make needs
+questions written by engineers with plant experience.</li>
+<li>Every question was well posed. Ambiguous or incomplete questions, long multi-step tasks, and sessions without
+tools were not measured.</li>
+<li>Charts, P&amp;IDs, whole-flowsheet consistency and costing were not tested. For those, the App-tab write-ups remain
+unverified expectations.</li>
+</ul>
+</li>
+<li><strong>For users.</strong> The prompting advice still applies (<a href="#p-2">Prompting guide</a>): state the basis, ask for
+computed properties, ask for a second method. To it add: <em>check every number in the answer, including the asides</em>.</li>
+</ol>
+</div>
+    </div>
+  </section>
+
+  <section id="panel-app" class="tpanel" hidden>
     <div class="case-head"><h2 id="case-title"></h2><span class="pill" id="res-src">build-time result</span>
       <span class="pill meas" id="m-measured"></span></div>
     <div class="metrics">
@@ -9345,6 +9591,30 @@ window.PY_FILES = {"cases.py":"\"\"\"Ten worked problems where a quick answer is
 
   /* ------------------------------------------------------------ tabs */
   var plotsDrawn = false;
+  function showTab(name) {
+    var b = document.querySelector('.tabs button[data-tab="' + name + '"]');
+    if (b) b.click();
+  }
+
+  /* In-page links: #case-<id> opens that problem on the App tab; other #ids switch to the tab holding the target. */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a || a.closest('.toc')) return;
+    var id = a.getAttribute('href').slice(1), m = /^case-(.+)$/.exec(id);
+    if (m && byId[m[1]]) {
+      e.preventDefault();
+      $('in-case').value = m[1]; current = m[1]; buildInputs(); update();
+      showTab('app'); window.scrollTo(0, 0);
+      return;
+    }
+    var t = document.getElementById(id), panel = t && t.closest('.tpanel');
+    if (!panel) return;
+    e.preventDefault();
+    showTab(panel.id.replace('panel-', ''));
+    var d = t.closest('details'); if (d) d.open = true;
+    setTimeout(function () { t.scrollIntoView(); }, 0);
+  });
+
   document.querySelectorAll('.tabs button').forEach(function (b) {
     b.addEventListener('click', function () {
       document.querySelectorAll('.tabs button').forEach(function (x) { x.classList.toggle('active', x === b); });
@@ -9568,6 +9838,7 @@ function tocSpy(boxId, navId, panelId) {
 tocSpy('toc-box', 'toc', 'panel-prompts');
 tocSpy('toc-box-code', 'toc-code', 'panel-code');
 tocSpy('toc-box-meas', 'toc-meas', 'panel-measured');
+tocSpy('toc-box-study', 'toc-study', 'panel-study');
 </script>
 </body>
 </html>

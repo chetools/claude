@@ -24,6 +24,30 @@
 
   /* ------------------------------------------------------------ tabs */
   var plotsDrawn = false;
+  function showTab(name) {
+    var b = document.querySelector('.tabs button[data-tab="' + name + '"]');
+    if (b) b.click();
+  }
+
+  /* In-page links: #case-<id> opens that problem on the App tab; other #ids switch to the tab holding the target. */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a || a.closest('.toc')) return;
+    var id = a.getAttribute('href').slice(1), m = /^case-(.+)$/.exec(id);
+    if (m && byId[m[1]]) {
+      e.preventDefault();
+      $('in-case').value = m[1]; current = m[1]; buildInputs(); update();
+      showTab('app'); window.scrollTo(0, 0);
+      return;
+    }
+    var t = document.getElementById(id), panel = t && t.closest('.tpanel');
+    if (!panel) return;
+    e.preventDefault();
+    showTab(panel.id.replace('panel-', ''));
+    var d = t.closest('details'); if (d) d.open = true;
+    setTimeout(function () { t.scrollIntoView(); }, 0);
+  });
+
   document.querySelectorAll('.tabs button').forEach(function (b) {
     b.addEventListener('click', function () {
       document.querySelectorAll('.tabs button').forEach(function (x) { x.classList.toggle('active', x === b); });
