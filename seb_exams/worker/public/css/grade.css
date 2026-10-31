@@ -1,0 +1,54 @@
+/* Grade tab */
+.gr { max-width: 74rem; margin: 0 auto; }
+.gr-toolbar { position: sticky; top: var(--barh, 0px); z-index: 5; background: rgba(246, 247, 249, .97); border-bottom: 1px solid var(--line); margin: 0 -16px 14px; padding: 8px 16px; }
+.gr-toolrow { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
+.gr-check { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; min-height: 36px; cursor: pointer; }
+.gr-check input { width: 18px; height: 18px; }
+.gr-lbl { color: var(--muted); font-size: .88rem; }
+.gr-seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.gr-segbtn { background: #fff; color: var(--ink); border-radius: 0; padding: 6px 12px; font-weight: 600; font-size: .9rem; }
+.gr-segbtn + .gr-segbtn { border-left: 1px solid var(--line); }
+.gr-segbtn.on { background: var(--accent); color: var(--accent-ink); }
+.gr-pending { background: var(--warn-bg); color: #8a5a00; border: 1px solid #e8c874; border-radius: 99px; padding: 2px 12px; font-weight: 700; font-size: .85rem; }
+.gr-summary { display: flex; flex-wrap: wrap; gap: 4px 22px; margin: 0 0 14px; color: var(--muted); }
+.gr-progress { color: var(--muted); font-size: .92rem; font-weight: 600; }
+.gr-group { margin: 0 0 28px; }
+.gr-ghead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; border-bottom: 2px solid var(--line); margin-bottom: 8px; }
+.gr-ghead h3 { margin: 0; font-size: 1.15rem; }
+.gr-ptsmax { color: var(--muted); font-weight: 500; font-size: .9rem; margin-left: 10px; }
+.gr-qtext { max-width: 46rem; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 6px; padding: 8px 14px; margin: 0 0 14px; }
+.gr-qtext.small { margin: 6px 0 8px; font-size: .95rem; }
+.gr-qtext p:last-child { margin-bottom: 0; }
+.gr-card { display: grid; grid-template-columns: minmax(0, 1fr) 19rem; gap: 14px 22px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 0 0 12px; align-items: start; }
+.gr-answercol { min-width: 0; }
+.gr-who { display: flex; gap: 10px; align-items: baseline; margin-bottom: 6px; }
+.gr-qno { color: var(--accent); font-weight: 700; font-size: .85rem; background: #e3eefb; border-radius: 99px; padding: 0 9px; }
+.gr-answer { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 46rem; font-size: 1.02rem; line-height: 1.6; background: #fbfbfc; border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+.gr-answer.empty { color: var(--muted); font-style: italic; }
+.gr-qdet { margin: 0 0 6px; font-size: .9rem; color: var(--muted); } .gr-qdet summary { cursor: pointer; }
+.gr-gradebox { background: #f3f6fb; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; position: sticky; top: calc(var(--barh, 0px) + 56px); }
+.gr-pts { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+input.gin { width: 6em; font-size: 1.35rem; font-weight: 700; text-align: center; padding: 6px 8px; border: 2px solid #9db3d3; }
+input.gin:focus, .gcom:focus { outline: 3px solid #9cc3f0; border-color: var(--accent); }
+input.gin.invalid { border-color: var(--bad); background: #fdecea; }
+.gr-max { font-size: 1.1rem; color: var(--muted); font-weight: 600; }
+.gr-status { font-size: .85rem; color: var(--muted); } .gr-status.ok { color: var(--ok); font-weight: 600; } .gr-status.warn { color: #8a5a00; font-weight: 600; } .gr-status.bad { color: var(--bad); font-weight: 600; }
+.gr-err { color: var(--bad); font-size: .85rem; min-height: 0; } .gr-err:not(:empty) { margin-top: 4px; }
+input.gcom { width: 100%; margin-top: 8px; }
+.gr-done { color: var(--muted); padding: 10px 0; }
+/* phone */
+.gr.phone .gr-toolbar { margin: 0 -16px 10px; }
+.gr-pickrow { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; } .gr-pickrow label { font-weight: 700; }
+.gr-picker { flex: 1; min-width: 0; font-size: 1rem; padding: 10px; }
+.gr-card.mob { display: block; touch-action: pan-y; padding: 14px; }
+.gr-card.mob .gr-answer { max-width: none; }
+.gr-sliderbox { margin: 14px 0 10px; }
+.gr-big { text-align: center; line-height: 1.1; } .gr-big .v { font-size: 3.2rem; font-weight: 800; color: var(--accent); } .gr-big .of { font-size: 1.3rem; color: var(--muted); }
+.gr-slider { width: 100%; height: 44px; padding: 0; margin: 4px 0 0; accent-color: var(--accent); touch-action: none; }
+.gr-ticks { display: flex; justify-content: space-between; color: var(--muted); font-size: .85rem; }
+.gr-sliderbox .gr-status { display: block; text-align: center; min-height: 1.3em; margin-top: 4px; }
+.gr-comment { font-family: inherit; font-size: 1rem; }
+.gr-navrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+.gr-pos { color: var(--muted); font-weight: 600; text-align: center; flex: 1; }
+.gr-nav { font-size: 1.8rem; line-height: 1; width: 64px; height: 52px; padding: 0; text-align: center; }
+@media (max-width: 767px) { .gr-card { grid-template-columns: 1fr; } .gr-gradebox { position: static; } }
