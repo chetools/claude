@@ -70,6 +70,34 @@ async function regradeStatements(env, examId, exam, now) {
   return st;
 }
 
+// Replacing an exam's questions is refused while students can be taking it.
+const OPEN_REPLACE_MSG = "This exam is open; close it before replacing its questions.";
+const refuseIfOpen = (e) => (examStatus(e) === "open" ? json({ error: OPEN_REPLACE_MSG }, 423) : null);
+
+// What a replace would change, matched by question id. changed = any normalized field differs; key_changed = the
+// grading key differs (type, points, correct option position, blank answers/variants).
+const keyOf = (q) => JSON.stringify([q.type, q.points,
+  q.type === "mc" ? q.options.findIndex((o) => o.correct) : null,
+  q.type === "fill" ? q.blanks.map((b) => [b.answer, b.variants || []]) : null]);
+
+async function replaceSummary(env, e, oldExam, newExam) {
+  const old = new Map(oldExam.questions.map((q) => [q.id, q]));
+  const cur = new Map(newExam.questions.map((q) => [q.id, q]));
+  const added = [], removed = [], changed = [], keyChanged = [];
+  for (const [id, q] of cur) {
+    const o = old.get(id);
+    if (!o) { added.push(id); continue; }
+    if (JSON.stringify(o) !== JSON.stringify(q)) changed.push(id);
+    if (keyOf(o) !== keyOf(q)) keyChanged.push(id);
+  }
+  for (const id of old.keys()) if (!cur.has(id)) removed.push(id);
+  const stillOpen = new Set(newExam.questions.filter((q) => q.type === "open").map((q) => q.id));
+  const { results } = await env.DB.prepare("SELECT manual_json FROM submissions WHERE exam_id = ?").bind(e.id).all();
+  let dropped = 0;
+  for (const s of results) for (const qid of Object.keys(JSON.parse(s.manual_json || "{}"))) if (!stillOpen.has(qid)) dropped++;
+  return { added, removed, changed, key_changed: keyChanged, regrade_count: results.length, manual_grades_dropped: dropped };
+}
+
 async function runBatch(env, stmts) {
   for (let i = 0; i < stmts.length; i += 90) await env.DB.batch(stmts.slice(i, i + 90));
 }
@@ -92,7 +120,12 @@ async function importExam(req, env, t) {
   const names = Object.keys(imgs);
   const errors = [], warnings = [];
   let replace = null;
-  if (body.replace_id !== undefined && body.replace_id !== null) replace = await examFor(env, t, String(body.replace_id));
+  const dry = body.dry_run === true;
+  if (body.replace_id !== undefined && body.replace_id !== null) {
+    replace = await examFor(env, t, String(body.replace_id));
+    const locked = refuseIfOpen(replace);
+    if (locked) return locked;
+  }
   if (typeof body.yaml !== "string") throw bad("yaml must be the text of exam.yaml.");
   if (body.yaml.length > 2 * MB) throw bad("exam.yaml is larger than 2 MB.");
   let obj;
@@ -113,6 +146,10 @@ async function importExam(req, env, t) {
   if (exam && content.length > MAX_CONTENT) errors.push("The exam text is larger than 1.5 MB.");
   if (errors.length) return json({ errors, warnings }, 422);
 
+  if (dry) {
+    const summary = replace ? await replaceSummary(env, replace, JSON.parse(replace.content_json), exam) : null;
+    return json({ ok: true, exam, warnings, summary });
+  }
   const now = new Date().toISOString();
   const imageStmts = (id) => names.map((n) => insertImage(env, id, n, checked[n]));
   if (replace) {
@@ -160,6 +197,8 @@ function dumpExam(exam) {
 }
 
 async function putContent(req, env, e) {
+  const locked = refuseIfOpen(e);
+  if (locked) return locked;
   const body = await readJson(req, MB * 1.5);
   const { results } = await env.DB.prepare("SELECT name FROM images WHERE exam_id = ?").bind(e.id).all();
   const r = validateExam(body.content, results.map((x) => x.name));
@@ -287,9 +326,9 @@ async function putManual(req, env, t, id) {
   if (!q || q.type !== "open") throw bad("qid must be an open question of this exam.");
   const comment = b.comment === undefined || b.comment === null ? "" : b.comment;
   if (typeof comment !== "string" || comment.length > 5000) throw bad("comment must be text of at most 5000 characters.");
-  let points = b.points === undefined ? null : b.points;
-  if (points !== null && (typeof points !== "number" || !Number.isFinite(points) || points < 0 || points > q.points)) {
-    throw bad(`points must be a number from 0 to ${q.points}, or null.`);
+  const points = b.points === undefined ? null : b.points;
+  if (points !== null && (typeof points !== "number" || !Number.isFinite(points) || points < 0 || points > q.points || points * 2 !== Math.round(points * 2))) {
+    throw new HttpError(422, `points must be null or a multiple of 0.5 from 0 to ${q.points}.`);
   }
   const manual = JSON.parse(s.manual_json || "{}");
   if (points === null && !comment) delete manual[q.id]; else manual[q.id] = { points, comment };

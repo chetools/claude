@@ -113,6 +113,17 @@ j .seb_link | grep -q '^sebs://' && ok "seb_link" || fail "seb_link"
 CODE=$(curl -s -o "$TMP/img" -w '%{http_code}' -b "$A" "$B/api/exams/$ID/images/fig.svg"); check "image bytes" 200 "$CODE"
 grep -q '<circle' "$TMP/img" && ok "image content" || fail "image content"
 
+echo "== dry run import"
+api "$A" GET /api/exams; N0=$(j length)
+api "$A" POST /api/exams/import "$(imp "$SVGB" | jq '. + {dry_run:true}')"; check "dry run" 200 "$CODE"
+check "dry run ok" true "$(j .ok)"; check "dry run returns normalized exam" 3 "$(j '.exam.questions|length')"
+check "dry run normalized defaults" true "$(j '.exam.questions[0].shuffle_options')"
+check "dry run summary null" null "$(j .summary)"; check "dry run has warnings array" array "$(j '.warnings|type')"
+api "$A" GET /api/exams; check "dry run creates nothing" "$N0" "$(j length)"
+check "dry run stores no images" 1 "$(sql "SELECT COUNT(*) AS n FROM images" | jq '.[0].n')"
+api "$A" POST /api/exams/import "$(imp "$BAD" | jq '. + {dry_run:true}')"; check "dry run invalid -> 422" 422 "$CODE"
+j '.errors[0]' | grep -q 'script' && ok "dry run error names the script" || fail "dry run error names the script"
+
 echo "== settings and student flow"
 api "$A" PUT "/api/exams/$ID/settings" '{"require_seb":true,"quit_password":"secret","extra_config_keys":[]}'; check "settings" 200 "$CODE"
 api "$A" GET "/api/exams/$ID"; check "has_quit_password" true "$(j .has_quit_password)"
@@ -162,7 +173,25 @@ check "manual_max" 5 "$(j '.submissions[0].manual_max')"; check "not late" false
 SID=$(j '.submissions[0].id')
 api "$A" PUT "/api/submissions/$SID/manual" '{"qid":"q-open","points":4,"comment":"good"}'; check "manual grade" 200 "$CODE"
 check "total" 9 "$(j .total)"
-api "$A" PUT "/api/submissions/$SID/manual" '{"qid":"q-open","points":6,"comment":""}'; check "points above max -> 400" 400 "$CODE"
+api "$A" PUT "/api/submissions/$SID/manual" '{"qid":"q-open","points":6,"comment":""}'; check "points above max -> 422" 422 "$CODE"
+api "$A" PUT "/api/submissions/$SID/manual" '{"qid":"q-open","points":2.3,"comment":""}'; check "points 2.3 -> 422" 422 "$CODE"
+j .error | grep -q '0.5' && ok "422 message names the 0.5 step" || fail "422 message names the 0.5 step"
+api "$A" PUT "/api/submissions/$SID/manual" '{"qid":"q-open","points":-0.5,"comment":""}'; check "negative points -> 422" 422 "$CODE"
+api "$A" PUT "/api/submissions/$SID/manual" '{"qid":"q-open","points":"3","comment":""}'; check "text points -> 422" 422 "$CODE"
+api "$A" PUT "/api/submissions/$SID/manual" '{"qid":"q-open","points":2.5,"comment":"half"}'; check "points 2.5 ok" 200 "$CODE"
+check "2.5 stored" 2.5 "$(j '.manual["q-open"].points')"
+api "$A" PUT "/api/submissions/$SID/manual" '{"qid":"q-open","points":null,"comment":"half"}'; check "null clears points" 200 "$CODE"
+check "points now null" null "$(j '.manual["q-open"].points')"
+api "$A" PUT "/api/submissions/$SID/manual" '{"qid":"q-open","points":4,"comment":"good"}'; check "regrade 4 again" 200 "$CODE"
+echo "== replace refused while open"
+api "$A" GET "/api/exams/$ID"; jq '{content}' "$TMP/out" > "$TMP/c.json"
+api "$A" PUT "/api/exams/$ID/content" "$(cat "$TMP/c.json")"; check "PUT content while open -> 423" 423 "$CODE"
+check "423 message" "This exam is open; close it before replacing its questions." "$(j .error)"
+OPENIMP=$(jq -n --rawfile y "$TMP/exam.yaml" --arg s "$SVGB" --arg r "$ID" '{yaml:$y, images:{"fig.svg":$s}, replace_id:$r}')
+api "$A" POST /api/exams/import "$OPENIMP"; check "replace while open -> 423" 423 "$CODE"
+api "$A" POST /api/exams/import "$(echo "$OPENIMP" | jq '. + {dry_run:true}')"; check "dry-run replace while open -> 423" 423 "$CODE"
+check "open stays untouched" 3 "$(sql "SELECT json_array_length(content_json,'\$.questions') AS n FROM exams WHERE id='$ID'" | jq '.[0].n')"
+api "$A" POST "/api/exams/$ID/close-now"; check "close for edits" 200 "$CODE"
 api "$A" PUT "/api/submissions/$SID/manual" '{"qid":"q-mc","points":1,"comment":""}'; check "manual on mc -> 400" 400 "$CODE"
 # regrade after a content change: make the second mc option the correct one
 api "$A" GET "/api/exams/$ID"; jq '{content: (.content | .questions[0].options[0].correct=false | .questions[0].options[1].correct=true)}' "$TMP/out" > "$TMP/c.json"
@@ -173,6 +202,28 @@ check "manual grade kept" 4 "$(j '.submissions[0].manual["q-open"].points')"
 api "$A" GET "/api/exams/$ID"; check "regraded_at set" true "$(j '.regraded_at != null')"
 echo '{"content":{"format":"seb-exam/1","title":"x","duration_minutes":0,"questions":[]}}' > "$TMP/c.json"
 api "$A" PUT "/api/exams/$ID/content" "$(cat "$TMP/c.json")"; check "invalid content -> 422" 422 "$CODE"
+# dry-run replace: remove q-fill, flip the q-mc key back, change only the text of q-open, add q-new
+api "$A" GET "/api/exams/$ID"
+jq --arg s "$SVGB" --arg r "$ID" '{yaml: (.content
+    | del(.questions[1])
+    | .questions[0].options[0].correct=true | .questions[0].options[1].correct=false
+    | .questions[1].text = "Explain in words why reflux helps the separation."
+    | .questions += [{id:"q-new",type:"open",points:2,text:"Why is the feed state important?"}] | tojson),
+  images:{"fig.svg":$s}, replace_id:$r, dry_run:true}' "$TMP/out" > "$TMP/dry.json"
+api "$A" POST /api/exams/import "$(cat "$TMP/dry.json")"; check "dry-run replace" 200 "$CODE"
+check "summary added" '["q-new"]' "$(jq -c .summary.added "$TMP/out")"
+check "summary removed" '["q-fill"]' "$(jq -c .summary.removed "$TMP/out")"
+check "summary changed" '["q-mc","q-open"]' "$(jq -c .summary.changed "$TMP/out")"
+check "summary key_changed" '["q-mc"]' "$(jq -c .summary.key_changed "$TMP/out")"
+check "summary regrade_count" 1 "$(j .summary.regrade_count)"
+check "summary manual_grades_dropped" 0 "$(j .summary.manual_grades_dropped)"
+check "dry-run exam is normalized" 3 "$(j '.exam.questions|length')"
+api "$A" GET "/api/exams/$ID"; check "dry-run replace changed nothing" 3 "$(j '.content.questions|length')"
+api "$A" GET "/api/exams/$ID/results"; check "dry-run kept submission untouched" 3 "$(j '.submissions[0].auto_score')"
+# q-open turned into mc: the manual grade on it would be dropped
+api "$A" POST /api/exams/import "$(jq '.yaml |= (fromjson | .questions[1] = {id:"q-open",type:"mc",points:5,text:"now mc",options:[{text:"a",correct:true},{text:"b"}]} | tojson)' "$TMP/dry.json")"
+check "dry-run open->mc" 200 "$CODE"; check "dropped manual grades" 1 "$(j .summary.manual_grades_dropped)"
+check "open->mc is a key change" true "$(j '.summary.key_changed|index("q-open") != null')"
 # content change that turns the open question into mc drops the manual grade
 api "$A" GET "/api/exams/$ID"; jq '{content: (.content | .questions[2] = {id:"q-open",type:"mc",points:5,text:"now mc",options:[{text:"a",correct:true},{text:"b"}]})}' "$TMP/out" > "$TMP/c.json"
 api "$A" PUT "/api/exams/$ID/content" "$(cat "$TMP/c.json")"; check "open -> mc" 200 "$CODE"
