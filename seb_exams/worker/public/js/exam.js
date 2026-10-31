@@ -2,10 +2,12 @@ import { api, setImg } from './api.js';
 import { h, msg, problemList, download, slug, b64decode } from './util.js';
 import { renderMd, boxesHtml } from './render.js';
 import { fillPattern, validateExam } from '/shared/validate.js';
-import { setWidth } from './app.js';
+import { setWidth, state, reroute } from './app.js';
+import { showBar, setBarActions, lab } from './bar.js';
+import { importPreview, pickZip } from './importer.js';
 import { badge } from './dashboard.js';
 
-const TABS = [['questions', 'Questions'], ['edit', 'Edit'], ['settings', 'Settings'], ['results', 'Results']];
+const TABS = [['questions', 'Questions'], ['edit', 'Edit'], ['grade', 'Grade'], ['submissions', 'Submissions'], ['settings', 'Settings'], ['results', 'Results']];
 
 function statusOf(ex) {
   const now = Date.now();
@@ -28,12 +30,17 @@ export async function render(root, id, tab) {
     } catch (e) { alert('Export failed: ' + e.message); }
     btn.disabled = false;
   };
-  const exportBtn = h('button', { class: 'secondary small', onclick: () => exportZip(exportBtn) }, 'Export zip');
-  root.append(
-    h('p', { class: 'crumb' }, h('a', { href: '#/' }, '← All exams')),
-    h('div', { class: 'examhead' }, h('h2', {}, ex.content.title || ex.id), badge(statusOf(ex)), h('span', { class: 'grow' }), exportBtn),
-    h('nav', { class: 'tabs' }, TABS.map(([k, label]) => h('a', { href: `#/exam/${encodeURIComponent(id)}/${k}`, class: k === tab ? 'on' : '' }, label))));
+  const exportBtn = h('button', { class: 'secondary small', onclick: () => exportZip(exportBtn) }, lab('Export', ' zip'));
   const body = h('div', { class: 'tabbody' });
+  const ctx = { body, replaceId: id, ex, choose: () => pickZip(startPreview), cancel: () => { state.preview = false; reroute(); } };
+  async function startPreview(f) {
+    if (state.dirty && !confirm('You have unsaved changes in the editor. Replacing from a zip discards them. Continue?')) return;
+    state.dirty = false; setBarActions(null);
+    await importPreview(f, ctx);
+  }
+  const replaceBtn = h('button', { class: 'secondary small', onclick: ctx.choose }, lab('Replace', ' from zip'));
+  showBar({ title: ex.content.title || ex.id, badge: badge(statusOf(ex)), back: true, actions: [replaceBtn, exportBtn],
+    tabs: TABS.map(([k, label]) => ({ href: `#/exam/${encodeURIComponent(id)}/${k}`, label, on: k === tab })) });
   root.append(body);
   if (tab === 'questions') await questionsView(body, ex);
   else await (await import(`./${tab}.js`)).render(body, ex);
@@ -53,7 +60,11 @@ export function questionBody(ex, q, n) {
   };
   card.append(h('div', { class: 'md', html: renderMd(q.text, q.type === 'fill' ? { blanks: blankHtml } : {}) }));
   if (q.image) {
-    card.append(h('div', { class: 'figure' }, setImg(h('img', { alt: q.image_alt || '' }), ex.id, q.image)));
+    const img = h('img', { alt: q.image_alt || '' });
+    if (ex.imageUrls) { // import preview: the image is in the zip, not on the server yet
+      if (ex.imageUrls[q.image]) img.src = ex.imageUrls[q.image]; else img.alt = 'Image "' + q.image + '" is not in the zip';
+    } else setImg(img, ex.id, q.image);
+    card.append(h('div', { class: 'figure' }, img));
     if (q.image_alt) card.append(h('p', { class: 'hint' }, 'Image description: ', q.image_alt));
   }
   if (q.type === 'mc') {
@@ -73,11 +84,11 @@ export function questionBody(ex, q, n) {
   return card;
 }
 
-export async function questionsView(body, ex) {
+export async function questionsView(body, ex, opts = {}) {
   const c = ex.content, qs = c.questions || [];
   const total = qs.reduce((s, q) => s + Number(q.points || 0), 0);
   let warnings = [];
-  try { warnings = validateExam(JSON.parse(JSON.stringify(c)), (ex.images || []).map((i) => i.name)).warnings || []; } catch (e) { /* ignore */ }
+  if (!opts.noWarnings) try { warnings = validateExam(JSON.parse(JSON.stringify(c)), (ex.images || []).map((i) => i.name)).warnings || []; } catch (e) { /* ignore */ }
   body.append(h('div', { class: 'card summary' },
     h('div', { class: 'stats' }, [['Questions', qs.length], ['Points', total], ['Duration', c.duration_minutes + ' min'],
       ['Multiple choice', qs.filter((q) => q.type === 'mc').length], ['Fill', qs.filter((q) => q.type === 'fill').length], ['Open', qs.filter((q) => q.type === 'open').length]]

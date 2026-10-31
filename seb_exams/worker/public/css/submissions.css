@@ -1,0 +1,95 @@
+/* Submissions tab. The .subview rules are self-contained: they are also inlined into the exported HTML files. */
+
+/* ---- list and toolbar (teacher app only; the app's style.css supplies buttons, cards, tables) */
+.sv-bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
+.sv-actions { justify-content: flex-end; }
+.sv-table th:first-child, .sv-table td:first-child { width: 1%; }
+.sv-table input[type=checkbox], .sv-toolbar input[type=checkbox] { width: 1.1em; height: 1.1em; padding: 0; vertical-align: middle; }
+.sv-toolbar { position: sticky; top: var(--barh, 0px); z-index: 3; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+  background: rgba(246, 247, 249, .97); border-bottom: 1px solid var(--line, #dde1e7); padding: 8px 0; margin-bottom: 16px; }
+.sv-toolbar .sv-ctl { font-weight: 600; font-size: .92rem; white-space: nowrap; }
+.sv-toolbar select { padding: 4px 8px; }
+.sv-toolbar .grow { flex: 1 1 0; }
+.sv-status.bad { color: var(--bad, #b3261e); }
+@media (max-width: 600px) { .sv-toolbar { gap: 6px 10px; } .sv-toolbar .grow { flex-basis: 100%; height: 0; } }
+
+/* ---- one submission */
+.subview {
+  --sv-ink: #1d2330; --sv-muted: #5d6675; --sv-line: #dde1e7; --sv-accent: #1f5fae;
+  --sv-ok: #237a45; --sv-okbg: #e7f5ec; --sv-bad: #b3261e; --sv-badbg: #fdecea;
+  max-width: 52rem; margin: 0 auto 28px; padding: 18px; box-sizing: border-box; overflow-wrap: break-word;
+  background: #fff; color: var(--sv-ink); border: 1px solid var(--sv-line); border-radius: 10px;
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.subview *, .subview *::before, .subview *::after { box-sizing: border-box; }
+.subview img { max-width: 100%; height: auto; }
+.sv-head { border-bottom: 2px solid var(--sv-line); margin: 0 0 14px; padding: 0 0 10px; }
+.sv-exam { color: var(--sv-muted); font-size: .9rem; }
+.sv-head h2 { font-size: 1.35rem; line-height: 1.3; margin: 2px 0 8px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+.sv-id { font: 600 1rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--sv-muted); }
+.sv-late { font-size: .78rem; font-weight: 700; padding: 1px 9px; border-radius: 99px; background: var(--sv-badbg); color: var(--sv-bad); border: 1px solid var(--sv-bad); }
+.sv-meta { display: flex; flex-wrap: wrap; gap: 4px 26px; margin: 0; }
+.sv-meta > div { min-width: 0; }
+.sv-meta dt { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--sv-muted); }
+.sv-meta dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.sv-section { font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; color: var(--sv-muted); margin: 20px 0 8px; }
+.sv-q { border: 1px solid var(--sv-line); border-radius: 8px; padding: 12px 14px; margin: 0 0 12px; }
+.sv-q h3 { font-size: 1.02rem; margin: 0 0 8px; display: flex; gap: 10px; justify-content: space-between; align-items: baseline; }
+.sv-qtype { color: var(--sv-muted); font-weight: 500; font-size: .85rem; }
+.sv-pts { color: var(--sv-muted); font-weight: 500; font-size: .9rem; white-space: nowrap; }
+.sv-md { overflow-wrap: anywhere; min-width: 0; }
+.sv-md p { margin: 0 0 10px; }
+.sv-md img { max-width: 100%; }
+.subview .eq, .subview .katex-display { overflow-x: auto; overflow-y: hidden; margin: 6px 0 12px; }
+.sv-figure { margin: 6px 0 12px; text-align: center; }
+.sv-figure img { max-height: 340px; background: #fff; }
+.sv-none { color: var(--sv-muted); font-style: italic; margin: 6px 0 0; }
+.sv-mark { display: inline-block; font-weight: 800; min-width: 1.2em; text-align: center; }
+.sv-mark.ok { color: var(--sv-ok); } .sv-mark.bad { color: var(--sv-bad); }
+/* multiple choice */
+.sv-opts { display: grid; gap: 6px; margin-top: 6px; }
+.sv-opt { display: flex; gap: 10px; align-items: center; border: 1px solid var(--sv-line); border-radius: 8px; padding: 7px 12px; }
+.sv-opt .sv-lab p { margin: 0; }
+.sv-opt .sv-lab { flex: 1 1 auto; }
+.sv-radio { flex: none; width: 1.05em; height: 1.05em; border: 2px solid #8793a6; border-radius: 50%; background: #fff; }
+.sv-opt.chosen { border-color: var(--sv-accent); background: #f1f6fd; font-weight: 600; }
+.sv-opt.chosen .sv-radio { border-color: var(--sv-accent); background: radial-gradient(circle, var(--sv-accent) 0 45%, #fff 50%); }
+.sv-letter { flex: none; color: var(--sv-muted); font-weight: 600; }
+.sv-opt.right { border-color: var(--sv-ok); background: var(--sv-okbg); }
+.sv-opt.wrong { border-color: var(--sv-bad); background: var(--sv-badbg); }
+.sv-tag { flex: none; color: var(--sv-ok); font-size: .8rem; font-weight: 700; white-space: nowrap; }
+/* fill in the blanks: boxes exactly as typed */
+.sv-bref { font-weight: 700; color: var(--sv-accent); white-space: nowrap; }
+.sv-fillrow { margin: 8px 0 10px; }
+.sv-blabel { font-size: .8rem; color: var(--sv-muted); margin: 0 0 3px; }
+.sv-boxes { display: inline-flex; flex-wrap: wrap; gap: 3px; max-width: 100%; align-items: center; }
+.sv-bx { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2.3rem; background: #fff; color: var(--sv-ink);
+  border: 1.5px solid #9aa8bd; border-bottom-width: 3px; border-radius: 6px;
+  font: 600 1.1rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.sv-bx.typed { border-color: var(--sv-accent); }
+.sv-bx.fixed { background: #e3e8ef; color: #38414f; border-color: #c3ccd9; border-bottom-width: 3px; }
+.sv-gap { display: inline-block; width: 1rem; }
+.sv-sep { font-weight: 700; color: var(--sv-muted); padding: 0 1px; }
+/* open answer */
+.sv-open { white-space: pre-wrap; border: 1px solid var(--sv-line); border-radius: 8px; padding: 10px 12px; background: #fcfcfd; margin-top: 4px; min-height: 3rem; }
+.sv-comment { margin-top: 8px; border-left: 4px solid var(--sv-accent); background: #f1f6fd; padding: 6px 10px; border-radius: 4px; white-space: pre-wrap; }
+@media (max-width: 480px) {
+  .subview { padding: 12px; }
+  .sv-bx { width: 1.7rem; height: 2.1rem; font-size: 1rem; }
+  .sv-q { padding: 10px; }
+}
+
+/* ---- print: only the viewer, one student per page */
+@page { margin: 14mm; }
+@media print {
+  /* hide, at every level above the viewer, everything that is not on the way to it */
+  :is(body, :has(.sv-viewer)) > :not(:has(.sv-viewer)):not(.sv-viewer) { display: none !important; }
+  body:has(.sv-viewer) { background: #fff !important; }
+  body:has(.sv-viewer) :is(.wrap, main, #app, .tabbody, .sv-root) { max-width: none !important; width: auto !important; margin: 0 !important; padding: 0 !important; border: 0 !important; }
+  .sv-viewer .subview { max-width: none; margin: 0; padding: 0; border: 0; border-radius: 0; font-size: 11pt;
+    break-after: page; page-break-after: always; }
+  .sv-viewer .subview:last-child { break-after: auto; page-break-after: auto; }
+  .sv-q { break-inside: avoid; page-break-inside: avoid; }
+  .sv-figure img { max-height: 220px; }
+}

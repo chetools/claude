@@ -1,19 +1,16 @@
 import { api } from './api.js';
 import { h, fmtTime, msg } from './util.js';
-import { importZipFile } from './importer.js';
-import { state } from './app.js';
+import { importPreview, pickZip } from './importer.js';
+import { state, reroute } from './app.js';
+import { showBar, lab } from './bar.js';
 
 const LABEL = { draft: 'Draft', scheduled: 'Scheduled', open: 'Open', closed: 'Closed' };
 export const badge = (s) => h('span', { class: 'badge ' + s }, LABEL[s] || s);
 
 export async function render(root) {
   const out = h('div', {});
-  const file = h('input', { type: 'file', accept: '.zip,application/zip', class: 'hidden', onchange: async () => {
-    const f = file.files[0]; file.value = '';
-    if (!f) return;
-    const r = await importZipFile(f, out);
-    if (r && r.id) location.hash = '#/exam/' + encodeURIComponent(r.id) + '/questions';
-  } });
+  const ctx = { body: root, replaceId: null, choose: () => pickZip(start), cancel: () => { state.preview = false; reroute(); } };
+  const start = (f) => importPreview(f, ctx);
   const newBlank = async () => {
     const title = prompt('Title of the new exam:', 'New exam');
     if (!title) return;
@@ -24,10 +21,9 @@ export async function render(root) {
       location.hash = '#/exam/' + encodeURIComponent(r.id) + '/edit';
     } catch (e) { out.replaceChildren(msg('err', e.message)); }
   };
-  root.append(h('div', { class: 'card' }, h('h2', {}, 'Exams'),
-    h('div', { class: 'row' }, h('button', { onclick: () => file.click() }, 'Import zip'),
-      h('button', { class: 'secondary', onclick: newBlank }, 'New blank exam'),
-      h('a', { class: 'btn secondary', href: '#/ai' }, 'Write an exam with AI'), file), h('div', { style: 'margin-top:12px' }, out)));
+  showBar({ title: 'My exams', actions: [h('button', { class: 'small', onclick: ctx.choose }, lab('Import', ' zip')),
+    h('button', { class: 'secondary small', onclick: newBlank }, lab('New blank', ' exam'))] });
+  root.append(out);
   const exams = await api('/api/exams');
   if (!exams.length) { root.append(h('p', { class: 'hint' }, 'No exams yet. Import a zip file or create a blank exam.')); return; }
   const me = state.me.email;

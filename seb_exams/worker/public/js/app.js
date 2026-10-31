@@ -1,9 +1,10 @@
 import { api, ApiError } from './api.js';
 import { h, msg } from './util.js';
+import { hideBar, setBarActions } from './bar.js';
 
 const app = document.getElementById('app');
 const head = document.getElementById('head');
-export const state = { me: null, dirty: false };
+export const state = { me: null, dirty: false, preview: false };
 let lastHash = '', token = 0, revert = false;
 
 function renderHead() {
@@ -23,7 +24,7 @@ async function signOut() {
 }
 
 async function loginView() {
-  state.me = null; renderHead(); setWidth('');
+  state.me = null; renderHead(); setWidth(''); hideBar();
   const out = h('div', {});
   const email = h('input', { type: 'email', required: true, autocomplete: 'email', placeholder: 'you@school.org', id: 'login-email' });
   const form = h('form', { class: 'card', onsubmit: async (ev) => {
@@ -41,6 +42,8 @@ async function loginView() {
 
 export function setWidth(kind) { document.body.classList.remove('wide', 'mid'); if (kind) document.body.classList.add(kind); }
 
+export function reroute() { return route(); }
+
 async function route() {
   const my = ++token;
   const hash = location.hash || '#/';
@@ -50,6 +53,7 @@ async function route() {
     if (!state.me) { state.me = await api('/api/me'); }
     if (my !== token) return;
     renderHead();
+    if (parts[0] === 'admin' || parts[0] === 'ai') hideBar(); else setBarActions(null);
     app.replaceChildren(h('p', { class: 'hint' }, 'Loading …'));
     let mod, args = [];
     if (parts[0] === 'exam' && parts[1]) { mod = await import('./exam.js'); args = [parts[1], parts[2] || 'questions']; }
@@ -65,17 +69,18 @@ async function route() {
   } catch (e) {
     if (my !== token) return;
     if (e instanceof ApiError && e.status === 401) return;
+    hideBar();
     app.replaceChildren(msg('err', e.message || String(e)), h('p', {}, h('a', { href: '#/' }, 'Back to my exams')));
   }
 }
 
 window.addEventListener('hashchange', () => {
   if (revert) { revert = false; return; }
-  if (state.dirty && !confirm('You have unsaved changes in the editor. Leave without saving?')) {
-    revert = true; location.hash = lastHash; return;
-  }
-  state.dirty = false; lastHash = location.hash; route();
+  const warn = state.preview ? 'This import preview has not been approved, so nothing is saved. Leave the preview?'
+    : state.dirty ? 'You have unsaved changes in the editor. Leave without saving?' : '';
+  if (warn && !confirm(warn)) { revert = true; location.hash = lastHash; return; }
+  state.dirty = false; state.preview = false; lastHash = location.hash; route();
 });
-window.addEventListener('beforeunload', (e) => { if (state.dirty) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', (e) => { if (state.dirty || state.preview) { e.preventDefault(); e.returnValue = ''; } });
 lastHash = location.hash;
 route();

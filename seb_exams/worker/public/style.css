@@ -6,7 +6,7 @@
 body.mid { --col: 74rem; }
 body.wide { --col: 110rem; }
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: var(--barh, 0px); }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
 .wrap { max-width: var(--col); margin: 0 auto; padding-left: 16px; padding-right: 16px; }
 header.top { background: var(--card); border-bottom: 1px solid var(--line); }
@@ -55,8 +55,6 @@ td .open { max-width: 22em; white-space: pre-wrap; max-height: 5em; overflow: hi
 td .open.full { max-height: none; }
 td input.cmt { width: 100%; margin-top: 4px; }
 /* exam page */
-.crumb { margin: 0 0 6px; }
-.examhead { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; margin-bottom: 10px; } .examhead h2 { margin: 0; overflow-wrap: anywhere; }
 .tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
 .tabs a { padding: 8px 16px; text-decoration: none; color: var(--muted); border-bottom: 3px solid transparent; font-weight: 600; }
 .tabs a.on { color: var(--accent); border-bottom-color: var(--accent); }
@@ -88,7 +86,23 @@ li.opt.correct { border-color: var(--ok); background: var(--okbg); } li.opt .tic
 .bpv { grid-column: 2 / -1; overflow-x: auto; }
 @media (max-width: 760px) { .blankedit { grid-template-columns: 1fr; } .bpv { grid-column: auto; } }
 .imgrow { margin-bottom: 14px; } .imgrow label.grow { font-weight: 400; font-size: .9rem; } .imgrow label.grow input { display: block; width: 100%; }
-.savebar { position: sticky; bottom: 0; z-index: 4; background: rgba(246, 247, 249, .96); padding: 10px 0; border-top: 1px solid var(--line); margin-bottom: 14px; } .savebar .inner { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
 .linkrow { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); } .linkrow .k { width: 9rem; font-weight: 600; } .linkrow .v { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .danger-zone { border-color: #f0c4c0; }
 .guide h1 { font-size: 1.4rem; } .guide h2 { font-size: 1.2rem; margin-top: 18px; } .guide pre { white-space: pre-wrap; }
+/* fixed bar (dashboard and exam pages); --barh is set to its height by bar.js */
+.bar { position: sticky; top: 0; z-index: 30; background: var(--card); border-bottom: 1px solid var(--line); box-shadow: 0 1px 4px rgba(0, 0, 0, .08); }
+.bar .wrap { padding-top: 8px; padding-bottom: 0; } .bar.notabs .wrap { padding-bottom: 8px; }
+.barrow { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.bartitle { margin: 0; font-size: 1.15rem; line-height: 1.3; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar .badge { margin-left: 0; } .bar a.back { text-decoration: none; font-weight: 600; white-space: nowrap; }
+.baractions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.bar .tabs { position: relative; flex-wrap: nowrap; overflow-x: auto; gap: 2px; margin: 4px 0 0; border-bottom: 0; scrollbar-width: none; }
+.bar .tabs::-webkit-scrollbar { display: none; }
+.bar .tabs a { flex: none; padding: 6px 12px; white-space: nowrap; }
+@media (max-width: 767px) {
+  .bar .long { display: none; } .bartitle { font-size: 1.05rem; } .bar .tabs a { padding: 6px 10px; }
+  .bar button, .bar .btn { padding: 4px 10px; }
+}
+/* import preview */
+.pvbanner { border: 2px dashed #d99a00; background: var(--warn-bg); } .pvbanner h2 { margin: 0 0 4px; } .pvbanner p { margin: 0; }
+.chg h4 { margin: 10px 0 4px; font-size: .95rem; } .chg ul { margin: 0; } .chg.key h4 { color: var(--bad); }

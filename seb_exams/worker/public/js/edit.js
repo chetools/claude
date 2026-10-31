@@ -2,8 +2,8 @@ import { api, ApiError, bumpImages, setImg } from './api.js';
 import { h, clone, msg, problemList, debounce, b64encode } from './util.js';
 import { renderMd, boxesHtml } from './render.js';
 import { fillPattern, validateExam } from '/shared/validate.js';
-import { state } from './app.js';
-import { importZipFile } from './importer.js';
+import { state, reroute } from './app.js';
+import { setBarActions } from './bar.js';
 
 const TYPES = [['mc', 'Multiple choice'], ['fill', 'Fill in the blanks'], ['open', 'Open question']];
 const IMG_OK = /\.(svg|png|jpe?g|webp)$/i;
@@ -13,7 +13,7 @@ export async function render(root, ex) {
   st.questions = st.questions || [];
   let images = (ex.images || []).slice();
   const examId = ex.id;
-  const markDirty = () => { state.dirty = true; saveBtn.textContent = 'Save'; validate(); };
+  const markDirty = () => { state.dirty = true; flash = ''; saveBtn.textContent = 'Save'; validate(); };
 
   const safePattern = (b) => { try { return fillPattern({ answer: b.answer || '', ...(b.clue ? { clue: b.clue } : {}), ...(b.variants && b.variants.length ? { variants: b.variants } : {}) }); } catch (e) { return ''; } };
   const nextId = () => { const used = new Set(st.questions.map((q) => q.id)); let i = st.questions.length + 1; while (used.has('q' + i)) i++; return 'q' + i; };
@@ -57,8 +57,20 @@ export async function render(root, ex) {
 
   const qBox = h('div', { class: 'qlist' });
   const status = h('div', {});
-  const saveBtn = h('button', { onclick: save }, 'Save');
-  const saveMsg = h('span', { class: 'hint' });
+  const saveBtn = h('button', { class: 'small', onclick: save }, 'Save');
+  const discardBtn = h('button', { class: 'secondary small', onclick: discard }, 'Discard');
+  let flash = '';
+  // Save / Discard live in the fixed bar and show only while there are unsaved changes.
+  function updateBar() {
+    const n = lastResult.errors.length;
+    if (state.dirty) setBarActions([n ? h('button', { class: 'danger small', onclick: () => status.scrollIntoView({ behavior: 'smooth', block: 'center' }) }, plural(n)) : null, saveBtn, discardBtn]);
+    else setBarActions(flash ? h('span', { class: 'hint nw' }, flash) : null);
+  }
+  const plural = (n) => n + (n === 1 ? ' error' : ' errors');
+  function discard() {
+    if (!confirm('Discard all unsaved changes and reload the saved content?')) return;
+    state.dirty = false; setBarActions(null); reroute();
+  }
 
   function qCard(q, i) {
     const n = i + 1, card = h('section', { class: 'card qedit' });
@@ -165,32 +177,22 @@ export async function render(root, ex) {
     lastResult = r;
     status.replaceChildren(problemList(r.errors, r.warnings));
     saveBtn.disabled = r.errors.length > 0;
-    saveMsg.textContent = r.errors.length ? 'Fix the errors above to save.' : state.dirty ? 'Unsaved changes.' : '';
+    updateBar();
   }
   async function save() {
-    saveBtn.disabled = true; saveMsg.textContent = 'Saving …';
+    saveBtn.disabled = true; saveBtn.textContent = 'Saving …';
     try {
       const r = await api(`/api/exams/${encodeURIComponent(examId)}/content`, { method: 'PUT', body: { content: clean() } });
-      state.dirty = false;
-      saveMsg.textContent = 'Saved ✓ (existing submissions were regraded).';
+      state.dirty = false; flash = 'Saved ✓';
       if (r.warnings && r.warnings.length) status.replaceChildren(problemList([], r.warnings));
     } catch (e) {
       if (e instanceof ApiError && e.data.errors) status.replaceChildren(problemList(e.data.errors, e.data.warnings));
       else status.replaceChildren(msg('err', e.message));
-      saveMsg.textContent = 'Not saved.';
     }
+    saveBtn.textContent = 'Save';
     saveBtn.disabled = lastResult.errors.length > 0;
+    updateBar();
   }
-
-  // ---- replace from zip
-  const zipOut = h('div', {});
-  const zipIn = h('input', { type: 'file', accept: '.zip,application/zip', class: 'hidden', onchange: async () => {
-    const f = zipIn.files[0]; zipIn.value = '';
-    if (!f) return;
-    if (!confirm('Replace the whole content of this exam with the zip file? Settings and results are kept; results are regraded.')) return;
-    const r = await importZipFile(f, zipOut, examId);
-    if (r) { state.dirty = false; location.reload(); }
-  } });
 
   root.append(
     h('div', { class: 'card' }, h('div', { class: 'row grid2' },
@@ -198,11 +200,8 @@ export async function render(root, ex) {
     split('Introduction (optional, shown above the questions)', introTa, introBox)),
     qBox,
     h('div', { class: 'card row' }, h('strong', {}, 'Add question:'), TYPES.map(([k, l]) => h('button', { class: 'secondary', onclick: () => addQ(k) }, '+ ' + l))),
-    h('div', { class: 'savebar' }, h('div', { class: 'inner' }, saveBtn, saveMsg)),
     status,
-    h('div', { class: 'card' }, h('h3', {}, 'Replace from zip'),
-      h('p', { class: 'hint' }, 'Upload a new exam zip (exam.yaml and images) to replace all questions of this exam. Settings and submissions are kept.'),
-      h('button', { class: 'secondary', onclick: () => zipIn.click() }, 'Replace from zip …'), zipIn, h('div', { style: 'margin-top:10px' }, zipOut)));
+    h('p', { class: 'hint' }, 'Saving regrades all existing submissions. Save and Discard are in the bar at the top.'));
   drawQ();
   state.dirty = false;
   validate();
