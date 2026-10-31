@@ -90,6 +90,7 @@
   .sv-viewer .subview { max-width: none; margin: 0; padding: 0; border: 0; border-radius: 0; font-size: 11pt;
     break-after: page; page-break-after: always; }
   .sv-viewer .subview:last-child { break-after: auto; page-break-after: auto; }
+  .subview { border: 0; border-radius: 0; margin: 0 auto; }
   .sv-q { break-inside: avoid; page-break-inside: avoid; }
   .sv-figure img { max-height: 220px; }
 }

@@ -171,7 +171,7 @@ const fileSafe = (s) => String(s).replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^\.
 
 function htmlDoc(title, css, bodyHtml) {
   return `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">\n` +
-    `<title>${esc1(title)}</title>\n<link rel="stylesheet" href="${KATEX_CSS}">\n<style>\nbody{margin:0;padding:16px;background:#f6f7f9}\n${css}\n</style></head>\n<body>\n${bodyHtml}\n</body></html>\n`;
+    `<title>${esc1(title)}</title>\n<link rel="stylesheet" href="${KATEX_CSS}">\n<style>\nbody{margin:0;padding:16px;background:#f6f7f9}\n@media print{body{padding:0;background:#fff}}\n${css}\n</style></head>\n<body>\n${bodyHtml}\n</body></html>\n`;
 }
 
 // ---------------------------------------------------------------- tab

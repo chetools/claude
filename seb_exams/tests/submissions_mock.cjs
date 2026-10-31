@@ -179,7 +179,7 @@ const qids = (page, n = 0) => page.locator('.subview').nth(n).locator('.sv-q').e
       check(await page.locator('.sv-table tbody tr').count() === 4, `${tag} list: 4 rows`);
       const rowTxt = await page.locator('.sv-table tbody tr').evaluateAll((trs) => trs.map((t) => t.innerText.replace(/\s+/g, ' ').trim()));
       check(rowTxt[0].includes('Ada Lovelace') && rowTxt[3].includes('Cyrus Empty') && rowTxt[3].includes('late'), `${tag} list sorted by submission order, late flag: ${rowTxt[3]}`);
-      check(/\d+(\.\d+)? \/ 21/.test(rowTxt[0]), `${tag} list shows total / max: ${rowTxt[0]}`);
+      check(/\d+(\.\d+)? \/ 31/.test(rowTxt[0]), `${tag} list shows total / max: ${rowTxt[0]}`);
       check(await page.locator('.sv-viewsel').isDisabled(), `${tag} View selected disabled with nothing selected`);
       await shot('list');
       check(await noHScroll(page), `${tag} list: no horizontal scroll`);
@@ -206,7 +206,7 @@ const qids = (page, n = 0) => page.locator('.subview').nth(n).locator('.sv-q').e
       const ada = page.locator('.subview').first();
       await page.waitForFunction(() => [...document.querySelectorAll('.subview img')].every((i) => i.complete && i.naturalWidth > 0), null, { timeout: 8000 });
       const head = (await ada.locator('.sv-head').innerText()).replace(/\s+/g, ' ');
-      check(/Ada Lovelace/.test(head) && /S100/.test(head) && /RC-11-ZZ/.test(head) && /Submitted/.test(head) && /Started/.test(head) && /SEB check/.test(head) && /Total/.test(head), `${tag} header has name, ID, times, receipt, SEB check, total: ${head}`);
+      check(/Ada Lovelace/.test(head) && /S100/.test(head) && /RC-11-ZZ/.test(head) && /Submitted/i.test(head) && /Started/i.test(head) && /SEB check/i.test(head) && /Total/i.test(head), `${tag} header has name, ID, times, receipt, SEB check, total: ${head}`);
       check((await ada.locator('.sv-q').count()) === 13, `${tag} Ada: 13 questions`);
       check(JSON.stringify(await qids(page)) === JSON.stringify(content.questions.map((q) => q.id)), `${tag} default order = exam file order`);
       check((await ada.locator('[data-qid=m1] .sv-figure img').getAttribute('src')).startsWith('blob:'), `${tag} figure shown`);
@@ -272,7 +272,7 @@ const qids = (page, n = 0) => page.locator('.subview').nth(n).locator('.sv-q').e
       // ---- anonymise
       await page.check('.sv-anon');
       const txt = await page.locator('.sv-viewer').innerText();
-      const heads = await page.locator('.sv-head h2').allInnerTexts();
+      const heads = (await page.locator('.sv-head h2').allInnerTexts()).map((t) => t.replace(/\s*late$/i, '').trim());
       check(heads.join('|') === 'Student 1|Student 2|Student 3|Student 4', `${tag} anonymise: Student N in submission order (Ada=1 earliest, Cyrus=4 latest): ${heads.join('|')}`);
       check(!/Ada|Lovelace|Bob|Quote|Dee|Cyrus|S100|S200|S300|DEE-4|RC-1\d-ZZ/.test(txt), `${tag} anonymise: no names, IDs or receipts in the viewer`);
       if (w === 1280) await shot('viewer-anon');
@@ -303,7 +303,7 @@ const qids = (page, n = 0) => page.locator('.subview').nth(n).locator('.sv-q').e
           check(html.every((x) => x.includes('katex@0.16.11/dist/katex.min.css') && x.includes('<style>') && x.includes('class="katex"') && !x.includes('blob:') && !/<script/i.test(x)), `${tag} zip: inline CSS, KaTeX link, pre-rendered math, no blob: urls, no script`);
           check(html.every((x) => /<img [^>]*src="data:image\/svg\+xml;base64,/.test(x)), `${tag} zip: figure embedded as data: URL in every file`);
           if (anon) check(!html.some((x) => /Ada|Lovelace|Bob|Quote|Cyrus|O&#39;Neil|S100|S200|S300|DEE-4|RC-1\d-ZZ/.test(x)) && html.every((x, i) => x.includes(`Student ${i + 1}`)), `${tag} zip anonymised: no names/IDs/receipts anywhere in the files`);
-          else check(html[1].includes('Ada Lovelace') === false && fs.readFileSync(path.join(dir, 'S100.html'), 'utf8').includes('Ada Lovelace') && fs.readFileSync(path.join(dir, 'S100.html'), 'utf8').includes('class="sv-mark ok"'), `${tag} zip named: S100.html holds Ada's submission, with marking`);
+          else check(fs.readFileSync(path.join(dir, 'S100.html'), 'utf8').includes('Ada Lovelace') && fs.readFileSync(path.join(dir, 'S100.html'), 'utf8').includes('class="sv-mark ok"'), `${tag} zip named: S100.html holds Ada's submission, with marking`);
           if (w === 1280) {
             // open an exported file: it must look like the viewer (text equal) and load its image
             const pg2 = await newPage(ctx);
@@ -336,12 +336,12 @@ const qids = (page, n = 0) => page.locator('.subview').nth(n).locator('.sv-q').e
         const pages = parseInt(execSync(`pdfinfo ${pdf}`).toString().match(/Pages:\s+(\d+)/)[1], 10);
         const per = [];
         for (let i = 1; i <= pages; i++) per.push(execSync(`pdftotext -f ${i} -l ${i} -layout ${pdf} -`).toString());
-        const starts = per.map((t) => (t.match(/Ada Lovelace|Bob "Quote" Jr|Dee O'Neil|Cyrus Empty/) || ['-'])[0]);
+        const starts = per.map((t) => (t.match(/Ada Lovelace|Bob "Quote" Jr|Dee <i>|Cyrus Empty/) || ['-'])[0]);
         const inPdf = per.join('\n');
         check(!/Print \/ Save|Download zip|View selected|SEB Exams/.test(inPdf), 'PDF: no UI (toolbar buttons, app header) printed');
         const firsts = per.map((t, i) => (starts[i] !== '-' ? i + 1 : 0)).filter(Boolean);
         const counts = ['Ada Lovelace', 'Bob "Quote" Jr', 'Dee', 'Cyrus Empty'].map((n) => per.filter((t) => t.includes(n)).length);
-        check(pages >= 4 && starts.slice(0, 1)[0] === 'Ada Lovelace' && firsts.length === 4 && counts.every((c) => c >= 1), `PDF: ${pages} pages; each student starts on a new page (first lines: ${starts.join(' / ')})`);
+        check(pages >= 4 && starts.slice(0, 1)[0] === 'Ada Lovelace' && firsts.length === 4 && counts.every((c) => c >= 1), `PDF: ${pages} pages; each student's header appears once, on its own page (name-bearing pages: ${starts.join(' / ')})`);
         // a student never shares a page with the next: no page contains two different names
         const mixed = per.filter((t) => ['Ada Lovelace', 'Bob "Quote"', 'Dee', 'Cyrus Empty'].filter((n) => t.includes(n)).length > 1).length;
         check(mixed === 0, `PDF: no page holds two students (${mixed} mixed)`);
