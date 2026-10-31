@@ -86,6 +86,14 @@ These complement the rules above. They apply to every project.
   not span the whole window: wrap them in one block with the same `max-width` as the body column, set in the body
   font (a `ch` width set on the larger title font comes out wider). Check with Playwright at 2560 px that the
   header and body share left and right edges.
+- **Limit the width of text, not of the page.**
+  - App and page columns are about 80rem; data-heavy pages (wide tables) are about 110rem.
+  - Paragraphs keep a readable measure, `max-width` about 72ch.
+  - Use the extra width for side-by-side layouts, not longer lines.
+  - Buttons, labels, badges, dates, names and table cells never wrap at 1280 px and wider (`white-space: nowrap`
+    where needed). Short text lines should not wrap with only a few words left on the second line.
+  - Check with a Playwright wrap audit at 1280, 1440 and 1920 px. The reference is `seb_exams/tests/wrap_audit.cjs`.
+  - Phones (< 768 px) keep their own layout.
 
 ### Publishing
 - **Check that the deployed artefact is the new one.** Compare the served bytes with the build (`cmp`), not just
