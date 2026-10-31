@@ -94,7 +94,7 @@ const check = (ok, what) => { checks.push([ok, what]); console.log((ok ? 'PASS '
       const shot = async (name) => { await page.waitForTimeout(250); await page.screenshot({ path: `${SHOTS}/${name}-${w}.png`, fullPage: true }); };
       const noScroll = async (name) => { const o = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth); check(o <= 0, `${w}px ${name}: no horizontal page scroll (${o})`); };
       const aligned = async (name) => {
-        const r = await page.evaluate(() => { const a = document.querySelector('#head').getBoundingClientRect(), b = document.querySelector('#app').getBoundingClientRect(); return [a.left, a.right, b.left, b.right]; });
+        const r = await page.evaluate(() => { const hd = document.querySelector('#head'); const a = (hd.getBoundingClientRect().width ? hd : document.querySelector('#barin')).getBoundingClientRect(), b = document.querySelector('#app').getBoundingClientRect(); return [a.left, a.right, b.left, b.right]; });
         check(Math.abs(r[0] - r[2]) < 1 && Math.abs(r[1] - r[3]) < 1, `${w}px ${name}: header/body edges aligned ${r.map(Math.round)}`);
       };
       const barVisible = async (name) => {
