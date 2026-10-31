@@ -123,7 +123,7 @@ export async function importPreview(file, ctx) {
   approve.addEventListener('click', async () => {
     [approve, cancelBtn, chooseBtn].forEach((b) => (b.disabled = true));
     try {
-      const res = await upload(z.yaml, z.images);
+      const res = await upload(z.yaml, z.images, replaceId);
       bumpImages();
       goToQuestions(replaceId || res.id);
     } catch (e) {

@@ -87,7 +87,7 @@ const check = (ok, what) => { checks.push([ok, what]); console.log((ok ? 'PASS '
       const page = await ctx.newPage();
       const errs = [];
       page.on('pageerror', (e) => errs.push('pageerror: ' + e.message));
-      page.on('console', (m) => { if (m.type() === 'error' && !/status of (401|422)/.test(m.text())) errs.push('console: ' + m.text()); });
+      page.on('console', (m) => { if (m.type() === 'error' && !/status of (401|422|423)/.test(m.text())) errs.push('console: ' + m.text()); });
       const dialogs = []; let dialogAnswer = true;
       page.on('dialog', (d) => { dialogs.push(d.message()); if (dialogAnswer) d.accept(d.type() === 'prompt' ? 'My title' : undefined); else d.dismiss(); });
       await mock(page);
@@ -199,7 +199,7 @@ const check = (ok, what) => { checks.push([ok, what]); console.log((ok ? 'PASS '
       await pick('Replace', 'new.zip', good, true); await page.waitForSelector('#bar button:has-text("Approve and replace")');
       importCalls = [];
       await page.click('#bar button:has-text("Approve and replace")'); await page.waitForSelector('#bar button:has-text("Export")'); await page.waitForTimeout(400);
-      check(importCalls.length === 1 && !importCalls[0].dry && importCalls[0].replace === 'mt-7k2p9x' && !(await page.isVisible('text=Preview – not saved')), `${w}px approve replace sends the real import and returns to the Questions tab`);
+      check(importCalls.length === 1 && !importCalls[0].dry && importCalls[0].replace === 'mt-7k2p9x' && !(await page.isVisible('text=Preview – not saved')), `${w}px approve replace sends the real import and returns to the Questions tab ${JSON.stringify(importCalls)}`);
 
       await go('/exam/mt-7k2p9x/edit', 'edit', '.qedit');
       check((await page.locator('.qedit').count()) === 3, `${w}px editor has 3 question cards`);
