@@ -237,3 +237,84 @@ Works at 390 px and 2560 px (header aligned with body column; tables scroll insi
   serving `student/` as `/exam/`): teacher login via outbox link, import example zip, view, edit, settings, open
   now; student flows (outside SEB, wrong key, full exam, reload, duplicate, timeout); grading; CSV; export→import
   round trip; admin adds a teacher; access control (teacher B cannot see A's exam); layout at 390/2560.
+
+## v2.1 additions (grading UI, submissions viewer, import preview, fixed bar)
+
+### Import preview and approval (backend + teacher app)
+- `POST /api/exams/import` accepts `dry_run: true`: validates exactly as a real import and stores nothing.
+  It returns `200 {ok: true, exam (normalized content), warnings, summary}` or `422 {errors, warnings}`.
+  With `replace_id`, `summary = {added: [qid], removed: [qid], changed: [qid], key_changed: [qid], regrade_count,
+  manual_grades_dropped}`. Here `key_changed` means a correct option, a blank answer/variants, or the points
+  changed; `regrade_count` = number of stored submissions; `manual_grades_dropped` = number of manual grades on
+  removed questions or questions that are no longer `open`. Without `replace_id`, `summary` is null.
+- Replacing (dry run or real) is refused with `423 {error}` while the exam's status is `open`.
+- The teacher app never saves an uploaded zip directly:
+  1. read the zip;
+  2. dry-run it;
+  3. render a preview identical to the Questions tab, with a "Preview – not saved" banner, the errors and warnings,
+     and, when replacing, the change summary;
+  4. the fixed bar shows **Approve and save** (or **Approve and replace**), disabled while there are errors,
+     **Cancel** and **Choose another zip**.
+
+  Approve sends the real import. Leaving the page with an unapproved preview asks for confirmation
+  (`beforeunload` + in-app navigation). Any teacher of the exam may approve.
+- Questions are matched by `id` on replace. Settings, co-teachers and submissions are kept. Manual grades are kept
+  for questions that still exist and are still `open`.
+
+### Fixed bar (teacher app)
+- Every exam page has one sticky bar at the top that never scrolls out of view. It holds:
+  - the exam title and status badge;
+  - the tabs: Questions, Edit, Grade, Submissions, Settings, Results;
+  - the actions: **Replace from zip**, **Export zip**. Preview mode swaps them for Approve/Cancel/Choose another
+    zip. On the Edit tab, **Save** and **Discard** appear while there are unsaved changes.
+- The dashboard has the same kind of bar, with **Import zip** and **New blank exam**.
+- On phones (< 768 px) the bar is compact: short labels, the tabs scroll horizontally inside the bar, and no
+  action is hidden in a menu.
+- The "Replace from zip" button in the Edit tab moves to the bar.
+
+### Grade tab (`#/exam/<id>/grade`, `worker/public/js/grade.js`)
+- Open questions only, using `GET /api/exams/:id/results` and `PUT /api/submissions/:id/manual {qid, points,
+  comment}`.
+- Points are a multiple of 0.5, from 0 to the question's points (the server rejects other values with 422).
+- No model answer is shown. No grader is recorded; the last write wins.
+- Anonymous by default: a "Show names" toggle; otherwise students are labelled "Student 1…N". The numbering
+  follows the shuffled order, so the labels are stable.
+- Answer order: a fixed shuffle seeded by the exam id, the same on every visit and for every teacher.
+- Filter "Ungraded only" is on by default; progress "14 of 30 graded" is shown per question.
+- **Desktop (≥ 768 px):**
+  - grouped by question (default) or by student (toggle);
+  - every answer shown in full;
+  - beside each answer, a number input (step 0.5) and an optional comment;
+  - Enter saves and focuses the next grade input.
+- **Phone (< 768 px):**
+  - one card at a time (one student's answer to one question);
+  - a slider (step 0.5, 0..max) shows its value large and saves on release;
+  - swipe left/right, plus ‹ › buttons, moves to the next/previous card;
+  - the order is next student for the same question, then the next question; a toggle switches to next question
+    for the same student;
+  - a question picker sits at the top;
+  - dragging the slider never triggers a swipe;
+  - optional comment field.
+- Saving shows "Saved ✓". On a network failure the grade is kept in localStorage
+  (`sebgrade:<examid>:queue`) and retried until it succeeds; a pending badge shows unsaved grades.
+- Filtered-out (already graded) cards are not removed from view the moment they are graded. The list is
+  re-filtered only when the filter is toggled or the page is reloaded, so the card does not jump away.
+
+### Submissions tab (`#/exam/<id>/submissions`, `worker/public/js/submissions.js`)
+- A list of submissions with checkboxes, "Select all", **View selected**, **View all**, and a per-row **View**.
+- Each submission is shown "as entered":
+  - a header with name, ID, start/submit time, late flag, receipt, SEB check and total;
+  - every question with its text and figure;
+  - the chosen option (all options listed, the chosen one marked);
+  - fill boxes showing exactly what was typed (clue letters distinct, empty boxes empty);
+  - essay text with line breaks kept.
+- Toggles:
+  - **Order**: exam-file order (default) or "as the student saw it". The latter must reproduce the student page's
+    deterministic shuffle exactly: same seed, same RNG, same section grouping and option shuffling. Copy the
+    algorithm from `student/index.html` into `worker/public/shared/shuffle.js` and prove equality in a test.
+  - **Show marking** (default on): correct/wrong per mc/fill, points, essay grade and comment.
+  - **Anonymise** (default off): replaces name/ID/receipt with "Student N".
+- Export:
+  - **Print / Save as PDF**: a print stylesheet with one student per page, triggering `window.print()`;
+  - **Download zip**: one self-contained HTML file per student (inline CSS, KaTeX CSS link, images as data URLs,
+    rendered math), file names `<student-id>.html` or `student-N.html` when anonymised.
