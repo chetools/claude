@@ -3,7 +3,8 @@ import yaml from "js-yaml";
 import { validateExam, gradeSubmission, sanitizeSvgCheck } from "../public/shared/validate.js";
 import { currentTeacher } from "./auth.js";
 import { configKey, studentUrl, sebLink } from "./seb.js";
-import { json, readJson, sha256hex, newExamId, HttpError, base64Info, normEmail, isEmail, examStatus } from "./util.js";
+import { json, readJson, sha256hex, newExamId, HttpError, base64Info, normEmail, isEmail, examStatus, receipt } from "./util.js";
+import { practiceSubmissions } from "./practice.js";
 
 const MB = 1024 * 1024;
 const MAX_IMAGE = MB;                 // decoded bytes per image
@@ -105,7 +106,7 @@ async function runBatch(env, stmts) {
 // ---- exams -------------------------------------------------------------------------------------
 async function listExams(env, t) {
   const { results } = await env.DB.prepare(
-    `SELECT e.id, e.title, e.owner_email, e.opens_at, e.closes_at, e.updated_at,
+    `SELECT e.id, e.title, e.owner_email, e.opens_at, e.closes_at, e.updated_at, e.practice,
        (SELECT COUNT(*) FROM submissions s WHERE s.exam_id = e.id) AS submissions,
        COALESCE(json_array_length(e.content_json, '$.questions'), 0) AS questions
      FROM exams e WHERE ?1 = 1 OR e.owner_email = ?2
@@ -121,6 +122,8 @@ async function importExam(req, env, t) {
   const errors = [], warnings = [];
   let replace = null;
   const dry = body.dry_run === true;
+  const practice = body.practice === true;  // a closed copy with made-up submissions, for trying the app
+  if (practice && (dry || (body.replace_id !== undefined && body.replace_id !== null))) throw bad("practice cannot be combined with dry_run or replace_id.");
   if (body.replace_id !== undefined && body.replace_id !== null) {
     replace = await examFor(env, t, String(body.replace_id));
     const locked = refuseIfOpen(replace);
@@ -142,6 +145,7 @@ async function importExam(req, env, t) {
       errors.push(...r.errors); warnings.push(...r.warnings); exam = r.exam;
     }
   }
+  if (exam && practice) exam.title = "Practice – " + exam.title;
   const content = exam ? JSON.stringify(exam) : "";
   if (exam && content.length > MAX_CONTENT) errors.push("The exam text is larger than 1.5 MB.");
   if (errors.length) return json({ errors, warnings }, 422);
@@ -166,11 +170,24 @@ async function importExam(req, env, t) {
     id = newExamId(exam.title);
     if (!(await env.DB.prepare("SELECT 1 AS x FROM exams WHERE id = ?").bind(id).first())) break;
   }
+  const opensMs = Date.now() - 3 * 3600000;  // practice exams are already closed
   await env.DB.batch([
-    env.DB.prepare(`INSERT INTO exams (id, owner_email, title, content_json, require_seb, extra_config_keys, created_at, updated_at)
-      VALUES (?, ?, ?, ?, 1, '[]', ?, ?)`).bind(id, t.email, exam.title, content, now, now),
+    env.DB.prepare(`INSERT INTO exams (id, owner_email, title, content_json, require_seb, extra_config_keys, created_at, updated_at,
+      practice, opens_at, closes_at) VALUES (?, ?, ?, ?, 1, '[]', ?, ?, ?, ?, ?)`).bind(id, t.email, exam.title, content, now, now,
+      practice ? 1 : 0, practice ? new Date(opensMs).toISOString() : null, practice ? new Date(opensMs + 2 * 3600000).toISOString() : null),
     ...imageStmts(id),
   ]);
+  if (practice) {
+    const stmts = [];
+    for (const s of practiceSubmissions(exam, id, opensMs, receipt)) {
+      stmts.push(env.DB.prepare("INSERT INTO attempts (exam_id, student_id, name, started_at) VALUES (?, ?, ?, ?)").bind(id, s.student_id, s.name, s.started_at),
+        env.DB.prepare(`INSERT INTO submissions (exam_id, student_id, name, answers_json, detail_json, auto_score, auto_max, manual_json,
+          receipt, started_at, submitted_at, late, seb_check, user_agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'practice', 'practice')`)
+          .bind(id, s.student_id, s.name, JSON.stringify(s.answers), JSON.stringify(s.detail), s.score, s.max, JSON.stringify(s.manual),
+            s.receipt, s.started_at, s.submitted_at, s.late));
+    }
+    await runBatch(env, stmts);
+  }
   return json({ id, warnings });
 }
 
@@ -186,7 +203,7 @@ async function getExam(env, e) {
     require_seb: !!e.require_seb, opens_at: e.opens_at, closes_at: e.closes_at,
     has_quit_password: !!e.quit_password_sha256, extra_config_keys: JSON.parse(e.extra_config_keys || "[]"),
     config_key: await configKey(e), seb_link: sebLink(env, e.id), student_url: studentUrl(e.id),
-    submissions_count: n.n, regraded_at: e.regraded_at,
+    submissions_count: n.n, regraded_at: e.regraded_at, practice: !!e.practice,
   };
 }
 

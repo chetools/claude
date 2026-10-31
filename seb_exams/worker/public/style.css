@@ -106,3 +106,4 @@ li.opt.correct { border-color: var(--ok); background: var(--okbg); } li.opt .tic
 /* import preview */
 .pvbanner { border: 2px dashed #d99a00; background: var(--warn-bg); } .pvbanner h2 { margin: 0 0 4px; } .pvbanner p { margin: 0; }
 .chg h4 { margin: 10px 0 4px; font-size: .95rem; } .chg ul { margin: 0; } .chg.key h4 { color: var(--bad); }
+.badge.practice { background: #fdf0d9; color: #8a5a00; }

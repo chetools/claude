@@ -48,7 +48,8 @@ CREATE TABLE exams (
   extra_config_keys    TEXT NOT NULL DEFAULT '[]',   -- JSON array of accepted extra Config Keys (hex)
   created_at           TEXT NOT NULL,
   updated_at           TEXT NOT NULL,
-  regraded_at          TEXT
+  regraded_at          TEXT,
+  practice             INTEGER NOT NULL DEFAULT 0   -- 1 = practice copy with made-up submissions
 );
 CREATE TABLE exam_teachers (
   exam_id TEXT NOT NULL,

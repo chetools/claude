@@ -331,6 +331,29 @@ async function submit(page) {
     check((await api(B, "GET", "/api/teachers")).status === 403, "a non-admin cannot manage teachers");
     check(T.errors.length === 0 && B.errors.length === 0, "teacher app: no errors " + [...T.errors, ...B.errors].join(" | "));
 
+    // ---------------------------------------------------------- practice exam
+    await T.goto(`${APP}/#/`);
+    await T.waitForSelector("#bar:not(.hidden)");
+    await T.locator('#bar button:has-text("Practice")').click();
+    await T.waitForURL(/#\/exam\/[a-z]{2}-[a-z0-9]+\/questions/, { timeout: 15000 });
+    const pid = T.url().match(/#\/exam\/([^/]+)\//)[1];
+    const pex = (await api(T, "GET", `/api/exams/${pid}`)).data;
+    const pres = (await api(T, "GET", `/api/exams/${pid}/results`)).data;
+    const popen = pres.questions.filter((q) => q.type === "open").map((q) => q.id);
+    const graded = pres.submissions.filter((s) => popen.some((q) => s.manual[q] && s.manual[q].points !== null)).length;
+    const scores = pres.submissions.map((s) => s.auto_score);
+    check(pex.practice === true && /^Practice – /.test(pex.content.title), "Practice exam button creates a practice copy");
+    check(pres.submissions.length === 12 && pres.submissions.filter((s) => s.late).length === 1, "practice exam has 12 made-up submissions, one late");
+    check(graded >= 3 && graded < 12, `some practice essays are graded, some are left to grade (${graded}/12)`);
+    check(Math.max(...scores) > Math.min(...scores), `practice students range in quality (scores ${Math.min(...scores)}..${Math.max(...scores)})`);
+    check((await (await fetch(`${APP}/s/info?id=${pid}`)).json()).status === "closed", "practice exam is closed, so no student can sit it by accident");
+    await T.goto(`${APP}/#/`);
+    await T.waitForSelector("table.exams");
+    check(await T.locator("table.exams .badge.practice").count() === 1, "dashboard marks the practice exam");
+    await T.goto(`${APP}/#/exam/${pid}/grade`);
+    await T.waitForSelector(".gr-toolbar");
+    check(await T.locator("input.gin").count() > 0, "practice essays can be graded on the Grade tab");
+
     // ---------------------------------------------------------- layout at phone and wide-monitor widths
     for (const width of [390, 2560]) {
       const P = await teacherPage(browser, ADMIN, width);
