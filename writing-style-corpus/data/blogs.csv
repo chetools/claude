@@ -1,31 +1,49 @@
-org,id,kind,url,title,date,words
-anthropic,anthropic-01,blog,https://www.anthropic.com/research/effective-context-engineering-for-ai-agents,Effective context engineering for AI agents,2025-09-29,3012
-anthropic,anthropic-02,tutorial,https://docs.anthropic.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices,Prompting best practices,,5303
-anthropic,anthropic-03,tutorial,https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills/best-practices,Skill authoring best practices,,3590
-anthropic,anthropic-04,tutorial,https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/define-tools,Define tools,,1359
-anthropic,anthropic-05,tutorial,https://docs.anthropic.com/en/docs/build-with-claude/citations,Citations,,1197
-anthropic,anthropic-06,tutorial,https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/how-tool-use-works,How tool use works,,1222
-anthropic,anthropic-07,tutorial,https://docs.anthropic.com/en/docs/about-claude/use-case-guides/ticket-routing,Ticket routing,,2768
-anthropic,anthropic-08,tutorial,https://docs.anthropic.com/en/docs/build-with-claude/batch-processing,Message Batches API,,2743
-anthropic,anthropic-09,blog,https://www.anthropic.com/research/writing-tools-for-agents,Writing effective tools for AI agents,2025-09-11,3069
-anthropic,anthropic-10,blog,https://www.anthropic.com/research/multi-agent-research-system,How we built our multi-agent research system,2025-06-13,3463
-anthropic,anthropic-11,blog,https://www.anthropic.com/research/effective-harnesses-for-long-running-agents,Effective harnesses for long-running agents,2025-11-26,1874
-anthropic,anthropic-12,blog,https://www.anthropic.com/research/demystifying-evals-for-ai-agents,Demystifying evals for AI agents,2026-01-09,5634
-anthropic,anthropic-13,blog,https://www.anthropic.com/research/code-execution-with-mcp,Code execution with MCP for efficient agents,2025-11-04,1350
-anthropic,anthropic-14,blog,https://www.anthropic.com/research/claude-think-tool,"The ""think"" tool for complex tool use",2025-03-20,1728
-anthropic,anthropic-15,blog,https://www.anthropic.com/research/claude-code-sandboxing,Making Claude Code safer with sandboxing,2025-10-20,1030
-openai,openai-01,tutorial,https://developers.openai.com/api/docs/guides/prompt-engineering,Prompt engineering,,2396
-openai,openai-02,tutorial,https://developers.openai.com/api/docs/guides/reasoning-best-practices,Reasoning best practices,,2308
-openai,openai-03,tutorial,https://developers.openai.com/api/docs/guides/structured-outputs,Structured model outputs,,2381
-openai,openai-04,tutorial,https://developers.openai.com/api/docs/guides/function-calling,Function calling,,3615
-openai,openai-05,tutorial,https://developers.openai.com/api/docs/guides/evaluation-getting-started,Getting started with datasets,,1287
-openai,openai-06,tutorial,https://developers.openai.com/api/docs/guides/conversation-state,Conversation state,,1093
-openai,openai-07,blog,https://developers.openai.com/blog/eval-skills,Testing Agent Skills Systematically with Evals,,2234
-openai,openai-08,blog,https://developers.openai.com/blog/skills-shell-tips,Shell + Skills + Compaction: Tips for long-running agents that do real work,,1581
-openai,openai-09,blog,https://developers.openai.com/blog/responses-api,Why we built the Responses API,,1091
-openai,openai-10,blog,https://developers.openai.com/blog/designing-failover-across-openai-model-providers,Designing failover across OpenAI model providers,,1987
-openai,openai-11,blog,https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra,Rethinking skills and prompts for GPT-6 Astra,,1022
-openai,openai-12,blog,https://developers.openai.com/blog/15-lessons-building-chatgpt-apps,15 lessons learned building ChatGPT Apps,,2519
-openai,openai-13,blog,https://developers.openai.com/blog/one-year-of-responses,From prompts to products: One year of Responses,,2167
-openai,openai-14,blog,https://developers.openai.com/blog/realtime-perplexity-computer,How Perplexity Brought Voice Search to Millions Using the Realtime API,,1219
-openai,openai-15,blog,https://developers.openai.com/blog/designing-delightful-frontends-with-gpt-5-4,Designing delightful frontends with GPT-5.4,,1091
+org,id,kind,url,title,date,words,role
+anthropic,anthropic-01,blog,https://www.anthropic.com/research/effective-context-engineering-for-ai-agents,Effective context engineering for AI agents,2025-09-29,3012,corpus
+anthropic,anthropic-02,tutorial,https://docs.anthropic.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices,Prompting best practices,,5303,corpus
+anthropic,anthropic-03,tutorial,https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills/best-practices,Skill authoring best practices,,3581,heldout
+anthropic,anthropic-04,tutorial,https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/define-tools,Define tools,,1359,corpus
+anthropic,anthropic-05,tutorial,https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/how-tool-use-works,How tool use works,,1222,corpus
+anthropic,anthropic-06,tutorial,https://docs.anthropic.com/en/docs/about-claude/use-case-guides/ticket-routing,Ticket routing,,2768,corpus
+anthropic,anthropic-07,tutorial,https://docs.anthropic.com/en/docs/build-with-claude/batch-processing,Message Batches API,,2736,corpus
+anthropic,anthropic-08,blog,https://www.anthropic.com/research/writing-tools-for-agents,Writing effective tools for AI agents,2025-09-11,3069,corpus
+anthropic,anthropic-09,blog,https://www.anthropic.com/research/multi-agent-research-system,How we built our multi-agent research system,2025-06-13,3463,corpus
+anthropic,anthropic-10,blog,https://www.anthropic.com/research/effective-harnesses-for-long-running-agents,Effective harnesses for long-running agents,2025-11-26,1874,corpus
+anthropic,anthropic-11,blog,https://www.anthropic.com/research/demystifying-evals-for-ai-agents,Demystifying evals for AI agents,2026-01-09,5634,corpus
+anthropic,anthropic-12,blog,https://www.anthropic.com/research/claude-think-tool,"The ""think"" tool for complex tool use",2025-03-20,1728,corpus
+openai,openai-01,tutorial,https://developers.openai.com/api/docs/guides/prompt-engineering,Prompt engineering,,2396,corpus
+openai,openai-02,tutorial,https://developers.openai.com/api/docs/guides/reasoning-best-practices,Reasoning best practices,,2308,corpus
+openai,openai-03,tutorial,https://developers.openai.com/api/docs/guides/structured-outputs,Structured model outputs,,2381,corpus
+openai,openai-04,tutorial,https://developers.openai.com/api/docs/guides/function-calling,Function calling,,3615,corpus
+openai,openai-05,tutorial,https://developers.openai.com/api/docs/guides/evaluation-getting-started,Getting started with datasets,,1287,heldout
+openai,openai-06,tutorial,https://developers.openai.com/api/docs/guides/conversation-state,Conversation state,,1093,corpus
+openai,openai-07,blog,https://developers.openai.com/blog/eval-skills,Testing Agent Skills Systematically with Evals,,2234,corpus
+openai,openai-08,blog,https://developers.openai.com/blog/skills-shell-tips,Shell + Skills + Compaction: Tips for long-running agents that do real work,,1581,corpus
+openai,openai-09,blog,https://developers.openai.com/blog/designing-failover-across-openai-model-providers,Designing failover across OpenAI model providers,,1987,corpus
+openai,openai-10,blog,https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra,Rethinking skills and prompts for GPT-6 Astra,,1022,corpus
+openai,openai-11,blog,https://developers.openai.com/blog/15-lessons-building-chatgpt-apps,15 lessons learned building ChatGPT Apps,,2519,corpus
+openai,openai-12,blog,https://developers.openai.com/blog/one-year-of-responses,From prompts to products: One year of Responses,,2167,corpus
+google,google-01,tutorial,https://developers.google.com/machine-learning/crash-course/llm,Introduction to Large Language Models,,1100,corpus
+google,google-02,blog,https://research.google/blog/coherent-long-form-video-generation/,Automating coherent long-form video generation,,2197,heldout
+google,google-03,blog,https://research.google/blog/thinking-to-recall-how-reasoning-unlocks-parametric-knowledge-in-llms/,Thinking to recall: How reasoning unlocks parametric knowledge in LLMs,,1516,corpus
+google,google-04,blog,https://research.google/blog/empty-shelves-or-lost-keys-recall-is-the-bottleneck-for-parametric-factuality/,Empty shelves or lost keys? Recall is the bottleneck for parametric factuality,,1729,corpus
+google,google-05,blog,https://research.google/blog/towards-demystifying-the-creativity-of-diffusion-models/,Towards demystifying the creativity of diffusion models,,1534,corpus
+google,google-06,blog,https://research.google/blog/bypassing-inference-bottlenecks-accelerating-complex-ai-search-with-retrieve-for-train/,Bypassing inference bottlenecks: Accelerating complex AI search with Retrieve-for-Train,,1734,corpus
+google,google-07,blog,https://research.google/blog/the-sleep-framework-a-new-way-for-llms-to-retain-knowledge-in-continual-learning/,The sleep framework: A new way for LLMs to retain knowledge in continual learning,,1374,corpus
+deepmind,deepmind-01,blog,https://deepmind.google/blog/alphageometry-an-olympiad-level-ai-system-for-geometry/,AlphaGeometry: An Olympiad-level AI system for geometry,2024-01-17,1230,corpus
+deepmind,deepmind-02,blog,https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/,AlphaEvolve: A Gemini-powered coding agent for designing advanced algorithms,2025-05-14,1295,corpus
+deepmind,deepmind-03,blog,https://deepmind.google/blog/facts-grounding-a-new-benchmark-for-evaluating-the-factuality-of-large-language-models/,FACTS Grounding: A new benchmark for evaluating the factuality of large language models,2024-12-17,817,corpus
+deepmind,deepmind-04,blog,https://deepmind.google/blog/specifying-ai-safety-problems-in-simple-environments/,Specifying AI safety problems in simple environments,2017-11-28,895,corpus
+deepmind,deepmind-05,blog,https://deepmind.google/blog/differentiable-neural-computers/,Differentiable neural computers,2016-10-12,1533,corpus
+deepmind,deepmind-06,blog,https://deepmind.google/blog/understanding-agent-cooperation/,Understanding Agent Cooperation,2017-02-02,903,corpus
+deepmind,deepmind-07,blog,https://deepmind.google/blog/going-beyond-average-for-reinforcement-learning/,Going beyond average for reinforcement learning,2017-07-24,1023,corpus
+google,google-08,tutorial,https://developers.google.com/machine-learning/guides/rules-of-ml,Rules of Machine Learning: Best Practices for ML Engineering,,9451,corpus
+google,google-09,tutorial,https://developers.google.com/machine-learning/guides/good-data-analysis,Good Data Analysis,,4005,corpus
+google,google-10,tutorial,https://web.dev/learn/ai/prompt-engineering,Prompt engineering,,1472,corpus
+google,google-11,tutorial,https://web.dev/learn/ai/evaluation-driven-development,Evaluation-driven development,,1377,corpus
+google,google-12,tutorial,https://web.dev/learn/ai/responsibility,AI governance: Build responsibly,,2266,corpus
+deepmind,deepmind-08,blog,https://deepmind.google/blog/prefrontal-cortex-as-a-meta-reinforcement-learning-system/,Prefrontal cortex as a meta-reinforcement learning system,2018-05-14,1089,corpus
+deepmind,deepmind-09,blog,https://deepmind.google/blog/graphcast-ai-model-for-faster-and-more-accurate-global-weather-forecasting/,GraphCast: AI model for faster and more accurate global weather forecasting,2023-11-14,1259,corpus
+deepmind,deepmind-10,blog,https://deepmind.google/blog/muzero-alphazero-and-alphadev-optimizing-computer-systems/,"MuZero, AlphaZero, and AlphaDev: Optimizing computer systems",2023-06-12,1026,heldout
+deepmind,deepmind-11,blog,https://deepmind.google/blog/how-alphachip-transformed-computer-chip-design/,How AlphaChip transformed computer chip design,2024-09-26,1277,corpus
+deepmind,deepmind-12,blog,https://deepmind.google/blog/interpreting-deep-neural-networks-using-cognitive-psychology/,Interpreting Deep Neural Networks using Cognitive Psychology,2017-06-27,1210,corpus

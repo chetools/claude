@@ -43,8 +43,11 @@ def load(path):
     return BeautifulSoup(raw, "lxml")
 
 
+BOILERPLATE_RE = re.compile(r"Stay organized with collections\s*Save and categorize content based on your preferences\.?")
+
+
 def norm(text):
-    return re.sub(r"\s+", " ", text).strip()
+    return re.sub(r"\s+", " ", BOILERPLATE_RE.sub(" ", text)).strip()
 
 
 def meta_content(soup, *names):
@@ -214,10 +217,76 @@ def cmd_add(args):
     return 0
 
 
+def count_words(body):
+    return sum(len(b.split()) for b in body.splitlines()
+               if not b.startswith("# ") and not b.startswith("CAPTION: "))
+
+
+def write_rows(rows):
+    with open(CSV_PATH, "w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, fieldnames=FIELDS)
+        w.writeheader()
+        w.writerows(rows)
+
+
+def cmd_drop(urls):
+    rows = read_rows()
+    keep, gone = [], []
+    for r in rows:
+        (gone if r["url"] in urls else keep).append(r)
+    for r in gone:
+        path = os.path.join(RAW_DIR, r["id"] + ".txt")
+        if os.path.exists(path):
+            os.remove(path)
+        print("DROP " + r["id"] + " " + r["url"])
+    missing = set(urls) - {r["url"] for r in gone}
+    if missing:
+        sys.exit("not listed: " + ", ".join(sorted(missing)))
+    write_rows(keep)
+    return 0
+
+
+def cmd_sanitize():
+    """Strip the boilerplate line, recount words, renumber ids per org in CSV order."""
+    rows = read_rows()
+    counters, new_rows, moves = {}, [], []
+    for r in rows:
+        org = r["org"]
+        counters[org] = counters.get(org, 0) + 1
+        new_id = "%s-%02d" % (org, counters[org])
+        old_path = os.path.join(RAW_DIR, r["id"] + ".txt")
+        with open(old_path, encoding="utf-8") as fh:
+            text = fh.read()
+        text = "\n".join(BOILERPLATE_RE.sub("", line).strip() for line in text.splitlines())
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        text = "\n".join(line for line in text.split("\n") if not re.fullmatch(r"#\s*", line))
+        r = dict(r)
+        r["title"] = norm(BOILERPLATE_RE.sub(" ", r["title"]))
+        r["words"] = str(count_words(text))
+        r["id"] = new_id
+        moves.append((old_path, os.path.join(RAW_DIR, new_id + ".txt"), text))
+        new_rows.append(r)
+    # rename through temporary names so no id collides with an old one
+    for old, _, _ in moves:
+        os.rename(old, old + ".tmp")
+    for old, new, text in moves:
+        with open(new, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        os.remove(old + ".tmp")
+    write_rows(new_rows)
+    for r in new_rows:
+        print("%s %s words %s | %s" % (r["id"], r["words"], r["kind"], r["title"]))
+    return 0
+
+
 def main(argv):
     if len(argv) >= 2 and argv[0] == "links":
         cmd_links(argv[1], argv[2])
         return 0
+    if argv and argv[0] == "drop":
+        return cmd_drop(argv[1:])
+    if argv and argv[0] == "sanitize":
+        return cmd_sanitize()
     p = argparse.ArgumentParser()
     sub = p.add_subparsers(dest="cmd", required=True)
     a = sub.add_parser("add")

@@ -1,0 +1,177 @@
+field,rank,role,arxiv,s2id,year,citations,title
+Physics,1,corpus,cond-mat/0410550,c92bd747a97eeafdb164985b0d044caa1dc6e73e,2004,60303,Electric Field Effect in Atomically Thin Carbon Films
+Physics,2,corpus,cond-mat/0702595,7aa80a53314affc1a6b83d5fccf96fb77568cbd6,2007,38263,The rise of graphene.
+Physics,3,corpus,2006.11239,5c126ae3421f05768d8edd97ecd44b1364e2c99a,2020,37318,Denoising Diffusion Probabilistic Models
+Physics,4,corpus,0906.2569,c5b1324b388e12d6c856460b955b3124d075e386,2009,26854,QUANTUM ESPRESSO: a modular and open-source software project for quantum simulations of materials
+Physics,5,corpus,0803.0476,274a4b1b7ef7811c5cbf9a2127b7dbd21244122a,2008,21150,Fast unfolding of communities in large networks
+Physics,6,corpus,cond-mat/0106096,dce8146987557735a19771aefa1f027211a2c275,2001,20341,Statistical mechanics of complex networks
+Physics,7,corpus,cond-mat/0509330,228e604ea7c1333a99663b6b547cf47b98e721e7,2005,19168,Two-dimensional gas of massless Dirac fermions in graphene
+Physics,8,corpus,0803.4060,4dcf1ba0e71f692fac74ba0343a97f1c38e4a0d4,2007,17313,Canonical sampling through velocity rescaling.
+Physics,9,corpus,math/0409186,c1180048929ed490ab25e0e612f8f7c3d7196450,2004,16685,Robust uncertainty principles: exact signal reconstruction from highly incomplete frequency information
+Physics,10,corpus,cond-mat/0308217,08b39cbabc2c5b764a85a0193296f83e23a62934,2003,14263,Finding and evaluating community structure in networks.
+Physics,11,corpus,cond-mat/0606284,ddeb1c116cecd14f1065c76599509de094e18420,2006,13457,Raman spectrum of graphene and graphene layers.
+Physics,12,corpus,physics/0602124,2a91c8ff11a828209f10714cfc46fd929a51e9dc,2006,12636,Modularity and community structure in networks.
+Physics,13,heldout,1004.0546,3325546dedc6745b1cc2373d99f0ab4ab67d3dac,2010,12157,Atomically thin MoS₂: a new direct-gap semiconductor.
+Physics,14,heldout,cond-mat/0509355,bce3dbd69273ba6a9fa2024427bf7a849c7477c6,2005,11930,Experimental observation of the quantum Hall effect and Berry's phase in graphene
+Physics,15,corpus,0705.0003,54a6cc491f38879309c915d44f10aef3b1a189bd,2007,11860,XO-2b: Transiting Hot Jupiter in a Metal-rich Common Proper Motion Binary
+Physics,16,corpus,0906.0612,9be428c9383d47b86570b1b9fc20faf006346c5d,2009,11788,Community detection in graphs
+Physics,17,corpus,2507.01682,efa06fd0a0762fbf3ce6e105f2c61296dc54a898,2000,11391,Negative refraction makes a perfect lens
+Physics,18,corpus,1307.6212,5013dd4a2551df4975145c234339d7fb94ecec7d,2013,11321,Astropy: A community Python package for astronomy
+Physics,19,corpus,1503.03585,2dcef55a07f8607a819c21fe84131ea269cc2e3c,2015,11181,Deep Unsupervised Learning using Nonequilibrium Thermodynamics
+Physics,20,corpus,0905.1712,4ffe66b451efaf9b55dd5d8f41cb28eee4655854,2009,10907,Large-Area Synthesis of High-Quality and Uniform Graphene Films on Copper Foils
+Physics,21,corpus,cond-mat/0503533,cecdae5c0b63442d31d4c73da63a8046773526db,2005,10839,Two-dimensional atomic crystals.
+Physics,22,corpus,1202.3665,d4b60fb779eeecc9a91c309320a08bd45eeeda7e,2012,10542,emcee: The MCMC Hammer
+Mathematics,1,corpus,1412.6980,a6cb366736791bcccc5c8639de5a8f9636bf87e8,2014,174575,Adam: A Method for Stochastic Optimization
+Mathematics,2,heldout,1406.5823,9b536c7b0f45d4b512f337d0acda09ca3e4cd953,2014,90688,Fitting Linear Mixed-Effects Models Using lme4
+Mathematics,3,corpus,1603.02754,26bc9195c6343e4d7f434dd65b4ad67efe2be27a,2016,65700,XGBoost: A Scalable Tree Boosting System
+Mathematics,4,corpus,1912.01703,3c8a456509e6c0805354bd40a35e3f2dbf8069b1,2019,57653,"PyTorch: An Imperative Style, High-Performance Deep Learning Library"
+Mathematics,5,corpus,1705.07874,442e10a3c6640ded9408622005e3c2a8906ce4c2,2017,44983,A Unified Approach to Interpreting Model Predictions
+Mathematics,6,corpus,2106.01946,0b14178e7d79ac426d0a39700e1ac8b2c6f2e752,2010,41636,Convex optimization
+Mathematics,7,corpus,1609.02907,36eff562f65125511b5dfab68ce7f7a943c27478,2016,38483,Semi-Supervised Classification with Graph Convolutional Networks
+Mathematics,8,corpus,1310.4546,87f40e6f3022adbc1f1905e3e506abad05a9964f,2013,36650,Distributed Representations of Words and Phrases and their Compositionality
+Mathematics,9,heldout,1106.1813,8cb44f06586f609a29d9b496cc752ec01475dffe,2002,33319,SMOTE: Synthetic Minority Over-sampling Technique
+Mathematics,10,corpus,1409.0473,fa72afa9b2cbc8f0d7b05d52548906610ffbb9c5,2014,30741,Neural Machine Translation by Jointly Learning to Align and Translate
+Mathematics,11,corpus,1710.10903,33998aff64ce51df8dee45989cdca4b6b1329ec4,2017,29626,Graph Attention Networks
+Mathematics,12,corpus,1406.1078,0b544dfe355a5070b60986319a3f51fb45d1348e,2014,28302,Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation
+Mathematics,13,corpus,1910.10683,6c4b76232bb72897685d19b3d264c6ee3005bc2b,2019,28194,Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer
+Mathematics,14,corpus,1503.02531,0c908739fbff75f03469d13d4a1a07de3414ee19,2015,27469,Distilling the Knowledge in a Neural Network
+Mathematics,15,corpus,1905.11946,4f2eda8077dc7a69bb2b4e0a1a086cf054adb3f9,2019,27289,EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks
+Mathematics,16,corpus,2002.05709,7af72a461ed7cda180e7eab878efd5f35d79bbf4,2020,27207,A Simple Framework for Contrastive Learning of Visual Representations
+Mathematics,17,corpus,2002.07217,ef4f5a50837a7c1b3e87b9300ffc7ba00d461a0f,2020,25762,Decision-Making with Auto-Encoding Variational Bayes
+Mathematics,18,corpus,1602.04938,c0883f5930a232a9c1ad601c978caede29155979,2016,25582,“Why Should I Trust You?”: Explaining the Predictions of Any Classifier
+Mathematics,19,corpus,1412.6572,bee044c8e8903fb67523c1f8c105ab4718600cdb,2014,23647,Explaining and Harnessing Adversarial Examples
+Mathematics,20,corpus,1706.02216,6b7d6e6416343b2a122f8416e69059ce919026ef,2017,21961,Inductive Representation Learning on Large Graphs
+Mathematics,21,corpus,2407.21783,9da8ea6466d7142703d8771d8dcea44e19304abb,2024,20536,The Llama 3 Herd of Models
+Mathematics,22,corpus,1610.02357,5b6ec746d309b165f9f9def873a2375b6fb40f3d,2016,18978,Xception: Deep Learning with Depthwise Separable Convolutions
+Computer Science,1,corpus,1512.03385,2c03df8b48bf3fa39054345bafabfeff15bfd11d,2015,245842,Deep Residual Learning for Image Recognition
+Computer Science,2,corpus,1706.03762,204e3073870fae3d05bcbc2f6a8e263d9b72e776,2017,200819,Attention is All you Need
+Computer Science,3,corpus,1810.04805,df2b0e26d0599ce3e70df8a9da02e51594e0e992,2019,124833,BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding
+Computer Science,4,corpus,1409.1556,eb42cf88027de515750f230b23b1a057dc782108,2014,116148,Very Deep Convolutional Networks for Large-Scale Image Recognition
+Computer Science,5,corpus,1505.04597,6364fdaa0a0eccd823a779fcdd489173f938e91a,2015,104465,U-Net: Convolutional Networks for Biomedical Image Segmentation
+Computer Science,6,corpus,1201.0490,ad4fd2c149f220a62441576af92a8a669fe81246,2011,97606,Scikit-learn: Machine Learning in Python
+Computer Science,7,corpus,1506.01497,424561d8585ff8ebce7d5d07de8dbf7aae5e7270,2015,77151,Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks
+Computer Science,8,corpus,2010.11929,268d347e8a55b5eb82fb5e7d2f800e33c75ab18a,2020,73344,An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale
+Computer Science,9,corpus,2005.14165,90abbc2cf38462b954ae1b772fac9532e2ccd8b0,2020,65929,Language Models are Few-Shot Learners
+Computer Science,10,corpus,2103.00020,6f870f7f02a8c59c3e23f407f3ef00dd1dcf8fc4,2021,59251,Learning Transferable Visual Models From Natural Language Supervision
+Computer Science,11,corpus,1405.0312,71b7178df5d2b112d07e45038cb5637208659ff7,2014,57191,Microsoft COCO: Common Objects in Context
+Computer Science,12,corpus,1506.02640,f8e79ac0ea341056ef20f2616628b3e964764cfd,2015,49552,"You Only Look Once: Unified, Real-Time Object Detection"
+Computer Science,13,corpus,1409.4842,e15cf50aa89fee8535703b9f9512fca5bfc43327,2014,49149,Going deeper with convolutions
+Computer Science,14,corpus,1502.03167,995c5f5e62614fcb4d2796ad2faab969da51713e,2015,48568,Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift
+Computer Science,15,corpus,1608.06993,5694e46284460a648fe29117cbc55f6c9be3fa3c,2016,45997,Densely Connected Convolutional Networks
+Computer Science,16,heldout,1409.0575,e74f9b7f8eec6ba4704c206b93bc8079af3da4bd,2014,44443,ImageNet Large Scale Visual Recognition Challenge
+Computer Science,17,heldout,1411.4038,6fc6803df5f9ae505cae5b2f178ade4062c768d0,2014,43535,Fully convolutional networks for semantic segmentation
+Computer Science,18,corpus,1709.01507,fb37561499573109fc2cebb6a7b08f44917267dd,2017,37793,Squeeze-and-Excitation Networks
+Computer Science,19,corpus,2103.14030,c8b25fab5608c3e033d34b4483ec47e68ba109b7,2021,37366,Swin Transformer: Hierarchical Vision Transformer using Shifted Windows
+Computer Science,20,corpus,1512.02325,4d7a9197433acbfb24ef0e9d0f33ed1699e4a5b0,2015,36749,SSD: Single Shot MultiBox Detector
+Computer Science,21,corpus,1301.3781,f6b51c8753a871dc94ff32152c00c01e94f90f09,2013,36061,Efficient Estimation of Word Representations in Vector Space
+Computer Science,22,corpus,1703.06870,1a0912bb76777469295bb2c059faee907e7f3258,2017,33787,Mask R-CNN
+Chemistry,1,corpus,cond-mat/0104182,cb8d2615ab2a7e1321387847ab01940cfadef702,2001,10199,The SIESTA method for ab initio order-N materials simulation
+Chemistry,2,corpus,1704.01212,e24cdf73b3e7e590c2fe5ecac9ae8aa983801367,2017,9925,Neural Message Passing for Quantum Chemistry
+Chemistry,3,corpus,cond-mat/0610809,d0cec50c2ad5063c311e121944d4c123341ad22a,2006,7623,Detection of individual gas molecules adsorbed on graphene.
+Chemistry,4,corpus,0909.0948,abcacba645152530b080db0fda434a5664936df6,2009,7034,The chemical composition of the Sun
+Chemistry,5,corpus,0805.2850,f8e208c67545cb9f66185ecfbbbe484721e58a04,2008,5889,High-yield production of graphene by liquid-phase exfoliation of graphite.
+Chemistry,6,corpus,cond-mat/0611399,10e1607a040e305eca20ad891bd9ba3c28efe102,2006,5648,Quantum Spin Hall Effect and Topological Phase Transition in HgTe Quantum Wells
+Chemistry,7,corpus,1703.05892,abedf9ed6c4d4dcba4f65a3a8acab82ae5343d9e,2017,5292,Layer-dependent ferromagnetism in a van der Waals crystal down to the monolayer limit
+Chemistry,8,corpus,cond-mat/0208352,0cfd8229fcd87c6f9545d9cce08d882f93e9eacd,2002,5219,Escaping free-energy minima
+Chemistry,9,corpus,1108.2331,7a0aee520d442c669703a6be004de816932843fc,2011,4974,Co₃O₄ nanocrystals on graphene as a synergistic catalyst for oxygen reduction reaction.
+Chemistry,10,heldout,cond-mat/0306203,14ffa269871af1f52191e52193b12ca6fc3b977f,2003,4952,Climbing the density functional ladder: nonempirical meta-generalized gradient approximation designed for molecules and solids.
+Chemistry,11,corpus,0710.0582,a38e5bfdbbd8e204c42b6180f041231fb935a3ad,2007,4851,Quantum Spin Hall Insulator State in HgTe Quantum Wells
+Chemistry,12,corpus,1104.2966,769190f3dc630a7e5db1be546b8c3d051eb6fe26,2011,4620,MoS2 nanoparticles grown on graphene: an advanced catalyst for the hydrogen evolution reaction.
+Chemistry,13,heldout,cond-mat/0209244,a33bbacc55b69adf894bbb1b423b9b4c5b031ae0,2002,4195,Hierarchical Organization of Modularity in Metabolic Networks
+Chemistry,14,corpus,2311.12022,210b0a3d76e93079cc51b03c4115fde545eea966,2023,3855,GPQA: A Graduate-Level Google-Proof Q&A Benchmark
+Chemistry,15,corpus,1610.02415,88427d2143d4cff357c3b393ae7580a7b6e19940,2016,3795,Automatic Chemical Design Using a Data-Driven Continuous Representation of Molecules
+Chemistry,16,corpus,1509.09292,5d1bfeed240709725c78bc72ea40e55410b373dc,2015,3775,Convolutional Networks on Graphs for Learning Molecular Fingerprints
+Chemistry,17,corpus,0810.4706,7faca99722617b0df24db60bb126a15cd004f10b,2008,3749,Control of Graphene's Properties by Reversible Hydrogenation: Evidence for Graphane
+Chemistry,18,corpus,1511.05493,492f57ee9ceb61fb5a47ad7aebfec1121887a175,2015,3734,Gated Graph Sequence Neural Networks
+Chemistry,19,corpus,1105.0175,649a040e575d46a27bc2d37b5fc0399030984f5f,2011,3512,Quantifying defects in graphene via Raman spectroscopy at different excitation energies.
+Chemistry,20,corpus,1605.08829,688a57efe8dd235ea11843193c50ec60de4793ec,2013,3508,Experimental Observation of the Quantum Anomalous Hall Effect in a Magnetic Topological Insulator
+Chemistry,21,corpus,0807.4959,01c69b292ecd056c6b53c2a8fb939e4556ddc308,2008,3421,PEGylated Nano-Graphene Oxide for Delivery of Water Insoluble Cancer Drugs
+Chemistry,22,corpus,cond-mat/0410240,644710beb273aed55887bd0dc3f8043be8b5124d,2004,3286,Ultrathin epitaxial graphite: 2D electron gas properties and a route toward graphene-based nanoelectronics.
+Engineering,1,corpus,2112.10752,f58acfeb022ba15282ec5fc047c98010311fa9da,2021,28752,High-Resolution Image Synthesis with Latent Diffusion Models
+Engineering,2,corpus,1704.04861,3647d6d0f151dc05626449ee09cc7bce55be497e,2017,26721,MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications
+Engineering,3,corpus,2004.10934,2a6f7f0d659c5f7dcd665064b71e7b751592c80e,2020,16660,YOLOv4: Optimal Speed and Accuracy of Object Detection
+Engineering,4,corpus,1706.02413,8674494bd7a076286b905912d26d47f7501c4046,2017,15479,PointNet++: Deep Hierarchical Feature Learning on Point Sets in a Metric Space
+Engineering,5,corpus,1604.01685,c8c494ee5488fe20e0aa01bddf3fc4632086d654,2016,14474,The Cityscapes Dataset for Semantic Urban Scene Understanding
+Engineering,6,corpus,2105.05233,64ea8f180d0682e6c18d1eb688afdb2027c02794,2021,13656,Diffusion Models Beat GANs on Image Synthesis
+Engineering,7,corpus,1603.04467,9c9d7247f8c51ec5a02b0d911d1d7b9e8160495d,2016,12025,TensorFlow: Large-Scale Machine Learning on Heterogeneous Distributed Systems
+Engineering,8,corpus,1207.0203,72c4d8b64a9959ea45677ca1955d3491ef0f1c62,2012,11986,"Internet of Things (IoT): A vision, architectural elements, and future directions"
+Engineering,9,corpus,1510.00149,642d0f49b7826adcf986616f4af77e736229990f,2015,10748,"Deep Compression: Compressing Deep Neural Network with Pruning, Trained Quantization and Huffman Coding"
+Engineering,10,corpus,1905.02244,5e19eba1e6644f7c83f607383d256deea71f87ae,2019,10730,Searching for MobileNetV3
+Engineering,11,corpus,1807.10165,a6876ea89e677a7cc42dd43f27165ff6fd414de5,2018,9958,UNet++: A Nested U-Net Architecture for Medical Image Segmentation
+Engineering,12,heldout,2006.11477,49a049dc85e2380dde80501a984878341dd8efdf,2020,9847,wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations
+Engineering,13,corpus,1812.06127,1284ed4bf6a043ecf8cebca09e4811f1e3b83b65,2018,9538,Federated Optimization in Heterogeneous Networks
+Engineering,14,corpus,2012.07436,5b9d8bcc46b766b47389c912a8e026f81b91b0d8,2020,9489,Informer: Beyond Efficient Transformer for Long Sequence Time-Series Forecasting
+Engineering,15,corpus,1903.11027,9e475a514f54665478aac6038c262e5a6bac5e64,2019,9386,nuScenes: A Multimodal Dataset for Autonomous Driving
+Engineering,16,heldout,2212.04356,a02fbaf22237a1aedacb1320b6007cd70c1fe6ec,2022,9364,Robust Speech Recognition via Large-Scale Weak Supervision
+Engineering,17,corpus,1608.03981,0c00a328fa7cd56ee60338c54e89bd48310db80b,2016,8909,Beyond a Gaussian Denoiser: Residual Learning of Deep CNN for Image Denoising
+Engineering,18,corpus,1602.07360,592d2e65489f23ebd993dbdc0c84eda9ac8aadbe,2016,8758,SqueezeNet: AlexNet-level accuracy with 50x fewer parameters and <1MB model size
+Engineering,19,corpus,1801.07829,e1799aaf23c12af6932dc0ef3dfb1638f01413d1,2018,8147,Dynamic Graph CNN for Learning on Point Clouds
+Engineering,20,corpus,math/0503066,915df1a8dda45221204f3ecbf70b07d8b34d7ba8,2005,7858,Stable signal recovery from incomplete and inaccurate measurements
+Engineering,21,corpus,1911.09070,41c67d04be2d1632c0d3b0880c21c9fe797cdab8,2019,7743,EfficientDet: Scalable and Efficient Object Detection
+Engineering,22,corpus,1707.02921,7ba5d3808e117e7a68dc40331ce1d483ceeedcb2,2017,7682,Enhanced Deep Residual Networks for Single Image Super-Resolution
+Materials Science,1,corpus,1506.08498,3211538093dba303115d3ab6ef7719b53aac8aad,2015,10247,First principles phonon calculations in materials science
+Materials Science,2,corpus,0802.2389,7955d79a044057eff9d5ccff0611e112a00bad95,2008,7655,Ultrahigh electron mobility in suspended graphene
+Materials Science,3,corpus,1401.4117,1e947c571541ecf66e7c8b691b172942d6f99d4b,2014,7523,Black phosphorus field-effect transistors.
+Materials Science,4,corpus,0912.5485,0fcd399b8fd3edd168178d0be016561a7d507621,2009,6758,Roll-to-roll production of 30-inch graphene films for transparent electrodes.
+Materials Science,5,corpus,1709.10010,4e065bbd2c5125cc07beaf1dd5bfd20215d57485,2017,6708,Advanced capabilities for materials modelling with Quantum ESPRESSO
+Materials Science,6,corpus,1005.4917,682f75de0b7c2c3df1bdba665884825a1936c2b8,2010,6648,Boron nitride substrates for high-quality graphene electronics.
+Materials Science,7,heldout,0803.1670,449e80837d1afe16ae96b58c4afd62136803a9e7,2008,6515,Perfect metamaterial absorber.
+Materials Science,8,corpus,1401.4133,097786ba89560b21027496ff7103186670233a8f,2014,4782,Phosphorene: an unexplored 2D semiconductor with a high hole mobility.
+Materials Science,9,corpus,cond-mat/0701379,200c8711fed74965e3e944c635c6d4f4e88dcaf5,2007,4763,The structure of suspended graphene sheets
+Materials Science,10,corpus,1802.00553,1b77e7c4f1073e5a50cc5e3344a2dc6b2111a0fb,2018,4697,Correlated insulator behaviour at half-filling in magic-angle graphene superlattices
+Materials Science,11,corpus,1005.2509,a086a079877e4e06e1802cf72e2e2aa1622055cc,2010,4670,Anomalous lattice vibrations of single- and few-layer MoS2.
+Materials Science,12,corpus,cond-mat/0702511,92266f110426c6bfcd4eb362399d02bcc9c7db49,2007,4532,Energy band-gap engineering of graphene nanoribbons.
+Materials Science,13,corpus,1703.05753,e81c4f9554736915a68984f3c7ed65368e3f6314,2017,4444,Discovery of intrinsic ferromagnetism in two-dimensional van der Waals crystals
+Materials Science,14,corpus,2003.12039,3230e2d6b4671cc03974af2219c6d3270e6fac70,2020,4432,RAFT: Recurrent All-Pairs Field Transforms for Optical Flow
+Materials Science,15,corpus,cond-mat/0611602,b2ea5b492f4b13604258a968407854b474da82c1,2006,4242,Energy gaps in graphene nanoribbons.
+Materials Science,16,corpus,1203.2875,9782a75d3377cdcdc7f223bbac8a5be4128bcbe7,2012,3823,Spin-Torque Switching with the Giant Spin Hall Effect of Tantalum
+Materials Science,17,corpus,1112.3144,87809db4bc0d63da6a0f30bea26b66513767ccae,2011,3806,Coupled spin and valley physics in monolayers of MoS2 and other group-VI dichalcogenides.
+Materials Science,18,corpus,1205.1822,6ab23963ca44f01fe62a33b1642db43f67185ce8,2012,3705,Control of valley polarization in monolayer MoS2 by optical helicity.
+Materials Science,19,heldout,1704.05018,5676184605224be5d89bbf18ef8b992bea6f768f,2017,3564,Hardware-efficient variational quantum eigensolver for small molecules and quantum magnets
+Materials Science,20,corpus,0709.1174,55b8d7f025f782cd137870bdeafdcdb71c5b038b,2007,3482,Monitoring dopants by Raman scattering in an electrochemically top-gated graphene transistor.
+Materials Science,21,corpus,1102.1358,215c9bb6bcd705c7710077830fda07408fefd3ac,2011,3445,Van der Waals density functionals applied to solids
+Materials Science,22,corpus,1410.0065,022c04080eb0a21d65b9bfc944aa73a25c590482,2014,3426,Necessary and Sufficient Elastic Stability Conditions in Various Crystal Systems
+Biology,1,corpus,1305.3347,cdbe8a265ef4bd8350722d2209fc6cc6290da1b3,2013,24990,featureCounts: an efficient general purpose program for assigning sequence reads to genomic features
+Biology,2,corpus,1708.01492,a47483dca56d93dabc54c8d49a5d03c6fb1e9771,2017,14236,Minimap2: pairwise alignment for nucleotide sequences
+Biology,3,corpus,2012.10295,5a2dddce4aaaf6bff6c56d5f0dfdc4db66159369,2020,14149,Twelve years of SAMtools and BCFtools
+Biology,4,corpus,1303.3997,74574ee09030e8aadb48fa349eb9b054e2f95ceb,2013,13590,"Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM"
+Biology,5,heldout,math/0610840,4797ce59f8a8b0cf9af34d536e70ab9fa9e25d9f,2006,13233,Estimating the Relative Order of Speciation or Coalescence Events on a Given Phylogeny
+Biology,6,corpus,1410.4803,91e0bb69106b4e8620a1f4ee1d98e0046baafed4,2014,12123,Second-generation PLINK: rising to the challenge of larger and richer datasets
+Biology,7,corpus,1409.7208,6238d517da8cbf5477d302f4879c0930c91de887,2014,9049,MEGAHIT: an ultra-fast single-node solution for large and complex metagenomics assembly via succinct de Bruijn graph
+Biology,8,corpus,cond-mat/0008064,44805aaf4c0415e3b00476e7d873348bd2c01ae5,2000,8634,Error and attack tolerance of complex networks
+Biology,9,corpus,1003.1594,58af6481ed611b0c64592dac94c6626cef226a77,2009,6574,Cuckoo Search via Lévy flights
+Biology,10,corpus,1203.6372,12b0e1d632b523b10de540cd3e66503653d83024,2011,6337,"A statistical framework for SNP calling, mutation discovery, association mapping and population genetical parameter estimation from sequencing data"
+Biology,11,corpus,2106.11799,d7216a4c00b0f525c7e57e433d8fe0b91db9ff53,2021,5784,"BUSCO Update: Novel and Streamlined Workflows along with Broader and Deeper Phylogenetic Coverage for Scoring of Eukaryotic, Prokaryotic, and Viral Genomes"
+Biology,12,corpus,1701.05940,8f63eed1c6aef4e96a08281563c2305ff55e7ab9,2017,5535,ImageJ2: ImageJ for the next generation of scientific image data
+Biology,13,corpus,physics/0506133,afc3a4ce6f2aedfc91a0408547d894e3cf04e4d2,2005,5492,Uncovering the overlapping community structure of complex networks in nature and society
+Biology,14,corpus,cond-mat/0105306,5e49e7a0a6c6d46a368a4c036bc9e89a0ac4edd5,2001,5326,Lethality and centrality in protein networks
+Biology,15,corpus,1207.3907,4fab3a273af553b17bb099baa0eca3ce6e67f42b,2012,5178,Haplotype-based variant detection from short-read sequencing
+Biology,16,corpus,1611.08024,64a2261b178f09e19a4dbbe5296f9f15cee053e3,2016,5106,EEGNet: a compact convolutional neural network for EEG-based brain–computer interfaces
+Biology,17,heldout,cond-mat/0010278,d1c5900f63f06a17d9f549f0a44037b758499bc8,2000,5085,The large-scale organization of metabolic networks
+Biology,18,corpus,1804.03142,6001895c2fcf69528d01306e9d293d9d2a4cc67b,2018,4811,DeepLabCut: markerless pose estimation of user-defined body parts with deep learning
+Biology,19,corpus,1501.01455,d5cf668d5cd91a144897284951c1629d30ae7544,2001,4625,In silico prediction of protein-protein interactions in human macrophages
+Biology,20,corpus,1603.01360,f5a7da72496e2ca8edcd9f9123773012c010cfc6,2016,4510,Neural Architectures for Named Entity Recognition
+Biology,21,corpus,1509.01845,f67fd9dbd7e9c14a440bb5bee8a0fb71551d0f7b,2015,4378,"piecewiseSEM: Piecewise structural equation modelling in r for ecology, evolution, and systematics"
+Biology,22,corpus,1903.10676,156d217b0a911af97fa1b5a71dc909ccef7a8028,2019,4244,SciBERT: A Pretrained Language Model for Scientific Text
+Environmental Science,1,corpus,1506.04214,f9c990b1b5724e50e5632b94fdb7484ece8a6ce7,2015,10364,Convolutional LSTM Network: A Machine Learning Approach for Precipitation Nowcasting
+Environmental Science,2,corpus,1711.03938,ebf0615fc4d98cf1dbe527c79146ce1e50dce9af,2017,7528,CARLA: An Open Urban Driving Simulator
+Environmental Science,3,corpus,2106.13008,fc46ccb83dc121c33de7ab6bdedab7d970780b2f,2021,6119,Autoformer: Decomposition Transformers with Auto-Correlation for Long-Term Series Forecasting
+Environmental Science,4,corpus,1509.03580,5d150cec2775f9bc863760448f14104cc8f42368,2015,5724,Discovering governing equations from data by sparse identification of nonlinear dynamical systems
+Environmental Science,5,heldout,1604.03169,e30d9b8ce108d982169621b88a5e3fb69fec70e1,2016,4886,Using Deep Learning for Image-Based Plant Disease Detection
+Environmental Science,6,corpus,1711.06396,80f5ee8578ee76e2c17824f211762ffec7e029d4,2017,4793,VoxelNet: End-to-End Learning for Point Cloud Based 3D Object Detection
+Environmental Science,7,corpus,1912.04838,8406903fd2f0eb25349bf071ccfaae3947e2a9cd,2019,4634,Scalability in Perception for Autonomous Driving: Waymo Open Dataset
+Environmental Science,8,corpus,1607.00217,f20c3afa3a2d752ec2e30199a64443c7f75a8b25,2016,4328,Climatologies at high resolution for the earth’s land surface areas
+Environmental Science,9,corpus,1012.0206,84e27641ed70c5f62d215c6f7e474a238bdca0ee,2009,4298,Catastrophic cascade of failures in interdependent networks
+Environmental Science,10,heldout,1311.3618,18c125ce0f64e85577f7d30132cf0e92ec664bf4,2013,3944,Describing Textures in the Wild
+Environmental Science,11,corpus,1906.02243,d6a083dad7114f3a39adc65c09bfbb6cf3fee9ea,2019,3912,Energy and Policy Considerations for Deep Learning in NLP
+Environmental Science,12,corpus,1711.10398,8ecf9e6428edd33986e8c6a143870e57142fd5a1,2017,3211,DOTA: A Large-Scale Dataset for Object Detection in Aerial Images
+Environmental Science,13,corpus,1601.07661,a127899f71b6ebc03521d2f9538335ebf1f29d78,2016,3187,DehazeNet: An End-to-End System for Single Image Haze Removal
+Environmental Science,14,corpus,1703.07015,b4ebfebb47e7b61d674747e378fd8eb4516e7716,2017,3109,Modeling Long- and Short-Term Temporal Patterns with Deep Neural Networks
+Environmental Science,15,corpus,physics/0607100,39433dcfe25535df4398742432f2fb11330b0097,2006,3100,Resolution limit in community detection
+Environmental Science,16,corpus,1709.00029,9c88c2357abcd58cc330179c1965fe0a8c067ebc,2017,3067,EuroSAT: A Novel Dataset and Deep Learning Benchmark for Land Use and Land Cover Classification
+Environmental Science,17,corpus,1711.10684,f06ff5f719eb9cd939dde8fc9b199b17adcbc75f,2017,2862,Road Extraction by Deep Residual U-Net
+Environmental Science,18,corpus,1709.06158,8337441971f941716a9e525a67f37088eb01fd13,2017,2791,Matterport3D: Learning from RGB-D Data in Indoor Environments
+Environmental Science,19,corpus,1310.0424,702b5b7832f439d024d8fda91358a6bb948f6eee,2013,2667,"Waste Not, Want Not: Why Rarefying Microbiome Data Is Inadmissible"
+Environmental Science,20,corpus,2203.02258,1a1147e174772f88c59c7cc439e3e3571dc0dfa2,2022,2551,Air quality in the New Delhi metropolis under COVID-19 lockdown
+Environmental Science,21,corpus,1605.04619,9887337bc350ff71b2aa0c1c5a137ae0333244e4,2016,2535,De novo assembly of the Aedes aegypti genome using Hi-C yields chromosome-length scaffolds
+Environmental Science,22,corpus,1712.04143,abf75b81b96ff2cd262086675deba55f907108db,2017,2386,Benchmarking Single-Image Dehazing and Beyond
