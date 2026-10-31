@@ -13,7 +13,20 @@ const round = (x) => Math.round(Number(x) * 100) / 100;
 const ALNUM = /[A-Za-z0-9]/;
 
 // Viewer toggles; they stay as set when going back to the list and into the viewer again.
-const opts = { order: 'file', marking: true, anon: false };
+// qsel: ids of the questions shown (and exported); every question by default, reset when the tab is opened.
+const opts = { order: 'file', marking: true, anon: false, qsel: null };
+
+// First words of a question, without markdown or maths, so questions can be told apart in the picker.
+function excerpt(text, n = 90) {
+  const t = String(text || '').replace(/\$\$[\s\S]*?\$\$|\$[^$]*\$/g, '…').replace(/[*_`#>]+/g, '')
+    .replace(/\[\[\d+\]\]/g, '___').replace(/\s+/g, ' ').trim();  // blanks after the markdown clean-up, which drops underscores
+  return t.length > n ? t.slice(0, n - 1).replace(/\s+\S*$/, '') + ' …' : t;
+}
+// Points a student earned on one question (automatic for mc/fill, the teacher's grade for open questions).
+function earnedOn(s, q) {
+  if (q.type === 'open') { const m = (s.manual || {})[q.id]; return m && m.points != null ? Number(m.points) : 0; }
+  const d = (s.detail || {})[q.id]; return d ? Number(d.points) || 0 : 0;
+}
 
 function ensureCss() {
   if (document.querySelector('link[data-sv-css]')) return;
@@ -64,10 +77,15 @@ function buildSub(ctx, s, o, img) {
   if (s.minutes_used != null) add('Time used', s.minutes_used + ' min');
   if (!o.anon) add('Receipt', s.receipt || '');
   if (s.seb_check != null && s.seb_check !== '') add('SEB check', String(s.seb_check));
+  const shown = questions.filter((q) => !o.qsel || o.qsel.has(q.id));
   if (o.marking) {
     const earned = round(Number(s.total) || 0);
     add('Total', `${earned} / ${ctx.max}`);
+    if (shown.length < questions.length) {
+      add('Shown questions', `${round(shown.reduce((t, q) => t + earnedOn(s, q), 0))} / ${round(shown.reduce((t, q) => t + (Number(q.points) || 0), 0))}`);
+    }
   }
+  if (shown.length < questions.length) add('Questions shown', `${shown.length} of ${questions.length}`);
   root.append(h('header', { class: 'sv-head' },
     h('div', { class: 'sv-exam' }, ctx.ex.content.title || ctx.ex.id),
     h('h2', {}, o.anon ? `Student ${N}` : [s.name || '(no name)', h('span', { class: 'sv-id' }, s.student_id || '')],
@@ -84,7 +102,8 @@ function buildSub(ctx, s, o, img) {
   for (const qid of ids) {
     const q = qmap.get(qid);
     if (!q) continue;
-    n++;
+    n++;  // numbers stay those of the full exam when only some questions are shown
+    if (o.qsel && !o.qsel.has(qid)) continue;
     if (o.order === 'seen' && q.type !== lastType) {
       lastType = q.type;
       root.append(h('div', { class: 'sv-section' }, (SECTIONS.find((x) => x[0] === q.type) || [0, q.type])[1]));
@@ -188,6 +207,31 @@ export async function render(body, ex) {
   const root = h('div', { class: 'sv-root' });
   body.append(root);
   const selected = new Set();
+  opts.qsel = new Set(questions.map((q) => q.id));
+
+  async function exportZip(list, btn, status) {
+    if (!opts.qsel.size) { status.textContent = 'No questions selected (see “Questions” in the viewer).'; status.classList.add('bad'); return; }
+    btn.disabled = true; status.textContent = 'Preparing …'; status.classList.remove('bad');
+    try {
+      const names = [...new Set(questions.filter((q) => q.image).map((q) => q.image))];
+      const urls = new Map();
+      await Promise.all(names.map(async (nm) => { try { urls.set(nm, await imageDataUrl(ex.id, nm)); } catch (e) { /* image stays missing */ } }));
+      const css = await viewerCss();
+      const files = {}, used = new Set();
+      for (const s of list) {
+        const el = buildSub(ctx, s, opts, (im, name) => { if (urls.has(name)) im.src = urls.get(name); });
+        const label = opts.anon ? `Student ${ctx.number.get(s.id)}` : `${s.name || ''} (${s.student_id || ''})`;
+        let base = opts.anon ? `student-${ctx.number.get(s.id)}` : fileSafe(s.student_id);
+        let fname = base + '.html';
+        for (let k = 2; used.has(fname.toLowerCase()); k++) fname = `${base}-${k}.html`;
+        used.add(fname.toLowerCase());
+        files[fname] = window.fflate.strToU8(htmlDoc(`${ctx.ex.content.title || ex.id} – ${label}`, css, el.outerHTML));
+      }
+      download(slug(ex.content.title || ex.id) + (opts.anon ? '-submissions-anonymous' : '-submissions') + '.zip', [window.fflate.zipSync(files)], 'application/zip');
+      status.textContent = `${list.length} ${list.length === 1 ? 'file' : 'files'} saved`;
+    } catch (e) { status.textContent = 'Export failed: ' + e.message; status.classList.add('bad'); }
+    btn.disabled = false;
+  }
 
   // ---- list
   function showList() {
@@ -199,6 +243,10 @@ export async function render(body, ex) {
       boxes.forEach((b, i) => (b.checked = selected.has(subs[i].id))); sync();
     } }, 'Select all');
     const count = h('span', { class: 'hint sv-count' });
+    // export from the list: the selected students, or everyone when none is selected (current viewer settings apply)
+    const listStatus = h('span', { class: 'hint sv-status', role: 'status' });
+    const listZip = h('button', { type: 'button', class: 'secondary sv-listzip', title: 'One HTML file per student, with the current viewer settings',
+      onclick: () => exportZip(selected.size ? subs.filter((s) => selected.has(s.id)) : subs, listZip, listStatus) }, 'Download zip');
     const boxes = subs.map((s) => h('input', { type: 'checkbox', class: 'sv-pick', 'aria-label': `Select ${s.name}`, checked: selected.has(s.id),
       onchange: (ev) => { if (ev.target.checked) selected.add(s.id); else selected.delete(s.id); sync(); } }));
     const headBox = h('input', { type: 'checkbox', 'aria-label': 'Select all', class: 'sv-pickall', onchange: (ev) => {
@@ -211,11 +259,12 @@ export async function render(body, ex) {
       selAll.textContent = all ? 'Select none' : 'Select all';
       headBox.checked = all; headBox.indeterminate = !all && selected.size > 0;
       count.textContent = `${selected.size} of ${subs.length} selected`;
+      listZip.textContent = selected.size ? `Download zip (${selected.size})` : 'Download zip (all)';
     }
     root.append(h('div', { class: 'card sv-bar' },
       h('span', {}, h('strong', {}, String(subs.length)), subs.length === 1 ? ' submission' : ' submissions'),
       h('span', { class: 'row sv-actions' }, count, selAll, viewSel,
-        h('button', { type: 'button', class: 'sv-viewall', onclick: () => showViewer(subs) }, 'View all'))));
+        h('button', { type: 'button', class: 'sv-viewall', onclick: () => showViewer(subs) }, 'View all'), listZip, listStatus)));
     const rows = subs.map((s, i) => h('tr', {}, h('td', {}, boxes[i]), h('td', { class: 'nw' }, String(ctx.number.get(s.id))), h('td', {}, s.name),
       h('td', { class: 'nw' }, s.student_id), h('td', { class: 'nw' }, fmtTime(s.submitted_at)),
       h('td', {}, s.late ? h('span', { class: 'badge closed', title: 'Submitted after the end time' }, 'late') : ''),
@@ -236,7 +285,7 @@ export async function render(body, ex) {
     order.value = opts.order;
     const marking = h('input', { type: 'checkbox', class: 'sv-marking', checked: opts.marking, onchange: () => { opts.marking = marking.checked; draw(); } });
     const anon = h('input', { type: 'checkbox', class: 'sv-anon', checked: opts.anon, onchange: () => { opts.anon = anon.checked; draw(); } });
-    const zipBtn = h('button', { type: 'button', class: 'secondary sv-zip', onclick: () => exportZip(zipBtn) }, 'Download zip');
+    const zipBtn = h('button', { type: 'button', class: 'secondary sv-zip', onclick: () => exportZip(list, zipBtn, status) }, 'Download zip');
     const toolbar = h('div', { class: 'sv-toolbar' },
       h('button', { type: 'button', class: 'secondary small sv-back', onclick: showList }, '← List'),
       h('span', { class: 'hint' }, `${list.length} ${list.length === 1 ? 'submission' : 'submissions'}`),
@@ -247,34 +296,30 @@ export async function render(body, ex) {
       h('button', { type: 'button', class: 'secondary sv-print', onclick: () => window.print() }, 'Print / Save as PDF'),
       zipBtn, status);
     const viewer = h('div', { class: 'sv-viewer' });
-    root.append(toolbar, viewer);
+    const printBtn = toolbar.querySelector('.sv-print');
+
+    // question picker: which questions are shown, printed and exported
+    const qsum = h('summary', {});
+    const qboxes = questions.map((q, i) => h('input', { type: 'checkbox', class: 'sv-qpick', value: q.id, checked: opts.qsel.has(q.id),
+      onchange: (ev) => { if (ev.target.checked) opts.qsel.add(q.id); else opts.qsel.delete(q.id); draw(); } }));
+    const setAll = (on) => { questions.forEach((q, i) => { qboxes[i].checked = on; if (on) opts.qsel.add(q.id); else opts.qsel.delete(q.id); }); draw(); };
+    const qpanel = h('details', { class: 'sv-qsel' }, qsum,
+      h('div', { class: 'sv-qlist' },
+        h('div', { class: 'row' }, h('button', { type: 'button', class: 'secondary small', onclick: () => setAll(true) }, 'All'),
+          h('button', { type: 'button', class: 'secondary small', onclick: () => setAll(false) }, 'None')),
+        questions.map((q, i) => h('label', { class: 'sv-qitem' }, qboxes[i],
+          h('span', { class: 'sv-qno' }, `Q${i + 1}`), h('span', { class: 'sv-qtype' }, TYPE_LABEL[q.type] || q.type),
+          h('span', { class: 'sv-qexc' }, excerpt(q.text))))));
+    root.append(toolbar, qpanel, viewer);
 
     function draw() {
       const y = window.scrollY;
-      viewer.replaceChildren(...list.map((s) => buildSub(ctx, s, opts, (im, name) => setImg(im, ex.id, name))));
+      const k = opts.qsel.size;
+      qsum.textContent = `Questions: ${k === questions.length ? 'all ' + k : k + ' of ' + questions.length}`;
+      zipBtn.disabled = printBtn.disabled = !k;
+      viewer.replaceChildren(...(k ? list.map((s) => buildSub(ctx, s, opts, (im, name) => setImg(im, ex.id, name)))
+        : [h('p', { class: 'hint' }, 'No questions selected. Tick at least one question under “Questions”.')]));
       window.scrollTo(0, y);
-    }
-    async function exportZip(btn) {
-      btn.disabled = true; status.textContent = 'Preparing …'; status.classList.remove('bad');
-      try {
-        const names = [...new Set(questions.filter((q) => q.image).map((q) => q.image))];
-        const urls = new Map();
-        await Promise.all(names.map(async (nm) => { try { urls.set(nm, await imageDataUrl(ex.id, nm)); } catch (e) { /* image stays missing */ } }));
-        const css = await viewerCss();
-        const files = {}, used = new Set();
-        for (const s of list) {
-          const el = buildSub(ctx, s, opts, (im, name) => { if (urls.has(name)) im.src = urls.get(name); });
-          const label = opts.anon ? `Student ${ctx.number.get(s.id)}` : `${s.name || ''} (${s.student_id || ''})`;
-          let base = opts.anon ? `student-${ctx.number.get(s.id)}` : fileSafe(s.student_id);
-          let fname = base + '.html';
-          for (let k = 2; used.has(fname.toLowerCase()); k++) fname = `${base}-${k}.html`;
-          used.add(fname.toLowerCase());
-          files[fname] = window.fflate.strToU8(htmlDoc(`${ctx.ex.content.title || ex.id} – ${label}`, css, el.outerHTML));
-        }
-        download(slug(ex.content.title || ex.id) + (opts.anon ? '-submissions-anonymous' : '-submissions') + '.zip', [window.fflate.zipSync(files)], 'application/zip');
-        status.textContent = `${list.length} ${list.length === 1 ? 'file' : 'files'} saved`;
-      } catch (e) { status.textContent = 'Export failed: ' + e.message; status.classList.add('bad'); }
-      btn.disabled = false;
     }
     draw();
     window.scrollTo(0, 0);

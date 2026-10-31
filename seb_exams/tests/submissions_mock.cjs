@@ -321,6 +321,45 @@ const qids = (page, n = 0) => page.locator('.subview').nth(n).locator('.sv-q').e
         await page.uncheck('.sv-anon'); await page.selectOption('.sv-order', 'file');
       }
 
+      // ---- question picker (1280 only): all ticked by default, excerpts shown, subset shown/exported, none = nothing to export
+      if (w === 1280) {
+        const nq = content.questions.length;
+        check((await page.locator('.sv-qpick').count()) === nq && (await page.locator('.sv-qpick:checked').count()) === nq, `question picker lists all ${nq} questions, all ticked`);
+        check((await page.textContent('.sv-qsel summary')).includes('all ' + nq), 'picker summary says all questions');
+        await page.click('.sv-qsel summary');
+        await page.evaluate(() => window.scrollTo(0, 0)); await page.screenshot({ path: `${SHOTS}/question-picker-1280.png` });
+        const exc = await page.locator('.sv-qitem .sv-qexc').allTextContents();
+        check(exc.every((t) => t.trim().length > 3 && !t.includes('$') && !t.includes('**')), 'each question shows a plain-text excerpt: ' + exc[0]);
+        check(exc.some((t) => /heats of ___ and the ___ of the ___/.test(t)), 'fill-in excerpts keep their blanks as ___');
+        const firstId = content.questions[0].id, secondId = content.questions[1].id;
+        const perSub = async () => page.evaluate(() => document.querySelector('.subview').querySelectorAll('section.sv-q').length);
+        const before = await perSub();
+        await page.locator(`.sv-qpick[value="${firstId}"]`).uncheck();
+        const after = await perSub();
+        check(after === before - 1, `unticking a question hides it in every submission (${before} -> ${after})`);
+        check((await page.textContent('.subview .sv-meta')).includes(`${nq - 1} of ${nq}`), 'header says how many questions are shown');
+        await page.click('.sv-qsel button:has-text("None")');
+        check(await page.isDisabled('.sv-zip') && await page.isDisabled('.sv-print') && (await page.textContent('.sv-viewer')).includes('No questions selected'), 'no questions: nothing shown, export and print disabled');
+        await page.click('.sv-qsel button:has-text("All")');
+        await page.locator(`.sv-qpick`).evaluateAll((els, keep) => els.forEach((e) => { if (e.value !== keep && e.checked) e.click(); }), secondId);
+        const [qdl] = await Promise.all([page.waitForEvent('download'), page.click('.sv-zip')]);
+        const qzp = path.join(scratch, 'qsel.zip'); await qdl.saveAs(qzp);
+        const qdir = path.join(scratch, 'unz-qsel'); fs.mkdirSync(qdir, { recursive: true }); execSync(`unzip -o -q ${qzp} -d ${qdir}`);
+        const one = fs.readFileSync(path.join(qdir, fs.readdirSync(qdir)[0]), 'utf8');
+        check((one.match(/class="sv-q[ "]/g) || []).length === 1 && one.includes(`1 of ${nq}`), 'zip with one question selected holds only that question');
+        await page.click('.sv-qsel button:has-text("All")');
+        // export straight from the list: selected students only
+        await page.click('.sv-back');
+        await page.locator('.sv-pick').nth(0).check(); await page.locator('.sv-pick').nth(2).check();
+        check((await page.textContent('.sv-listzip')).includes('(2)'), 'list export button counts the selected students');
+        const [ldl] = await Promise.all([page.waitForEvent('download'), page.click('.sv-listzip')]);
+        const lzp = path.join(scratch, 'list.zip'); await ldl.saveAs(lzp);
+        const ldir = path.join(scratch, 'unz-list'); fs.mkdirSync(ldir, { recursive: true }); execSync(`unzip -o -q ${lzp} -d ${ldir}`);
+        check(fs.readdirSync(ldir).length === 2, 'list export holds the 2 selected students: ' + fs.readdirSync(ldir).join(', '));
+        await page.locator('.sv-pick').nth(0).uncheck(); await page.locator('.sv-pick').nth(2).uncheck();
+        await page.click('.sv-viewall');
+      }
+
       // ---- print (1280 only)
       if (w === 1280) {
         await page.emulateMedia({ media: 'print' });

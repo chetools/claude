@@ -94,3 +94,13 @@
   .sv-q { break-inside: avoid; page-break-inside: avoid; }
   .sv-figure img { max-height: 220px; }
 }
+/* question picker: which questions are shown, printed and exported */
+.sv-qsel { background: var(--card, #fff); border: 1px solid var(--line, #dde1e7); border-radius: 10px; padding: 6px 12px; margin: 0 0 14px; }
+.sv-qsel summary { cursor: pointer; font-weight: 700; padding: 4px 0; }
+.sv-qlist { display: grid; gap: 4px; padding: 6px 0 4px; }
+.sv-qitem { display: grid; grid-template-columns: auto auto auto minmax(0, 1fr); gap: 4px 10px; align-items: baseline; padding: 4px 0; border-top: 1px solid var(--line, #dde1e7); cursor: pointer; }
+.sv-qitem input { width: 18px; height: 18px; align-self: center; }
+.sv-qno { font-weight: 700; } .sv-qtype { color: var(--muted, #5d6675); font-size: .85rem; white-space: nowrap; }
+.sv-qexc { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink, #1d2330); }
+@media (max-width: 600px) { .sv-qitem { grid-template-columns: auto auto minmax(0, 1fr); } .sv-qtype { display: none; } .sv-qexc { white-space: normal; } }
+@media print { .sv-qsel { display: none !important; } }
