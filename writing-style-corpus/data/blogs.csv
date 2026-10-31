@@ -1,0 +1,31 @@
+org,id,kind,url,title,date,words
+anthropic,anthropic-01,blog,https://www.anthropic.com/research/effective-context-engineering-for-ai-agents,Effective context engineering for AI agents,2025-09-29,3012
+anthropic,anthropic-02,tutorial,https://docs.anthropic.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices,Prompting best practices,,5303
+anthropic,anthropic-03,tutorial,https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills/best-practices,Skill authoring best practices,,3590
+anthropic,anthropic-04,tutorial,https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/define-tools,Define tools,,1359
+anthropic,anthropic-05,tutorial,https://docs.anthropic.com/en/docs/build-with-claude/citations,Citations,,1197
+anthropic,anthropic-06,tutorial,https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/how-tool-use-works,How tool use works,,1222
+anthropic,anthropic-07,tutorial,https://docs.anthropic.com/en/docs/about-claude/use-case-guides/ticket-routing,Ticket routing,,2768
+anthropic,anthropic-08,tutorial,https://docs.anthropic.com/en/docs/build-with-claude/batch-processing,Message Batches API,,2743
+anthropic,anthropic-09,blog,https://www.anthropic.com/research/writing-tools-for-agents,Writing effective tools for AI agents,2025-09-11,3069
+anthropic,anthropic-10,blog,https://www.anthropic.com/research/multi-agent-research-system,How we built our multi-agent research system,2025-06-13,3463
+anthropic,anthropic-11,blog,https://www.anthropic.com/research/effective-harnesses-for-long-running-agents,Effective harnesses for long-running agents,2025-11-26,1874
+anthropic,anthropic-12,blog,https://www.anthropic.com/research/demystifying-evals-for-ai-agents,Demystifying evals for AI agents,2026-01-09,5634
+anthropic,anthropic-13,blog,https://www.anthropic.com/research/code-execution-with-mcp,Code execution with MCP for efficient agents,2025-11-04,1350
+anthropic,anthropic-14,blog,https://www.anthropic.com/research/claude-think-tool,"The ""think"" tool for complex tool use",2025-03-20,1728
+anthropic,anthropic-15,blog,https://www.anthropic.com/research/claude-code-sandboxing,Making Claude Code safer with sandboxing,2025-10-20,1030
+openai,openai-01,tutorial,https://developers.openai.com/api/docs/guides/prompt-engineering,Prompt engineering,,2396
+openai,openai-02,tutorial,https://developers.openai.com/api/docs/guides/reasoning-best-practices,Reasoning best practices,,2308
+openai,openai-03,tutorial,https://developers.openai.com/api/docs/guides/structured-outputs,Structured model outputs,,2381
+openai,openai-04,tutorial,https://developers.openai.com/api/docs/guides/function-calling,Function calling,,3615
+openai,openai-05,tutorial,https://developers.openai.com/api/docs/guides/evaluation-getting-started,Getting started with datasets,,1287
+openai,openai-06,tutorial,https://developers.openai.com/api/docs/guides/conversation-state,Conversation state,,1093
+openai,openai-07,blog,https://developers.openai.com/blog/eval-skills,Testing Agent Skills Systematically with Evals,,2234
+openai,openai-08,blog,https://developers.openai.com/blog/skills-shell-tips,Shell + Skills + Compaction: Tips for long-running agents that do real work,,1581
+openai,openai-09,blog,https://developers.openai.com/blog/responses-api,Why we built the Responses API,,1091
+openai,openai-10,blog,https://developers.openai.com/blog/designing-failover-across-openai-model-providers,Designing failover across OpenAI model providers,,1987
+openai,openai-11,blog,https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra,Rethinking skills and prompts for GPT-6 Astra,,1022
+openai,openai-12,blog,https://developers.openai.com/blog/15-lessons-building-chatgpt-apps,15 lessons learned building ChatGPT Apps,,2519
+openai,openai-13,blog,https://developers.openai.com/blog/one-year-of-responses,From prompts to products: One year of Responses,,2167
+openai,openai-14,blog,https://developers.openai.com/blog/realtime-perplexity-computer,How Perplexity Brought Voice Search to Millions Using the Realtime API,,1219
+openai,openai-15,blog,https://developers.openai.com/blog/designing-delightful-frontends-with-gpt-5-4,Designing delightful frontends with GPT-5.4,,1091
