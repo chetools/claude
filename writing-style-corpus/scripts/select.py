@@ -24,6 +24,13 @@ POOL = ROOT / "data" / "pool.json"
 OUT = ROOT / "data" / "selection.csv"
 ML = {"cs.LG", "cs.CV", "cs.CL", "cs.AI", "cs.NE", "cs.IR", "stat.ML"}
 GROUPS = 7
+# Checked by hand against the arXiv records: same title as a highly cited work,
+# but a different document (or an implausible merged citation count).
+EXCLUDE = {
+    "2106.01946": "2021 lecture textbook, not Boyd and Vandenberghe",
+    "2604.20890": "2026 short note, not Godsil and Royle",
+    "0705.0003": "XO-2b discovery paper; 11860 citations is a merged record",
+}
 
 
 def group(cat):
@@ -113,6 +120,9 @@ def main():
         meta = arxiv_meta([p["arxiv"] for p in batch])
         for p in batch:
             m = meta.get(p["arxiv"])
+            if p["arxiv"] in EXCLUDE:
+                rejected.append((p["arxiv"], "excluded: " + EXCLUDE[p["arxiv"]]))
+                continue
             if not m:
                 rejected.append((p["arxiv"], "no arXiv record"))
                 continue
