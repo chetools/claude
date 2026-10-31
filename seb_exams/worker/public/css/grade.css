@@ -1,6 +1,6 @@
 /* Grade tab */
 .gr { max-width: 74rem; margin: 0 auto; }
-.gr-toolbar { position: sticky; top: var(--barh, 0px); z-index: 5; background: rgba(246, 247, 249, .97); border-bottom: 1px solid var(--line); margin: 0 -16px 14px; padding: 8px 16px; }
+.gr-toolbar { position: sticky; top: var(--barh, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); margin: 0 -16px 14px; padding: 8px 16px; }
 .gr-toolrow { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
 .gr-check { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; min-height: 36px; cursor: pointer; }
 .gr-check input { width: 18px; height: 18px; }

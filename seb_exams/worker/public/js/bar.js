@@ -23,7 +23,7 @@ export function showBar({ title, badge, back, tabs, actions }) {
     back ? h('a', { class: 'back', href: '#/', title: 'All exams' }, '←', h('span', { class: 'long' }, ' All exams')) : null,
     h('h2', { class: 'bartitle', title }, title), badge, h('span', { class: 'grow' }), slot);
   const nav = tabs ? h('nav', { class: 'tabs' }, tabs.map((t) => h('a', { href: t.href, class: t.on ? 'on' : '' }, t.label))) : null;
-  inner.replaceChildren(row, nav);
+  inner.replaceChildren(...[row, nav].filter(Boolean));
   bar.classList.toggle('notabs', !nav);
   bar.classList.remove('hidden');
   draw();

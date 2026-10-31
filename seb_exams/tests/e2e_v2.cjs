@@ -46,7 +46,7 @@ async function teacherPage(browser, email, width = 1280) {
   const link = body.match(/https?:\/\/\S+?\/auth\/verify\?token=[A-Za-z0-9_-]+/)[0];
   await page.goto(link);
   await page.click("button");
-  await page.waitForSelector("table.exams, #app .card");
+  await page.waitForSelector("#bar:not(.hidden)");
   return page;
 }
 
@@ -56,6 +56,13 @@ async function api(page, method, p, body) {
       body: b ? JSON.stringify(b) : undefined });
     return { status: r.status, data: await r.json().catch(() => null) };
   }, [method, p, body]);
+}
+
+// Click the bar button whose label starts with `label` and answer the file chooser with `file`.
+async function pickZip(page, label, file) {
+  const [chooser] = await Promise.all([page.waitForEvent("filechooser"),
+    page.locator(`#bar button:has-text("${label}")`).first().click()]);
+  await chooser.setFiles(file);
 }
 
 // ------------------------------------------------------------ student helpers
@@ -136,7 +143,10 @@ async function submit(page) {
     // ---------------------------------------------------------- teacher: sign in, import, view
     const T = await teacherPage(browser, ADMIN);
     check(true, "admin signs in with the emailed link");
-    await T.setInputFiles("input[type=file]", ZIP);
+    await pickZip(T, "Import", ZIP);
+    await T.waitForSelector("text=Preview – not saved", { timeout: 15000 });
+    check((await (await api(T, "GET", "/api/exams")).data).length === 0, "an uploaded zip is not saved before approval");
+    await T.click("button:has-text('Approve and save')");
     await T.waitForURL(/#\/exam\/[a-z]{2}-[a-z0-9]+\/questions/, { timeout: 15000 });
     const id = T.url().match(/#\/exam\/([^/]+)\//)[1];
     check(/^[a-z]{2}-[a-z0-9]{6}$/.test(id), "import creates a random exam id " + id);
@@ -242,12 +252,60 @@ async function submit(page) {
     const cq = changed.questions.find((q) => q.id === mc.id);
     const ci = cq.options.findIndex((o) => o.correct);
     cq.options.forEach((o, k) => { o.correct = k === (ci + 1) % cq.options.length; });
+    check((await api(T, "PUT", `/api/exams/${id}/content`, { content: changed })).status === 423, "questions cannot be changed while the exam is open");
+    await api(T, "POST", `/api/exams/${id}/close-now`);
     const put = await api(T, "PUT", `/api/exams/${id}/content`, { content: changed });
-    check(put.status === 200, "content update accepted");
+    check(put.status === 200, "content update accepted once closed");
     const re = (await api(T, "GET", `/api/exams/${id}/results`)).data.submissions;
     check(re.find((s) => s.student_id === "S-GOOD").auto_score === good.auto_score - mc.points &&
           re.find((s) => s.student_id === "S-TIME").auto_score === mc.points, "changing the key re-grades stored submissions");
     await api(T, "PUT", `/api/exams/${id}/content`, { content });
+
+    // ---------------------------------------------------------- replace from zip: preview with change summary, approve
+    await T.goto(`${APP}/#/exam/${id}/questions`);
+    await T.waitForSelector(".q");
+    await pickZip(T, "Replace", ZIP);
+    await T.waitForSelector("text=Preview – not saved", { timeout: 15000 });
+    check(await T.isVisible("button:has-text('Approve and replace')"), "replace shows a preview with Approve and replace");
+    await T.click("button:has-text('Approve and replace')");
+    await T.waitForSelector(".q:not(.preview)", { timeout: 15000 });
+    check((await api(T, "GET", `/api/exams/${id}/results`)).data.submissions.length >= 2, "replacing keeps the submissions");
+
+    // ---------------------------------------------------------- Grade tab (real backend)
+    if (openQ) {
+      await T.goto(`${APP}/#/exam/${id}/grade`);
+      await T.waitForSelector(".gr-toolbar");
+      const ungraded = await T.locator("input.gin").count();
+      check(ungraded >= 1, `Grade tab lists ungraded essays only (${ungraded} input(s))`);
+      check(!(await T.textContent("#app")).includes("Ada Good"), "Grade tab is anonymous by default");
+      await T.locator("input.gin").first().fill("2.3");
+      await T.locator("input.gin").first().press("Enter");
+      await T.waitForTimeout(600);
+      let rs = (await api(T, "GET", `/api/exams/${id}/results`)).data.submissions.find((x) => x.student_id === "S-TIME");
+      check(!(rs.manual[openQ.id] && rs.manual[openQ.id].points === 2.3), "a grade that is not a multiple of 0.5 is not saved");
+      await T.locator("input.gin").first().fill("1.5");
+      await T.locator("input.gin").first().press("Enter");
+      await T.waitForTimeout(800);
+      rs = (await api(T, "GET", `/api/exams/${id}/results`)).data.submissions.find((x) => x.student_id === "S-TIME");
+      check(rs.manual[openQ.id] && rs.manual[openQ.id].points === 1.5, "Grade tab saves 1.5 points to the database");
+      await T.evaluate(() => window.scrollTo(0, 400));
+      await T.waitForTimeout(300);
+      await T.screenshot({ path: path.join(SHOTS, "teacher-grade-1280.png") });  // viewport: full-page shots misplace sticky bars
+    }
+
+    // ---------------------------------------------------------- Submissions tab (real backend)
+    await T.goto(`${APP}/#/exam/${id}/submissions`);
+    await T.waitForSelector(".sv-viewall");
+    await T.click(".sv-viewall");
+    await T.waitForSelector(".subview");
+    const nsub = (await api(T, "GET", `/api/exams/${id}/results`)).data.submissions.length;
+    check(await T.locator(".subview").count() === nsub, `View all shows every submission (${nsub})`);
+    check((await T.textContent("#app")).includes("Because the vapour pressure rises"), "essay text shown as entered");
+    const [zdl] = await Promise.all([T.waitForEvent("download"), T.click(".sv-zip")]);
+    const zbuf = fs.readFileSync(await zdl.path());
+    check(zbuf.slice(0, 2).toString() === "PK" && zbuf.includes(Buffer.from("S-GOOD.html")), "zip export has one HTML file per student");
+    await T.screenshot({ path: path.join(SHOTS, "teacher-submissions-1280.png"), fullPage: true });
+    await api(T, "POST", `/api/exams/${id}/open-now`);
 
     // ---------------------------------------------------------- export -> import round trip
     const exp = (await api(T, "GET", `/api/exams/${id}/export`)).data;
@@ -276,14 +334,20 @@ async function submit(page) {
     // ---------------------------------------------------------- layout at phone and wide-monitor widths
     for (const width of [390, 2560]) {
       const P = await teacherPage(browser, ADMIN, width);
-      for (const tab of ["questions", "edit", "settings", "results"]) {
+      for (const tab of ["questions", "edit", "grade", "submissions", "settings", "results"]) {
         await P.goto(`${APP}/#/exam/${id}/${tab}`);
         await P.reload();
-        await P.waitForSelector("#app .card, #app table", { timeout: 10000 });
+        await P.waitForSelector("#app .card, #app table, #app .gr-toolbar, #app .subview, #app .sv-viewall", { timeout: 10000 });
         await P.waitForTimeout(500);
+        await P.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+        await P.waitForTimeout(200);
         const m = await P.evaluate(() => { const a = document.querySelector("#head").getBoundingClientRect(), b = document.querySelector("#app").getBoundingClientRect();
-          return { sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth, d: Math.max(Math.abs(a.left - b.left), Math.abs(a.right - b.right)) }; });
+          const bar = document.querySelector("#bar"); const bt = bar ? bar.getBoundingClientRect().top : -1;
+          const natural = document.querySelector("header.top").getBoundingClientRect().bottom + window.scrollY;  // bar's unstuck position
+          return { sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth, d: Math.max(Math.abs(a.left - b.left), Math.abs(a.right - b.right)),
+                   bt: window.scrollY >= natural ? bt : bt === natural - window.scrollY ? 0 : bt }; });
         check(m.sw <= m.cw && m.d < 1, `teacher ${tab} @${width}: no horizontal scroll, header aligned (${m.sw}/${m.cw}, ${m.d.toFixed(1)})`);
+        check(m.bt === 0, `teacher ${tab} @${width}: bar stays in view, at the top once scrolled past (top ${m.bt})`);
         await P.screenshot({ path: path.join(SHOTS, `teacher-${tab}-${width}.png`), fullPage: width === 390 });
       }
       check(P.errors.length === 0, `teacher app @${width}: no errors ` + P.errors.join(" | "));
