@@ -364,14 +364,15 @@ async function submit(page) {
         await P.waitForTimeout(500);
         await P.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
         await P.waitForTimeout(200);
-        const m = await P.evaluate(() => { const a = document.querySelector("#head").getBoundingClientRect(), b = document.querySelector("#app").getBoundingClientRect();
+        const m = await P.evaluate(() => { const hd = document.querySelector("#head"); const a = (hd.getBoundingClientRect().width ? hd : document.querySelector("#barin")).getBoundingClientRect(), b = document.querySelector("#app").getBoundingClientRect();
           const bar = document.querySelector("#bar"); const bt = bar ? bar.getBoundingClientRect().top : -1;
           const natural = document.querySelector("header.top").getBoundingClientRect().bottom + window.scrollY;  // bar's unstuck position
           return { sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth, d: Math.max(Math.abs(a.left - b.left), Math.abs(a.right - b.right)),
                    bt: window.scrollY >= natural ? bt : bt === natural - window.scrollY ? 0 : bt }; });
         check(m.sw <= m.cw && m.d < 1, `teacher ${tab} @${width}: no horizontal scroll, header aligned (${m.sw}/${m.cw}, ${m.d.toFixed(1)})`);
         check(m.bt === 0, `teacher ${tab} @${width}: bar stays in view, at the top once scrolled past (top ${m.bt})`);
-        await P.screenshot({ path: path.join(SHOTS, `teacher-${tab}-${width}.png`), fullPage: width === 390 });
+        if (width === 390) await P.evaluate(() => window.scrollTo(0, 0));
+        await P.screenshot({ path: path.join(SHOTS, `teacher-${tab}-${width}.png`), fullPage: width === 390 && tab !== "grade" });
       }
       check(P.errors.length === 0, `teacher app @${width}: no errors ` + P.errors.join(" | "));
       await P.context().close();

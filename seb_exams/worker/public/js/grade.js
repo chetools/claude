@@ -38,6 +38,8 @@ const isDesktop = () => window.matchMedia('(min-width: 768px)').matches;
 const PREFS_DEFAULT = { names: false, group: 'question', filter: true, order: 'student' };
 
 let active = null; // the live instance, so a re-render disposes the previous one's timers
+// leaving the Grade tab ends the phone focus mode
+window.addEventListener('hashchange', () => { if (!/\/grade$/.test(location.hash)) document.body.classList.remove('grade-focus'); });
 
 export async function render(body, ex) {
   if (!document.getElementById('grade-css')) {
@@ -131,7 +133,7 @@ export async function render(body, ex) {
   const onOnline = () => flush();
   window.addEventListener('online', onOnline);
   let wasConnected = false;
-  function dispose() { disposed = true; clearInterval(timer); window.removeEventListener('online', onOnline); mq.removeEventListener('change', onMq); if (active === inst) active = null; }
+  function dispose() { document.body.classList.remove('grade-focus'); disposed = true; clearInterval(timer); window.removeEventListener('online', onOnline); mq.removeEventListener('change', onMq); if (active === inst) active = null; }
   const inst = { dispose };
   active = inst;
 
@@ -182,6 +184,7 @@ export async function render(body, ex) {
     }
     return wrap;
   };
+  let optsOpen = false;
   const toolbar = () => {
     const bar = h('div', { class: 'gr-toolbar' });
     const rerun = () => { stay.clear(); draw(); };
@@ -191,7 +194,12 @@ export async function render(body, ex) {
     if (isDesktop()) {
       row.append(h('span', { class: 'gr-lbl' }, 'Group by'), seg('Group by', 'group', [['question', 'Question'], ['student', 'Student']], () => draw()));
     } else {
-      row.append(h('span', { class: 'gr-lbl' }, 'Next'), seg('Order', 'order', [['student', 'Next student'], ['question', 'Next question']], () => draw()));
+      // phones: the options are folded away so the essay gets the screen
+      row.append(h('span', { class: 'gr-lbl' }, 'Swipe to'), seg('Order', 'order', [['student', 'Next student'], ['question', 'Next question']], () => draw()));
+      const opts = h('details', { class: 'gr-opts', open: optsOpen }, h('summary', {}, 'Options'), row);
+      opts.addEventListener('toggle', () => { optsOpen = opts.open; });  // stays open while options are changed
+      bar.append(opts, badge);
+      return bar;
     }
     row.append(h('span', { class: 'grow' }), badge);
     bar.append(row);
@@ -223,12 +231,22 @@ export async function render(body, ex) {
       save(s, q, v, com.value.trim());
       return true;
     };
-    const next = () => {
+    const next = (d = 1) => {
       const all = [...body.querySelectorAll('input.gin')], i = all.indexOf(inp);
-      const n = all[i + 1];
-      if (n) { n.focus(); n.select(); n.scrollIntoView({ block: 'center', behavior: 'smooth' }); } else inp.blur();
+      const n = all[i + d];
+      if (n) { n.focus({ preventScroll: true }); n.select(); n.scrollIntoView({ block: 'center', behavior: 'smooth' }); } else if (d > 0) inp.blur();
+      return !!n;
     };
     const onKey = (e) => { if (e.key === 'Enter') { e.preventDefault(); if (commit()) next(); } };
+    // Tab and Shift+Tab jump straight to the next/previous grade box (comments are reached with the mouse)
+    inp.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab' || e.altKey || e.ctrlKey || e.metaKey) return;
+      const d = e.shiftKey ? -1 : 1;
+      const all = [...body.querySelectorAll('input.gin')], i = all.indexOf(inp);
+      if (!all[i + d]) return;  // first/last box: normal Tab leaves the list
+      e.preventDefault();
+      if (commit()) next(d);
+    });
     inp.addEventListener('keydown', onKey); com.addEventListener('keydown', onKey);
     inp.addEventListener('change', commit); com.addEventListener('change', commit);
     inp.addEventListener('input', () => { if (inp.classList.contains('invalid')) { inp.classList.remove('invalid'); inp.removeAttribute('aria-invalid'); err.textContent = ''; } });
@@ -326,6 +344,9 @@ export async function render(body, ex) {
       'aria-label': `Points for ${prefs.names ? nameOf(s) : s.label}, question ${q.no} (max ${q.points})`, 'data-key': k });
     const com = h('textarea', { class: 'gr-comment', rows: 2, placeholder: 'Comment (optional)', 'aria-label': `Comment for ${prefs.names ? nameOf(s) : s.label}, question ${q.no}`, maxlength: 2000 }, commentOf(s, q));
     com.value = commentOf(s, q);
+    const comWrap = h('div', { class: 'gr-comwrap' + (commentOf(s, q) ? '' : ' hidden') }, com);
+    const comBtn = h('button', { type: 'button', class: 'secondary small gr-combtn' + (commentOf(s, q) ? ' hidden' : ''),
+      onclick: () => { comWrap.classList.remove('hidden'); comBtn.classList.add('hidden'); com.focus(); } }, '+ Comment');
     const st = register(statusEls, k, h('span', { class: 'gr-status' }, isGraded(s, q) ? 'Saved ✓' : ''));
     if (queue[k]) st.textContent = 'Not saved yet – will retry', st.className = 'gr-status warn';
     let touched = cur != null;
@@ -340,18 +361,18 @@ export async function render(body, ex) {
     com.addEventListener('change', () => { save(s, q, pointsOf(s, q), com.value.trim()); });
 
     const card = h('article', { class: 'gr-card mob', 'data-key': k },
-      h('div', { class: 'gr-who' }, h('strong', {}, nameOf(s)), h('span', { class: 'gr-qno' }, `Q${q.no}`)),
-      h('details', { class: 'gr-qdet' }, h('summary', {}, 'Question'), qText(q, true)),
+      h('div', { class: 'gr-who' }, h('strong', {}, nameOf(s)), h('span', { class: 'gr-qno' }, `Q${q.no}`), h('span', { class: 'grow' }), comBtn),
+      h('details', { class: 'gr-qdet' }, h('summary', {}, 'Show question'), qText(q, true)),
       answerBox(s, q),
-      h('div', { class: 'gr-sliderbox' }, big, slider,
-        h('div', { class: 'gr-ticks' }, h('span', {}, '0'), h('span', {}, String(q.points))), st),
-      com);
+      comWrap);
     attachSwipe(card, go);
 
-    host.append(
-      h('div', { class: 'gr-pickrow' }, h('label', { for: 'gr-picker' }, 'Question'), picker),
-      card,
-      h('div', { class: 'gr-navrow' }, prevBtn, pos, nextBtn));
+    // the grade and the arrows stay at the bottom of the screen while the essay scrolls
+    const dock = h('div', { class: 'gr-dock' },
+      h('div', { class: 'gr-dockrow' }, prevBtn,
+        h('div', { class: 'gr-sliderbox' }, h('div', { class: 'gr-dockhead' }, big, st), slider), nextBtn),
+      pos);
+    host.append(h('div', { class: 'gr-pickrow' }, picker), card, dock);
     picker.id = 'gr-picker';
     paintMobileMeta();
   }
@@ -378,6 +399,7 @@ export async function render(body, ex) {
     statusEls.clear(); progressEls.clear(); mobileRefs = null;
     host.replaceChildren(toolbar());
     host.classList.toggle('desk', isDesktop()); host.classList.toggle('phone', !isDesktop());
+    document.body.classList.toggle('grade-focus', !isDesktop());  // phones: hide the site header and exam tabs
     (isDesktop() ? drawDesktop : drawMobile)(host);
     if (isDesktop()) window.scrollTo({ top: y });
   }

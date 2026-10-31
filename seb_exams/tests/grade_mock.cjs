@@ -188,6 +188,18 @@ const labels = (page) => page.$$eval('.gr-card .gr-who strong', (e) => e.map((x)
     await noScroll(page, 2560, 'grade desktop');
     const ans = await page.locator('.gr-answer').first().boundingBox();
     check(ans.width < 800, 'answer line length bounded at 2560 (' + Math.round(ans.width) + 'px)');
+    // Tab from a grade box saves and jumps to the next grade box (not the comment), Shift+Tab goes back
+    const gins = page.locator('input.gin');
+    await gins.nth(1).fill('1.5'); await gins.nth(1).press('Tab'); await page.waitForTimeout(300);
+    check(await page.evaluate(() => [...document.querySelectorAll('input.gin')].indexOf(document.activeElement)) === 2, 'Tab jumps to the next grade box, skipping the comment');
+    check(puts.some((p) => p.points === 1.5), 'Tab saves the grade it leaves');
+    const inView = await page.evaluate(() => { const r = document.activeElement.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; });
+    check(inView, 'the next grade box is scrolled into view');
+    await page.keyboard.press('Shift+Tab'); await page.waitForTimeout(200);
+    check(await page.evaluate(() => [...document.querySelectorAll('input.gin')].indexOf(document.activeElement)) === 1, 'Shift+Tab goes back to the previous grade box');
+    await gins.nth(1).fill('2.3'); await gins.nth(1).press('Tab'); await page.waitForTimeout(200);
+    check(await page.evaluate(() => [...document.querySelectorAll('input.gin')].indexOf(document.activeElement)) === 1, 'Tab stays on an invalid grade');
+    await gins.nth(1).fill('1.5'); await gins.nth(1).press('Enter'); await page.waitForTimeout(300);
     check(errs.length === 0, 'no console errors (2560) ' + errs.join(';'));
     await ctx.close();
 
@@ -195,9 +207,18 @@ const labels = (page) => page.$$eval('.gr-card .gr-who strong', (e) => e.map((x)
     subs = mkSubs(); puts = []; mode = 'ok';
     ({ ctx, page, errs } = await newPage(390, 844));
     await open(page);
-    await page.screenshot({ path: `${SHOTS}/mobile-390.png`, fullPage: true });
+    await page.screenshot({ path: `${SHOTS}/mobile-390.png` });  // viewport: the dock is fixed to the screen bottom
     await noScroll(page, 390, 'grade phone');
     check(await page.locator('.gr-card.mob').count() === 1, 'phone shows one card');
+    const focusUi = await page.evaluate(() => {
+      const vis = (sel) => { const e = document.querySelector(sel); return !!e && getComputedStyle(e).display !== 'none' && e.getBoundingClientRect().height > 0; };
+      const dock = document.querySelector('.gr-dock').getBoundingClientRect();
+      return { header: vis('header.top'), tabs: vis('.bar .tabs'), opts: document.querySelector('.gr-opts').open, comment: vis('.gr-comment'), dockAtBottom: dock.top >= 0 && dock.bottom <= innerHeight + 1 };
+    });
+    check(!focusUi.header && !focusUi.tabs, 'phone focus mode hides the site header and exam tabs ' + JSON.stringify(focusUi));
+    check(!focusUi.opts && !focusUi.comment, 'options and comment are folded away');
+    check(focusUi.dockAtBottom, 'grade slider and arrows are fully on screen');
+    await page.click('.gr-combtn');
     const pos = () => page.locator('.gr-pos').textContent();
     const who = () => page.locator('.gr-card.mob .gr-who').textContent();
     const p0 = await pos(); const w0 = await who();
@@ -240,6 +261,7 @@ const labels = (page) => page.$$eval('.gr-card .gr-who strong', (e) => e.map((x)
     await swipe(-120, 0, '.gr-comment'); await page.waitForTimeout(100);
     check((await who()) === w0, 'swipe started on textarea ignored');
     // comment save on phone
+    await page.click('.gr-combtn');
     await page.fill('.gr-comment', 'nice'); await page.locator('.gr-comment').blur(); await page.waitForTimeout(300);
     check(puts.length === 2 && puts[1].comment === 'nice' && puts[1].points === puts[0].points, 'comment saved with current points ' + JSON.stringify(puts[1]));
     // graded card stays under filter after navigating away and back
@@ -250,6 +272,7 @@ const labels = (page) => page.$$eval('.gr-card .gr-who strong', (e) => e.map((x)
     check(/Q3/.test(await who()), 'picker jumps to Q3 (' + await who() + ')');
     check((await page.locator('.gr-picker option:checked').textContent()).includes('of 6 graded'), 'picker shows progress');
     // order toggle: next question same student
+    await page.click('.gr-opts summary');
     await page.getByRole('button', { name: 'Next question' }).click();
     await page.getByLabel('Ungraded only').uncheck();
     await page.selectOption('.gr-picker', 'o1'); await page.waitForTimeout(200);
