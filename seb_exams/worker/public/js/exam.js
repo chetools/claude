@@ -58,26 +58,28 @@ export function questionBody(ex, q, n) {
     let pat = ''; try { pat = fillPattern(b); } catch (e) { /* ignore */ }
     return boxesHtml(pat, b.answer);
   };
-  card.append(h('div', { class: 'md', html: renderMd(q.text, q.type === 'fill' ? { blanks: blankHtml } : {}) }));
+  const main = h('div', { class: 'qmain' }), key = h('div', { class: 'qkey' });
+  card.append(h('div', { class: 'qgrid' + (q.type === 'fill' ? ' single' : '') }, main, key));  // fill: the blank table needs the width
+  main.append(h('div', { class: 'md', html: renderMd(q.text, q.type === 'fill' ? { blanks: blankHtml } : {}) }));
   if (q.image) {
     const img = h('img', { alt: q.image_alt || '' });
     if (ex.imageUrls) { // import preview: the image is in the zip, not on the server yet
       if (ex.imageUrls[q.image]) img.src = ex.imageUrls[q.image]; else img.alt = 'Image "' + q.image + '" is not in the zip';
     } else setImg(img, ex.id, q.image);
-    card.append(h('div', { class: 'figure' }, img));
-    if (q.image_alt) card.append(h('p', { class: 'hint' }, 'Image description: ', q.image_alt));
+    main.append(h('div', { class: 'figure' }, img));
+    if (q.image_alt) main.append(h('p', { class: 'hint' }, 'Image description: ', q.image_alt));
   }
   if (q.type === 'mc') {
-    card.append(h('ol', { class: 'opts', type: 'A' }, (q.options || []).map((o) =>
+    key.append(h('ol', { class: 'opts', type: 'A' }, (q.options || []).map((o) =>
       h('li', { class: 'opt' + (o.correct ? ' correct' : '') }, h('div', { class: 'md', html: renderMd(o.text) }), o.correct ? h('span', { class: 'tick' }, '✓ correct') : null))),
     h('p', { class: 'hint' }, q.shuffle_options === false ? 'Options are shown in this order.' : 'Options are shuffled for each student.'));
   } else if (q.type === 'fill') {
-    card.append(h('div', { class: 'tablewrap' }, h('table', { class: 'blanktable' }, h('thead', {}, h('tr', {}, ['Blank', 'Answer', 'Also accepted', 'Clue'].map((c) => h('th', {}, c)))),
+    key.append(h('div', { class: 'tablewrap' }, h('table', { class: 'blanktable' }, h('thead', {}, h('tr', {}, ['Blank', 'Answer', 'Also accepted', 'Clue'].map((c) => h('th', {}, c)))),
       h('tbody', {}, blanks.map((b, i) => h('tr', {}, h('td', {}, String(i + 1)), h('td', {}, h('strong', {}, b.answer)),
         h('td', {}, (b.variants || []).join(', ') || '–'), h('td', {}, b.clue ? h('code', {}, b.clue) : h('span', { class: 'hint' }, 'none'))))))),
     h('p', { class: 'hint' }, 'Graded all-or-nothing: every blank must be right (case-insensitive).'));
   } else {
-    card.append(q.model_answer && q.model_answer.trim()
+    key.append(q.model_answer && q.model_answer.trim()
       ? h('div', { class: 'model' }, h('div', { class: 'label' }, 'Model answer (teacher only)'), h('div', { class: 'md', html: renderMd(q.model_answer) }))
       : h('p', { class: 'hint' }, 'No model answer. Graded by hand in the Results tab.'));
   }

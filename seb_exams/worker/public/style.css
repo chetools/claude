@@ -1,9 +1,9 @@
 :root {
   --bg: #f6f7f9; --card: #ffffff; --ink: #1d2330; --muted: #5d6675; --line: #dde1e7;
   --accent: #1f5fae; --accent-ink: #ffffff; --ok: #237a45; --bad: #b3261e; --warn-bg: #fff6e0; --okbg: #e7f5ec;
-  --col: 52rem;
+  --col: 80rem;
 }
-body.mid { --col: 74rem; }
+body.mid { --col: 80rem; }
 body.wide { --col: 110rem; }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: var(--barh, 0px); }
@@ -49,7 +49,7 @@ th, td { border-bottom: 1px solid var(--line); padding: 6px 10px; text-align: le
 th { background: #f0f3f7; white-space: nowrap; }
 .nw { white-space: nowrap; } .mono { font-family: ui-monospace, Menlo, monospace; }
 td.ok { color: var(--ok); } td.bad { color: var(--bad); } .bad { color: var(--bad); }
-table.results td .ans { max-width: 16em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+table.results td .ans { display: inline-block; vertical-align: bottom; max-width: 16em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 table.results td.opencell { min-width: 16em; }
 td .open { max-width: 22em; white-space: pre-wrap; max-height: 5em; overflow: hidden; cursor: pointer; margin-bottom: 4px; }
 td .open.full { max-height: none; }
@@ -68,7 +68,7 @@ td input.cmt { width: 100%; margin-top: 4px; }
 .qtype { color: var(--muted); font-weight: 500; font-size: .9rem; }
 .figure { margin: 6px 0 12px; text-align: center; } .figure img, img.thumb { max-width: 100%; max-height: 320px; background: #fff; border: 1px solid var(--line); border-radius: 6px; } img.thumb { max-width: 160px; max-height: 100px; }
 ol.opts { list-style-type: upper-alpha; padding-left: 28px; display: grid; gap: 8px; margin: 6px 0; }
-li.opt { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; } li.opt .md p:last-child { margin: 0; }
+li.opt { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 4px 12px; flex-wrap: wrap; } li.opt > .md { flex: 1 1 auto; min-width: 0; } li.opt .md p:last-child { margin: 0; }
 li.opt.correct { border-color: var(--ok); background: var(--okbg); } li.opt .tick { color: var(--ok); font-weight: 700; font-size: .85rem; }
 .model { border-left: 4px solid var(--ok); background: var(--okbg); padding: 8px 12px; border-radius: 4px; } .label { font-size: .8rem; font-weight: 700; color: var(--ok); text-transform: uppercase; letter-spacing: .05em; }
 .boxes { display: inline-flex; flex-wrap: wrap; gap: 2px; vertical-align: middle; max-width: 100%; margin: 0 3px; }
@@ -107,3 +107,15 @@ li.opt.correct { border-color: var(--ok); background: var(--okbg); } li.opt .tic
 .pvbanner { border: 2px dashed #d99a00; background: var(--warn-bg); } .pvbanner h2 { margin: 0 0 4px; } .pvbanner p { margin: 0; }
 .chg h4 { margin: 10px 0 4px; font-size: .95rem; } .chg ul { margin: 0; } .chg.key h4 { color: var(--bad); }
 .badge.practice { background: #fdf0d9; color: #8a5a00; }
+
+/* Width: limit the width of text, not of the page (80rem column, 72ch paragraphs, short items never wrap) */
+.md > p, .md > ul, .md > ol, .md > blockquote, .md > .eq { max-width: 64ch; }  /* 64ch (width of "0") is about 75 average characters */
+button, .btn, .badge, th, td.nw, .tabs a, .crumb, .qtype, .pts { white-space: nowrap; }
+@media (min-width: 1100px) {
+  .q .qgrid:not(.single) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(20rem, 30rem); gap: 0 28px; align-items: start; }
+  .q .qkey > :first-child { margin-top: 0; }
+}
+.setgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 32rem), 1fr)); gap: 16px; align-items: start; }
+.setgrid > .card { margin: 0; } .setgrid > .card.full { grid-column: 1 / -1; }
+table.exams td:first-child { min-width: 16rem; }
+.linkrow .v code { overflow-wrap: anywhere; }

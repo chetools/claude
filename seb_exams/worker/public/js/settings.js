@@ -23,8 +23,8 @@ export async function render(root, ex) {
   const copyBtn = (text) => { const b = h('button', { class: 'secondary small', onclick: async () => { b.textContent = (await copyText(text)) ? 'Copied' : 'Copy failed'; setTimeout(() => (b.textContent = 'Copy'), 1500); } }, 'Copy'); return b; };
   const linkRow = (label, node, copy) => h('div', { class: 'linkrow' }, h('div', { class: 'k' }, label), h('div', { class: 'v' }, node), copy ? copyBtn(copy) : null);
 
-  root.append(out,
-    h('div', { class: 'card' }, h('h3', {}, 'Availability'),
+  root.append(out, h('div', { class: 'setgrid' },
+    h('div', { class: 'card full' }, h('h3', {}, 'Availability'),
       h('p', { class: 'hint' }, 'Times are in your browser\'s local time (' + Intl.DateTimeFormat().resolvedOptions().timeZone + '). Students can start only while the exam is open.'),
       h('div', { class: 'row grid2' }, h('label', { class: 'field grow' }, 'Opens', opens), h('label', { class: 'field grow' }, 'Closes', closes)),
       h('div', { class: 'row' }, h('button', { onclick: () => saveSettings({}, 'Times saved.') }, 'Save settings'),
@@ -41,18 +41,18 @@ export async function render(root, ex) {
       h('div', { class: 'row' }, h('button', { class: 'secondary', onclick: () => pw.value ? saveSettings({ quit_password: pw.value }, 'Quit password set.') : flash('err', 'Type a password first.') }, 'Set quit password'),
         h('button', { class: 'secondary', disabled: !ex.has_quit_password, onclick: () => saveSettings({ quit_password: null }, 'Quit password cleared.') }, 'Clear quit password')),
       h('p', { class: 'hint' }, ex.has_quit_password ? 'A quit password is currently set.' : 'No quit password is set.')),
-    h('div', { class: 'card' }, h('h3', {}, 'Links for students'),
+    coTeachers(ex, base, flash, reload),  // beside the Safe Exam Browser card
+    h('div', { class: 'card full' }, h('h3', {}, 'Links for students'),
       linkRow('Student page', h('a', { href: ex.student_url, target: '_blank', rel: 'noopener' }, ex.student_url), ex.student_url),
       linkRow('Open in SEB', h('a', { href: ex.seb_link }, ex.seb_link), ex.seb_link),
       linkRow('SEB config file', h('a', { href: `/s/seb/${encodeURIComponent(id)}.seb`, download: id + '.seb' }, id + '.seb (download)')),
       linkRow('Config Key', h('code', {}, ex.config_key || ''), ex.config_key)),
-    coTeachers(ex, base, flash, reload),
-    h('div', { class: 'card danger-zone' }, h('h3', {}, 'Delete exam'),
+    h('div', { class: 'card danger-zone full' }, h('h3', {}, 'Delete exam'),
       h('p', { class: 'hint' }, 'Deletes the exam, its images and all submissions. This cannot be undone.'),
       h('button', { class: 'danger', onclick: async () => {
         if (!confirm('Delete this exam and all its submissions permanently?')) return;
         try { await api(base, { method: 'DELETE' }); location.hash = '#/'; } catch (e) { flash('err', e.message); }
-      } }, 'Delete exam')));
+      } }, 'Delete exam'))));
 }
 
 function coTeachers(ex, base, flash, reload) {

@@ -41,10 +41,11 @@ export async function render(root) {
   if (!exams.length) { root.append(h('p', { class: 'hint' }, 'No exams yet. Import a zip file, create a blank exam, or press Practice exam to try the app with made-up students.')); return; }
   const me = state.me.email;
   const mine = exams.filter((e) => e.owner_email === me), other = exams.filter((e) => e.owner_email !== me);
-  const list = (title, arr) => arr.length ? [h('div', { class: 'section-title' }, title), h('div', { class: 'tablewrap' }, h('table', { class: 'exams' },
-    h('thead', {}, h('tr', {}, ['Exam', 'Status', 'Opens', 'Closes', 'Questions', 'Submissions', 'Owner'].map((c) => h('th', {}, c)))),
-    h('tbody', {}, arr.map((e) => h('tr', {}, h('td', {}, h('a', { href: '#/exam/' + encodeURIComponent(e.id) + '/questions' }, e.title || e.id), e.practice ? badge('practice') : null),
-      h('td', {}, badge(e.status)), h('td', { class: 'nw' }, fmtTime(e.opens_at)), h('td', { class: 'nw' }, fmtTime(e.closes_at)),
-      h('td', {}, String(e.questions)), h('td', {}, h('a', { href: '#/exam/' + encodeURIComponent(e.id) + '/results' }, String(e.submissions))), h('td', {}, e.owner_email))))))] : [];
-  root.append(...list('My exams', mine), ...list(state.me.is_admin ? 'Other teachers\' exams' : 'Shared with me', other));
+  // the owner column only where the exams are someone else's
+  const list = (title, arr, owner) => arr.length ? [h('div', { class: 'section-title' }, title), h('div', { class: 'tablewrap' }, h('table', { class: 'exams' },
+    h('thead', {}, h('tr', {}, ['Exam', 'Status', 'Opens', 'Closes', 'Questions', 'Submissions', ...(owner ? ['Owner'] : [])].map((c) => h('th', {}, c)))),
+    h('tbody', {}, arr.map((e) => h('tr', {}, h('td', {}, h('a', { href: '#/exam/' + encodeURIComponent(e.id) + '/questions' }, e.title || e.id)),
+      h('td', { class: 'nw' }, badge(e.status), e.practice ? badge('practice') : null), h('td', { class: 'nw' }, fmtTime(e.opens_at)), h('td', { class: 'nw' }, fmtTime(e.closes_at)),
+      h('td', {}, String(e.questions)), h('td', {}, h('a', { href: '#/exam/' + encodeURIComponent(e.id) + '/results' }, String(e.submissions))), owner ? h('td', { class: 'nw' }, e.owner_email) : null)))))] : [];
+  root.append(...list('My exams', mine, false), ...list(state.me.is_admin ? 'Other teachers\' exams' : 'Shared with me', other, true));
 }

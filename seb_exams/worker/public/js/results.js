@@ -73,7 +73,7 @@ export async function render(root, ex) {
       const a = (s.answers || {})[q.id], d = (s.detail || {})[q.id];
       if (q.type !== 'open') {
         const t = answerText(q, a);
-        return h('td', { class: d ? (d.ok ? 'ok' : 'bad') : '' }, t ? h('div', { class: 'ans', title: t }, t) : '–', d ? h('div', { class: 'hint' }, `${d.points} pt`) : null);
+        return h('td', { class: 'nw ' + (d ? (d.ok ? 'ok' : 'bad') : '') }, t ? h('span', { class: 'ans', title: t }, t) : '–', d ? h('span', { class: 'hint pt' }, ` ${d.points} pt`) : null);
       }
       const m = man[q.id] || {};
       const pts = h('input', { type: 'number', min: 0, max: q.points, step: 'any', class: 'num', value: m.points ?? '', 'aria-label': 'points' });
@@ -95,7 +95,7 @@ export async function render(root, ex) {
       return h('td', { class: 'opencell' }, full, h('div', { class: 'row tight' }, pts, st), com);
     });
     recompute();
-    tbody.append(h('tr', {}, h('td', {}, s.name), h('td', { class: 'nw' }, s.student_id),
+    tbody.append(h('tr', {}, h('td', { class: 'nw' }, s.name), h('td', { class: 'nw' }, s.student_id),
       h('td', { class: 'nw' }, fmtTime(s.submitted_at), s.late ? h('span', { class: 'badge closed', title: 'Submitted after the end time' }, 'late') : null),
       h('td', {}, s.minutes_used == null ? '' : String(s.minutes_used)), ...cells,
       h('td', { class: 'nw' }, `${s.auto_score} / ${s.auto_max}`), manualCell, totalCell,

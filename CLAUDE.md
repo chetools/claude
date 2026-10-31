@@ -88,7 +88,8 @@ These complement the rules above. They apply to every project.
   header and body share left and right edges.
 - **Limit the width of text, not of the page.**
   - App and page columns are about 80rem; data-heavy pages (wide tables) are about 110rem.
-  - Paragraphs keep a readable measure, `max-width` about 72ch.
+  - Paragraphs keep a readable measure of about 75 characters: `max-width: 64ch`, since `ch` is the width of "0",
+    wider than an average letter.
   - Use the extra width for side-by-side layouts, not longer lines.
   - Buttons, labels, badges, dates, names and table cells never wrap at 1280 px and wider (`white-space: nowrap`
     where needed). Short text lines should not wrap with only a few words left on the second line.

@@ -17,7 +17,7 @@
 .subview {
   --sv-ink: #1d2330; --sv-muted: #5d6675; --sv-line: #dde1e7; --sv-accent: #1f5fae;
   --sv-ok: #237a45; --sv-okbg: #e7f5ec; --sv-bad: #b3261e; --sv-badbg: #fdecea;
-  max-width: 52rem; margin: 0 auto 28px; padding: 18px; box-sizing: border-box; overflow-wrap: break-word;
+  max-width: 80rem; margin: 0 auto 28px; padding: 18px; box-sizing: border-box; overflow-wrap: break-word;
   background: #fff; color: var(--sv-ink); border: 1px solid var(--sv-line); border-radius: 10px;
   font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-print-color-adjust: exact; print-color-adjust: exact;
@@ -104,3 +104,5 @@
 .sv-qexc { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink, #1d2330); }
 @media (max-width: 600px) { .sv-qitem { grid-template-columns: auto auto minmax(0, 1fr); } .sv-qtype { display: none; } .sv-qexc { white-space: normal; } }
 @media print { .sv-qsel { display: none !important; } }
+/* readable paragraphs inside the wider viewer */
+.sv-md > p, .sv-md > ul, .sv-md > ol { max-width: 64ch; }
