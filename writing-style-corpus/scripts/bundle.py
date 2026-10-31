@@ -2,7 +2,8 @@
 
 Papers (role corpus): abstract, introduction, methods, results (results and
 results_discussion), discussion (discussion and results_discussion),
-conclusion, captions, body (papers without section headings).
+conclusion, captions, body (papers without section headings, and sections with topical
+titles that match no type).
 Company writing: post, captions. Bundles larger than MAX_WORDS are split into
 parts, balanced across groups. Output data/sections/bundles/<unit>[_partN].txt
 (gitignored, deleted with the rest of the texts).
@@ -37,9 +38,9 @@ def paper_units():
             targets = {"results_discussion": ["results", "discussion"]}.get(t, [t])
             for u in targets:
                 by.setdefault(u, []).append((s["title"], s["text"]))
+        if "other" in by:  # sections with topical titles: general body prose
+            by.setdefault("body", []).extend(by.pop("other"))
         for u, parts in by.items():
-            if u == "other":
-                continue
             text = "\n\n".join(f"## {t}\n{x}" if t else x for t, x in parts)
             units.setdefault(u, []).append((key, clip(text)))
         if d["captions"]:

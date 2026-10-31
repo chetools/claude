@@ -177,28 +177,55 @@ def split_pdf_text(txt):
     return abstract, sections, captions
 
 
+def arxiv_abstracts(ids):
+    """Author abstracts from the arXiv API (used when the text has none)."""
+    cache = OUT / "cache" / "arxiv_abstracts.json"
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    if cache.exists():
+        return json.loads(cache.read_text())
+    import time, urllib.parse, urllib.request
+    import xml.etree.ElementTree as ET
+    ns, out = {"a": "http://www.w3.org/2005/Atom"}, {}
+    for i in range(0, len(ids), 100):
+        url = "https://export.arxiv.org/api/query?" + urllib.parse.urlencode(
+            {"id_list": ",".join(ids[i:i + 100]), "max_results": 100})
+        with urllib.request.urlopen(url, timeout=120) as r:
+            root = ET.fromstring(r.read())
+        for e in root.findall("a:entry", ns):
+            m = re.search(r"abs/(.+?)(v\d+)?$", e.findtext("a:id", "", ns))
+            if m:
+                out[m.group(1)] = " ".join(e.findtext("a:summary", "", ns).split())
+        time.sleep(3)
+    cache.write_text(json.dumps(out))
+    return out
+
+
 def main():
     sel = {r["arxiv"]: r for r in csv.DictReader(open(ROOT / "data" / "selection.csv"))}
     OUT.mkdir(parents=True, exist_ok=True)
+    abstracts = arxiv_abstracts(list(sel))
     n_ok = 0
     for axid, r in sel.items():
         d = RAW / axid.replace("/", "_")
         if not d.is_dir():
             continue
         mt = main_tex(d)
+        sections = []
         if mt is not None:
             abstract, sections, captions = split_paper(expand(mt, d.resolve()))
             source = "latex"
-        elif (d / "paper.txt").exists():
+        if sum(len(s["text"].split()) for s in sections) < 500 and (d / "paper.txt").exists():
             abstract, sections, captions = split_pdf_text((d / "paper.txt").read_text(errors="replace"))
             source = "pdf"
-        else:
+        if mt is None and not (d / "paper.txt").exists():
             print("no text", axid, file=sys.stderr)
             continue
         words = sum(len(s["text"].split()) for s in sections)
         if words < 500:
-            print("too short after split", axid, words, file=sys.stderr)
+            print("too short after split (run fetch.py --pdf)", axid, words, file=sys.stderr)
             continue
+        if not abstract:
+            abstract, source = abstracts.get(axid, ""), source + "+arxiv-abstract"
         (OUT / f"{axid.replace('/', '_')}.json").write_text(json.dumps(
             {"arxiv": axid, "field": r["field"], "role": r["role"], "title": r["title"],
              "source": source, "abstract": abstract, "sections": sections, "captions": captions}, indent=1))

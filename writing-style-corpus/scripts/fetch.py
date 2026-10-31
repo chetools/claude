@@ -1,7 +1,7 @@
 """Download arXiv e-prints (LaTeX source, latest version; PDF text if no source) for data/selection.csv.
 
 Each paper is unpacked into its own directory data/raw/arxiv/<id>/ (untrusted
-data, never executed). Usage: python -I scripts/fetch.py [field ...]
+data, never executed). Usage: python -I scripts/fetch.py [field ...] | --pdf ID ...
 Writes data/fetch_log.csv (arxiv, status, detail).
 """
 import csv, gzip, io, subprocess, sys, tarfile, time, urllib.request
@@ -62,7 +62,44 @@ def fetch(axid):
     return "ok", ""
 
 
+def fetch_pdf(axid):
+    """PDF text fallback (source wraps a PDF, uses old macros, or e-print fails)."""
+    d = RAW / safe_name(axid)
+    d.mkdir(parents=True, exist_ok=True)
+    req = urllib.request.Request(f"https://arxiv.org/pdf/{axid}",
+                                 headers={"User-Agent": "writing-style-corpus/1.0"})
+    for attempt in range(5):
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                blob = r.read()
+            break
+        except Exception as e:
+            err = e
+            time.sleep(3 * 2 ** attempt)
+    else:
+        return "fail", f"pdf download: {err}"
+    if blob[:4] != b"%PDF":
+        return "fail", "pdf url did not return a PDF"
+    (d / "paper.pdf").write_bytes(blob)
+    r = subprocess.run(["pdftotext", str(d / "paper.pdf"), str(d / "paper.txt")], capture_output=True)
+    (d / "paper.pdf").unlink()
+    return ("ok", "pdf text (fallback)") if not r.returncode else ("fail", "pdftotext failed")
+
+
 def main():
+    if sys.argv[1:2] == ["--pdf"]:
+        log_path = ROOT / "data" / "fetch_log.csv"
+        done = {r["arxiv"]: r for r in csv.DictReader(open(log_path))}
+        for axid in sys.argv[2:]:
+            status, detail = fetch_pdf(axid)
+            done[axid] = {"arxiv": axid, "status": status, "detail": detail}
+            print(axid, status, detail, flush=True)
+            time.sleep(3)
+        with open(log_path, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=["arxiv", "status", "detail"])
+            w.writeheader()
+            w.writerows(done.values())
+        return
     fields = set(sys.argv[1:])
     rows = list(csv.DictReader(open(ROOT / "data" / "selection.csv")))
     log_path = ROOT / "data" / "fetch_log.csv"
