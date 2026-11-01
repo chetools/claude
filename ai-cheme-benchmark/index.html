@@ -38268,14 +38268,14 @@ as they stand.</li>
 <li>Exception: Muse Spark 1.3 was not called through OpenRouter. Its replies were produced in the Muse app,
 one fresh agent per problem, each given only the system message above and the problem statement, with no
 tools and no code execution (as stated in the file of replies), and were pasted into this project by the
-user. Its sampling settings are not known, and its cost is shown as $0 because the Muse app did not charge
+user. Sampling settings for that run are not known, and its cost is shown as $0 because the Muse app did not charge
 for the run.</li>
 <li>Exception: Claude Sonnet 5.5 and Claude Haiku 5.5 were not called through OpenRouter either. Each reply
 came from a fresh Claude Code sub-agent (one per model and problem) whose task was the system message
 above, the problem statement, and one added line: &quot;Do not use any tools (no files, no code, no search).
 Answer from your own knowledge in a single reply; your reply is recorded verbatim as your exam answer.&quot;
-The sub-agents also carried Claude Code's own system prompt, which the other models did not have. Every
-sub-agent's transcript was checked: none called a tool apart from handing its answer back. The reply is
+The sub-agents also had Claude Code's own system prompt, which the other models did not have. Every
+sub-agent's transcript was checked: none called a tool apart from handing its answer back. Reply text is
 the sub-agent's first answer with FINAL lines, verbatim, or its hand-back message when it gave no other
 answer; text written after the harness asked a sub-agent to hand its answer back (repeats of the answer)
 is not part of the reply. Their sampling
@@ -38288,9 +38288,8 @@ models over time: small and older models first, then 2024 flagships (GPT-4o, Mis
 the first widely available reasoning models (o3, DeepSeek R1, Gemini 2.5 Pro), late-2025 models (GPT-5,
 GPT-5.2, Claude Sonnet 4.5, Claude Opus 4.5) and 2026 models (Gemini 3.1 Pro, Claude Opus 4.8). Claude
 Opus 5.5 was also run, but it is not shown. It is the grader, and its replies were graded by the model
-itself (its replies and grades are kept in <code>results/</code>). Claude Sonnet 5.5 and Claude Haiku 5.5 were added in
-its place, run as sub-agents (see Sampling settings); their release month is shown as 2026-10, the month
-they were run, and was not checked. GPT-4 Turbo, o3-mini and o4-mini were planned but were not called: OpenAI has retired them. GPT-4 and o1 were left out to stay within the budget. Muse Spark 1.3 (Meta) was added last, run
+itself (its replies and grades are kept in <code>results/</code>). In its place, Claude Sonnet 5.5 and Claude Haiku 5.5 were added, run as sub-agents (see Sampling settings); their release month is shown as 2026-10, the month
+they were run, and was not checked. GPT-4 Turbo, o3-mini and o4-mini were planned but were not called: OpenAI has retired them. Two further models (GPT-4 and o1) were left out to stay within the budget. Muse Spark 1.3 (Meta) was added last, run
 outside OpenRouter (see Sampling settings); its release month is shown as 2026-10, the month it was run, and
 was not checked against an announcement.</p>
 <p>Problems P13–P15 were written after P01–P12 had been graded for the models up to Claude Opus 4.5, to be
@@ -38308,8 +38307,7 @@ has taken the relevant course (fluid mechanics, process dynamics and control, or
 describe what a problem demands of the student, not how the AI models scored on it.</p>
 <ul>
 <li><strong>Level 1, direct application</strong> (P01, P05, P09). The problem maps onto one standard result from the course,
-such as the laminar friction factor, the step response of a first-order system or the Fenske equation. The
-work is to identify that result, substitute the data with consistent units and evaluate it; no iteration and
+such as the laminar friction factor, the step response of a first-order system or the Fenske equation. Work consists of identifying that result, substituting the data with consistent units and evaluating it; no iteration and
 no modelling decisions are needed.</li>
 <li><strong>Level 2, routine multi-step analysis</strong> (P02, P06, P10). Several standard relations are chained, and one of
 them may be implicit, such as the Colebrook equation solved by simple successive substitution. The student
@@ -38351,14 +38349,13 @@ or a value with no supporting working.</li>
 </ul>
 <p>The working is graded, not only the FINAL lines: a FINAL value that contradicts the working gets the
 credit of the working. A model's score is the mean of its problem scores, in percent.</p>
-<p>The grader was an AI model, Claude Opus 5.5, in one session: one grader instance per problem, which graded
+<p>Grading was done by an AI model, Claude Opus 5.5, in one session: one grader instance per problem, which graded
 every model's reply to that problem; the same mistake got the same deduction. As models were added
 in steps, each instance graded the new replies in a further batch and left its earlier grades unchanged.
 The grader is a model from the same family as the graded Claude models, and from the same
 generation as Claude Sonnet 5.5 and Claude Haiku 5.5; the grader's own replies are left out for this reason. It
 saw the problem, the reference answers, the reference solution and the rubric, graded the reply text only
-(not any hidden reasoning), and wrote the one-to-four-sentence justification shown under each reply. The
-instructions it followed are in <code>python/grading_prompt.md</code>.</p>
+(not any hidden reasoning), and wrote the one-to-four-sentence justification shown under each reply. Its instructions are in <code>python/grading_prompt.md</code>.</p>
 <p>A script (<code>tests/check_grades.py</code>) checked the grader: it read the FINAL lines of every reply and
 flagged each part where the grader gave full points to a value more than 5 % off the reference, or zero
 to a value within 1 % of it. It flagged 21 parts. Each was re-read and the grade was kept: meta-llama/llama-3.3-70b-instruct P13 (a): Qp = 50 L/s is stated without any network solution, from a wrong set-up (the stated pump head does not follow from it): a value without supporting working. openai/gpt-4o-mini P12 (f): 0.76 is stated, but the Kirkbride formula shown is garbled and cannot give it: a value without supporting working. qwen/qwen-2.5-72b-instruct P11 (e): Feed stage 7 is stated 'after detailed calculations' with no stage stepping shown: a value without supporting working. qwen/qwen-2.5-72b-instruct P13 (a): Qp = 50 L/s is stated without any network solution, from a wrong set-up (the stated pump head does not follow from it): a value without supporting working. microsoft/phi-4 P11 (e): Feed stage 7 is assumed ('Assume'), not obtained by stepping off stages: a value without supporting working. mistralai/mistral-large P15 (a): The bubble point is 1.01 °C from the reference; temperatures in P15 (a) need 0.2 °C (half points up to 1 °C), so the 1 % check does not apply: 0. deepseek/deepseek-chat P03 (a): 100.2 m is stated without any iteration, and the flows it reports contradict that head under its own equations: a value without supporting working. openai/o3 P13 (a): The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11). openai/o3 P13 (b): The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11). openai/o3 P13 (e): The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11). openai/o3 P14 (a): The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11). openai/o3 P15 (a): The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11). openai/o3 P15 (b): The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11). openai/o3 P15 (d): The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11). openai/o3 P15 (e): The reply gives only the FINAL lines, with no working at all: a value without supporting working (same rule as the bare answers in P03 and P11). deepseek/deepseek-r1-0528 P03 (a): All four values are close to the reference but are only stated in prose; no equation, friction factor, intermediate head or continuity check is shown: values without supporting working. deepseek/deepseek-r1-0528 P03 (b): As for (a): stated in prose without any working. deepseek/deepseek-r1-0528 P03 (c): As for (a): stated in prose without any working. deepseek/deepseek-r1-0528 P03 (d): As for (a): stated in prose without any working. deepseek/deepseek-r1-0528 P13 (c): Q3 = 3.5 L/s from B to C is stated after naming the Hardy Cross method, with no friction factors, losses or iterations shown: a value without supporting working. anthropic/claude-haiku-5.5 P11 (e): stage 7 matches the reference, but the reply switches lines at the minimum-reflux pinch (x = 0.364) on a wrong stripping line instead of at the operating-line intersection (0.3875); the match is a coincidence of a wrong method, graded 0 like the other P11 (e) answers without a sound method</p>
@@ -38399,7 +38396,7 @@ models here) have none and are left out of the score-versus-parameters chart.</p
 <h2 id="meth-cost">Cost</h2>
 <p>The cost of each model is the sum, over its replies, of the cost OpenRouter reported for each request
 (<code>usage.cost</code> in the response), in US dollars, at the prices of 23–24 October 2026 (the run dates). Models marked &quot;free&quot; were
-served on OpenRouter's free tier. The grading cost is not included. The total over all models was $12.1573.</p>
+served on OpenRouter's free tier. No grading cost is included. Over all models, the total was $12.1573.</p>
 <h2 id="meth-calibration-changes">Calibration changes</h2>
 <p>P01–P12, their reference solutions and their rubric were fixed before any reply was collected and were not
 changed after grading. P13–P15 and their rubric lines were added later, as described above; they were
@@ -38421,7 +38418,7 @@ but not against a textbook answer key.</li>
 <p>Every part that lost points has one label for the main cause of the loss, shown in the grid under each problem and
 next to each reply. Labels were assigned after grading, from the grader's justification for that part (and the reply
 itself where the justification was not enough); they do not change any score. A part that only repeats an earlier
-wrong value carries the type of the original mistake, and its note starts &quot;Carried from&quot;.</p>
+wrong value takes the type of the original mistake, and its note starts &quot;Carried from&quot;.</p>
 <ul>
 <li><strong>Wrong method or model</strong> (232 labelled parts): an approach, equation structure or model that cannot give the answer (e.g. wrong governing equation, wrong solution procedure, made-up formula structure).</li>
 <li><strong>Wrong formula or correlation</strong> (127 labelled parts): the right approach but a wrong or misremembered formula, correlation, coefficient or constant.</li>
@@ -38432,7 +38429,7 @@ wrong value carries the type of the original mistake, and its note starts &quot;
 </ul>
 <p>When more than one type could fit, these rules decide, in this order (the first that fits wins):</p>
 <ol>
-<li>If the part only reuses an earlier wrong value of the same reply and is otherwise right, it takes the type of that earlier mistake and its note starts &quot;Carried from (x):&quot;. If it reuses several wrong values, it takes the type that comes first in this list.</li>
+<li>If the part only reuses an earlier wrong value of the same reply and is otherwise right, it takes the type of that earlier mistake and its note starts &quot;Carried from (x):&quot;. Where several wrong values are reused, the part takes the type that comes first in this list.</li>
 <li>Missing or incomplete: the part is not answered, the reply is cut off, there is no final value, or a value is given with no working where the rubric requires the method to be shown.</li>
 <li>Wrong interpretation or assumption: the question or data was misread, the wrong quantity was answered, or a wrong physical assumption was made (flow regime, flow direction, phase, basis), even if the formula then used is correct for that assumption.</li>
 <li>Wrong method or model: the overall approach cannot give the answer (wrong balance, wrong procedure, a missing or invented step).</li>
@@ -38440,7 +38437,7 @@ wrong value carries the type of the original mistake, and its note starts &quot;
 <li>Unit or conversion error: the method and formula are right but a unit conversion is wrong or missing.</li>
 <li>Numerical or arithmetic slip: method, formula and units are right but the number is wrong (arithmetic, rounding, interpolation, an iteration stopped early).</li>
 </ol>
-<p>Two readers labelled the 915 lost parts independently, the second without seeing the first's labels (the first worked from the type definitions alone, the second also from the rules above). They chose the same type for 648 of 915 parts (71 %; Cohen's kappa 0.62). The 267 parts where they differed were settled by a third reader, who re-read the justification and the reply against the rules: 22 took the first reader's type, 243 the second's and 2 a third type. For five of them (P01 (b) and (c), where a model's own wrong Reynolds number from (a) was turbulent and a turbulent correlation was consistent with it) the third reader's call was changed back to the second reader's on review. The labels are judgements about the reply, not measurements; the readers were AI models (Claude), not human graders.</p>
+<p>Two readers labelled the 915 lost parts independently, the second without seeing the first's labels (the first worked from the type definitions alone, the second also from the rules above). They chose the same type for 648 of 915 parts (71 %; Cohen's kappa 0.62). The 267 parts where they differed were settled by a third reader, who re-read the justification and the reply against the rules: 22 took the first reader's type, 243 the second's and 2 a third type. For five of them (P01 (b) and (c), where a model's own wrong Reynolds number from (a) was turbulent and a turbulent correlation was consistent with it) the third reader's call was changed back to the second reader's on review. Mistake-type labels are judgements about the reply, not measurements; the readers were AI models (Claude), not human graders.</p>
 </div>
       </div>
     </section>
