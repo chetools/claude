@@ -36,13 +36,13 @@ Counted move sequence. The usual order is field context, then a gap or limitatio
 
 Typical length (counted, 40 complete blocks): median 7 paragraphs, range 2–16. Sentence counts follow the metrics row (median 37.5). Short introductions of 9–14 sentences occur in 6 documents (astro-ph/0006053, 1201.0490, 1705.07874, 1003.1466, 1004.4170, 1212.5226); all six still run context, contribution and either result or roadmap.
 
-The context move takes most of the space (impression, confirmed by paragraph position in 30 of 40 complete blocks, where the first contribution sentence falls in the second half of the introduction, for example 2103.00020, 1506.01497, astro-ph/0505010). The gap is usually one paragraph, sometimes one sentence.
+The context move takes most of the space (impression; in 2103.00020, 1506.01497 and astro-ph/0505010 the first contribution sentence comes after more than half of the text). The gap is usually one paragraph, sometimes one sentence.
 
 Constructed example (four moves in four sentences): "Shell-and-tube exchangers are sized from correlations for the shell-side film coefficient. These correlations were fitted to clean tube bundles and overpredict the coefficient by 20–40 % once fouling builds up. In this paper we fit a correction factor to 312 plant measurements. The corrected correlation reduces the mean sizing error from 31 % to 9 %."
 
 ## 2. Paragraphs
 
-Opening. Counted over paragraph-initial sentences of the 40 complete blocks: most paragraphs open with a noun-phrase subject that names the paragraph's topic (the problem, the prior method, the new system). Openers with a connective ("However", "Instead", "Yet") start fewer paragraphs than sentences in general; the connective is placed at the gap paragraph in particular (1706.02216, 2212.04356, 1512.03385, 2103.00020).
+Opening (impression): most paragraphs open with a noun-phrase subject that names the paragraph's topic (the problem, the prior method, the new system). A paragraph-initial connective ("However", "Instead", "Yet") marks the gap paragraph (1706.02216, 2212.04356, 1512.03385, 2103.00020).
 
 Development. A paragraph usually states one claim and then supports it with a list of examples, a mechanism, or a sequence of prior works (impression). Prior work is told in chronological order with the cited work as grammatical subject in 2103.00020, astro-ph/0009005, 1609.04153 and 0906.0612. In method papers the middle paragraph develops a mechanism step by step: 1502.03167 (why shifting input distributions slow training), 1512.03385 (why a deeper net should not train worse), math/0502327 (reduction of decoding to sparse recovery).
 
@@ -54,7 +54,7 @@ Constructed example of a handover by repeated noun: "...so the fouling layer low
 
 ## 3. Sentences
 
-Length and rhythm. Median 22.4 words (metrics). Long sentences over 40 words are 6.7 % of sentences, and 26 of 51 documents have at least one sentence over 60 words by the full-stop split (for example astro-ph/0009005, 1502.00956, 1709.10010, math/0307152). Impression: the strong texts alternate a long sentence carrying a mechanism or a list with a short sentence that states the point. Short point sentences of 5–10 words are counted in 1512.03385, 1502.03167, 2103.00020, 0802.1189 and 1203.6372, each with 3 or more.
+Length and rhythm. Median 22.4 words (metrics). Long sentences over 40 words are 6.7 % of sentences, and 26 of 51 documents have at least one sentence over 60 words by the full-stop split (for example astro-ph/0009005, 1502.00956, 1709.10010, math/0307152). Impression: the strong texts alternate a long sentence carrying a mechanism or a list with a short sentence that states the point. Short point sentences of 5–10 words were noted in 1512.03385, 1502.03167, 2103.00020, 0802.1189 and 1203.6372 (not counted).
 
 Constructed example: "Above a Reynolds number of about 10 000 the boundary layer near the wall becomes turbulent, the film resistance falls, and the measured coefficient rises with velocity to the power 0.8. The laminar correlation fails here."
 
@@ -66,7 +66,7 @@ Use of "we". Median 10.6 per 1000 words, with a wide spread by field (counted me
 
 Mathematics papers use an inclusive "we" and "one" to walk the reader through an argument: "one can", "one would" occurs 12 times in 0805.4471 and in 9 more documents (for example math/0307152, math/0409186, 1409.4842).
 
-Passive voice. 25 % of sentences (metrics). Counted placement: the passive dominates in the context and prior-work moves (astro-ph/0009005, 0708.1752, 1609.04153, 1207.7235) and in descriptions of procedures (1207.7235 "were formally approved and fixed"). The contribution and result moves are active with "we" in 33 of the 41 documents that state a contribution.
+Passive voice. 25 % of sentences (metrics). Placement (impression): the passive dominates in the context and prior-work moves (astro-ph/0009005, 0708.1752, 1609.04153, 1207.7235) and in descriptions of procedures (1207.7235 "were formally approved and fixed"). The contribution and result moves are mostly active with "we" (1506.01497, 1512.03385, 1706.02216).
 
 ## 4. Claims and evidence
 
@@ -78,7 +78,7 @@ Constructed example: "The corrected correlation predicts the 312 measured coeffi
 
 Strength of claims. Counted on the 18 documents that preview results: the result verb is unhedged in 17 ("we show", "outperforms", "achieves"); the exception is 1003.1466 ("seems more promising"). Hedges attach to implications and generalisations in 5 of the 18 (astro-ph/0006053, 1512.03385, 2212.04356, 1506.01497, 2103.00020: "suggest", "we expect", "may be"). Hedge words also cluster in explanations of why prior work falls short (2103.00020 "This is likely because"; 1409.4842 "One must be cautious"). Median hedge rate is 3.95 per 1000 words.
 
-Priority and superlative claims ("first", "to our knowledge") occur in 25 of 51 by the regular expression, most often in machine learning and computer science (1403.6652, 1502.00956, 1608.04644, 1810.04805, 2308.04079).
+Priority and superlative phrases ("first", "for the first time", "to our knowledge") match in 20 of 51 by the regular expression, some of them false matches, most often in machine learning and computer science (1403.6652, 1502.00956, 1608.04644, 1810.04805, 2308.04079).
 
 ## 5. Terms and definitions
 
@@ -113,13 +113,13 @@ Constructed example: "The correction removes most of the bias. Can a single fact
 
 ## 8. Weak patterns
 
-- Citation lists that stand in for content: 9 documents have at least one sentence with five or more citation markers (for example 0909.0948, 1009.1622, 1603.04467, 1709.10010, 1707.00027). The sentence names no finding from the cited works.
+- Citation lists that stand in for content: 10 documents have at least one sentence with five or more citation markers (for example 0909.0948, 1009.1622, 1603.04467, 1709.10010, 1707.00027). The sentence names no finding from the cited works.
 - Very long sentences: over 60 words in 26 of 51 documents. The 116-word sentence in astro-ph/0009005 and the 129-word one in 1502.00956 hold several claims each.
-- Hype and evaluative adjectives (counted from a list of 17 words such as "revolution", "groundbreaking", "dramatically", "remarkable", "excellent", "crucial"): at least one in 34 of 51; four or more in 0909.0948, 0906.2569, 1409.4842, 1512.03385, 0803.2392, 0906.0612 and q-bio/0402017.
+- Hype and evaluative adjectives (counted from a list of 17 words such as "revolution", "groundbreaking", "dramatically", "remarkable", "excellent", "crucial"): at least one in 33 of 51; four or more in 0909.0948, 0906.2569, 1409.4842, 1512.03385, 0803.2392, 0906.0612 and q-bio/0402017.
 - Promotional self-assessment: 1502.00956 ("most complete and reliable solution"), 1506.01497 ("elegant"), 0803.2392 ("Incredibly").
 - Defensive or opinion paragraphs: 0708.1752 (a paragraph explaining that the paper is no accusation), 0906.2569 ("we believe" on licensing models), 1608.04644 and 1810.04805 ("we argue").
 - Paragraphs of one or two sentences in series: 1102.1523, 0802.1189 (16 paragraphs in 878 words) and 1403.6652; the argument breaks into fragments.
-- Typing errors, counted: 17 documents (for example 1009.1622 "of of", 1305.3347, 1207.3907, 2308.04079, 2103.00020).
+- Typing errors, noted while reading: at least 17 documents (for example 1009.1622 "of of", 1305.3347, 1207.3907, 2308.04079, 2103.00020).
 - Undefined acronyms at first use, counted only on a check of computer-science terms: "API" in 1610.05820, "ChIP-seq" in 1305.3347, and a mismatched "NBCR"/"NCBR" pair in 1707.00027.
 
 ## 9. Comparison with the house rules
@@ -136,8 +136,8 @@ Rules the strong texts follow:
 Rules the texts break:
 
 - Impersonal register (Section 2): first person in 46 of 51; second person "you" in 1410.3012, "the reader" in 1009.1622 and 0708.1752. The rules do not forbid "we" in papers, but they ask for an impersonal register; the corpus strongly prefers "we" for the authors' actions.
-- Persuasive framing (Section 2): "we argue" and "we believe" in 0906.2569, 1608.04644, 1810.04805; priority claims in 25 of 51.
-- Overused words (Section 4): "crucial" in 12 documents (for example 0909.0948, 2212.04356, 1810.04805, 2103.00020); hype words in 34 of 51.
+- Persuasive framing (Section 2): "we argue" and "we believe" in 0906.2569, 1608.04644, 1810.04805; priority phrases in 20 of 51.
+- Overused words (Section 4): "crucial" or "crucially" in 12 documents (for example 0909.0948, 2212.04356, 1810.04805, 2103.00020); hype words in 33 of 51.
 - Origin statements (Section 6): 7 documents state companion papers, earlier versions or release context (1502.01583, 1609.04153, 1212.5226, 1506.01497, 1502.00956, cond-mat/0308217, 1709.10010). In a journal introduction this is conventional, so the house rule conflicts with the genre here.
 - Negative parallelism (Section 4): "not just ... but", "not only ... but also", "rather than" in 1409.4842, 0909.0948, 0802.1189.
 - Conversational headings (Section 2): question headings in 0805.4471 and "A puzzling numerical experiment" in math/0409186; exclamation marks in math/0409186 and 1410.3012.

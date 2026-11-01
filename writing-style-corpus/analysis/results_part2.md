@@ -37,7 +37,7 @@ Constructed example of the opening move: "This section tests the heat-exchanger 
 
 ## 2. Paragraphs
 
-Opening. In the 23 blocks, the commonest paragraph opener is a sentence that names the test or the object under test as subject, before any number (by reading, the dominant form in 18 of 23; for example 1506.02640, 1708.01492, 1603.02754, 1105.0828). A second common opener points at a display: "Figure/Table [REF] shows/summarizes/compares" occurs 30 times across 13 blocks (counted; 2010.11929 and hep-ph/0201195 have 5 each, 1506.02640 has 3). The display sentence states what is plotted, and the next sentences read it.
+Opening. In the 23 blocks, the commonest paragraph opener is a sentence that names the test or the object under test as subject, before any number (by reading, the dominant form in 18 of 23; for example 1506.02640, 1708.01492, 1603.02754, 1105.0828). A second common opener points at a display: "Figure/Table [REF] shows/summarizes/compares" occurs 27 times across 12 blocks (counted; 2010.11929 and hep-ph/0201195 have 5 each, 1506.02640 has 3). The display sentence states what is plotted, and the next sentences read it.
 
 Development. Inside a paragraph the order is usually number, comparison, reason. Constructed example: "The new sorter finishes the 10^8-key benchmark in 4.1 s. The library quicksort needs 6.3 s on the same machine. Most of the gain comes from the branch-free partition step, which removes mispredictions on random keys."
 
@@ -51,15 +51,15 @@ Information flow. The subject position is held by the method or system name in 1
 
 Length and rhythm. Short declarative result sentences (under 12 words) alternate with longer setup or explanation sentences. The short form is most frequent in 1506.02640, 1708.01492, 1303.3997 and 1603.02754, where several consecutive sentences of 8–15 words state one result each. The longer sentences (30+ words) carry conditions, test protocol or the reasoning behind a number (2212.04356, 1009.1622, hep-ph/0201195, 1010.3775). Constructed example of the rhythm: "The coarse grid fails. Its error at the wall exceeds 20%, because the first cell centre lies outside the viscous sublayer at every flow rate tested."
 
-Openers. Prepositional and conditional openers that fix the condition first are common: "On data set X", "For the base model", "At test time", "In the static framework" (counted by reading in 19 of 23; for example 1706.03762, 1708.01492, 1010.3775, 1506.02640). Connective openers are infrequent (measured median 0.067 of sentences). "However" opens a sentence 15 times in the 23 blocks, most in 1105.0828 (4), 1706.02216 (3) and 1506.02640 (3). "Finally" is used to mark the last test in 7 blocks (0805.4471, 1411.4038, 1603.02754, 2010.11929).
+Openers. Prepositional and conditional openers that fix the condition first are common: "On data set X", "For the base model", "At test time", "In the static framework" (counted by reading in 19 of 23; for example 1706.03762, 1708.01492, 1010.3775, 1506.02640). Connective openers are infrequent (measured median 0.067 of sentences). "However" opens a sentence 15 times in the 23 blocks, most in 1105.0828 (4), 1706.02216 (3) and 1506.02640 (3). "Finally" is used to mark the last test in 6 blocks (1009.1622, 0805.4471, 1411.4038, 1603.02754, 2010.11929).
 
-"We". "We" is the normal agent for actions: we trained, we compared, we set, we report. Counted occurrences of "we" range from 0 (1207.7235) to 53 in 1500 words (2308.04079); 1609.02907 has 42 in 1180 words. "We" with a perception verb ("we find", "we observe", "we can see") occurs in 11 of 23 blocks, most in 1706.02216 and 1105.0828 (6 each). The CMS paper (1207.7235) and the Gaia summary (1609.04153) are impersonal throughout.
+"We". "We" is the normal agent for actions: we trained, we compared, we set, we report. Counted occurrences of "we" range from 0 (1207.7235) to 53 in 1500 words (2308.04079); 1609.02907 has 42 in 1180 words. "We" with a perception verb ("we find", "we observe", "we can see") occurs in 10 of 23 blocks, most in 1706.02216 and 1105.0828 (6 each). The CMS paper (1207.7235) and the Gaia summary (1609.04153) are impersonal throughout.
 
 Voice. Active voice with "we" is used for what the authors did; the passive is used for protocol held constant, for quantities and for displays (by reading, clearest in 0805.4471, 1207.7235, 1609.04153, hep-ph/0201195). Constructed example: "We heated each sample at 5 K/min. The onset temperature was taken as the intersection of the baseline and the tangent at the inflection point."
 
 ## 4. Claims and evidence
 
-Number with baseline. In most result sentences the number and its comparison point appear together, either as an absolute pair or as a ratio or difference. Counted by reading, this pairing is the main form in 16 of 23 (1505.04597, 1506.02640, 1706.02216, 2212.04356, 1708.01492). Speed is stated as a multiple ("6 times faster", "[MATH]x slower"): the "times"/"x" pattern occurs 28 times in 9 blocks (counted), with 9 in 1708.01492 and 5 each in 1506.02640 and 1409.7208.
+Number with baseline. In most result sentences the number and its comparison point appear together, either as an absolute pair or as a ratio or difference. Counted by reading, this pairing is the main form in 16 of 23 (1505.04597, 1506.02640, 1706.02216, 2212.04356, 1708.01492). Speed is stated as a multiple ("6 times faster", "[MATH]x slower"): the "times"/"x" pattern occurs 26 times in 8 blocks (counted), with 9 in 1708.01492 and 5 each in 1506.02640 and 1409.7208.
 
 Constructed example: "The packed column reaches 98.5% recovery at 1.2 kPa pressure drop, against 96.0% for the tray column at the same reboiler duty."
 
@@ -83,15 +83,15 @@ Undefined terms remain in several blocks. Abbreviations are used without a full 
 
 Cohesion rests mainly on repetition of the same noun or name, not on connectives (impression, supported by the low connective-opener share of 0.067). In the tool papers the program name recurs as the subject sentence after sentence (1708.01492, 1303.3997, 1603.02754). In the physics papers the measured quantity recurs ("the scatter", "the fit", "the excess") (astro-ph/0006289, 1207.7235, hep-ph/0201195).
 
-"This" plus a noun ("This result", "This finding", "This experiment") links a result to its reading in 8 of 23 blocks (2010.11929, 1603.02754, 1010.3775, 1207.7235). Bare "This + verb" openers occur 18 times in the 23 blocks (counted), most in hep-ph/0201195 (3) and 1603.02754 (2), close to the measured median share of 0.021.
+"This" plus a noun ("This result", "This finding", "This experiment") links a result to its reading in 8 of 23 blocks (2010.11929, 1603.02754, 1010.3775, 1207.7235). Bare "This + verb" openers occur 13 times in the 23 blocks (counted), most in hep-ph/0201195 (3) and 1603.02754 (2), close to the measured median share of 0.021.
 
-Contrast is carried by "while", "whereas" and "in contrast" inside the sentence, 32 times in 16 of 23 blocks (counted; 1506.02640 has 5, 1603.02754 and 2212.04356 have 4 each). Sequence markers ("First", "Second", "Finally") organize lists of experiments in 7 blocks. Cross-references to appendices and other sections are dense in 6 blocks (hep-ph/0201195 has 12, 2010.11929 has 6, 1706.02216 has 5) and absent in 6 (1506.02640, 1303.3997, 1409.7208, 1708.01492).
+Contrast is carried by "while", "whereas" and "in contrast" inside the sentence, 31 times in 13 of 23 blocks (counted; 1506.02640 has 5, 1603.02754 and 2212.04356 have 4 each). Sequence markers ("First", "Second", "Finally") organize lists of experiments in 6 blocks (counted for "Finally"). Cross-references to appendices and other sections are dense in 6 blocks (hep-ph/0201195 has 12, 2010.11929 has 6, 1706.02216 has 5) and absent in 7 (astro-ph/0006289, 1608.04644, 1506.02640, 1303.3997, 1409.7208, 1708.01492).
 
 Constructed example of noun-repetition cohesion: "The reactor reaches steady state after 40 min. At steady state, the reactor outlet holds 2.1 mol/L of product. The outlet concentration falls by 8% when the feed temperature drops 10 K."
 
 ## 7. Differences between groups
 
-Machine learning and computer science (16 blocks, 14 with results). Per-data-set subsections, a heavy "we" (1609.02907 and 2308.04079 above 35 per 1000 words), comparisons with named baselines, "state of the art" claims (counted 25 times in 9 blocks; 6 in 2308.04079, 5 in 2010.11929), and single values without spread. Setup detail (hardware, hyperparameters) is placed inside results (1603.02754, 1609.02907, 1706.03762, 2010.11929).
+Machine learning and computer science (16 blocks, 14 with results). Per-data-set subsections, a heavy "we" (1609.02907 and 2308.04079 above 35 per 1000 words), comparisons with named baselines, "state of the art" claims (counted 24 times in 8 blocks; 6 in 2308.04079, 5 in 2010.11929), and single values without spread. Setup detail (hardware, hyperparameters) is placed inside results (1603.02754, 1609.02907, 1706.03762, 2010.11929).
 
 Astrophysics and physics (6 blocks, 5 with results). Longer sentences, quantities as subjects, figure-reading paragraphs that describe each curve, and uncertainty in most numbers (astro-ph/0006289, 1207.7235, hep-ph/0201195, 1609.04153). Collaboration writing is impersonal (1207.7235 has no "we"). Caveats are stated as physical reasons for a deviation (1009.1622, hep-ph/0201195).
 
@@ -101,12 +101,12 @@ Quantitative biology tool papers (1303.3997, 1409.7208, 1708.01492). Very short 
 
 ## 8. Weak patterns
 
-- "Significantly" without a test. "Significant" or "significantly" occurs 27 times in 12 blocks (counted). In 1505.04597 (3), 1506.02640 (5) and 1608.04644 (3) it means "large", with no test behind it. In 1706.02216 and 1207.7235 it refers to a stated test. A reader cannot tell the two uses apart.
+- "Significantly" without a test. "Significant" or "significantly" occurs 26 times in 10 of the 23 blocks (counted). In 1505.04597 (3), 1506.02640 (5) and 1608.04644 (3) it means "large", with no test behind it. In 1706.02216 and 1207.7235 it refers to a stated test. A reader cannot tell the two uses apart.
 - Points without spread for small differences: gains under 1 point are reported as single values in 2010.11929, 1706.03762 and 1506.02640, with no run-to-run variation.
 - Setup inside results: data sets and hyperparameters fill most of 1609.02907 and 1610.05820, so the reader reaches few numbers.
 - Pointers in place of content: "results are shown/summarized in Table [REF]" with no number in the text occurs in 1609.02907 (two subsections) and 1603.02754 (5 times "The results are shown in").
 - Undefined abbreviations (Section 5), 9 of 23 blocks.
-- Evaluative adjectives about one's own result: "surprisingly well", "remarkably little", "excellent fit", "fascinating" (1706.03762, 1009.1622, hep-ph/0201195, 1411.1607). "Interestingly" opens a sentence 6 times in 5 blocks (0805.4471 twice, 1706.02216, 1603.02754, 2010.11929).
+- Evaluative adjectives about one's own result: "surprisingly well", "remarkably little", "excellent fit", "fascinating" (1706.03762, 1009.1622, hep-ph/0201195, 1411.1607). "Interestingly" opens a sentence 5 times in 4 blocks (0805.4471 twice, 1706.02216, 1603.02754, 2010.11929).
 - Mislabelled or misplaced content under a results heading: 7 of 32 blocks (Section "Material and counting basis").
 - Typographical slips and broken references in the source text (1603.02754, 1708.01492, 1506.02640), which suggests results text received less editing than abstracts (impression).
 
@@ -128,8 +128,8 @@ Rules the texts break:
 - Section 2, no persuasive or evaluative framing: broken by "surprisingly well", "excellent", "fascinating", and "significantly" used as an intensifier (1706.03762, hep-ph/0201195, 1411.1607, 1505.04597, 1506.02640).
 - Section 2, impersonal register: the house rules do not ban "we", but the measured rate in results (19.6 per 1000 words) is the highest of any paper unit. The strong texts use "we" for actions and keep quantities as subjects for findings; a writer following the house rules can keep that split.
 - Section 9, number typography: ranges and multiples are written with hyphens and "x" ("8-10%", "400-500x", "3x") in 1506.02640, 1603.02754 and 1409.7208, where the house rules ask for an en dash and ×.
-- Section 4, "worth noting" and similar framing: "It is worth noting" (1708.01492), "It is important to realize" (1608.04644), and "Note that" (counted 19 times in 13 blocks; 4 in 2308.04079).
+- Section 4, "worth noting" and similar framing: "It is worth noting" (1708.01492), "It is important to realize" (1608.04644), and "Note that" (counted 12 times in 7 of 23 blocks; 4 in 2308.04079).
 - Section 10, uncertainty with each reported value: absent in 12 of 23.
 - Section 6, no prompt or status framing inside a document: 1603.04467 holds only a promise of a later version, and 1609.04153 states the date of the estimates and a package location inside the section.
 
-Rules with no counterpart in the corpus: the house preference for prose over bullets is mostly followed (bulleted protocols or data-set lists appear in 4 of 23: math/0409186, 1105.0828, 1411.4038, 1506.02640, each for genuinely parallel items).
+Prose over bullets (Section 6): the house preference for prose over bullets is mostly followed (bulleted protocols or data-set lists appear in 4 of 23: math/0409186, 1105.0828, 1411.4038, 1506.02640, each for genuinely parallel items).
