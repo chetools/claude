@@ -92,7 +92,7 @@ Signpost nouns that name the main point ("The key feature above is", "The crucia
 
 ## 7. Differences between groups
 
-Condensed matter and the letter-style texts in physics and biology (0802.2389, 1004.0546, 0805.2850, cond-mat/0503533, physics/0506133, 0709.1916) put the result number early, describe preparation in the passive, and walk through figures with "Figure N shows ..." sentences. Figure-led sentences occur in 12 blocks overall, 9 of them from condensed matter, astrophysics, physics (other) and quantitative biology.
+Condensed matter and the letter-style texts in physics and biology (0802.2389, 1004.0546, 0805.2850, cond-mat/0503533, physics/0506133, 0709.1916) put the result number early, describe preparation in the passive, and walk through figures with "Figure N shows ..." sentences. Figure-led sentences occur in 12 blocks, all from condensed matter, astrophysics, physics (other) and quantitative biology (for example 0802.2389, 0906.0612, 2106.11799, 0909.0948).
 
 Machine learning (1609.03499, 1512.03385, 1505.04597, 1609.02907, 1810.04805, 1411.4038) uses short subsections, one per design component, a high "we" rate, design reasons stated as "to"-clauses, and qualitative claims backed by a forward pointer to experiments.
 
@@ -139,4 +139,4 @@ Rules the strong texts break:
 - "No hype": the 6 promotional blocks in Section 8.
 - "Every modelling choice has a citation": 1003.1466 sets parameter values as "typically" taken, without a source; 0909.0948 states one error choice as "somewhat arbitrary", which is honest but uncited.
 
-The rules on short evaluative sentences and rhetorical questions are not covered by the house rules. Both are used in the readable blocks of this bundle (9 and 8 blocks respectively) and are always followed at once by the explanation they announce.
+The house rules say nothing about short evaluative sentences or framing questions. Both are used in the readable blocks of this bundle (9 and 8 blocks respectively) and are always followed at once by the explanation they announce.
