@@ -77,7 +77,7 @@ textarea { width: 100%; font-family: Consolas, Menlo, monospace; font-size: 0.88
     <button id="saveKey" class="small">Save</button>
     <button id="forgetKey" class="small ghost">Forget key</button>
   </div>
-  <p class="hint">Stored only in this browser and sent only to openrouter.ai. Free models need no credit;
+  <p class="hint">The key is stored only in this browser and sent only to openrouter.ai. Free models need no credit;
     get a key at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>.</p>
 
   <label for="model">Model</label>
@@ -87,9 +87,9 @@ textarea { width: 100%; font-family: Consolas, Menlo, monospace; font-size: 0.88
   </div>
   <p class="hint" id="modelInfo">Loading free models…</p>
   <p class="hint">"Auto" ranks the free vision models by how well each reads a built-in sample card (text, bold,
-    italic, strikethrough, emoji, table), tested once a day; models scoring under 50 are skipped. Results are pooled with other visitors (only the sample
-    card's answers, never your images or text), so models someone tested in the last day are not re-tested. If a model is busy, the next ones are
-    tried, then OpenRouter's own free router. Tesseract's plain reading is sent along as a draft.</p>
+    italic, strikethrough, emoji, table). Testing runs once a day; models scoring under 50 are skipped. Results are pooled with other visitors (only the sample
+    card's answers, never your images or text). A model tested by another visitor in the last day is not re-tested. If a model is busy, the next models are
+    tried, then OpenRouter's own free router. Tesseract's plain reading of the image is sent along as a draft.</p>
 </aside>
 
 <main class="main">
@@ -97,7 +97,8 @@ textarea { width: 100%; font-family: Consolas, Menlo, monospace; font-size: 0.88
     <header>
       <h1>Image to Text</h1>
       <p class="intro">Drop, paste or pick an image with text. A free vision model transcribes it with its
-        formatting, ready to paste into Gmail, Discord or iPhone Messages.</p>
+        formatting, ready to paste into Gmail, Discord or iPhone Messages. An OpenRouter API key is required;
+        enter it under Settings in the sidebar.</p>
       <div id="status" class="status">Add an image to start.</div>
     </header>
 
@@ -114,7 +115,7 @@ textarea { width: 100%; font-family: Consolas, Menlo, monospace; font-size: 0.88
     </section>
 
     <section class="card">
-      <label for="md">Transcription (Markdown, edit to fix mistakes; outputs update as you type)</label>
+      <label for="md">Transcription in Markdown (edit to fix mistakes; outputs update as you type)</label>
       <textarea id="md" spellcheck="false" rows="10"></textarea>
     </section>
 
@@ -125,7 +126,7 @@ textarea { width: 100%; font-family: Consolas, Menlo, monospace; font-size: 0.88
     </nav>
     <section class="card panel" id="panel-gmail">
       <div class="row"><button class="copy" data-out="gmail">Copy for Gmail</button>
-        <span class="muted">Copies formatted text; paste into the message body.</span></div>
+        <span class="muted">Formatted text is copied; paste it into the message body.</span></div>
       <div id="out-gmail" class="gmail-preview"></div>
     </section>
     <section class="card panel" id="panel-discord" hidden>

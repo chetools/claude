@@ -97,7 +97,7 @@ dialog { border: 1px solid var(--line); border-radius: 10px; max-width: min(30re
   <section id="start" class="hidden">
     <div class="card" id="infocard"></div>
     <div id="sebgate" class="card hidden">
-      <p><strong>This exam must be taken in Safe Exam Browser.</strong> You are not in Safe Exam Browser now, so you cannot start.</p>
+      <p><strong>This exam must be taken in Safe Exam Browser.</strong> You are not in Safe Exam Browser now. You cannot start.</p>
       <div class="row"><a class="btn" id="seblink" href="#">Open in Safe Exam Browser</a><a class="btn secondary" id="sebfile" href="#">Download the .seb file</a></div>
     </div>
     <form id="startform" class="card" autocomplete="off">
@@ -510,7 +510,7 @@ dialog { border: 1px solid var(--line); border-radius: 10px; max-width: min(30re
     for (const { q, n } of order) { const s = status(q); if (s === "empty") empty.push(n); else if (s === "partial") partial.push(n); }
     let t = "";
     if (empty.length) t += "Not answered: question" + (empty.length > 1 ? "s " : " ") + empty.join(", ") + ". ";
-    if (partial.length) t += "Only partly filled: question" + (partial.length > 1 ? "s " : " ") + partial.join(", ") + ". ";
+    if (partial.length) t += "Partly filled: question" + (partial.length > 1 ? "s " : " ") + partial.join(", ") + ". ";
     $("confirmtext").textContent = t + "You can submit only once. Submit your exam now?";
     $("confirm").showModal();
   }
