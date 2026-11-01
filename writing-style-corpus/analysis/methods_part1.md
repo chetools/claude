@@ -17,7 +17,7 @@ The usual sequence of moves, counted over all 34:
 3. Procedure: the method stated in order, as prose steps, a numbered list or pseudocode. Present in 33 of 34 (the exception is the survey 0906.0612, which describes other authors' procedures).
 4. Justification of choices: a reason or a rejected alternative for at least one setting. Present in 18 of 34 (astro-ph/0505010, 1706.02216, 2212.04356, 1010.3775, 1305.3347, 1105.0828).
 5. Scope or limitation: what the method does not cover, or an approximation it makes. Present in 10 of 34 (1206.2332, 1709.10010, 1509.06555, 0803.4060, 1409.7208).
-6. Pointer onward: to an appendix, a later section or a code repository. Present in 19 of 34 by the regex count of "see/described in/refer to + Section/Appendix/Ref" plus explicit URLs.
+6. Pointer onward: to an appendix, a later section or a code repository. Present in 14 of 34 by a regex count of "see/described in/refer to + Section/Appendix/Ref"; code or data URLs add 1307.6212 and 1206.2332.
 
 Constructed example of moves 1 to 3: "The solver has two stages. The first stage computes the steady temperature field; the second integrates the transient from that field. Let T(x, t) be the wall temperature in kelvin and h the heat transfer coefficient in W/(m² K)."
 
@@ -31,7 +31,7 @@ Constructed example of the label opening: "Boundary conditions. The inlet temper
 
 Development follows the order of the procedure in the procedure group and the order of the derivation in the derivation group (impression, consistent in every document read). Paragraphs close in three ways: on a consequence of the step ("This gives ...", "As a result, ..."), on a parameter value, or on a pointer onward. Closing summaries that restate the paragraph are rare: none were found in 1009.1622, 2010.11929 or 1206.2332.
 
-Hand-over between paragraphs uses three devices. Step order ("First ... Then ... Finally", counted in 22 of 34, densest in 0912.3599 with 7 and 1206.2332 with 5). Repetition of the last paragraph's object as the next subject, for example a paragraph ending on a weight function and the next beginning "The weight function ..." (impression, frequent in 1509.06555, 1305.3347, cond-mat/0408187). And contrast with the previous method ("Instead, ...", "In contrast to ..."), counted in 9 of 34 (1105.0828, 0803.4060, 1212.5226, 2212.04356).
+Hand-over between paragraphs uses three devices. Step order ("First ... Then ... Finally", counted in 19 of 34, densest in 0912.3599 with 7 and 1206.2332 with 5). Repetition of the last paragraph's object as the next subject, for example a paragraph ending on a weight function and the next beginning "The weight function ..." (impression, frequent in 1509.06555, 1305.3347, cond-mat/0408187). And contrast with the previous method ("Instead, ...", "In contrast to ..."), counted in 9 of 34 (1105.0828, 0803.4060, 1212.5226, 2212.04356).
 
 ## 3. Sentences
 
@@ -39,11 +39,11 @@ Information flow (impression, checked in every document read): the subject carri
 
 Final stress position holds the number or the reason. Sentences ending on a value are frequent in the procedure group (1010.3775, 2212.04356, 1206.2332). Sentences ending on a "because" or "to avoid" clause are frequent where choices are justified (2212.04356, 1105.0828, 1706.02216).
 
-Length and rhythm: mean sentence length is 21.4 words, with a coefficient of variation of 0.517, so a 10-word sentence next to a 35-word one is normal. Only 6.3% of sentences exceed 40 words. Short sentences of fewer than 8 words appear in 32 of 34 documents (counted), and they are typically flat statements of a fact or a parameter: "No temporal smoothing was performed" in form. The highest counts are in 1206.2332 (14) and math/0307152 (10). Long sentences carry a definition list after an equation ("where A is ..., B is ..., and C is ...").
+Length and rhythm: mean sentence length is 21.4 words, with a coefficient of variation of 0.517, so a 10-word sentence next to a 35-word one is normal. Only 6.3% of sentences exceed 40 words. Short sentences of fewer than 8 words appear in 30 of 34 documents (counted), and they are typically flat statements of a fact or a parameter: "No temporal smoothing was performed" in form. The highest counts are in 1206.2332 (14) and math/0307152 (10). Long sentences carry a definition list after an equation ("where A is ..., B is ..., and C is ...").
 
-Openers (counted): sentences opening with "We" are frequent in 28 of 34. Explicit connective openers are 7.3% of sentences (metrics row). "Since/Because" as a sentence opener appears in 21 of 34. "Let" opens a definition in 9 of 34, mainly the proof and derivation groups (1105.1186 with 11, 1607.00653, 0803.2392, math/0307152). Imperative or invitational openers ("Consider", "Suppose", "Recall", "Write") appear only in 3 of 34, all mathematical (0912.3599, 1105.1186, math/0307152, with 0803.2392 using "Let us"). Questions appear in 1 of 34 (0803.0547).
+Openers (counted): explicit connective openers are 7.3% of sentences (metrics row). "Since/Because" as a sentence opener appears in 17 of 34. "Let" opens a definition in 8 of 34, mainly the proof and derivation groups (1105.1186 with 11, 1607.00653, 0803.2392, math/0307152). Imperative or invitational openers ("Consider", "Suppose", "Recall", "Write") appear only in 4 of 34, all mathematical (0912.3599, 1105.1186, math/0307152, 0803.2392). Questions appear in 1 of 34 (0803.0547).
 
-"We": 32 of 34 use it at least once; 28 use it more than 4 times. The two with none are a collaboration search description (1207.7235) and a problem formulation written entirely in "Let" and passive (1105.1186). Software descriptions use it little (1009.1622, 0710.3820, 0906.0612: 1 to 2 each). "We" carries decisions and actions: "we use", "we set", "we adopt", "we train".
+"We": 32 of 34 use it at least once; 27 use it more than 4 times. The two with none are a collaboration search description (1207.7235) and a problem formulation written entirely in "Let" and passive (1105.1186). Software descriptions use it little (1009.1622, 0710.3820, 0906.0612: 1 to 2 each). "We" carries decisions and actions: "we use", "we set", "we adopt", "we train".
 
 Active and passive: the split follows the content. The passive carries fixed apparatus and data handling, usually in the past tense: "Images were filtered", "Samples were generated". Counted "was/were + -ed" forms: 39 in 1010.3775, 11 in q-bio/0512013, 10 in 1206.2332, 8 each in 1409.4842 and 1305.3347. The active "we" in the present tense carries method choices and derivation: 1706.02216, 2212.04356, 1105.0828 and 1509.06555 have 6 to 10 present-tense "we + verb" forms and 0 to 3 past passives. Most documents mix the two within one paragraph, with "we" for the choice and passive for the execution. Constructed example: "We set the time step to 0.1 s. The equations were integrated with an implicit Euler scheme."
 
@@ -53,29 +53,29 @@ Numbers in methods are mainly settings, not results (counted): 15 of 34 state nu
 
 Comparison baselines are named when a choice replaces an earlier one: the previous data release (1212.5226), the earlier code version (astro-ph/0505010), the standard algorithm with its complexity (cond-mat/0408187, 1709.10010), or a competing tool (1305.3347). Constructed example: "Compared with the explicit scheme, the implicit scheme allows a time step 20 times larger at the same error."
 
-Claim strength (counted with the metrics hedge list): hedges are 3.0 per 1000 words, the lowest of the paper units except captions and the same level as body text. Twelve of 34 documents contain no hedge word or one at most (1009.1622, 1212.5226, 2212.04356, 0803.4060, 1207.7235, 1010.3775). Procedure statements are unhedged. Hedges cluster in three places: expected behaviour not tested ("may improve performance", 0803.2392 with 10 hedges), effects of a choice the authors could not isolate (1409.4842, 6 hedges), and limits of a data source (1206.2332, 1409.7208). Impression: the strongest texts hedge the untested consequence and state the procedure flat.
+Claim strength (counted with the metrics hedge list): hedges are 3.0 per 1000 words, the lowest of the paper units except captions and the same level as body text. Seventeen of 34 documents contain no hedge word or one at most (1009.1622, 1212.5226, 2212.04356, 0803.4060, 1207.7235, 1010.3775). Procedure statements are unhedged. Hedges cluster in three places: expected behaviour not tested ("may improve performance", 0803.2392 with 10 hedges), effects of a choice the authors could not isolate (1409.4842, 6 hedges), and limits of a data source (1206.2332, 1409.7208). Impression: the strongest texts hedge the untested consequence and state the procedure flat.
 
 ## 5. Terms and definitions
 
-Symbols are defined at first use by a "where" clause after the equation, counted in 18 of 34 (1509.06555, 0912.3599, 1709.10010, 1003.1466, 0803.4060). The derivation and proof groups do this almost without exception; the empirical groups have few equations and define acronyms instead. The "Here, X is ..." form follows an equation in 5 of 34 (0803.0547, 1509.06555, 1607.00653, q-bio/0402017).
+Symbols are defined at first use by a "where" clause after the equation, counted in 18 of 34 (1509.06555, 0912.3599, 1709.10010, 1003.1466, 0803.4060). The derivation and proof groups do this almost without exception; the empirical groups have few equations and define acronyms instead. The "Here, X is ..." form follows an equation in 4 of 34 (0803.0547, 1509.06555, 1607.00653, q-bio/0402017).
 
-Method names and new terms are introduced by an explicit naming verb ("we call", "termed", "known as", "denoted", "referred to as"), counted in 22 of 34. The term then recurs unchanged: once a step is named "the aggregation step" or "the estimation step", the same noun phrase is repeated (1706.02216, 0803.2392, cond-mat/0408187). Synonym cycling for a defined term was not found in the documents checked for it (1706.02216, 0803.2392, 1305.3347, 1206.2332).
+Method names and new terms are introduced by an explicit naming verb ("we call", "termed", "known as", "denoted", "referred to as"), counted in 19 of 34. The term then recurs unchanged: once a step is named "the aggregation step" or "the estimation step", the same noun phrase is repeated (1706.02216, 0803.2392, cond-mat/0408187). Synonym cycling for a defined term was not found in the documents checked for it (1706.02216, 0803.2392, 1305.3347, 1206.2332).
 
-A gloss in plain words follows a formal definition in 11 of 34, through "i.e.", "In other words" or "In words" (counted; 1105.1186 with 8, math/0307152 with 8, 1706.02216 with 7, 0912.3599 with 4). Constructed example: "The Biot number is Bi = hL/k. In words, Bi compares conduction resistance inside the wall with convection resistance at its surface."
+A gloss in plain words follows a formal definition in 13 of 34, through "i.e.", "In other words" or "In words" (counted; 1105.1186 with 8, math/0307152 with 8, 1706.02216 with 7, 0912.3599 with 4). Constructed example: "The Biot number is Bi = hL/k. In words, Bi compares conduction resistance inside the wall with convection resistance at its surface."
 
 Acronyms are expanded at first use in most documents (impression). Exceptions are listed in section 8.
 
 ## 6. Connectives and cohesion
 
-Cohesion rests on noun repetition more than on connectives (impression, supported by the metrics row: 7.3% connective-initial sentences and 2.2% bare "This/These + verb" openers). "This/These + noun" as an opener ("This step", "These samples") is counted in 31 of 34, with up to 12 instances in 0803.2392 and 9 in 1206.2332.
+Cohesion rests on noun repetition more than on connectives (impression, supported by the metrics row: 7.3% connective-initial sentences and 2.2% bare "This/These + verb" openers). "This/These + noun" as an opener ("This step", "These samples") is counted in 30 of 34, with up to 12 instances in 0803.2392 and 9 in 1206.2332.
 
 Explicit connectives by function (counted, documents with at least one):
 
-- Consequence ("thus", "therefore", "hence"): 25 of 34, densest in 0803.0547 and 0912.3599 (6 each).
-- Contrast ("However"): 19 of 34, at most 4 per document (1105.0828).
-- Exemplification ("for example", "e.g."): 22 of 34, densest in 1512.03012 (10) and 1409.0575 (5).
-- Sequence ("First", "Then", "Finally"): 22 of 34.
-- "Note that": 16 of 34, densest in 0912.3599 (5).
+- Consequence ("thus", "therefore", "hence"): 23 of 34, densest in 0803.0547 and 0912.3599 (6 each).
+- Contrast ("However"): 17 of 34, at most 4 per document (1105.0828).
+- Exemplification ("for example", "e.g."): 17 of 34, densest in 1512.03012 (10) and 1409.0575 (5).
+- Sequence ("First", "Then", "Finally"): 19 of 34.
+- "Note that": 15 of 34, densest in 0912.3599 (5).
 
 The density stays low: in a 1500-word section a typical count is 2 to 6 consequence links and 0 to 2 contrasts. Impression: the strongest procedure texts (1206.2332, 2212.04356, 1010.3775) rely on step order and repeated nouns almost alone.
 
@@ -97,7 +97,7 @@ Habits in the bundle that hurt readability, so a style guide should not copy the
 - Evaluative adjectives in a methods context ("remarkable", "excellent", "fascinating", "extremely", "uniquely"), counted in 13 of 34 with at least one; clustered in 1512.03012, 1709.10010 and 0803.0547. Some instances are technical ("excellent mass resolution", 1207.7235); most are not.
 - Future-tense plans inside a methods section: 1512.03012 has 13 "will/shall", mostly for annotations not yet made, so the reader cannot tell what was done.
 - Unexpanded acronyms and tool names: 1409.7208 (several tool names and an algorithm label without expansion), 1207.7235 (generator names), 1212.5226 (survey names).
-- Undefined "simple", "straightforward", "easily", "clearly": counted in 28 of 34, up to 6 in 1706.02216. The word asserts ease without showing it.
+- Undefined "simple", "straightforward", "easily", "clearly": counted in 24 of 34, up to 6 in 1706.02216. The word asserts ease without showing it.
 - Typing errors left in the text: 1003.1466, 1305.3347, 1409.0575 and 1607.00653 each have at least one misspelled word (counted by reading).
 - Run-on sentences of 60 words or more that stack a definition, a condition and a reason (impression, several in astro-ph/0505010 and 1607.00653).
 - Popular-science openings in a technical section: 1003.1466 opens with a description of insect behaviour before the algorithm.
@@ -109,20 +109,20 @@ Rules the strong texts follow:
 - Define every symbol at or before first use (house rules section 5). Followed in the 18 documents with "where" clauses, without exception in 0803.4060, 1509.06555 and 1709.10010. Units accompany numeric settings in all 15 documents that state them.
 - Repeat the correct term; no synonym cycling (section 4). Followed in every document checked (1706.02216, 0803.2392, 1305.3347, 1206.2332).
 - Brevity and plain words; no throat-clearing (section 3). The procedure group (2212.04356, 1206.2332, 1010.3775, 1505.04597) opens with the first fact and has no summary closings.
-- Prose as the default form, bullets for parallel items (section 6). Bullet lists appear in 11 of 34 and hold genuinely parallel items: data structures (cond-mat/0408187), algorithm steps (0803.2392), class fields (0710.3820).
+- Prose as the default form, bullets for parallel items (section 6). Bullet lists appear in 9 of 34 and hold genuinely parallel items: data structures (cond-mat/0408187), algorithm steps (0803.2392), class fields (0710.3820).
 - Every computed quantity defined by what is computed, from what data, in what steps (section 7). Followed closely by 1105.0828 (the stopping criterion and both error measures), q-bio/0402017 (the cross-validated smoothing parameter) and 1206.2332 (the jackknife standard error).
 - Every modelling choice cited (section 8). The derivation and empirical groups cite each adopted method; citation density is 0.135 per sentence (metrics row).
 
 Rules the texts break:
 
-- Words from the overused set (section 4): "key", "crucial", "important", "valuable" appear in 25 of 34; densest in 1512.03012 (8) and 1105.1186 (5).
+- Words from the overused set (section 4): "key", "crucial", "important", "valuable" appear in 20 of 34; densest in 1512.03012 (8) and 1105.1186 (5).
 - "It is worth noting" and similar filler (section 4): 4 of 34, listed in section 8.
 - Promotional wording (section 4): 1512.03012, 1709.10010, 1003.1466.
-- "e.g." and "i.e." (house rules section 12, at 100% only): common, 11 of 34 use "i.e." and 22 use "for example" or "e.g." This rule applies only when the style dial is set, so it is not a defect at 0%.
+- "e.g." and "i.e." (house rules section 12, at 100% only): common: 13 of 34 use "i.e." or "in other words", and 17 use "for example" or "e.g.". This rule applies only when the style dial is set, so it is not a defect at 0%.
 - Abbreviation defined next to first use (section 5): broken in 1409.7208, 1207.7235 and 1212.5226.
 - Numbered equations referred to in the text (section 9): followed in the derivation group (1705.07874, 1607.00653, cond-mat/0408187 refer to equations by number); the extracted text does not show whether the empirical group numbers its few equations.
 
-Points where the corpus is more specific than the house rules: the split of active "we" for choices and past passive for executed steps (section 3 above) is a consistent pattern that the house rules leave open, and the habit of following a formal definition with a plain-words gloss (11 of 34) matches the rule to explain a technical word at first use.
+Points where the corpus is more specific than the house rules: the split of active "we" for choices and past passive for executed steps (section 3 above) is a consistent pattern that the house rules leave open, and the habit of following a formal definition with a plain-words gloss (13 of 34) matches the rule to explain a technical word at first use.
 
 ## Checked and not checked
 
