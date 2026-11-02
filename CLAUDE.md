@@ -56,11 +56,27 @@ These complement the rules above. They apply to every project.
   code and quantify it. Then say whether it is real behaviour, a display or normalisation artefact, or a bug.
   Usually it is not the first explanation that comes to mind.
 
-### Writing style
-All user-facing writing (replies, documents, pages, notebooks, captions, labels, commit messages) follows
-`writing-style/writing-style.md`, imported below. Its references are in `writing-style/references/`.
-
-@writing-style/writing-style.md
+### Writing
+- Before drafting or revising user-facing text (documents, pages, theory and caption text, notebook
+  prose, commit messages, long replies), load the `writing-skills` skill (`.claude/skills/writing-skills/`;
+  canonical source `chetools/muse:writing-skills/`), name the document type, and run its revision pass
+  before delivery. Before drawing or styling a figure, plot or page, load the `stem-visual-style` skill.
+- Always on: journal-formal, plain, brief English; no hype or filler; verified facts kept apart from
+  inference, with what was not checked named.
+- Chat replies: English; voice input is spell-checked against chemical-engineering, coding and AI/ML
+  vocabulary. No LaTeX: math-heavy content goes in a self-contained HTML file (KaTeX rendered at build
+  time) or a PDF, with every equation checked on a screenshot. Runtime and availability caveats go in the
+  reply, never in a document or page. A changed file is re-delivered under a fresh filename. A MoLab link,
+  and the link of a changed published page, each stand on their own labelled line.
+- Code shown to the user is minimal: existing libraries (Plotly, SciPy, existing routines) over
+  hand-written numerics, plain functions over classes. Calculations and plots are in Python, not
+  JavaScript, except a requested accelerator with a measured speed-up, the Python reference kept and
+  parity shown.
+- A request such as "70% technical style" or "STE100" sets the dial in `writing-skills/references/ste100.md`.
+- Class material: the word "formula" is not used; a student explains a solution, concept or procedure
+  without "that", "this", "thing" or "formula"; teaching time is split 30% exposition skills, 60% deep
+  conceptual understanding, 10% AI fluency.
+- When I give exact wording for a rule, it is recorded verbatim, with no added heading, date or context.
 
 ### Verification
 - **Cross-check independent implementations.** Wherever there are two codes for the same thing (reference vs fast,
@@ -127,6 +143,8 @@ All user-facing writing (replies, documents, pages, notebooks, captions, labels,
   - The Code tab's content column is wider than the Theory text (plots and code need the width).
   - Reference implementation: `cylinder-cavity-3d/` (`add_toc` in `build.py`, the `<!--CODE_BODY-->` block and
     `tocSpy` in `web/template.html`).
+- **Fragments and tab bar.** Every panel and every headed section has a URL fragment that opens it. The main tab
+  bar is sticky with an opaque background, in-panel contents sit below it, and fragment targets have a scroll margin.
 - **Every page that shows Python code must link to an editable MoLab (marimo) version of that code.**
   - The notebook is a **single self-contained marimo `.py` file**, because MoLab opens one file from GitHub with no
     repository checkout. It has:

@@ -1,0 +1,7 @@
+# Equations [load for a document with displayed equations, with textbook.md]
+
+E1. Symbols of a display are defined in one of two sites. Where the set-up is a complete sentence naming the quantities, all the display's symbols are defined in that sentence, in symbol order, with units in parentheses. Where the set-up is a lead-in clause that the display completes, the central object is defined in prose before the display and the remaining symbols in a where roster immediately after it, in equation order. A table carries the roster only where the text states the deferral. One sentence per symbol ahead of the display fragments the passage and is not used. Standard notation (core rule 4) is not defined in either site.
+E2. The set-up is a lead-in clause or a complete sentence naming the quantities the equation relates, and states the assumption or the named prior relation the equation rests on.
+E3. The sentence immediately after the display is the definition sentence; interpretation follows the roster, not the display directly.
+E4. A boundary or case (a piecewise threshold, an endpoint case) stands next to the equation; a threshold on the equation's own variable stands in the sentence immediately after the display. Validity is stated with the law named as subject (core rule 32).
+E5. Displays are numbered and referred to by number; an unnumbered definitional display is referred to by name.

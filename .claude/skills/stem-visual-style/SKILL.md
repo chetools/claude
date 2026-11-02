@@ -1,3 +1,8 @@
+---
+name: stem-visual-style
+description: Visual style specification for journal-grade STEM figures, diagrams, plots, documents and HTML pages (sizes, typefaces, line weights, colour, export, captions, page layout). Load before drawing or styling any figure, plot, schematic or page.
+---
+
 # STEM visual style: journal-grade, not AI-generated
 
 This skill applies to every figure, diagram, plot, document, Markdown file and HTML page I produce for technical or STEM content.
