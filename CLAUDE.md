@@ -73,9 +73,6 @@ These complement the rules above. They apply to every project.
   JavaScript, except a requested accelerator with a measured speed-up, the Python reference kept and
   parity shown.
 - A request such as "70% technical style" or "STE100" sets the dial in `writing-skills/references/ste100.md`.
-- Class material: the word "formula" is not used; a student explains a solution, concept or procedure
-  without "that", "this", "thing" or "formula"; teaching time is split 30% exposition skills, 60% deep
-  conceptual understanding, 10% AI fluency.
 - When I give exact wording for a rule, it is recorded verbatim, with no added heading, date or context.
 
 ### Verification
