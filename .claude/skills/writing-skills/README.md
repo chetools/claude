@@ -3,7 +3,8 @@
 ## Contents
 
 - `SKILL.md`: the core rules (rules 1–35), loaded for all writing under the package. It states which reference file loads under which condition.
-- `references/`: `textbook.md` (detail sentences: derivations, definitions, procedure steps, worked calculations), `equations.md` (displayed equations), `figures.md` (figures, plots, and tables), `business.md` (business documents), `ste100.md` (the Simplified Technical English dial, on request only), `ai-check.md` (the revision pass, the AI-writing pattern list, and the independent check pass), and `evidence.md` (evidence, corpus sizes, and limits; not loaded for writing).
+- `references/`: `textbook.md` (detail sentences), `equations.md` (displayed equations), `figures.md` (figures and tables), `business.md` (business documents), `ste100.md` (the Simplified Technical English dial, on request only), `ai-check.md` (the revision and check passes, the AI-writing patterns, and the house word list), `examples.md` (rejected and accepted forms for the rules most often broken), and `evidence.md` (evidence and limits; not loaded for writing).
+- `tools/`: `lint_prose.py` (mechanical scan of a draft, used in the revision pass), `check_package.py` (cross-reference check of the package), and `sync_skill.py` (installs or compares the package in another repository).
 - `APPENDIX.md`: two chief executive officer letter patterns held out of the main rules because they rest on one corpus.
 
 ## Worked examples on the web

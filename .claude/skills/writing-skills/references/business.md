@@ -11,7 +11,7 @@ B4. A recommendation is an action with a named owner class. Timing and quantifie
 B5. Where a claim is not restated, the closing is next steps, questions for the reader's team, a checklist, or an invitation. A formal decision ask with a named decision maker and date is used only on request.
 B6. Consulting-form exhibit titles state the finding with its number or comparison, and a source line names the data base and respondent count. In a slide storyline, the opening title states the recommendation complete (action, scope, held items, decision point), and each support line belongs to the title it follows.
 B7. A trade-off is stated in one sentence with both numbers: benefit and cost, or gain and risk.
-B8. A period result is one sentence carrying its components, or a headline figure followed in the next sentence by its signed components at the same scale.
+B8. A period result is one sentence that states its components, or a headline figure followed in the next sentence by its signed components at the same scale.
 B9. Persuasion screen. Measured recommendation and framing devices are used; devices that misstate evidence are not: a closing claim stronger than the opening claim with no evidence added between them; a superlative with no comparison set; a certainty opener with no evidence pointer in the same sentence; an analogy in closing position with no stated boundary.
 
 Completion check: bottom line present (B1); frame performed in the opening (B2); owner class named for each recommendation (B4); evidence base named where the finding is stated (B3); in a slide storyline, each support line checked against its own title.
