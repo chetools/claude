@@ -1,8 +1,10 @@
 """Consistency check for the writing-skills package. Exit 1 on any failure.
 
 Checks: every cited core rule number exists; every cited prefixed rule (T, E, B, F, C) exists in its
-file; every referenced file exists (any *.md name, backticked or not, except CLAUDE.md, which is the host repository's; and tools/*.py); no stale names (CHECKLIST, What not to do, writing-style, old rule
-ranges); SKILL.md front matter has name writing-skills.
+file; every referenced file exists (any *.md name, backticked or not, except CLAUDE.md, which is the host repository's; and tools/*.py); no "Brief X" reference (the package defines no briefs); the front-matter
+description keeps its load-bearing phrases ("theory text on pages", "measured from"); no stale
+names (CHECKLIST, What not to do, writing-style, old rule ranges); SKILL.md front matter has name
+writing-skills.
 """
 import re, sys, pathlib
 root = pathlib.Path(__file__).resolve().parent.parent
@@ -33,11 +35,17 @@ for name, t in text.items():
     for tref in re.findall(r"\btools/([a-z0-9_]+\.py)\b", t):
         if not (root / "tools" / tref).exists():
             errors.append(f"{name}: references missing tool {tref}")
+    for bref in re.findall(r"\bBrief ([A-Z])\b", t):
+        errors.append(f"{name}: cites Brief {bref}, which the package does not define")
     for stale in ["CHECKLIST", "What not to do", "writing-style", "predecessor skills, which remain"]:
         if stale in t:
             errors.append(f"{name}: stale reference '{stale}'")
 if not re.match(r"---\nname: writing-skills\ndescription: .+\n---\n", text["SKILL.md"]):
     errors.append("SKILL.md front matter malformed")
+desc = re.search(r"^description: (.+)$", text["SKILL.md"], re.M).group(1)
+for phrase in ["theory text on pages", "measured from"]:
+    if phrase not in desc:
+        errors.append(f"SKILL.md description lost load-bearing phrase '{phrase}'")
 for e in errors:
     print("FAIL", e)
 print(f"{len(errors)} failures; core rules 1-{max(core_rules)}; " + ", ".join(f"{k}: {len(v)}" for k, v in defined.items()))
