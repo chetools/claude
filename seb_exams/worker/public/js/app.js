@@ -10,7 +10,7 @@ let lastHash = '', token = 0, revert = false;
 function renderHead() {
   const nav = h('nav', { class: 'nav' });
   if (state.me) {
-    nav.append(h('a', { href: '#/' }, 'My exams'), h('a', { href: '#/ai' }, 'Write an exam with AI'));
+    nav.append(h('a', { href: '#/' }, 'My exams'), h('a', { href: '#/texams' }, 'Transcript exams'), h('a', { href: '#/ai' }, 'Write an exam with AI'));
     if (state.me.is_admin) nav.append(h('a', { href: '#/admin' }, 'Teachers'));
     nav.append(h('span', { class: 'who' }, state.me.email),
       h('button', { class: 'secondary small', onclick: signOut }, 'Sign out'));
@@ -57,6 +57,7 @@ async function route() {
     app.replaceChildren(h('p', { class: 'hint' }, 'Loading …'));
     let mod, args = [];
     if (parts[0] === 'exam' && parts[1]) { mod = await import('./exam.js'); args = [parts[1], parts[2] || 'questions']; }
+    else if (parts[0] === 'texams' || parts[0] === 'texam') { mod = await import('./transcript.js'); args = parts[0] === 'texam' ? [parts[1], parts[2] || 'exam'] : []; }
     else if (parts[0] === 'admin') mod = await import('./admin.js');
     else if (parts[0] === 'ai') mod = await import('./ai.js');
     else mod = await import('./dashboard.js');

@@ -2,6 +2,8 @@
 // is the teacher app, bundled from ./public into the Worker (see static.js).
 import { handleAuth } from "./auth.js";
 import { handleApi } from "./teacher.js";
+import { handleTranscript } from "./transcript.js";
+import { handleKeypoints } from "./keypoints.js";
 import { handleS } from "./student.js";
 import { json } from "./util.js";
 import { serveStatic } from "./static.js";
@@ -12,6 +14,8 @@ export default {
     const p = url.pathname;
     try {
       if (p.startsWith("/auth/")) return await handleAuth(req, env, ctx, url);
+      if (p.startsWith("/k/")) return await handleKeypoints(req, env, ctx, url);
+      if (p.startsWith("/t/") || p.startsWith("/api/t/") || p.startsWith("/tv/")) return await handleTranscript(req, env, ctx, url);
       if (p.startsWith("/api/")) return await handleApi(req, env, url);
       if (p.startsWith("/s/") || p === "/exam.seb") return await handleS(req, env, url);
     } catch (e) {
