@@ -1,9 +1,10 @@
-// Keypoints assignments: additive routes under /k/ for the explain-the-page flow.
-// The transcript machinery (transcript.js) is reused unchanged for roster sign-in,
-// audio sealing, the grading packet and critique uploads; this module holds only what
-// that machinery has no place for: the assignment page, the approved answer key, the
-// model-take identity, and the standing (best) grade. Teacher-side writes are
-// credentialed by the exam's audit token (header X-Audit-Token), as /tv/* is.
+// Keypoints assignments: routes under /k/ for the explain-the-page flow, the
+// only exam flow. The shared exam infrastructure in transcript.js (roster
+// sign-in, audio sealing, the grading packet and critique uploads) is used
+// unchanged; this module holds only what that infrastructure has no place
+// for: the assignment page, the approved answer key, the model-take identity,
+// and the standing (best) grade. Teacher-side writes are credentialed by the
+// exam's audit token (header X-Audit-Token).
 import { json, readJson, sha256hex, normEmail, isEmail, examStatus, HttpError, ctEqual } from "./util.js";
 
 const nowIso = () => new Date().toISOString();
@@ -157,7 +158,7 @@ async function getRole(req, env, url) {
 async function getKeySession(env, url) {
   const sub = await submissionByCode(env, url.searchParams.get("session"));
   if (!sub) throw new HttpError(404, "Unknown session code.");
-  const sealed = !!(sub.audio_fingerprint || sub.fingerprint);
+  const sealed = !!sub.audio_fingerprint;
   if (!sealed) throw new HttpError(409, "This take is not sealed yet.");
   const key = await loadKey(env, sub.exam_id);
   if (!key) throw new HttpError(404, "No approved answer key for this assignment.");

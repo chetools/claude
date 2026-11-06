@@ -1,14 +1,16 @@
-// Transcript exams: student sign-in by emailed link, transcript sealing, grading support,
-// and the teacher API for managing transcript exams. Routes: /t/* (student, CORS) and
-// /api/t/* (teacher, session cookie). Exam content (prompt, rubric, variations, student app
-// address) and the model connection settings are read from the database, never hard-coded here.
+// Exam support for the keypoints flow (the only exam flow): student sign-in by
+// emailed link, audio take sealing, the grading packet and critique upload,
+// watch grading, and the teacher API for managing exams. Routes: /t/*
+// (student, CORS), /api/t/* (teacher, session cookie) and /w/* (watch).
+// Exam content (prompt, rubric, student app address) is read from the
+// database, never hard-coded here. The server makes no model calls of any
+// kind: transcription and grading happen in the student's or teacher's Muse.
 import { currentTeacher } from "./auth.js";
 import { json, readJson, sha256hex, randomToken, newExamId, normEmail, isEmail, esc, examStatus, HttpError, ctEqual } from "./util.js";
 
 const TOKEN_MIN = 15;
 const SESSION_HOURS = 12;
 const RATE_PER_HOUR = 5;
-const FLAG_DIFF = 0.25;   // student vs audit grade, as a fraction of the element's range
 const isoIn = (ms) => new Date(Date.now() + ms).toISOString();
 const nowIso = () => new Date().toISOString();
 
@@ -50,16 +52,6 @@ async function tExamFor(env, t, id) {
 }
 
 const rubricOf = (exam) => { try { return JSON.parse(exam.rubric_json || "[]"); } catch { return []; } };
-const variationsOf = (exam) => { try { return JSON.parse(exam.variations_json || "[]"); } catch { return []; } };
-
-function assemble(segments) {
-  const out = [];
-  for (let k = 1; k <= 99; k++) {
-    const seg = segments[String(k)];
-    if (seg && seg.text && seg.text.trim()) out.push(k + " (" + (seg.title || "") + "): " + seg.text.trim());
-  }
-  return out.join("\n");
-}
 
 async function receiptCode(env, parts) {
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(env.SEAL_SECRET),
@@ -76,57 +68,15 @@ async function studentSession(req, env) {
     .bind(await sha256hex(v), nowIso()).first();
 }
 
-async function getSettings(env, key) {
-  const row = await env.DB.prepare("SELECT value_json FROM t_settings WHERE key = ?").bind(key).first();
-  try { return row ? JSON.parse(row.value_json) : null; } catch { return null; }
-}
-
-// ---- audit re-grade ----------------------------------------------------------------------
-// Grades only, with the exam's own prompt and rubric, through the configured model
-// connection (an OpenAI-style chat completions endpoint). Returns {status, fractions?, model?}.
-async function runAudit(env, exam, transcript) {
-  const cfg = await getSettings(env, "model");
-  if (!cfg || !cfg.base_url || !cfg.model) return { status: "not_configured" };
-  if (!env.MODEL_API_KEY) return { status: "no_key" };
-  const rubric = rubricOf(exam);
-  const system = [
-    "You are an audit grader. Grade the transcript with the teacher's prompt and rubric below.",
-    "Return only a JSON object mapping each rubric element name to a fraction from 0 to 1.",
-    "Teacher prompt:\n" + exam.prompt,
-    "Rubric (name, points, guidance):\n" + JSON.stringify(rubric),
-  ].join("\n\n");
-  try {
-    const res = await fetch(cfg.base_url.replace(/\/+$/, "") + "/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + env.MODEL_API_KEY },
-      body: JSON.stringify({ model: cfg.model, temperature: 0,
-        messages: [{ role: "system", content: system }, { role: "user", content: transcript }] }),
-    });
-    if (!res.ok) return { status: "error", detail: "model HTTP " + res.status };
-    const data = await res.json();
-    const text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "";
-    const m = text.match(/\{[\s\S]*\}/);
-    if (!m) return { status: "error", detail: "model returned no JSON" };
-    const raw = JSON.parse(m[0]);
-    const fractions = {};
-    for (const el of rubric) {
-      const v = Number(raw[el.name]);
-      if (Number.isFinite(v)) fractions[el.name] = Math.min(1, Math.max(0, v));
-    }
-    return { status: "done", fractions, model: cfg.model, at: nowIso() };
-  } catch (e) {
-    return { status: "error", detail: String(e).slice(0, 200) };
-  }
-}
-
 // ---- audio takes (R2) ----------------------------------------------------------------------
-// A spoken take can be sealed from its audio instead of from a browser-made transcript:
-// the app uploads one WAV segment per slide (16 kHz mono, from the take's own capture),
-// the server stores the segments in the AUDIO R2 bucket and seals a fingerprint of the
-// audio. The server never transcribes: the take stays in status 'audio_sealed' (audio
-// held and fingerprinted, no transcript invented) until the student's Muse downloads
-// the segments under the session code, transcribes them, and uploads its transcript
-// with its critique and grades. Without a bucket the audio routes fail closed.
+// A spoken take is sealed from its audio: the app uploads one WAV segment per
+// slide (16 kHz mono, from the take's own capture), the server stores the
+// segments in the AUDIO R2 bucket and seals a fingerprint of the audio. The
+// server never transcribes: the take stays in status 'audio_sealed' (audio
+// held and fingerprinted, no transcript invented) until the student's Muse
+// downloads the segments under the session code, transcribes them, and uploads
+// its transcript with its critique and grades. Without a bucket the audio
+// routes fail closed.
 const AUDIO_MAX_BYTES = 25 * 1024 * 1024;   // one slide segment; ~13 min at 16 kHz 16-bit mono
 
 async function sha256hexBytes(buf) {
@@ -172,25 +122,12 @@ async function finaliseAudioSeal(env, exam, sub) {
     + (motion.length ? "\nmotion:" + motion.map((m) => m.sha256).join(",") : "");
   const audioFp = await sha256hex(fpText);
   const sealedAt = sub.sealed_at || nowIso();
-  const receipt = await receiptCode(env, [sub.session_code, sub.email, audioFp, "", sub.variation || "", sub.opened_at, sealedAt]);
+  const receipt = await receiptCode(env, [sub.session_code, sub.email, audioFp, "", "", sub.opened_at, sealedAt]);
   await env.DB.prepare(
     "UPDATE t_submissions SET status = 'audio_sealed', audio_fingerprint = ?, photo_fingerprint = ?, receipt = ?, sealed_at = ?, prompt_version = ?, transcription_json = '{}' WHERE exam_id = ? AND email = ?")
     .bind(audioFp, photo ? photo.sha256 : null, receipt, sealedAt, exam.prompt_version, exam.id, sub.email).run();
   return { audioFingerprint: audioFp, transcriptFingerprint: null, receipt, sealedAt,
     photoFingerprint: photo ? photo.sha256 : null, sealedTranscript: null };
-}
-
-function computeFlags(rubric, grades, audit) {
-  const flags = [];
-  if (!audit || audit.status !== "done" || !audit.fractions) return flags;
-  for (const el of rubric) {
-    const a = grades ? grades[el.name] : undefined;
-    const b = audit.fractions[el.name];
-    if (typeof a === "number" && typeof b === "number" && Math.abs(a - b) > FLAG_DIFF) {
-      flags.push({ element: el.name, student: a, audit: b });
-    }
-  }
-  return flags;
 }
 
 // ---- student routes (/t/*) ---------------------------------------------------------------
@@ -264,61 +201,30 @@ async function sealSessionOpen(req, env) {
   if (status !== "open") throw new HttpError(403, "This exam is " + status + " and is not accepting takes now.");
   const existing = await loadSubmission(env, exam.id, s.email);
   // Practice is unlimited: a new take may start over any earlier sealed or graded
-  // take (its graded attempts are archived in t_attempts). A take the student has
-  // marked final locks the exam for that student until the teacher releases it.
-  if (existing && existing.source === "sealed" && (existing.status === "awaiting_validation" || existing.status === "final")) {
-    throw new HttpError(409, "This exam is already submitted as final. The teacher can release it for another attempt.");
-  }
+  // take (its graded attempts are archived in t_attempts).
   // A new take supersedes the previous take's audio: its graded record is archived
   // in t_attempts, and its audio objects are removed so storage holds one take each.
   if (existing && env.AUDIO) {
     for (const a of Object.values(audioOf(existing))) { try { await env.AUDIO.delete(a.key); } catch { /* already gone */ } }
     for (const mf of motionOf(existing)) { try { await env.AUDIO.delete(mf.key); } catch { /* already gone */ } }
-    // The previous take's picture is NOT deleted: pictures are small, and the
-    // teacher's validation compares them across a student's submissions. Exam
-    // deletion removes them (see the delete route, which walks the attempt log).
+    // The previous take's picture is NOT deleted: pictures are small and cheap
+    // to keep. Exam deletion removes them (see the delete route, which walks
+    // the attempt log).
   }
   const rostered = await env.DB.prepare("SELECT name FROM t_roster WHERE exam_id = ? AND email = ?").bind(exam.id, s.email).first();
-  const variations = variationsOf(exam);
-  const variation = variations.length ? variations[Math.floor(Math.random() * variations.length)] : null;
   const sessionCode = randomToken(24);
   const now = nowIso();
   await env.DB.prepare(
-    `INSERT INTO t_submissions (exam_id, email, name, source, session_code, status, variation, opened_at,
+    `INSERT INTO t_submissions (exam_id, email, name, source, session_code, status, opened_at,
        segments_json, history_json, flags_json, manual_json)
-     VALUES (?, ?, ?, 'sealed', ?, 'open', ?, ?, '{}', '[]', '[]', '{}')
+     VALUES (?, ?, ?, 'sealed', ?, 'open', ?, '{}', '[]', '[]', '{}')
      ON CONFLICT(exam_id, email) DO UPDATE SET session_code = excluded.session_code, status = 'open',
-       variation = excluded.variation, opened_at = excluded.opened_at, segments_json = '{}', history_json = '[]',
+       opened_at = excluded.opened_at, segments_json = '{}', history_json = '[]',
        transcript = NULL, fingerprint = NULL, receipt = NULL, sealed_at = NULL, final_at = NULL,
        audio_json = '{}', audio_fingerprint = NULL, transcription_json = '{}',
        photo_json = '{}', photo_fingerprint = NULL, motion_json = '[]'`)
-    .bind(exam.id, s.email, rostered ? rostered.name : "", sessionCode, variation, now).run();
-  return json({ sessionCode, variation, openedAt: now });
-}
-
-async function sealSegment(req, env) {
-  const body = await readJson(req, 200 * 1024);
-  const exam = await loadTExam(env, body.examId);
-  if (!exam) throw new HttpError(404, "Unknown transcript exam.");
-  const s = await requireStudent(req, env, exam.id);
-  const sub = await loadSubmission(env, exam.id, s.email);
-  if (!sub || sub.status !== "open" || sub.source !== "sealed") throw new HttpError(409, "No open take for this student.");
-  const slide = Number(body.slide);
-  if (!Number.isInteger(slide) || slide < 1 || slide > 99) throw new HttpError(400, "Bad slide number.");
-  const text = String(body.text == null ? "" : body.text).slice(0, 20000);
-  const title = String(body.title == null ? "" : body.title).slice(0, 120);
-  const segments = JSON.parse(sub.segments_json || "{}");
-  const history = JSON.parse(sub.history_json || "[]");
-  const at = nowIso();
-  let late = false;
-  for (const k of Object.keys(segments)) if (Number(k) > slide) late = true;
-  const prev = segments[String(slide)];
-  segments[String(slide)] = { text, title, firstAt: prev ? prev.firstAt : at, lastAt: at, late: late || (prev ? prev.late : false) };
-  const fp = await sha256hex(text);
-  history.push({ slide, at, fingerprint: fp, late });
-  await env.DB.prepare("UPDATE t_submissions SET segments_json = ?, history_json = ? WHERE exam_id = ? AND email = ?")
-    .bind(JSON.stringify(segments), JSON.stringify(history), exam.id, s.email).run();
-  return json({ ok: true, slide, receivedAt: at, late, segmentFingerprint: fp });
+    .bind(exam.id, s.email, rostered ? rostered.name : "", sessionCode, now).run();
+  return json({ sessionCode, openedAt: now });
 }
 
 async function audioSegment(req, env, url) {
@@ -421,33 +327,16 @@ async function sealTake(req, env) {
   const s = await requireStudent(req, env, exam.id);
   const sub = await loadSubmission(env, exam.id, s.email);
   if (!sub || sub.source !== "sealed") throw new HttpError(409, "No take to seal.");
-  if (sub.status === "sealed" || sub.status === "graded" || sub.status === "flagged" || sub.status === "final") {
-    return json({ sessionCode: sub.session_code, sealedAt: sub.sealed_at, transcriptFingerprint: sub.fingerprint,
-      receipt: sub.receipt, sealedTranscript: sub.transcript, alreadySealed: true });
+  if (sub.status === "audio_sealed" || sub.status === "graded" || sub.status === "flagged" || sub.status === "final") {
+    return json({ sessionCode: sub.session_code, sealedAt: sub.sealed_at, audioFingerprint: sub.audio_fingerprint,
+      transcriptFingerprint: null, receipt: sub.receipt, sealedTranscript: null, alreadySealed: true });
   }
-  const assembled = assemble(JSON.parse(sub.segments_json || "{}"));
-  if (!assembled) {
-    // Audio take: no text segments, but stored audio segments seal the take.
-    const audio = audioOf(sub);
-    if (Object.keys(audio).length) {
-      if (!env.AUDIO) throw new HttpError(500, "Audio storage is not configured on the server (R2 bucket binding AUDIO).");
-      const out = await finaliseAudioSeal(env, exam, sub);
-      return json({ sessionCode: sub.session_code, ...out });
-    }
-    throw new HttpError(400, "No transcript segments were received.");
-  }
-  if (body.fullTranscript != null && String(body.fullTranscript).replace(/\s+$/g, "") !== assembled) {
-    throw new HttpError(409, "The submitted text differs from the segments held by the server.");
-  }
-  const fingerprint = await sha256hex(assembled);
-  const sealedAt = nowIso();
-  const receipt = await receiptCode(env, [sub.session_code, s.email, fingerprint, sub.variation || "", sub.opened_at, sealedAt]);
-  const photo = photoOf(sub);
-  await env.DB.prepare(
-    "UPDATE t_submissions SET status = 'sealed', transcript = ?, fingerprint = ?, photo_fingerprint = ?, receipt = ?, sealed_at = ?, prompt_version = ? WHERE exam_id = ? AND email = ?")
-    .bind(assembled, fingerprint, photo ? photo.sha256 : null, receipt, sealedAt, exam.prompt_version, exam.id, s.email).run();
-  return json({ sessionCode: sub.session_code, sealedAt, transcriptFingerprint: fingerprint, receipt, sealedTranscript: assembled,
-    photoFingerprint: photo ? photo.sha256 : null });
+  // Takes seal from their stored audio segments only.
+  const audio = audioOf(sub);
+  if (!Object.keys(audio).length) throw new HttpError(400, "No audio segments were received for this take.");
+  if (!env.AUDIO) throw new HttpError(500, "Audio storage is not configured on the server (R2 bucket binding AUDIO).");
+  const out = await finaliseAudioSeal(env, exam, sub);
+  return json({ sessionCode: sub.session_code, ...out });
 }
 
 // ---- grading routes (credential: the sealed session code) ------------------------------
@@ -461,13 +350,12 @@ async function gradingPacket(env, url) {
   const sub = await submissionByCode(env, url.searchParams.get("session"));
   if (!sub) throw new HttpError(404, "Unknown session code.");
   const audio = audioOf(sub);
-  if (!sub.transcript && !Object.keys(audio).length) throw new HttpError(409, "This submission is not sealed yet.");
+  if (!Object.keys(audio).length) throw new HttpError(409, "This submission is not sealed yet.");
   const exam = await loadTExam(env, sub.exam_id);
   return json({
     exam: { id: exam.id, title: exam.title, prompt: exam.prompt, promptVersion: sub.prompt_version ?? exam.prompt_version,
       rubric: rubricOf(exam) },
     student: { name: sub.name, email: sub.email },
-    variation: sub.variation, transcript: sub.transcript, fingerprint: sub.fingerprint,
     audioFingerprint: sub.audio_fingerprint || null,
     audio: Object.entries(audio).map(([slide, a]) => ({ slide: Number(slide), title: a.title || "", bytes: a.bytes, sha256: a.sha256 })),
     photo: photoOf(sub) ? (({ key, ...rest }) => rest)(photoOf(sub)) : null,
@@ -477,7 +365,7 @@ async function gradingPacket(env, url) {
 
 // One sealed audio segment, credentialed by the session code like the packet itself:
 // the student's Muse downloads the segments, transcribes them, and grades from its
-// own transcript (see uploadCritique for how that transcript is checked and stored).
+// own transcript, which the critique upload stores on the submission.
 async function audioDownload(env, url) {
   const sub = await submissionByCode(env, url.searchParams.get("session"));
   if (!sub) throw new HttpError(404, "Unknown session code.");
@@ -489,49 +377,23 @@ async function audioDownload(env, url) {
   return new Response(obj.body, { headers: { "Content-Type": "audio/wav", "Cache-Control": "no-store" } });
 }
 
-async function verifyTranscript(req, env) {
-  const body = await readJson(req, 1024 * 1024);
-  const sub = await submissionByCode(env, body.sessionCode);
-  if (!sub) throw new HttpError(404, "Unknown session code.");
-  if (!sub.fingerprint) throw new HttpError(409, "This submission is not sealed yet.");
-  const fp = await sha256hex(String(body.transcript || "").replace(/\s+$/g, "").replace(/^\s+/g, ""));
-  return json({ match: ctEqual(fp, sub.fingerprint), transcriptFingerprint: sub.fingerprint });
-}
-
-function wordSimilarity(a, b) {
-  const words = (t) => new Set(String(t).toLowerCase().match(/[a-z0-9]+/g) || []);
-  const A = words(a), B = words(b);
-  if (!A.size && !B.size) return 1;
-  let inter = 0;
-  for (const w of A) if (B.has(w)) inter++;
-  return inter / (A.size + B.size - inter);
-}
-
 async function uploadCritique(req, env) {
   const body = await readJson(req, 1024 * 1024);
   const sub = await submissionByCode(env, body.sessionCode);
   if (!sub) throw new HttpError(404, "Unknown session code.");
   const exam = await loadTExam(env, sub.exam_id);
-  let gradedText = sub.transcript;
-  let attemptTranscript = sub.student_transcript || null;
-  if (sub.transcript) {
-    const fp = await sha256hex(String(body.transcript || "").replace(/\s+$/g, "").replace(/^\s+/g, ""));
-    if (!ctEqual(fp, sub.fingerprint)) throw new HttpError(409, "The graded transcript is not the sealed transcript.");
-  } else if (Object.keys(audioOf(sub)).length) {
-    // Audio-sealed take: the student's Muse transcribed the sealed audio itself.
-    // Its transcript is stored as the student's transcript (the seal itself is the
-    // audio fingerprint; nothing here overwrites it), and the audit, when configured,
-    // grades that transcript.
-    const studentTranscript = String(body.transcript || "").replace(/\s+$/g, "").replace(/^\s+/g, "");
-    if (!studentTranscript) throw new HttpError(400, "For an audio-sealed take, the upload must include the transcript made from the sealed audio.");
-    attemptTranscript = studentTranscript;
-    gradedText = studentTranscript;
-    const sFp = await sha256hex(studentTranscript);
-    await env.DB.prepare("UPDATE t_submissions SET student_transcript = ?, student_fingerprint = ? WHERE exam_id = ? AND email = ?")
-      .bind(studentTranscript, sFp, sub.exam_id, sub.email).run();
-  } else {
+  // Audio-sealed take: the student's Muse transcribed the sealed audio itself.
+  // Its transcript is stored as the student's transcript (the seal itself is the
+  // audio fingerprint; nothing here overwrites it).
+  if (!Object.keys(audioOf(sub)).length) {
     throw new HttpError(409, "This submission is not sealed yet.");
   }
+  const studentTranscript = String(body.transcript || "").replace(/\s+$/g, "").replace(/^\s+/g, "");
+  if (!studentTranscript) throw new HttpError(400, "For an audio-sealed take, the upload must include the transcript made from the sealed audio.");
+  const attemptTranscript = studentTranscript;
+  const sFp = await sha256hex(studentTranscript);
+  await env.DB.prepare("UPDATE t_submissions SET student_transcript = ?, student_fingerprint = ? WHERE exam_id = ? AND email = ?")
+    .bind(studentTranscript, sFp, sub.exam_id, sub.email).run();
   const rubric = rubricOf(exam);
   const gradesIn = body.grades && typeof body.grades === "object" ? body.grades : {};
   const grades = {};
@@ -542,179 +404,128 @@ async function uploadCritique(req, env) {
   }
   const critique = String(body.critique || "").slice(0, 100000);
   if (!critique) throw new HttpError(400, "The critique text is empty.");
-  const audit = await runAudit(env, exam, gradedText);
-  const flags = computeFlags(rubric, grades, audit);
-  let status = flags.length ? "flagged" : "graded";
-  // Practice vs final: every upload is archived as an attempt. When the student marks
-  // the upload final, the submission waits for the teacher's Muse to validate it;
-  // the teacher's validation, not the student's grades, then sets the grade.
-  const isFinal = body.final === true;
-  const finalAt = isFinal ? nowIso() : null;
-  if (isFinal) status = "awaiting_validation";
+  // No audit or validation runs on the server (the server makes no model calls
+  // and never re-grades): the audit field records that nothing ran, and the
+  // flags list stays empty. The teacher's own override in the Results view is
+  // the only later adjustment.
+  const audit = { status: "not_run" };
+  const flags = [];
+  const status = "graded";
+  // Every upload is archived as an attempt; the keypoints standing grade is the
+  // best attempt's, computed from t_attempts by the /k/standing route.
   await env.DB.prepare(
-    "UPDATE t_submissions SET critique = ?, grades_json = ?, audit_json = ?, flags_json = ?, status = ?, final_at = COALESCE(?, final_at) WHERE exam_id = ? AND email = ?")
-    .bind(critique, JSON.stringify(grades), JSON.stringify(audit), JSON.stringify(flags), status, finalAt, sub.exam_id, sub.email).run();
+    "UPDATE t_submissions SET critique = ?, grades_json = ?, audit_json = ?, flags_json = ?, status = ?, watch_claim_at = NULL WHERE exam_id = ? AND email = ?")
+    .bind(critique, JSON.stringify(grades), JSON.stringify(audit), JSON.stringify(flags), status, sub.exam_id, sub.email).run();
   await env.DB.prepare(
     `INSERT INTO t_attempts (session_code, exam_id, email, final, audio_fingerprint, student_transcript, critique, grades_json, status, motion_count, created_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(session_code) DO UPDATE SET final = excluded.final, student_transcript = excluded.student_transcript,
        critique = excluded.critique, grades_json = excluded.grades_json, status = excluded.status, motion_count = excluded.motion_count`)
-    .bind(sub.session_code, sub.exam_id, sub.email, isFinal ? 1 : 0, sub.audio_fingerprint || null,
+    .bind(sub.session_code, sub.exam_id, sub.email, 0, sub.audio_fingerprint || null,
       attemptTranscript, critique, JSON.stringify(grades), status, motionOf(sub).length, nowIso()).run();
-  return json({ ok: true, status, flags, auditStatus: audit.status, final: isFinal });
+  return json({ ok: true, status, flags, auditStatus: audit.status });
 }
 
-// ---- teacher-Muse validation (/tv/*, credential: the exam's audit token) -----------------
-// The teacher's own Muse validates final submissions: it downloads the sealed audio,
-// transcribes it independently, grades it, and posts its grades here. The token is
-// generated per exam in the teacher app and stored only as a SHA-256 hash.
+// ---- watch grading (/w/*, credentials: the student's watch token / poll key) --------------
+// Option 2: the student's Muse learns about sealed takes without the student pasting
+// anything. A low-privilege poll key answers only "is anything pending?"; the grading
+// token lists the pending takes. Both are generated per student per exam, authenticated
+// by SHA-256 hash, and stored AES-GCM encrypted so the teacher app can re-email the
+// same values (decryption is used only by that email action, never for authentication).
+// The encryption key is derived from SEAL_SECRET, so rotating SEAL_SECRET makes the
+// stored values unreadable; regenerating the credentials is the recovery.
 
-async function examByAuditToken(env, req, examId) {
-  const token = req.headers.get("X-Audit-Token") || "";
-  if (!examId || token.length < 16 || token.length > 200) return null;
-  const exam = await loadTExam(env, examId);
-  if (!exam || !exam.audit_token_hash) return null;
-  const hash = await sha256hex(token);
-  return ctEqual(hash, exam.audit_token_hash) ? exam : null;
+const WATCH_CLAIM_MS = 15 * 60e3;   // a pending fetch claims a take for 15 minutes
+
+async function watchKey(env) {
+  if (!env.SEAL_SECRET) throw new HttpError(500, "Watch tokens are not configured on the server (SEAL_SECRET).");
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(env.SEAL_SECRET + "|watch-enc-v1|"));
+  return crypto.subtle.importKey("raw", digest, { name: "AES-GCM" }, false, ["encrypt", "decrypt"]);
 }
 
-async function tvAwaiting(req, env, url) {
-  const exam = await examByAuditToken(env, req, url.searchParams.get("examId"));
-  if (!exam) throw new HttpError(401, "Bad or missing audit token for this exam.");
+export async function watchEncrypt(env, value) {
+  const key = await watchKey(env);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(value)));
+  const all = new Uint8Array(iv.length + ct.length);
+  all.set(iv); all.set(ct, iv.length);
+  return btoa(String.fromCharCode(...all));   // base64(iv || ciphertext)
+}
+
+export async function watchDecrypt(env, encValue) {
+  const key = await watchKey(env);
+  const all = Uint8Array.from(atob(String(encValue)), (c) => c.charCodeAt(0));
+  const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: all.slice(0, 12) }, key, all.slice(12));
+  return new TextDecoder().decode(pt);
+}
+
+// Creates the credential pair for one student in one exam, only where none exists.
+// Returns {created: true, token, pollKey} for a new row, {created: false} otherwise.
+export async function createWatchCredentials(env, examId, email, name = "") {
+  email = normEmail(email);
+  const existing = await env.DB.prepare("SELECT email FROM t_watch_tokens WHERE exam_id = ? AND email = ?")
+    .bind(examId, email).first();
+  if (existing) return { created: false };
+  const token = randomToken(32), pollKey = randomToken(32);
+  await env.DB.prepare(
+    `INSERT INTO t_watch_tokens (exam_id, email, name, token_hash, token_enc, poll_hash, poll_enc, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+    .bind(examId, email, String(name || ""), await sha256hex(token), await watchEncrypt(env, token),
+      await sha256hex(pollKey), await watchEncrypt(env, pollKey), nowIso()).run();
+  return { created: true, token, pollKey };
+}
+
+// Replaces both credentials for one student (regenerate): the old row is deleted
+// first, so the old token and poll key fail authentication immediately afterwards.
+export async function replaceWatchCredentials(env, examId, email, name = "") {
+  email = normEmail(email);
+  await env.DB.prepare("DELETE FROM t_watch_tokens WHERE exam_id = ? AND email = ?").bind(examId, email).run();
+  return createWatchCredentials(env, examId, email, name);
+}
+
+async function watchRow(env, req, header, column) {
+  const v = req.headers.get(header) || "";
+  if (v.length < 16 || v.length > 200) return null;
+  const hash = await sha256hex(v);
+  const row = await env.DB.prepare("SELECT * FROM t_watch_tokens WHERE " + column + " = ?").bind(hash).first();
+  return row && ctEqual(hash, row[column]) ? row : null;
+}
+
+// Takes awaiting grading for one watch row: sealed, and not inside a live claim.
+async function pendingTakes(env, row) {
   const { results } = await env.DB.prepare(
-    "SELECT email, name, final_at, sealed_at, grades_json FROM t_submissions WHERE exam_id = ? AND status = 'awaiting_validation' ORDER BY final_at")
-    .bind(exam.id).all();
-  return json({ exam: { id: exam.id, title: exam.title },
-    awaiting: results.map((r) => ({ email: r.email, name: r.name, finalAt: r.final_at, sealedAt: r.sealed_at,
-      grades: r.grades_json ? JSON.parse(r.grades_json) : null })) });
+    `SELECT s.session_code, s.status, s.sealed_at, e.title FROM t_submissions s
+     JOIN t_exams e ON e.id = s.exam_id
+     WHERE s.exam_id = ? AND s.email = ? AND s.status = 'audio_sealed'
+       AND (s.watch_claim_at IS NULL OR s.watch_claim_at <= ?) ORDER BY s.sealed_at`)
+    .bind(row.exam_id, row.email, isoIn(-WATCH_CLAIM_MS)).all();
+  return results;
 }
 
-async function tvSubmission(req, env, url) {
-  const exam = await examByAuditToken(env, req, url.searchParams.get("examId"));
-  if (!exam) throw new HttpError(401, "Bad or missing audit token for this exam.");
-  const sub = await loadSubmission(env, exam.id, normEmail(url.searchParams.get("email") || ""));
-  if (!sub) throw new HttpError(404, "No submission for that student.");
-  const audio = audioOf(sub);
-  return json({
-    exam: { id: exam.id, title: exam.title, prompt: exam.prompt, promptVersion: sub.prompt_version ?? exam.prompt_version, rubric: rubricOf(exam) },
-    student: { name: sub.name, email: sub.email },
-    variation: sub.variation, status: sub.status, finalAt: sub.final_at, sessionCode: sub.session_code,
-    transcript: sub.transcript, studentTranscript: sub.student_transcript || null,
-    critique: sub.critique, grades: sub.grades_json ? JSON.parse(sub.grades_json) : null,
-    audioFingerprint: sub.audio_fingerprint || null,
-    audio: Object.entries(audio).map(([slide, a]) => ({ slide: Number(slide), title: a.title || "", bytes: a.bytes, sha256: a.sha256 })),
-    photo: photoOf(sub) ? (({ key, ...rest }) => rest)(photoOf(sub)) : null,
-    motion: motionOf(sub).map(({ key, ...rest }) => rest),
-    attemptPhotos: await attemptPhotoList(env, exam.id, sub.email),
-  });
+async function watchPoll(req, env) {
+  const row = await watchRow(env, req, "X-Poll-Key", "poll_hash");
+  if (!row) throw new HttpError(401, "Bad or revoked poll key.");
+  const pending = (await pendingTakes(env, row)).length;
+  const now = nowIso();
+  await env.DB.prepare(
+    "UPDATE t_watch_tokens SET last_poll_at = ?, last_pending_at = CASE WHEN ? > 0 THEN ? ELSE last_pending_at END WHERE exam_id = ? AND email = ?")
+    .bind(now, pending, now, row.exam_id, row.email).run();
+  return json({ pending });
 }
 
-async function attemptPhotoList(env, examId, email) {
-  const { results } = await env.DB.prepare(
-    "SELECT session_code, final, created_at FROM t_attempts WHERE exam_id = ? AND email = ? ORDER BY created_at")
-    .bind(examId, email).all();
-  return (results || []).map((a) => ({ sessionCode: a.session_code, final: !!a.final, createdAt: a.created_at }));
-}
-
-async function tvMotion(req, env, url) {
-  const exam = await examByAuditToken(env, req, url.searchParams.get("examId"));
-  if (!exam) throw new HttpError(401, "Bad or missing audit token for this exam.");
-  const sub = await loadSubmission(env, exam.id, normEmail(url.searchParams.get("email") || ""));
-  if (!sub) throw new HttpError(404, "No submission for that student.");
-  const frame = motionOf(sub).find((m) => m.n === Number(url.searchParams.get("n")));
-  if (!frame) throw new HttpError(404, "No such motion capture.");
-  if (!env.AUDIO) throw new HttpError(500, "Photo storage is not configured on the server (R2 bucket binding AUDIO).");
-  const obj = await env.AUDIO.get(frame.key);
-  if (!obj) throw new HttpError(404, "The stored frame is missing.");
-  return new Response(obj.body, { headers: { "Content-Type": "image/jpeg", "Cache-Control": "no-store" } });
-}
-
-async function tvPhoto(req, env, url) {
-  const exam = await examByAuditToken(env, req, url.searchParams.get("examId"));
-  if (!exam) throw new HttpError(401, "Bad or missing audit token for this exam.");
-  const email = normEmail(url.searchParams.get("email") || "");
-  const sub = await loadSubmission(env, exam.id, email);
-  if (!sub) throw new HttpError(404, "No submission for that student.");
-  if (!env.AUDIO) throw new HttpError(500, "Photo storage is not configured on the server (R2 bucket binding AUDIO).");
-  const session = url.searchParams.get("session");
-  let key = null;
-  if (session) {
-    // An earlier attempt's picture: its object key is derived from the attempt's
-    // session code, the same pattern the upload used.
-    const att = await env.DB.prepare("SELECT session_code FROM t_attempts WHERE exam_id = ? AND email = ? AND session_code = ?")
-      .bind(exam.id, email, session).first();
-    if (!att) throw new HttpError(404, "No such attempt for that student.");
-    key = "exams/" + exam.id + "/" + (await sha256hex(email)).slice(0, 16) + "/" + session + "/photo.jpg";
-  } else {
-    const photo = photoOf(sub);
-    if (!photo) throw new HttpError(404, "This submission has no picture.");
-    key = photo.key;
+async function watchPending(req, env) {
+  const row = await watchRow(env, req, "X-Watch-Token", "token_hash");
+  if (!row) throw new HttpError(401, "Bad or revoked watch token.");
+  const rows = await pendingTakes(env, row);
+  const flow = "keypoints";   // keypoints is the only flow
+  const now = nowIso();
+  if (rows.length) {
+    await env.DB.batch(rows.map((tk) => env.DB.prepare(
+      "UPDATE t_submissions SET watch_claim_at = ? WHERE exam_id = ? AND email = ? AND session_code = ?")
+      .bind(now, row.exam_id, row.email, tk.session_code)));
   }
-  const obj = await env.AUDIO.get(key);
-  if (!obj) throw new HttpError(404, "No picture stored for that take (it may predate pictures, or the take had none).");
-  return new Response(obj.body, { headers: { "Content-Type": "image/jpeg", "Cache-Control": "no-store" } });
-}
-
-async function tvAudio(req, env, url) {
-  const exam = await examByAuditToken(env, req, url.searchParams.get("examId"));
-  if (!exam) throw new HttpError(401, "Bad or missing audit token for this exam.");
-  const sub = await loadSubmission(env, exam.id, normEmail(url.searchParams.get("email") || ""));
-  if (!sub) throw new HttpError(404, "No submission for that student.");
-  const seg = audioOf(sub)[url.searchParams.get("slide") || ""];
-  if (!seg) throw new HttpError(404, "No audio stored for that slide.");
-  if (!env.AUDIO) throw new HttpError(500, "Audio storage is not configured on the server (R2 bucket binding AUDIO).");
-  const obj = await env.AUDIO.get(seg.key);
-  if (!obj) throw new HttpError(404, "The stored audio object is missing (it may have expired under the retention rule).");
-  return new Response(obj.body, { headers: { "Content-Type": "audio/wav", "Cache-Control": "no-store" } });
-}
-
-async function tvValidate(req, env) {
-  const body = await readJson(req, 1024 * 1024);
-  const exam = await examByAuditToken(env, req, body.examId);
-  if (!exam) throw new HttpError(401, "Bad or missing audit token for this exam.");
-  const email = normEmail(body.email || "");
-  const sub = await loadSubmission(env, exam.id, email);
-  if (!sub) throw new HttpError(404, "No submission for that student.");
-  if (sub.status !== "awaiting_validation") throw new HttpError(409, "This submission is not awaiting validation (status: " + sub.status + ").");
-  const rubric = rubricOf(exam);
-  const gradesIn = body.grades && typeof body.grades === "object" ? body.grades : {};
-  const vGrades = {};
-  for (const el of rubric) {
-    const v = Number(gradesIn[el.name]);
-    if (!Number.isFinite(v)) throw new HttpError(400, "Missing or invalid grade for rubric element: " + el.name);
-    vGrades[el.name] = Math.min(1, Math.max(0, v));
-  }
-  const vTranscript = String(body.transcript || "").slice(0, 100000);
-  const studentGrades = sub.grades_json ? JSON.parse(sub.grades_json) : {};
-  const audit = { status: "done", source: "teacher-claude", fractions: vGrades, model: "teacher's Muse",
-    at: nowIso(), transcript: vTranscript || undefined };
-  // Identity picture check: the validator viewed the submission's picture against
-  // the pictures from the student's earlier submissions. A "different" verdict
-  // flags the submission for the teacher; it never fails it automatically.
-  const photoVerdict = ["same", "different", "unclear", "none"].includes(body.photoVerdict) ? body.photoVerdict : null;
-  if (photoVerdict) audit.photo_check = { verdict: photoVerdict, note: String(body.photoNote || "").slice(0, 500), at: nowIso() };
-  if (body.motionNote) audit.photo_check = { ...(audit.photo_check || {}), motion_note: String(body.motionNote).slice(0, 1000), at: nowIso() };
-  const flags = computeFlags(rubric, studentGrades, audit);
-  if (photoVerdict === "different") flags.push({ element: "Identity picture", student: 0, audit: 1 });
-  let similarity = null;
-  const against = sub.student_transcript || sub.transcript;
-  if (vTranscript && against) {
-    similarity = Math.round(wordSimilarity(vTranscript, against) * 1000) / 1000;
-    audit.transcript_similarity = similarity;
-    if (similarity < 0.6) flags.push({ element: "Transcription match", student: similarity, audit: 1 });
-  }
-  if (flags.length) {
-    await env.DB.prepare("UPDATE t_submissions SET audit_json = ?, flags_json = ?, status = 'flagged' WHERE exam_id = ? AND email = ?")
-      .bind(JSON.stringify(audit), JSON.stringify(flags), exam.id, email).run();
-    return json({ ok: true, status: "flagged", flags, similarity });
-  }
-  // No flags: the teacher's Muse grades become the final grade, through the same
-  // manual record the teacher's own override uses, so results and CSV agree.
-  const manual = { fractions: vGrades, comment: String(body.comment || "Validated by the teacher's Muse.").slice(0, 2000),
-    by: "teacher's Muse", at: nowIso() };
-  await env.DB.prepare("UPDATE t_submissions SET audit_json = ?, flags_json = '[]', manual_json = ?, status = 'final' WHERE exam_id = ? AND email = ?")
-    .bind(JSON.stringify(audit), JSON.stringify(manual), exam.id, email).run();
-  return json({ ok: true, status: "final", flags: [], similarity });
+  return json({ takes: rows.map((tk) => ({ examId: row.exam_id, title: tk.title, sessionCode: tk.session_code,
+    status: tk.status, flow, sealedAt: tk.sealed_at })) });
 }
 
 // ---- teacher API (/api/t/*) ---------------------------------------------------------------
@@ -734,7 +545,7 @@ function cleanRubric(v) {
 
 function examView(e) {
   return { id: e.id, title: e.title, app_url: e.app_url, assignment: e.assignment, prompt: e.prompt,
-    rubric: rubricOf(e), variations: variationsOf(e), prompt_version: e.prompt_version,
+    rubric: rubricOf(e), prompt_version: e.prompt_version,
     opens_at: e.opens_at, closes_at: e.closes_at, owner_email: e.owner_email,
     has_audit_token: !!e.audit_token_hash,
     created_at: e.created_at, updated_at: e.updated_at, status: examStatus(e) };
@@ -744,22 +555,6 @@ async function teacherApi(req, env, url) {
   const t = await currentTeacher(req, env);
   if (!t) throw new HttpError(401, "Sign in first.");
   const p = url.pathname, m = req.method;
-
-  if (p === "/api/t/settings/model" && m === "GET") {
-    const cfg = (await getSettings(env, "model")) || { provider: "", base_url: "", model: "" };
-    return json({ provider: cfg.provider || "", base_url: cfg.base_url || "", model: cfg.model || "",
-      audio_configured: !!env.AUDIO,
-      key_configured: !!env.MODEL_API_KEY });
-  }
-  if (p === "/api/t/settings/model" && m === "PUT") {
-    const b = await readJson(req, 8192);
-    const cfg = { provider: String(b.provider || "").slice(0, 60), base_url: String(b.base_url || "").slice(0, 300),
-      model: String(b.model || "").slice(0, 120) };
-    await env.DB.prepare("INSERT INTO t_settings (key, value_json, updated_at, updated_by) VALUES ('model', ?, ?, ?) " +
-      "ON CONFLICT(key) DO UPDATE SET value_json = excluded.value_json, updated_at = excluded.updated_at, updated_by = excluded.updated_by")
-      .bind(JSON.stringify(cfg), nowIso(), t.email).run();
-    return json({ ok: true });
-  }
 
   if (p === "/api/t/exams" && m === "GET") {
     const { results } = await env.DB.prepare(
@@ -775,10 +570,10 @@ async function teacherApi(req, env, url) {
     const id = newExamId(title);
     const now = nowIso();
     await env.DB.prepare(
-      `INSERT INTO t_exams (id, owner_email, title, app_url, assignment, prompt, rubric_json, variations_json, opens_at, closes_at, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+      `INSERT INTO t_exams (id, owner_email, title, app_url, assignment, prompt, rubric_json, opens_at, closes_at, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
       .bind(id, t.email, title, String(b.app_url || ""), String(b.assignment || ""), String(b.prompt || ""),
-        JSON.stringify(cleanRubric(b.rubric || [])), JSON.stringify((b.variations || []).map((s) => String(s).slice(0, 500))),
+        JSON.stringify(cleanRubric(b.rubric || [])),
         b.opens_at || null, b.closes_at || null, now, now).run();
     return json({ id });
   }
@@ -791,11 +586,10 @@ async function teacherApi(req, env, url) {
     const rubric = cleanRubric(b.rubric || []);
     const changed = String(b.prompt || "") !== e.prompt || JSON.stringify(rubric) !== e.rubric_json;
     await env.DB.prepare(
-      `UPDATE t_exams SET title = ?, app_url = ?, assignment = ?, prompt = ?, rubric_json = ?, variations_json = ?,
+      `UPDATE t_exams SET title = ?, app_url = ?, assignment = ?, prompt = ?, rubric_json = ?,
          opens_at = ?, closes_at = ?, prompt_version = ?, updated_at = ? WHERE id = ?`)
       .bind(String(b.title || e.title), String(b.app_url ?? e.app_url), String(b.assignment ?? e.assignment),
         String(b.prompt ?? e.prompt), JSON.stringify(rubric),
-        JSON.stringify((b.variations || variationsOf(e)).map((s) => String(s).slice(0, 500))),
         b.opens_at ?? e.opens_at, b.closes_at ?? e.closes_at,
         e.prompt_version + (changed ? 1 : 0), nowIso(), e.id).run();
     return json({ ok: true, prompt_version: e.prompt_version + (changed ? 1 : 0) });
@@ -809,7 +603,7 @@ async function teacherApi(req, env, url) {
         for (const seg of Object.values(audioOf(r))) { try { await env.AUDIO.delete(seg.key); } catch { /* retention rule is the backstop */ } }
         const ph = photoOf(r);
         if (ph) { try { await env.AUDIO.delete(ph.key); } catch { /* retention rule is the backstop */ } }
-        // Earlier attempts' pictures (kept across takes for identity comparison).
+        // Earlier attempts' pictures and scene-change captures (kept across takes).
         for (const mf of motionOf(r)) { try { await env.AUDIO.delete(mf.key); } catch { /* retention rule is the backstop */ } }
         const atts = await env.DB.prepare("SELECT session_code, motion_count FROM t_attempts WHERE exam_id = ? AND email = ?").bind(e.id, r.email).all();
         for (const a of atts.results || []) {
@@ -827,6 +621,7 @@ async function teacherApi(req, env, url) {
       env.DB.prepare("DELETE FROM t_roster WHERE exam_id = ?").bind(e.id),
       env.DB.prepare("DELETE FROM t_exam_teachers WHERE exam_id = ?").bind(e.id),
       env.DB.prepare("DELETE FROM t_login_tokens WHERE exam_id = ?").bind(e.id),
+      env.DB.prepare("DELETE FROM t_watch_tokens WHERE exam_id = ?").bind(e.id),
       env.DB.prepare("DELETE FROM t_student_sessions WHERE exam_id = ?").bind(e.id),
       env.DB.prepare("DELETE FROM t_exams WHERE id = ?").bind(e.id),
     ]);
@@ -869,24 +664,6 @@ async function teacherApi(req, env, url) {
     return json({ ok: true });
   }
 
-  const mManual = p.match(/^\/api\/t\/exams\/([a-z0-9-]{1,40})\/manual$/);
-  if (mManual && m === "POST") {
-    const e = await tExamFor(env, t, mManual[1]);
-    const b = await readJson(req, 1024 * 1024);
-    const email = normEmail(b.email);
-    if (!isEmail(email)) throw new HttpError(400, "Bad email address.");
-    const transcript = String(b.transcript || "");
-    if (!transcript.trim()) throw new HttpError(400, "The transcript is empty.");
-    const fingerprint = await sha256hex(transcript.replace(/\s+$/g, ""));
-    await env.DB.prepare(
-      `INSERT INTO t_submissions (exam_id, email, name, source, session_code, status, transcript, fingerprint, sealed_at, prompt_version)
-       VALUES (?, ?, ?, 'teacher', ?, 'sealed', ?, ?, ?, ?)
-       ON CONFLICT(exam_id, email) DO UPDATE SET source = 'teacher', transcript = excluded.transcript,
-         fingerprint = excluded.fingerprint, status = 'sealed', prompt_version = excluded.prompt_version`)
-      .bind(e.id, email, String(b.name || ""), "manual-" + randomToken(16), transcript, fingerprint, nowIso(), e.prompt_version).run();
-    return json({ ok: true });
-  }
-
   const mResults = p.match(/^\/api\/t\/exams\/([a-z0-9-]{1,40})\/results$/);
   if (mResults && m === "GET") {
     const e = await tExamFor(env, t, mResults[1]);
@@ -894,7 +671,7 @@ async function teacherApi(req, env, url) {
     const att = await env.DB.prepare("SELECT email, COUNT(*) AS c FROM t_attempts WHERE exam_id = ? GROUP BY email").bind(e.id).all();
     const attCount = Object.fromEntries((att.results || []).map((a) => [a.email, a.c]));
     return json({ exam: examView(e), results: results.map((r) => ({
-      email: r.email, name: r.name, source: r.source, status: r.status, variation: r.variation,
+      email: r.email, name: r.name, source: r.source, status: r.status,
       opened_at: r.opened_at, sealed_at: r.sealed_at, fingerprint: r.fingerprint, session_code: r.session_code,
       final_at: r.final_at || null, attempts: attCount[r.email] || 0,
       audio_fingerprint: r.audio_fingerprint || null,
@@ -919,19 +696,18 @@ async function teacherApi(req, env, url) {
     const q = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
     const pts = (frac, el) => typeof frac === "number" ? String(Math.round(frac * el.points * 100) / 100) : "";
     const head = ["name", "email", "source", "status"];
-    for (const el of rubric) head.push(el.name + " (student)", el.name + " (audit)", el.name + " (final)");
+    for (const el of rubric) head.push(el.name + " (student)", el.name + " (final)");
     head.push("total (final)", "comment");
     const lines = [head.map(q).join(",")];
     for (const r of results) {
       const grades = r.grades_json ? JSON.parse(r.grades_json) : {};
-      const audit = r.audit_json ? JSON.parse(r.audit_json) : {};
       const manual = JSON.parse(r.manual_json || "{}");
       const row = [r.name, r.email, r.source, r.status];
       let total = 0, anyFinal = false;
       for (const el of rubric) {
         const f = manual.fractions && typeof manual.fractions[el.name] === "number" ? manual.fractions[el.name]
           : typeof grades[el.name] === "number" ? grades[el.name] : null;
-        row.push(pts(grades[el.name], el), pts(audit.fractions ? audit.fractions[el.name] : undefined, el), pts(f, el));
+        row.push(pts(grades[el.name], el), pts(f, el));
         if (f !== null) { total += f * el.points; anyFinal = true; }
       }
       row.push(anyFinal ? String(Math.round(total * 100) / 100) : "", manual.comment || "");
@@ -957,6 +733,131 @@ async function teacherApi(req, env, url) {
       "Content-Disposition": `inline; filename="slide-${mAudio[3]}.wav"` } });
   }
 
+  // ---- watch tokens (teacher management; list views carry metadata only) -------------
+  const watchMeta = (r) => ({ email: r.email, name: r.name || "", status: "active",
+    created_at: r.created_at, last_emailed_at: r.last_emailed_at,
+    last_poll_at: r.last_poll_at, last_pending_at: r.last_pending_at });
+  const loadWatchRow = (env, examId, email) => env.DB.prepare(
+    "SELECT * FROM t_watch_tokens WHERE exam_id = ? AND email = ?").bind(examId, email).first();
+  const rosterName = async (env, examId, email) => {
+    const r = await env.DB.prepare("SELECT name FROM t_roster WHERE exam_id = ? AND email = ?").bind(examId, email).first();
+    return r ? r.name : "";
+  };
+  // Accepts {entries: "Name, email\n..."} (roster form) or {emails: [...]}.
+  const watchEntries = (b) => {
+    const out = [];
+    if (Array.isArray(b.emails)) {
+      for (const v of b.emails) {
+        const email = normEmail(v);
+        if (!isEmail(email)) throw new HttpError(400, "Bad email address: " + String(v).slice(0, 80));
+        out.push({ email, name: "" });
+      }
+    }
+    for (const line of String(b.entries || "").split(/\r?\n/).map((s) => s.trim()).filter(Boolean)) {
+      const parts = line.split(",").map((s) => s.trim());
+      const email = normEmail(parts.length > 1 ? parts[parts.length - 1] : parts[0]);
+      if (!isEmail(email)) throw new HttpError(400, "Line is not 'name, email': " + line.slice(0, 80));
+      out.push({ email, name: parts.length > 1 ? parts.slice(0, -1).join(", ") : "" });
+    }
+    return out;
+  };
+
+  const mWatch = p.match(/^\/api\/t\/exams\/([a-z0-9-]{1,40})\/watch-tokens$/);
+  if (mWatch && m === "GET") {
+    const e = await tExamFor(env, t, mWatch[1]);
+    const { results } = await env.DB.prepare(
+      "SELECT email, name, created_at, last_emailed_at, last_poll_at, last_pending_at FROM t_watch_tokens WHERE exam_id = ? ORDER BY name, email")
+      .bind(e.id).all();
+    return json({ tokens: results.map(watchMeta) });
+  }
+  if (mWatch && m === "POST") {
+    const e = await tExamFor(env, t, mWatch[1]);
+    const b = await readJson(req, 512 * 1024);
+    let added = 0, existing = 0;
+    for (const { email, name } of watchEntries(b)) {
+      const r = await createWatchCredentials(env, e.id, email, name || (await rosterName(env, e.id, email)));
+      if (r.created) added++; else existing++;
+    }
+    return json({ ok: true, added, existing });
+  }
+  if (mWatch && m === "DELETE") {
+    const e = await tExamFor(env, t, mWatch[1]);
+    const b = await readJson(req, 512 * 1024);
+    const emails = Array.isArray(b.emails) ? b.emails.map(normEmail) : [normEmail(b.email)];
+    let removed = 0;
+    for (const email of emails) {
+      if (!isEmail(email)) throw new HttpError(400, "Bad email address.");
+      const r = await env.DB.prepare("DELETE FROM t_watch_tokens WHERE exam_id = ? AND email = ?").bind(e.id, email).run();
+      removed += r.meta.changes || 0;
+    }
+    return json({ ok: true, removed });
+  }
+
+  const mWatchRegen = p.match(/^\/api\/t\/exams\/([a-z0-9-]{1,40})\/watch-tokens\/regenerate$/);
+  if (mWatchRegen && m === "POST") {
+    const e = await tExamFor(env, t, mWatchRegen[1]);
+    const b = await readJson(req, 4096);
+    const email = normEmail(b.email);
+    if (!isEmail(email)) throw new HttpError(400, "Bad email address.");
+    const old = await loadWatchRow(env, e.id, email);
+    await replaceWatchCredentials(env, e.id, email, (old && old.name) || (await rosterName(env, e.id, email)));
+    return json({ ok: true, token: watchMeta(await loadWatchRow(env, e.id, email)) });
+  }
+
+  const mWatchEmail = p.match(/^\/api\/t\/exams\/([a-z0-9-]{1,40})\/watch-tokens\/email$/);
+  if (mWatchEmail && m === "POST") {
+    const e = await tExamFor(env, t, mWatchEmail[1]);
+    const b = await readJson(req, 512 * 1024);
+    let targets;
+    if (b.all === true) {
+      const rows = await env.DB.prepare(
+        `SELECT email FROM t_watch_tokens WHERE exam_id = ?
+         UNION SELECT email FROM t_roster WHERE exam_id = ? ORDER BY email`).bind(e.id, e.id).all();
+      targets = (rows.results || []).map((r) => r.email);
+    } else {
+      targets = watchEntries(b).map((x) => x.email);
+    }
+    const server = env.APP_ORIGIN || url.origin;
+    const results = [];
+    for (const email of targets) {
+      try {
+        await createWatchCredentials(env, e.id, email, await rosterName(env, e.id, email));
+        const row = await loadWatchRow(env, e.id, email);
+        const token = await watchDecrypt(env, row.token_enc);
+        const pollKey = await watchDecrypt(env, row.poll_enc);
+        const setup = [
+          "Set up watch grading for \"" + e.title + "\" in your Muse, once:",
+          "",
+          "Server: " + server,
+          "My grading token: " + token,
+          "My poll key: " + pollKey,
+          "",
+          "Paste this instruction into your Muse:",
+          "\"Set up watch grading with the watch-grading skill",
+          "(https://github.com/chetools/muse/tree/main/watch-grading-skill).",
+          "Use the server, grading token and poll key in this email as my watch",
+          "credentials: poll the server every 60 seconds with the poll key, and",
+          "when a sealed take of mine is pending, grade it with the keypoints-",
+          "grading skill (https://github.com/chetools/muse/tree/main/keypoints-grading-skill)",
+          "and upload the grades. Do not print",
+          "the token or the poll key back to me.\"",
+          "",
+          "After you record a take you do not have to wait for the next poll:",
+          "open your Muse and say \"check now\" and it will look for your take",
+          "at once and grade it.",
+        ].join("\n");
+        const html = setup.split("\n").map((l) => l ? "<p>" + esc(l) + "</p>" : "").join("");
+        await sendMail(env, email, "Your Muse watch-grading setup for " + e.title, html, setup);
+        await env.DB.prepare("UPDATE t_watch_tokens SET last_emailed_at = ? WHERE exam_id = ? AND email = ?")
+          .bind(nowIso(), e.id, email).run();
+        results.push({ email, sent: true });
+      } catch (err) {
+        results.push({ email, error: "stored token cannot be read — regenerate it" });
+      }
+    }
+    return json({ ok: true, results });
+  }
+
   const mToken = p.match(/^\/api\/t\/exams\/([a-z0-9-]{1,40})\/audit-token$/);
   if (mToken && m === "POST") {
     const e = await tExamFor(env, t, mToken[1]);
@@ -971,8 +872,9 @@ async function teacherApi(req, env, url) {
     const email = normEmail(decodeURIComponent(mRelease[2]));
     const sub = await loadSubmission(env, e.id, email);
     if (!sub) throw new HttpError(404, "No submission for that student.");
-    // Release a final submission for more practice: the final marking and any final
-    // grade set from it are cleared; graded attempts stay in the attempt log.
+    // Release a submission the teacher has marked final (through the Results
+    // override) for more practice: the final marking and any final grade set
+    // from it are cleared; graded attempts stay in the attempt log.
     await env.DB.prepare("UPDATE t_submissions SET status = 'graded', final_at = NULL, manual_json = '{}' WHERE exam_id = ? AND email = ?")
       .bind(e.id, email).run();
     return json({ ok: true });
@@ -1036,29 +938,23 @@ export async function handleTranscript(req, env, ctx, url) {
     if (p.startsWith("/api/t/")) return await teacherApi(req, env, url);
     const H = corsT(req, env);
     if (m === "OPTIONS") return new Response(null, { status: 204, headers: H });
-    if (p.startsWith("/tv/")) {
+    if (p.startsWith("/w/")) {
       let res = null;
-      if (m === "GET" && p === "/tv/awaiting") res = await tvAwaiting(req, env, url);
-      else if (m === "GET" && p === "/tv/submission") res = await tvSubmission(req, env, url);
-      else if (m === "GET" && p === "/tv/audio") res = await tvAudio(req, env, url);
-      else if (m === "GET" && p === "/tv/photo") res = await tvPhoto(req, env, url);
-      else if (m === "GET" && p === "/tv/motion") res = await tvMotion(req, env, url);
-      else if (m === "POST" && p === "/tv/validate") res = await tvValidate(req, env);
-      if (res) { for (const [k, v] of Object.entries(H)) if (k !== "Content-Type") res.headers.set(k, v); return res; }
+      if (m === "GET" && p === "/w/poll") res = await watchPoll(req, env);
+      else if (m === "GET" && p === "/w/pending") res = await watchPending(req, env);
+      if (res) return res;
       throw new HttpError(404, "Not found.");
     }
     let res = null;
     if (m === "POST" && p === "/t/login/request") res = await studentLoginRequest(req, env, ctx);
     else if (m === "POST" && p === "/t/login/verify") res = await studentLoginVerify(req, env);
     else if (m === "POST" && p === "/t/session") res = await sealSessionOpen(req, env);
-    else if (m === "POST" && p === "/t/segment") res = await sealSegment(req, env);
     else if (m === "POST" && p === "/t/audio-segment") res = await audioSegment(req, env, url);
     else if (m === "POST" && p === "/t/photo") res = await photoUpload(req, env, url);
     else if (m === "POST" && p === "/t/motion-photo") res = await motionUpload(req, env, url);
     else if (m === "POST" && p === "/t/seal") res = await sealTake(req, env);
     else if (m === "GET" && p === "/t/packet") res = await gradingPacket(env, url);
     else if (m === "GET" && p === "/t/audio") res = await audioDownload(env, url);
-    else if (m === "POST" && p === "/t/verify") res = await verifyTranscript(req, env);
     else if (m === "POST" && p === "/t/critique") res = await uploadCritique(req, env);
     if (!res) return json({ error: "Not found." }, 404, H);
     const headers = new Headers(res.headers);

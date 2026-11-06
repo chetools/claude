@@ -45,7 +45,7 @@ worker/public/shared/validate.js   exam validation and grading, used by the Work
 worker/schema.sql    database schema
 student/             the student exam page (published to gh-pages:seb_exams/exam/)
 apps-script/Code.gs  sends the sign-in emails from the admin's Gmail
-docs/                SETUP.md (email sender setup), AI_EXAM_GUIDE.md
+docs/                SETUP.md (email sender setup), SETUP-keypoints.md (keypoints assignments), AI_EXAM_GUIDE.md
 examples/            public example exam and its zip
 python/mccabe.py     McCabe–Thiele stepping used to draw and check the example figure
 private/             gitignored: real exams with answers

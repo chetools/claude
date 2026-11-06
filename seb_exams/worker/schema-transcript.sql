@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS t_submissions (
   student_transcript TEXT,                       -- transcript made by the student's own Muse from the sealed audio
   student_fingerprint TEXT,                      -- SHA-256 hex of the student's transcript
   final_at TEXT,                                 -- when the student marked the current take as their final submission
+  watch_claim_at TEXT,                           -- when a watch pending fetch claimed this take (15 min; cleared by a critique upload)
   photo_json TEXT NOT NULL DEFAULT '{}',         -- the submission's one picture {key, bytes, sha256, atSec, slide, precheck, receivedAt}
   photo_fingerprint TEXT,                        -- SHA-256 hex of the picture, covered by the seal
   motion_json TEXT NOT NULL DEFAULT '[]',        -- scene-change captures [{key, n, bytes, sha256, atSec, slide, score, receivedAt}]
@@ -112,3 +113,23 @@ CREATE TABLE IF NOT EXISTS t_attempts (
   created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS t_attempts_exam ON t_attempts (exam_id, email);
+
+-- Watch grading (option 2): one credential pair per student per exam — a grading
+-- token and a low-privilege poll key, each stored as a SHA-256 hash (authentication)
+-- and AES-GCM encrypted (so the teacher app can re-email the same values).
+CREATE TABLE IF NOT EXISTS t_watch_tokens (
+  exam_id  TEXT NOT NULL,
+  email    TEXT NOT NULL,
+  name     TEXT NOT NULL DEFAULT '',
+  token_hash TEXT NOT NULL,
+  token_enc  TEXT NOT NULL,
+  poll_hash  TEXT NOT NULL,
+  poll_enc   TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  last_emailed_at TEXT,
+  last_poll_at    TEXT,
+  last_pending_at TEXT,
+  PRIMARY KEY (exam_id, email)
+);
+CREATE INDEX IF NOT EXISTS t_watch_tokens_token ON t_watch_tokens (token_hash);
+CREATE INDEX IF NOT EXISTS t_watch_tokens_poll ON t_watch_tokens (poll_hash);

@@ -15,7 +15,7 @@ export default {
     try {
       if (p.startsWith("/auth/")) return await handleAuth(req, env, ctx, url);
       if (p.startsWith("/k/")) return await handleKeypoints(req, env, ctx, url);
-      if (p.startsWith("/t/") || p.startsWith("/api/t/") || p.startsWith("/tv/")) return await handleTranscript(req, env, ctx, url);
+      if (p.startsWith("/t/") || p.startsWith("/api/t/") || p.startsWith("/w/")) return await handleTranscript(req, env, ctx, url);
       if (p.startsWith("/api/")) return await handleApi(req, env, url);
       if (p.startsWith("/s/") || p === "/exam.seb") return await handleS(req, env, url);
     } catch (e) {
