@@ -33,20 +33,18 @@ async function listView(node) {
   const prov = h('input', { type: 'text' });
   const base = h('input', { type: 'text', placeholder: 'https://api.example.com/v1' });
   const mod = h('input', { type: 'text' });
-  const tmod = h('input', { type: 'text', placeholder: 'e.g. whisper-1 or gpt-4o-mini-transcribe' });
   const mOut = h('div', {});
   const cfg = await api('/api/t/settings/model');
-  prov.value = cfg.provider || ''; base.value = cfg.base_url || ''; mod.value = cfg.model || ''; tmod.value = cfg.transcribe_model || '';
+  prov.value = cfg.provider || ''; base.value = cfg.base_url || ''; mod.value = cfg.model || '';
   const modelCard = h('div', { class: 'card' },
-    h('h2', {}, 'Model connection (audit re-grade and audio transcription)'),
-    h('p', { class: 'hint' }, 'The audit re-grades each submission, grades only, with the exam\u2019s prompt and rubric, through this connection (an OpenAI-style chat completions service). The transcription model transcribes sealed audio takes through the same connection\u2019s audio transcriptions service. The key itself is a server secret and is never stored here. ' + (cfg.audio_configured ? 'Audio storage (R2) is connected.' : 'Audio storage (R2) is not connected yet; audio takes cannot be accepted until it is.')),
+    h('h2', {}, 'Model connection (audit re-grade)'),
+    h('p', { class: 'hint' }, 'The audit re-grades each submission, grades only, with the exam\u2019s prompt and rubric, through this connection (an OpenAI-style chat completions service). The key itself is a server secret and is never stored here. ' + (cfg.audio_configured ? 'Audio storage (R2) is connected.' : 'Audio storage (R2) is not connected yet; audio takes cannot be accepted until it is.')),
     h('label', { class: 'field' }, 'Provider name', prov),
     h('label', { class: 'field' }, 'Service address (base URL)', base),
     h('label', { class: 'field' }, 'Model', mod),
-    h('label', { class: 'field' }, 'Transcription model (audio takes)', tmod),
     h('div', { class: 'row' }, h('button', { onclick: async () => {
       mOut.replaceChildren();
-      try { await api('/api/t/settings/model', { method: 'PUT', body: { provider: prov.value, base_url: base.value, model: mod.value, transcribe_model: tmod.value } });
+      try { await api('/api/t/settings/model', { method: 'PUT', body: { provider: prov.value, base_url: base.value, model: mod.value } });
         mOut.replaceChildren(msg('ok', 'Connection saved.')); }
       catch (e) { mOut.replaceChildren(msg('err', e.message)); }
     } }, 'Save connection'), h('span', { class: 'hint' }, cfg.key_configured ? 'A model key is configured on the server.' : 'No model key is configured on the server; the audit will be skipped.')),
@@ -196,22 +194,12 @@ function resultsTab(node, exam) {
     const oOut = h('div', {});
     const audioKids = [];
     if (r.audio && r.audio.length) {
-      const tOut = h('div', {});
       audioKids.push(h('h4', {}, 'Sealed audio'));
-      audioKids.push(h('p', { class: 'hint' }, 'Transcription: ' + (r.transcription && r.transcription.status ? r.transcription.status : 'not run')
-        + (r.transcription && r.transcription.model ? ' · ' + r.transcription.model : '')
-        + (r.transcription && r.transcription.detail ? ' · ' + r.transcription.detail : '')
-        + '. Audio fingerprint: ' + (r.audio_fingerprint || '—')));
+      audioKids.push(h('p', { class: 'hint' }, 'Audio fingerprint: ' + (r.audio_fingerprint || '—')));
       for (const a of r.audio) {
         audioKids.push(h('p', {}, 'Slide ' + a.slide + (a.title ? ' — ' + a.title : '') + ' ',
           h('audio', { controls: 'controls', preload: 'none', src: '/api/t/exams/' + encodeURIComponent(exam.id) + '/results/' + encodeURIComponent(r.email) + '/audio/' + a.slide })));
       }
-      audioKids.push(h('div', { class: 'row' }, h('button', { class: 'secondary', onclick: async () => {
-        tOut.replaceChildren();
-        try { const d = await api('/api/t/exams/' + encodeURIComponent(exam.id) + '/results/' + encodeURIComponent(r.email) + '/transcribe', { method: 'POST', body: {} });
-          tOut.replaceChildren(msg(d.transcriptionStatus === 'done' ? 'ok' : 'err', 'Transcription ' + d.transcriptionStatus + '.')); load(); }
-        catch (e) { tOut.replaceChildren(msg('err', e.message)); }
-      } }, 'Transcribe audio'), tOut));
     }
     detail.replaceChildren(h('div', { class: 'card' },
       h('h3', {}, (r.name || r.email) + ' — ' + r.status + ' (' + r.source + ')'),

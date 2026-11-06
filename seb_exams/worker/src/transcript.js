@@ -122,13 +122,11 @@ async function runAudit(env, exam, transcript) {
 // ---- audio takes (R2) ----------------------------------------------------------------------
 // A spoken take can be sealed from its audio instead of from a browser-made transcript:
 // the app uploads one WAV segment per slide (16 kHz mono, from the take's own capture),
-// the server stores the segments in the AUDIO R2 bucket, seals a fingerprint of the audio,
-// and transcribes the segments itself through the configured model connection's
-// transcription model (an OpenAI-style /audio/transcriptions endpoint). The resulting
-// transcript is the canonical sealed text, exactly as a text seal is. Without a bucket
-// the audio routes fail closed; without a transcription model or key the take stays in
-// status 'audio_sealed' (audio held and fingerprinted, no transcript invented) until a
-// teacher runs transcription from the results view.
+// the server stores the segments in the AUDIO R2 bucket and seals a fingerprint of the
+// audio. The server never transcribes: the take stays in status 'audio_sealed' (audio
+// held and fingerprinted, no transcript invented) until the student's Muse downloads
+// the segments under the session code, transcribes them, and uploads its transcript
+// with its critique and grades. Without a bucket the audio routes fail closed.
 const AUDIO_MAX_BYTES = 25 * 1024 * 1024;   // one slide segment; ~13 min at 16 kHz 16-bit mono
 
 async function sha256hexBytes(buf) {
@@ -137,7 +135,6 @@ async function sha256hexBytes(buf) {
 }
 
 const audioOf = (sub) => { try { return JSON.parse(sub.audio_json || "{}"); } catch { return {}; } };
-const transcriptionOf = (sub) => { try { return JSON.parse(sub.transcription_json || "{}"); } catch { return {}; } };
 
 async function audioKey(env, examId, email, sessionCode, slide) {
   const eh = (await sha256hex(email)).slice(0, 16);
@@ -150,44 +147,11 @@ function audioFingerprintOf(audio) {
   return lines.join("\n");
 }
 
-// Transcribe every stored audio segment, in slide order, and assemble the canonical
-// transcript in the same "n (title): text" form as a text seal. Returns a status object;
-// on success the caller stores transcript/fingerprint from the returned segments.
-async function runTranscription(env, exam, sub) {
-  if (!env.AUDIO) return { status: "no_storage" };
-  const cfg = await getSettings(env, "model");
-  if (!cfg || !cfg.base_url || !cfg.transcribe_model) return { status: "not_configured" };
-  if (!env.MODEL_API_KEY) return { status: "no_key" };
-  const audio = audioOf(sub);
-  const slides = Object.keys(audio).sort((a, b) => Number(a) - Number(b));
-  if (!slides.length) return { status: "no_audio" };
-  const segments = {};
-  try {
-    for (const k of slides) {
-      const obj = await env.AUDIO.get(audio[k].key);
-      if (!obj) return { status: "error", detail: "stored audio missing for slide " + k };
-      const form = new FormData();
-      form.append("file", new Blob([await obj.arrayBuffer()], { type: "audio/wav" }), "slide-" + k + ".wav");
-      form.append("model", cfg.transcribe_model);
-      form.append("language", "en");
-      form.append("prompt", "Slide title: " + (audio[k].title || "") +
-        ". Transcribe exactly what is said, including technical terms. Do not correct, complete or rephrase statements.");
-      const res = await fetch(cfg.base_url.replace(/\/+$/, "") + "/audio/transcriptions", {
-        method: "POST", headers: { "Authorization": "Bearer " + env.MODEL_API_KEY }, body: form });
-      if (!res.ok) return { status: "error", detail: "transcription HTTP " + res.status };
-      const data = await res.json();
-      segments[k] = { text: String(data.text || "").trim(), title: audio[k].title || "",
-        firstAt: audio[k].at || null, lastAt: audio[k].at || null, late: false };
-    }
-  } catch (e) {
-    return { status: "error", detail: String(e).slice(0, 200) };
-  }
-  return { status: "done", segments, model: cfg.transcribe_model, at: nowIso() };
-}
 
-// Seal (or re-seal after transcription) an audio take: computes the transcript when
-// transcription succeeds, stamps transcript fingerprint + receipt, and records the
-// transcription status either way. Shared by /t/seal and the teacher transcribe route.
+// Seal an audio take: stamps the audio fingerprint and the receipt over the stored
+// segments (the submission picture and scene-change captures are covered when
+// present). The take is held as 'audio_sealed'; its transcript is made later by the
+// student's Muse from the sealed audio. Called by /t/seal.
 function motionOf(sub) {
   try { const m = JSON.parse((sub && sub.motion_json) || "[]"); return Array.isArray(m) ? m : []; }
   catch { return []; }
@@ -207,28 +171,13 @@ async function finaliseAudioSeal(env, exam, sub) {
   const fpText = audioFingerprintOf(audio) + (photo ? "\nphoto:" + photo.sha256 : "")
     + (motion.length ? "\nmotion:" + motion.map((m) => m.sha256).join(",") : "");
   const audioFp = await sha256hex(fpText);
-  const tr = await runTranscription(env, exam, sub);
   const sealedAt = sub.sealed_at || nowIso();
-  if (tr.status === "done") {
-    const assembled = assemble(tr.segments);
-    const fingerprint = await sha256hex(assembled);
-    const receipt = await receiptCode(env, [sub.session_code, sub.email, audioFp, fingerprint, sub.variation || "", sub.opened_at, sealedAt]);
-    await env.DB.prepare(
-      "UPDATE t_submissions SET status = 'sealed', segments_json = ?, transcript = ?, fingerprint = ?, audio_fingerprint = ?, photo_fingerprint = ?, receipt = ?, sealed_at = ?, prompt_version = ?, transcription_json = ? WHERE exam_id = ? AND email = ?")
-      .bind(JSON.stringify(tr.segments), assembled, fingerprint, audioFp, photo ? photo.sha256 : null, receipt, sealedAt, exam.prompt_version,
-        JSON.stringify({ status: "done", model: tr.model, at: tr.at }), exam.id, sub.email).run();
-    return { audioFingerprint: audioFp, transcriptFingerprint: fingerprint, receipt, sealedAt,
-      photoFingerprint: photo ? photo.sha256 : null,
-      sealedTranscript: assembled, transcriptionStatus: "done" };
-  }
   const receipt = await receiptCode(env, [sub.session_code, sub.email, audioFp, "", sub.variation || "", sub.opened_at, sealedAt]);
   await env.DB.prepare(
-    "UPDATE t_submissions SET status = 'audio_sealed', audio_fingerprint = ?, photo_fingerprint = ?, receipt = ?, sealed_at = ?, prompt_version = ?, transcription_json = ? WHERE exam_id = ? AND email = ?")
-    .bind(audioFp, photo ? photo.sha256 : null, receipt, sealedAt, exam.prompt_version,
-      JSON.stringify({ status: tr.status, detail: tr.detail || "", at: nowIso() }), exam.id, sub.email).run();
+    "UPDATE t_submissions SET status = 'audio_sealed', audio_fingerprint = ?, photo_fingerprint = ?, receipt = ?, sealed_at = ?, prompt_version = ?, transcription_json = '{}' WHERE exam_id = ? AND email = ?")
+    .bind(audioFp, photo ? photo.sha256 : null, receipt, sealedAt, exam.prompt_version, exam.id, sub.email).run();
   return { audioFingerprint: audioFp, transcriptFingerprint: null, receipt, sealedAt,
-    photoFingerprint: photo ? photo.sha256 : null,
-    sealedTranscript: null, transcriptionStatus: tr.status };
+    photoFingerprint: photo ? photo.sha256 : null, sealedTranscript: null };
 }
 
 function computeFlags(rubric, grades, audit) {
@@ -564,38 +513,22 @@ async function uploadCritique(req, env) {
   if (!sub) throw new HttpError(404, "Unknown session code.");
   const exam = await loadTExam(env, sub.exam_id);
   let gradedText = sub.transcript;
-  let transcriptionCheck = null;
   let attemptTranscript = sub.student_transcript || null;
   if (sub.transcript) {
     const fp = await sha256hex(String(body.transcript || "").replace(/\s+$/g, "").replace(/^\s+/g, ""));
     if (!ctEqual(fp, sub.fingerprint)) throw new HttpError(409, "The graded transcript is not the sealed transcript.");
   } else if (Object.keys(audioOf(sub)).length) {
-    // Audio-sealed take with no server transcript yet: the student's Muse transcribed
-    // the sealed audio itself. Its transcript is stored as the student's transcript
-    // (the seal itself is the audio fingerprint; nothing here overwrites it). When the
-    // server transcription is configured, the server transcribes the same audio now:
-    // that text becomes the canonical transcript, the audit grades it, and the student's
-    // transcript is compared against it word by word.
+    // Audio-sealed take: the student's Muse transcribed the sealed audio itself.
+    // Its transcript is stored as the student's transcript (the seal itself is the
+    // audio fingerprint; nothing here overwrites it), and the audit, when configured,
+    // grades that transcript.
     const studentTranscript = String(body.transcript || "").replace(/\s+$/g, "").replace(/^\s+/g, "");
     if (!studentTranscript) throw new HttpError(400, "For an audio-sealed take, the upload must include the transcript made from the sealed audio.");
     attemptTranscript = studentTranscript;
+    gradedText = studentTranscript;
     const sFp = await sha256hex(studentTranscript);
-    const tr = await runTranscription(env, exam, sub);
-    let canonical = null;
-    if (tr.status === "done") canonical = assemble(tr.segments);
-    const similarity = canonical ? Math.round(wordSimilarity(studentTranscript, canonical) * 1000) / 1000 : null;
-    transcriptionCheck = { status: canonical ? "done" : tr.status, similarity, model: tr.model || null, at: nowIso() };
-    gradedText = canonical || studentTranscript;
-    if (canonical) {
-      const cFp = await sha256hex(canonical);
-      await env.DB.prepare(
-        "UPDATE t_submissions SET student_transcript = ?, student_fingerprint = ?, segments_json = ?, transcript = ?, fingerprint = ?, status = 'sealed', transcription_json = ? WHERE exam_id = ? AND email = ?")
-        .bind(studentTranscript, sFp, JSON.stringify(tr.segments), canonical, cFp,
-          JSON.stringify({ status: "done", model: tr.model, at: tr.at }), sub.exam_id, sub.email).run();
-    } else {
-      await env.DB.prepare("UPDATE t_submissions SET student_transcript = ?, student_fingerprint = ? WHERE exam_id = ? AND email = ?")
-        .bind(studentTranscript, sFp, sub.exam_id, sub.email).run();
-    }
+    await env.DB.prepare("UPDATE t_submissions SET student_transcript = ?, student_fingerprint = ? WHERE exam_id = ? AND email = ?")
+      .bind(studentTranscript, sFp, sub.exam_id, sub.email).run();
   } else {
     throw new HttpError(409, "This submission is not sealed yet.");
   }
@@ -611,9 +544,6 @@ async function uploadCritique(req, env) {
   if (!critique) throw new HttpError(400, "The critique text is empty.");
   const audit = await runAudit(env, exam, gradedText);
   const flags = computeFlags(rubric, grades, audit);
-  if (transcriptionCheck && transcriptionCheck.similarity !== null && transcriptionCheck.similarity < 0.6) {
-    flags.push({ element: "Transcription match", student: transcriptionCheck.similarity, audit: 1 });
-  }
   let status = flags.length ? "flagged" : "graded";
   // Practice vs final: every upload is archived as an attempt. When the student marks
   // the upload final, the submission waits for the teacher's Muse to validate it;
@@ -621,10 +551,9 @@ async function uploadCritique(req, env) {
   const isFinal = body.final === true;
   const finalAt = isFinal ? nowIso() : null;
   if (isFinal) status = "awaiting_validation";
-  const auditStored = transcriptionCheck ? { ...audit, transcription_check: transcriptionCheck } : audit;
   await env.DB.prepare(
     "UPDATE t_submissions SET critique = ?, grades_json = ?, audit_json = ?, flags_json = ?, status = ?, final_at = COALESCE(?, final_at) WHERE exam_id = ? AND email = ?")
-    .bind(critique, JSON.stringify(grades), JSON.stringify(auditStored), JSON.stringify(flags), status, finalAt, sub.exam_id, sub.email).run();
+    .bind(critique, JSON.stringify(grades), JSON.stringify(audit), JSON.stringify(flags), status, finalAt, sub.exam_id, sub.email).run();
   await env.DB.prepare(
     `INSERT INTO t_attempts (session_code, exam_id, email, final, audio_fingerprint, student_transcript, critique, grades_json, status, motion_count, created_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -632,7 +561,7 @@ async function uploadCritique(req, env) {
        critique = excluded.critique, grades_json = excluded.grades_json, status = excluded.status, motion_count = excluded.motion_count`)
     .bind(sub.session_code, sub.exam_id, sub.email, isFinal ? 1 : 0, sub.audio_fingerprint || null,
       attemptTranscript, critique, JSON.stringify(grades), status, motionOf(sub).length, nowIso()).run();
-  return json({ ok: true, status, flags, auditStatus: audit.status, transcriptionCheck, final: isFinal });
+  return json({ ok: true, status, flags, auditStatus: audit.status, final: isFinal });
 }
 
 // ---- teacher-Muse validation (/tv/*, credential: the exam's audit token) -----------------
@@ -819,13 +748,13 @@ async function teacherApi(req, env, url) {
   if (p === "/api/t/settings/model" && m === "GET") {
     const cfg = (await getSettings(env, "model")) || { provider: "", base_url: "", model: "" };
     return json({ provider: cfg.provider || "", base_url: cfg.base_url || "", model: cfg.model || "",
-      transcribe_model: cfg.transcribe_model || "", audio_configured: !!env.AUDIO,
+      audio_configured: !!env.AUDIO,
       key_configured: !!env.MODEL_API_KEY });
   }
   if (p === "/api/t/settings/model" && m === "PUT") {
     const b = await readJson(req, 8192);
     const cfg = { provider: String(b.provider || "").slice(0, 60), base_url: String(b.base_url || "").slice(0, 300),
-      model: String(b.model || "").slice(0, 120), transcribe_model: String(b.transcribe_model || "").slice(0, 120) };
+      model: String(b.model || "").slice(0, 120) };
     await env.DB.prepare("INSERT INTO t_settings (key, value_json, updated_at, updated_by) VALUES ('model', ?, ?, ?) " +
       "ON CONFLICT(key) DO UPDATE SET value_json = excluded.value_json, updated_at = excluded.updated_at, updated_by = excluded.updated_by")
       .bind(JSON.stringify(cfg), nowIso(), t.email).run();
@@ -970,7 +899,6 @@ async function teacherApi(req, env, url) {
       final_at: r.final_at || null, attempts: attCount[r.email] || 0,
       audio_fingerprint: r.audio_fingerprint || null,
       audio: Object.entries(audioOf(r)).map(([slide, a]) => ({ slide: Number(slide), bytes: a.bytes, sha256: a.sha256, title: a.title || "" })),
-      transcription: transcriptionOf(r),
       photo: photoOf(r) ? (({ key, ...rest }) => rest)(photoOf(r)) : null,
       motion: motionOf(r).map(({ key, ...rest }) => rest),
       student_transcript: r.student_transcript || null,
@@ -1013,17 +941,6 @@ async function teacherApi(req, env, url) {
       "Content-Disposition": `attachment; filename="${e.id}-results.csv"`, "Cache-Control": "no-store" } });
   }
 
-  const mTranscribe = p.match(/^\/api\/t\/exams\/([a-z0-9-]{1,40})\/results\/([^/]+)\/transcribe$/);
-  if (mTranscribe && m === "POST") {
-    const e = await tExamFor(env, t, mTranscribe[1]);
-    const email = normEmail(decodeURIComponent(mTranscribe[2]));
-    const sub = await loadSubmission(env, e.id, email);
-    if (!sub) throw new HttpError(404, "No submission for that student.");
-    if (!Object.keys(audioOf(sub)).length) throw new HttpError(400, "This submission has no stored audio.");
-    if (!env.SEAL_SECRET) throw new HttpError(500, "Sealing is not configured on the server (SEAL_SECRET).");
-    const out = await finaliseAudioSeal(env, e, sub);
-    return json({ ok: true, ...out });
-  }
 
   const mAudio = p.match(/^\/api\/t\/exams\/([a-z0-9-]{1,40})\/results\/([^/]+)\/audio\/(\d{1,2})$/);
   if (mAudio && m === "GET") {

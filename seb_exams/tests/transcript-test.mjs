@@ -22,12 +22,7 @@ const modelServer = http.createServer((req, res) => {
   req.on("end", () => {
     const body = Buffer.concat(chunks).toString("latin1");
     res.writeHead(200, { "Content-Type": "application/json" });
-    if (req.url.includes("audio/transcriptions")) {
-      const text = body.includes("slide-1") ? "Words from audio one." : "Words from audio two.";
-      res.end(JSON.stringify({ text }));
-    } else {
-      res.end(JSON.stringify({ choices: [{ message: { content: JSON.stringify(auditFractions) } }] }));
-    }
+    res.end(JSON.stringify({ choices: [{ message: { content: JSON.stringify(auditFractions) } }] }));
   });
 });
 await new Promise((r) => modelServer.listen(8932, "127.0.0.1", r));
@@ -78,10 +73,10 @@ r = await call("GET", "/api/t/exams");
 check("teacher API rejects signed-out request", r.status === 401, r.status);
 
 // ---- model settings -------------------------------------------------------
-r = await call("PUT", "/api/t/settings/model", { cookie, body: { provider: "mock", base_url: "http://127.0.0.1:8932", model: "mock-1", transcribe_model: "mock-whisper" } });
+r = await call("PUT", "/api/t/settings/model", { cookie, body: { provider: "mock", base_url: "http://127.0.0.1:8932", model: "mock-1" } });
 check("model settings saved", r.status === 200 && r.data.ok === true, JSON.stringify(r.data));
 r = await call("GET", "/api/t/settings/model", { cookie });
-check("model settings read back, key not exposed", r.data.model === "mock-1" && r.data.transcribe_model === "mock-whisper" && r.data.audio_configured === true && r.data.key_configured === true && !JSON.stringify(r.data).includes("mock-key"));
+check("model settings read back, key not exposed", r.data.model === "mock-1" && !("transcribe_model" in r.data) && r.data.audio_configured === true && r.data.key_configured === true && !JSON.stringify(r.data).includes("mock-key"));
 
 // ---- create the pilot exam --------------------------------------------------
 const RUBRIC = [
@@ -169,7 +164,7 @@ check("inflated critique flagged by audit", r.status === 200 && r.data.status ==
 r = await call("POST", "/t/critique", { body: { sessionCode: bCode, transcript: bTranscript + " extra", critique: "x", grades: inflated } });
 check("critique on a swapped transcript refused", r.status === 409, r.status);
 
-// ---- audio take: upload, seal, server transcription --------------------------------
+// ---- audio take: upload, seal; the student's Muse transcribes and grades ------------
 const wav1 = new TextEncoder().encode("FAKE-WAV-ONE").buffer;
 const wav2 = new TextEncoder().encode("FAKE-WAV-TWO").buffer;
 const dan = await studentLogin("dan@example.edu");
@@ -183,42 +178,41 @@ r = await call("POST", `/t/audio-segment?examId=${examId}&slide=2&title=${encode
 check("audio segment 2 stored", r.status === 200 && r.data.segmentFingerprint === sha("FAKE-WAV-TWO"));
 check("two objects in the bucket", AUDIO.map.size === 2, AUDIO.map.size);
 r = await call("POST", "/t/seal", { session: dSess, body: { examId } });
-const dExpected = "1 (Bernoulli Equation): Words from audio one.\n2 (Energy balance): Words from audio two.";
-check("audio seal transcribes on the server", r.status === 200 && r.data.transcriptionStatus === "done" && r.data.sealedTranscript === dExpected, JSON.stringify(r.data));
+check("audio seal makes no transcript on the server", r.status === 200 && r.data.sealedTranscript === null && r.data.transcriptFingerprint === null && !("transcriptionStatus" in r.data), JSON.stringify(r.data));
 check("audio fingerprint covers both segments", r.data.audioFingerprint === sha("1:" + sha("FAKE-WAV-ONE") + "\n2:" + sha("FAKE-WAV-TWO")), r.data.audioFingerprint);
 const dCode = r.data.sessionCode;
 r = await call("GET", "/t/packet?session=" + dCode);
-check("packet for audio take carries transcript and audio fingerprint", r.status === 200 && r.data.transcript === dExpected && r.data.audioFingerprint === sha("1:" + sha("FAKE-WAV-ONE") + "\n2:" + sha("FAKE-WAV-TWO")));
+check("packet for audio take carries no transcript, lists the audio", r.status === 200 && r.data.transcript === null && r.data.audio.length === 2 && r.data.audioFingerprint === sha("1:" + sha("FAKE-WAV-ONE") + "\n2:" + sha("FAKE-WAV-TWO")));
 r = await call("GET", `/api/t/exams/${examId}/results/${encodeURIComponent("dan@example.edu")}/audio/1`, { cookie });
 check("teacher can download slide audio", r.status === 200 && r.text === "FAKE-WAV-ONE", r.status + " " + r.text);
 env.AUDIO = undefined;
 r = await call("POST", `/t/audio-segment?examId=${examId}&slide=3`, { session: dSess, raw: wav1 });
 check("audio route fails closed with no bucket", r.status === 500, r.status);
 env.AUDIO = AUDIO;
+auditFractions = { ...honest };
+r = await call("POST", "/t/critique", { body: { sessionCode: dCode, transcript: "1 (Bernoulli Equation): Words from audio one.\n2 (Energy balance): Words from audio two.", critique: "Graded from my own transcription of the sealed audio.", grades: honest } });
+check("student-Muse transcript graded, no server transcription check", r.status === 200 && r.data.status === "graded" && !("transcriptionCheck" in r.data), JSON.stringify(r.data));
 
-// ---- audio take with no transcription model: held as audio_sealed, teacher retries ----
-r = await call("PUT", "/api/t/settings/model", { cookie, body: { provider: "mock", base_url: "http://127.0.0.1:8932", model: "mock-1", transcribe_model: "" } });
+// ---- a sealed audio take waits for the student's Muse; no teacher transcribe route --
 const eve = await studentLogin("eve@example.edu");
 const eSess = eve.verify.data.session;
 await call("POST", "/t/session", { session: eSess, body: { examId } });
 await call("POST", `/t/audio-segment?examId=${examId}&slide=1&title=${encodeURIComponent("Bernoulli Equation")}`, { session: eSess, raw: wav1 });
 r = await call("POST", "/t/seal", { session: eSess, body: { examId } });
-check("unconfigured transcription holds the take as audio_sealed", r.status === 200 && r.data.transcriptionStatus === "not_configured" && r.data.sealedTranscript === null, JSON.stringify(r.data));
+check("the take is held as audio_sealed", r.status === 200 && r.data.sealedTranscript === null, JSON.stringify(r.data));
 const eCode = r.data.sessionCode;
 r = await call("GET", "/t/packet?session=" + eCode);
-check("packet serves an untranscribed audio take for student-Muse grading", r.status === 200 && r.data.transcript === null && r.data.audio.length === 1, r.status);
-r = await call("PUT", "/api/t/settings/model", { cookie, body: { provider: "mock", base_url: "http://127.0.0.1:8932", model: "mock-1", transcribe_model: "mock-whisper" } });
+check("packet serves the audio take for student-Muse grading", r.status === 200 && r.data.transcript === null && r.data.audio.length === 1, r.status);
 r = await call("POST", `/api/t/exams/${examId}/results/${encodeURIComponent("eve@example.edu")}/transcribe`, { cookie, body: {} });
-check("teacher-triggered transcription completes the seal", r.status === 200 && r.data.transcriptionStatus === "done" && r.data.sealedTranscript === "1 (Bernoulli Equation): Words from audio one.", JSON.stringify(r.data));
+check("the teacher transcribe route no longer exists", r.status === 404, r.status);
 
 // ---- student Muse transcribes the sealed audio itself and grades it -----------------
-r = await call("PUT", "/api/t/settings/model", { cookie, body: { provider: "mock", base_url: "http://127.0.0.1:8932", model: "mock-1", transcribe_model: "" } });
 const frank = await studentLogin("frank@example.edu");
 const fSess = frank.verify.data.session;
 await call("POST", "/t/session", { session: fSess, body: { examId } });
 await call("POST", `/t/audio-segment?examId=${examId}&slide=1&title=${encodeURIComponent("Bernoulli Equation")}`, { session: fSess, raw: wav1 });
 r = await call("POST", "/t/seal", { session: fSess, body: { examId } });
-check("frank's take is audio_sealed", r.status === 200 && r.data.transcriptionStatus === "not_configured", JSON.stringify(r.data));
+check("frank's take is audio_sealed", r.status === 200 && r.data.sealedTranscript === null, JSON.stringify(r.data));
 const fCode = r.data.sessionCode;
 r = await call("GET", "/t/packet?session=" + fCode);
 check("packet for an audio take lists the sealed audio, no transcript", r.status === 200 && r.data.transcript === null && r.data.audio.length === 1 && !!r.data.audioFingerprint, JSON.stringify(r.data).slice(0, 250));
@@ -231,13 +225,11 @@ r = await call("POST", "/t/critique", { body: { sessionCode: fCode, critique: "N
 check("audio critique without a transcript refused", r.status === 400, r.status);
 const fTranscript = "1 (Bernoulli Equation): Words from audio one.";
 r = await call("POST", "/t/critique", { body: { sessionCode: fCode, transcript: fTranscript, critique: "Graded from my own transcription of the sealed audio.", grades: honest } });
-check("student Muse transcript + critique accepted", r.status === 200 && r.data.status === "graded" && r.data.transcriptionCheck.status === "not_configured", JSON.stringify(r.data));
-r = await call("PUT", "/api/t/settings/model", { cookie, body: { provider: "mock", base_url: "http://127.0.0.1:8932", model: "mock-1", transcribe_model: "mock-whisper" } });
-r = await call("POST", "/t/critique", { body: { sessionCode: fCode, transcript: "1 (Bernoulli Equation): Completely invented words about nothing.", critique: "Graded from an invented transcript.", grades: honest } });
-check("invented transcript flagged against the server transcription", r.status === 200 && r.data.status === "flagged" && r.data.transcriptionCheck.similarity < 0.6 && r.data.flags.some((f) => f.element === "Transcription match"), JSON.stringify(r.data));
+check("student Muse transcript + critique accepted", r.status === 200 && r.data.status === "graded" && !("transcriptionCheck" in r.data), JSON.stringify(r.data));
+r = await call("POST", "/t/critique", { body: { sessionCode: fCode, transcript: "1 (Bernoulli Equation): Completely different words.", critique: "A replacement transcript.", grades: honest } });
+check("a replacement transcript is accepted (no server transcription cross-check)", r.status === 200 && r.data.status === "graded", JSON.stringify(r.data));
 
 // ---- practice loop, final marking, and teacher-Muse validation -----------------------
-r = await call("PUT", "/api/t/settings/model", { cookie, body: { provider: "mock", base_url: "http://127.0.0.1:8932", model: "mock-1", transcribe_model: "" } });
 const grace = await studentLogin("grace@example.edu");
 let gSess = grace.verify.data.session;
 await call("POST", "/t/session", { session: gSess, body: { examId } });
@@ -315,7 +307,7 @@ const graceRow = r.data.results.find((x) => x.email === "grace@example.edu");
 check("attempts archived and validation recorded as the final grade", !!graceRow && graceRow.attempts === 2 && graceRow.status === "final"
   && graceRow.manual.fractions["Technical accuracy"] === 0.7 && graceRow.audit.source === "teacher-claude", JSON.stringify(graceRow).slice(0, 300));
 const frankRow = r.data.results.find((x) => x.email === "frank@example.edu");
-check("student Muse transcript stored on the submission", !!frankRow && frankRow.student_transcript === "1 (Bernoulli Equation): Completely invented words about nothing." && frankRow.transcript === fTranscript, JSON.stringify(frankRow).slice(0, 300));
+check("student Muse transcript stored on the submission", !!frankRow && frankRow.student_transcript === "1 (Bernoulli Equation): Completely different words." && frankRow.transcript === null, JSON.stringify(frankRow).slice(0, 300));
 const settled = { "Technical accuracy": 0.5, "Technical completeness": 0.5, "Introduction": 0.5, "Relevance": 0.5, "Summary": 0.5, "Conclusion": 0.5 };
 r = await call("POST", `/api/t/exams/${examId}/results/${encodeURIComponent("nobody@example.edu")}/override`, { cookie, body: { fractions: settled, comment: "wrong student" } });
 check("override for unknown student refused", r.status === 404, r.status);

@@ -58,7 +58,7 @@ const wav = new TextEncoder().encode("FAKE-WAV-ONE").buffer;
 await call("POST", "/t/audio-segment?examId=be-test1&slide=1&title=Bernoulli%20Equation", undefined, sess, wav);
 const sealed = await call("POST", "/t/seal", { examId: "be-test1" }, sess);
 const code = sealed.data.sessionCode;
-check("setup: audio take sealed", sealed.status === 200 && sealed.data.transcriptionStatus === "not_configured" && !!sealed.data.audioFingerprint, JSON.stringify(sealed.data));
+check("setup: audio take sealed", sealed.status === 200 && sealed.data.sealedTranscript === null && !!sealed.data.audioFingerprint, JSON.stringify(sealed.data));
 
 const pkt = JSON.parse((await run("node", [GRADE, "packet", SERVER, code])).stdout);
 check("skill packet shows audio, no transcript", pkt.transcript === null && pkt.audio.length === 1 && !!pkt.audioFingerprint);

@@ -66,7 +66,7 @@ const mh = await call("POST", "/t/motion-photo?examId=be-test1&at=61&slide=4&sco
 check("setup: scene-change capture uploaded", mh.status === 200 && mh.data.n === 1, JSON.stringify(mh.data));
 const sealed = await call("POST", "/t/seal", { examId: "be-test1" }, sess);
 const code = sealed.data.sessionCode;
-check("setup: audio take sealed", sealed.status === 200 && sealed.data.transcriptionStatus === "not_configured" && !!sealed.data.audioFingerprint, JSON.stringify(sealed.data));
+check("setup: audio take sealed", sealed.status === 200 && sealed.data.sealedTranscript === null && !!sealed.data.audioFingerprint, JSON.stringify(sealed.data));
 
 const pkt = JSON.parse((await run("node", [GRADE, "packet", SERVER, code])).stdout);
 check("skill packet shows audio, no transcript", pkt.transcript === null && pkt.audio.length === 1 && !!pkt.audioFingerprint);
